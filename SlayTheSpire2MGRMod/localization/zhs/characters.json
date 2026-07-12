@@ -1,0 +1,17 @@
+{
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][orange]舞台已经准备好了。[/orange][/sine]",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "这一小节结束了。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "演出……还没有结束。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "MGR 的卡牌现在会出现在奖励和商店中。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGR 卡牌",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.description": "可爱的小女孩，曲奇指定歌姬。她会把出牌编成乐句，并在旋律完成时掀起高潮。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "歌声把她拉回舞台。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "这些金币足够准备下一场演出。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "她的",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "她",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "她的",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "她",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "使用[pink]{Prerequisite}[/pink]完成一局游戏来解锁 MGR。"
+}

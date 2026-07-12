@@ -1,0 +1,19 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# C# / IDE build products
+bin/
+obj/
+.idea/
+.vs/
+*.user
+*.suo
+*.uid
+*.import
+
+# Machine-specific paths
+local.props
+
+# Slay the Spire 1 source is reference material only.
+塔1老版本/
