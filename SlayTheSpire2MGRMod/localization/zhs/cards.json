@@ -5,9 +5,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.title": "防御",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.description": "获得 {Block:diff()} 点格挡。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.smartDescription": "获得 {Block:diff()} 点格挡。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.title": "窥视",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.description": "给予 {VulnerablePower:diff()} 层易伤。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.smartDescription": "给予 {VulnerablePower:diff()} 层易伤。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.title": "试音",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.description": "给予 {VulnerablePower:diff()} 层易伤。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.smartDescription": "给予 {VulnerablePower:diff()} 层易伤。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.title": "安眠曲",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.description": "获得 {Block:diff()} 点格挡。给予所有敌人 {WeakPower:diff()} 层虚弱。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.smartDescription": "获得 {Block:diff()} 点格挡。给予所有敌人 {WeakPower:diff()} 层虚弱。"

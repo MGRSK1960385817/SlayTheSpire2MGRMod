@@ -10,9 +10,9 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "peek")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "sound_check")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 30)]
-public sealed class Peek : ModCardTemplate
+public sealed class SoundCheck : ModCardTemplate
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -27,7 +27,7 @@ public sealed class Peek : ModCardTemplate
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");
 
-    public Peek() : base(1, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
+    public SoundCheck() : base(1, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
     {
     }
 

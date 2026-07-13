@@ -5,9 +5,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.title": "Defend",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.description": "Gain {Block:diff()} Block.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND.smartDescription": "Gain {Block:diff()} Block.",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.title": "Peek",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.description": "Apply {VulnerablePower:diff()} Vulnerable.",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PEEK.smartDescription": "Apply {VulnerablePower:diff()} Vulnerable.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.title": "Sound Check",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.description": "Apply {VulnerablePower:diff()} Vulnerable.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK.smartDescription": "Apply {VulnerablePower:diff()} Vulnerable.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.title": "Lullaby",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.description": "Gain {Block:diff()} Block. Apply {WeakPower:diff()} Weak to ALL enemies.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY.smartDescription": "Gain {Block:diff()} Block. Apply {WeakPower:diff()} Weak to ALL enemies."

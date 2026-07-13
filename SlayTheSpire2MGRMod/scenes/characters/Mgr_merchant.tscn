@@ -5,5 +5,5 @@
 [node name="MgrCharacterMerchant" type="Node2D"]
 
 [node name="Visuals" type="Sprite2D" parent="."]
-position = Vector2(0, -96)
+position = Vector2(0, -250)
 texture = ExtResource("1_character")
