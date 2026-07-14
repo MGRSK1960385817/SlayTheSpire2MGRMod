@@ -17,3 +17,9 @@ local.props
 
 # Slay the Spire 1 source is reference material only.
 塔1老版本/
+
+# External character mod source is reference material only.
+STS2_WineFox-main/
+
+# Local manual Git sync helper; never publish it with the mod source.
+/同步.BAT

@@ -14,7 +14,7 @@ namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "lullaby")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 40)]
-public sealed class Lullaby : ModCardTemplate
+public sealed class Lullaby : MgrCard
 {
     public override bool GainsBlock => true;
 
@@ -28,9 +28,6 @@ public sealed class Lullaby : ModCardTemplate
         new BlockVar(9m, ValueProp.Move),
         new PowerVar<WeakPower>(1m)
     ];
-
-    public override CardAssetProfile AssetProfile => new(
-        PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");
 
     public Lullaby() : base(2, CardType.Skill, CardRarity.Basic, TargetType.AllEnemies)
     {

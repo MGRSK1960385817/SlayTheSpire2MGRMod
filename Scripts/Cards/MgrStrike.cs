@@ -11,11 +11,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "strike")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), 4, Order = 10)]
-public sealed class MgrStrike : ModCardTemplate
+public sealed class MgrStrike : MgrCard
 {
-    public override CardAssetProfile AssetProfile => new(
-        PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6m, ValueProp.Move)
@@ -31,7 +28,7 @@ public sealed class MgrStrike : ModCardTemplate
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
     }

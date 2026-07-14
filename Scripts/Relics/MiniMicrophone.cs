@@ -16,5 +16,6 @@ public sealed class MiniMicrophone : ModRelicTemplate
         IconOutlinePath: $"{Entry.ResPath}/images/relics/MiniMicrophone_outline.png",
         BigIconPath: $"{Entry.ResPath}/images/relics/MiniMicrophone.png");
 
-    // Gameplay intentionally waits for the new Phrase system instead of recreating orb-channel behavior.
+    // MgrNoteSystem seeds Attack, Skill and Power notes at combat start so reset and
+    // chord resolution happen in one deterministic, multiplayer-aware hook.
 }

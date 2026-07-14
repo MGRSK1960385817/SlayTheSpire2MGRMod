@@ -3,6 +3,8 @@ using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
 using STS2RitsuLib;
 using STS2RitsuLib.Interop;
+using STS2RitsuLib.Patching.Core;
+using SlayTheSpire2MGRMod.Patches;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
 namespace SlayTheSpire2MGRMod;
@@ -15,14 +17,30 @@ public partial class Entry
 
     public static Logger Logger { get; } = new(ModId, LogType.Generic);
 
+    private static ModPatcher? _runtimePatcher;
+    public static bool IsModActive { get; private set; }
+
     public static void Initialize()
     {
+        if (IsModActive)
+            return;
+
         Assembly assembly = Assembly.GetExecutingAssembly();
 
         // Godot scene scripts and RitsuLib content attributes use separate discovery paths.
         RitsuLibFramework.EnsureGodotScriptsRegistered(assembly, Logger);
+
+        _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
+        _runtimePatcher.RegisterPatch<MgrCharacterSelectSfxPatch>();
+        if (!RitsuLibFramework.ApplyRequiredPatcher(
+                _runtimePatcher,
+                () => IsModActive = false,
+                "MGR runtime patches failed; initialization aborted."))
+            return;
+
         ModTypeDiscoveryHub.RegisterModAssembly(ModId, assembly);
 
+        IsModActive = true;
         Logger.Info("SlayTheSpire2MGRMod initialized.");
     }
 }

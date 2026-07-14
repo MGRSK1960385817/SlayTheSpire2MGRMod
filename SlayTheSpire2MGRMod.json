@@ -2,17 +2,17 @@
   "id": "SlayTheSpire2MGRMod",
   "name": "MGR",
   "pck_name": "SlayTheSpire2MGRMod",
-  "author": "MGR Mod Team",
-  "description": "A Slay the Spire 2 reimagining of the MGR character mod.",
+  "author": "MGRSK",
+  "description": "MGRMod For SlayTheSpire2.",
   "version": "0.1.0",
-  "min_game_version": "0.107.1",
+  "min_game_version": "0.108.0",
   "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true,
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "min_version": "0.4.56"
+      "min_version": "0.4.57"
     }
   ]
 }

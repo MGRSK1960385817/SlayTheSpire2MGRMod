@@ -1,0 +1,5 @@
+{
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_FORTE_POWER.title": "强音",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_FORTE_POWER.description": "改变音符触发时的效果数值。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_FORTE_POWER.smartDescription": "当前拥有 [blue]{Amount}[/blue] 层强音。它会改变音符触发时的效果数值。"
+}

@@ -11,12 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "defend")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), 4, Order = 20)]
-public sealed class MgrDefend : ModCardTemplate
+public sealed class MgrDefend : MgrCard
 {
     public override bool GainsBlock => true;
-
-    public override CardAssetProfile AssetProfile => new(
-        PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

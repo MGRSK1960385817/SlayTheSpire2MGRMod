@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" />
-    <PackageReference Include="STS2.RitsuLib.Compat.0.107.1" Version="0.4.56" />
+    <PackageReference Include="STS2.RitsuLib" Version="0.4.57" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,9 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**;SlayTheSpire2MGRMod/**" />
-    <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**;SlayTheSpire2MGRMod/**" />
-    <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**" />
+    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**;STS2_WineFox-main/**;SlayTheSpire2MGRMod/**" />
+    <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**;STS2_WineFox-main/**;SlayTheSpire2MGRMod/**" />
+    <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;塔1老版本/**;STS2_WineFox-main/**" />
     <AdditionalFiles Include="SlayTheSpire2MGRMod/localization/**/*.json" />
     <None Include="SlayTheSpire2MGRMod/**" />
     <None Include="SlayTheSpire2MGRMod.json" />

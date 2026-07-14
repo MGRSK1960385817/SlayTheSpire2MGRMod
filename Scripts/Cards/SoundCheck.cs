@@ -12,7 +12,7 @@ namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "sound_check")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 30)]
-public sealed class SoundCheck : ModCardTemplate
+public sealed class SoundCheck : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -23,9 +23,6 @@ public sealed class SoundCheck : ModCardTemplate
     [
         new PowerVar<VulnerablePower>(2m)
     ];
-
-    public override CardAssetProfile AssetProfile => new(
-        PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");
 
     public SoundCheck() : base(1, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
     {

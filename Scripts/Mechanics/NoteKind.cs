@@ -3,8 +3,10 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public enum NoteKind
 {
     Attack,
-    Guard,
-    Insight,
-    Dissonance,
-    Star
+    Skill,
+    Power,
+    Status,
+    Curse,
+    Quest,
+    Starry
 }
