@@ -1,7 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Nodes.Combat;
-using MegaCrit.Sts2.Core.Nodes.Orbs;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Characters;
 using STS2RitsuLib.Scaffolding.Godot;
@@ -26,11 +25,6 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
 
     public override CharacterAssetProfile AssetProfile => MgrCharacterAssets.Profile;
 
-    // The note rack reuses only the base game's empty NOrb outline. Preload its
-    // scene for MGR runs even though this character has no OrbQueue or orb slots.
-    protected override IEnumerable<string> ExtraAssetPaths =>
-        base.ExtraAssetPaths.Concat(NOrb.AssetPaths);
-
     // Development fallback only. It prevents missing non-MGR assets from blocking the first load.
     public override string? PlaceholderCharacterId => "ironclad";
     public override bool RequiresEpochAndTimeline => false;
@@ -46,9 +40,7 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
     {
         return
         [
-            "vfx/vfx_attack_slash",
-            "vfx/vfx_flying_slash",
-            "vfx/vfx_star_attack"
+            "vfx/vfx_attack_slash"
         ];
     }
 }

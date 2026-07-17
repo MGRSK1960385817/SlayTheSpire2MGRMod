@@ -11,7 +11,6 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "sound_check")]
-[RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 30)]
 public sealed class SoundCheck : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
@@ -24,7 +23,7 @@ public sealed class SoundCheck : MgrCard
         new PowerVar<VulnerablePower>(2m)
     ];
 
-    public SoundCheck() : base(1, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
+    public SoundCheck() : base(1, CardType.Skill, CardRarity.Common, TargetType.AnyEnemy)
     {
     }
 

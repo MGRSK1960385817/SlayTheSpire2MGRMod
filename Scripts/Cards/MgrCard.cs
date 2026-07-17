@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Scaffolding.Content;
 using SlayTheSpire2MGRMod.Mechanics;
 
@@ -24,10 +25,19 @@ public abstract class MgrCard(
     public virtual bool IsStarryCard => false;
 
     /// <summary>
-    /// Number of future turn starts on which this card will be played again.
-    /// Zero means this is not a Performance card. Runtime scheduling is implemented separately.
+    /// Initial number of future turn starts on which this card will be performed.
+    /// Remaining turns live in the combat-only performance entry so the printed
+    /// value and the mutable queue state cannot be confused.
     /// </summary>
-    public virtual int PerformanceTurns => 0;
+    public virtual int InitialPerformanceTurns => 0;
+
+    /// <summary>
+    /// Called after the final performance play and its native result-pile routing
+    /// resolve. Override this for card-specific finales.
+    /// </summary>
+    public virtual Task OnPerformanceFinished(
+        PlayerChoiceContext choiceContext,
+        PerformanceCompletionContext context) => Task.CompletedTask;
 
     /// <summary>
     /// Optional note override for special MGR cards.
@@ -49,6 +59,18 @@ public abstract class MgrCard(
 
     protected Task ChannelNote(PlayerChoiceContext choiceContext, NoteKind kind) =>
         MgrNoteSystem.ChannelNote(choiceContext, Owner, kind);
+
+    /// <summary>
+    /// A Performance card is held outside the ordinary combat piles until its
+    /// queue entry finishes. The engine's Play pile keeps the model registered
+    /// with combat without exposing it to draw/discard/exhaust effects. The last
+    /// automatic play is released to Tower 2's normal result-pile routing.
+    /// </summary>
+    protected override (PileType, CardPilePosition) GetResultPileTypeAndPositionForCardPlay() =>
+        MgrPerformanceSystem.IsPerformanceCard(this) &&
+        !MgrPerformanceSystem.IsCompletingPerformance(this)
+            ? (PileType.Play, CardPilePosition.Bottom)
+            : base.GetResultPileTypeAndPositionForCardPlay();
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");

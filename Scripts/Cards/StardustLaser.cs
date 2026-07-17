@@ -30,7 +30,7 @@ public sealed class StardustLaser : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
-            .WithHitFx("vfx/vfx_attack_fire")
+            .WithHitFx("vfx/vfx_starry_impact")
             .Execute(choiceContext);
     }
 

@@ -1,5 +1,8 @@
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
@@ -24,6 +27,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
     public override async Task BeforeCombatStart()
     {
+        MgrPerformanceSystem.ClearAll();
+        MgrCombatCardMutationState.Clear();
         MgrNoteVisuals.ClearAll();
         MgrCombatStateStore.Clear();
 
@@ -39,6 +44,17 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             if (player.Character is not MgrCharacter)
                 continue;
 
+            if (player.GetRelic<Fumo>() is { IsUsedUp: false } fumo)
+            {
+                fumo.Flash();
+                await PowerCmd.Apply<FortePower>(
+                    choiceContext,
+                    player.Creature,
+                    1m,
+                    player.Creature,
+                    cardSource: null);
+            }
+
             MgrCombatState state = MgrCombatStateStore.For(player);
             state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
             MgrNoteVisuals.Show(
@@ -47,6 +63,13 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 state.Phrase.Capacity,
                 state.Forte,
                 clearAfterDelay: false);
+
+            if (player.GetRelic<WeatheredPlectrum>() is { } plectrum)
+            {
+                plectrum.Flash();
+                for (int index = 0; index < plectrum.CombatStartAttackNotes; index++)
+                    await ChannelNote(choiceContext, player, NoteKind.Attack);
+            }
 
             if (player.GetRelic<MiniMicrophone>() is not { IsUsedUp: false } relic)
                 continue;
@@ -58,15 +81,33 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
-    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay);
 
         var player = cardPlay.Card.Owner;
         if (player.Character is not MgrCharacter)
-            return Task.CompletedTask;
+            return;
 
-        return ChannelNote(choiceContext, player, CardNoteResolver.Resolve(cardPlay.Card));
+        await ChannelNote(choiceContext, player, CardNoteResolver.Resolve(cardPlay.Card));
+        MgrPerformanceSystem.ObserveResolvedCardPlay(cardPlay);
+    }
+
+    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+        CardModel card,
+        bool isAutoPlay,
+        ResourceInfo resources,
+        PileType pileType,
+        CardPilePosition position)
+    {
+        if (card.Owner.Character is MgrCharacter &&
+            MgrPerformanceSystem.IsPerformanceCard(card) &&
+            !MgrPerformanceSystem.IsCompletingPerformance(card))
+        {
+            return (PileType.Play, CardPilePosition.Bottom);
+        }
+
+        return (pileType, position);
     }
 
     /// <summary>
@@ -74,6 +115,16 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// Filling the current capacity resolves a chord and triggers its notes from left to right.
     /// </summary>
     public static async Task ChannelNote(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        NoteKind kind)
+    {
+        int copies = player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ? 2 : 1;
+        for (int copy = 0; copy < copies; copy++)
+            await ChannelSingleNote(choiceContext, player, kind);
+    }
+
+    private static async Task ChannelSingleNote(
         PlayerChoiceContext choiceContext,
         Player player,
         NoteKind kind)
@@ -99,7 +150,25 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             return;
 
         MgrAudio.PlayChord();
-        await MgrNoteEffects.TriggerChord(choiceContext, player, resolution.Notes, state.Forte);
+        await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
+    }
+
+    /// <summary>
+    /// Removes the currently slotted notes without resolving their effects.
+    /// The returned snapshot lets cards calculate rewards from what was removed.
+    /// </summary>
+    public static IReadOnlyList<MgrNote> RemoveAllNotes(Player player)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        MgrNote[] removed = state.Phrase.Notes.ToArray();
+        state.Phrase.Clear();
+        MgrNoteVisuals.Show(
+            player,
+            state.Phrase.Notes,
+            state.Phrase.Capacity,
+            state.Forte,
+            clearAfterDelay: false);
+        return removed;
     }
 
     /// <summary>
@@ -173,11 +242,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 state.Phrase.Capacity,
                 state.Forte,
                 clearAfterDelay: isLastWithNoRemainder);
-            await MgrNoteEffects.TriggerChord(
-                choiceContext,
-                player,
-                resolution.Notes,
-                state.Forte);
+            await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
         }
 
         if (state.Phrase.Notes.Count > 0)
@@ -191,20 +256,59 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
-    public override Task AfterPlayerTurnStart(
+    public override async Task AfterPlayerTurnStart(
         PlayerChoiceContext choiceContext,
         Player player)
     {
         if (MgrCombatStateStore.TryGet(player, out MgrCombatState state))
             state.ResetTurnCounters();
 
+        if (player.Character is MgrCharacter)
+            await MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
+    }
+
+    public override Task BeforeSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (CurrentCombatState is not { } combatState)
+            return Task.CompletedTask;
+
+        foreach (Player player in combatState.Players)
+        {
+            if (player.Character is MgrCharacter &&
+                player.Creature.Side == side)
+            {
+                MgrCombatStateStore.For(player).SetUnusedEnergyLastTurn(
+                    player.PlayerCombatState?.Energy ?? 0m);
+            }
+        }
+
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
+        MgrPerformanceSystem.ClearAll();
+        MgrCombatCardMutationState.Clear();
         MgrNoteVisuals.ClearAll();
         MgrCombatStateStore.Clear();
         return Task.CompletedTask;
+    }
+
+    private static async Task TriggerResolvedChord(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<MgrNote> notes,
+        int forte)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        int triggerCount = 1 + state.ConsumePendingChordTriggers();
+        if (player.GetRelic<DecennialMetronome>()?.TryDoubleCurrentChord() == true)
+            triggerCount++;
+
+        for (int index = 0; index < triggerCount; index++)
+            await MgrNoteEffects.TriggerChord(choiceContext, player, notes, forte);
     }
 }

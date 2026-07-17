@@ -1,0 +1,760 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-07-17",
+  "purpose": "MGR 模组内容名称与资源登记表。所有新卡牌和遗物在实现时都必须登记；临时名称必须标记为 provisional 或 imported_from_sts1_needs_review。",
+  "maintenanceRules": [
+    "codeName 同时对应 C# 类型名、源代码文件基本名和默认图片文件基本名。",
+    "displayNames 记录游戏中显示的中文名和英文名；仅修改显示名时不应修改 stableEntryStem。",
+    "stableEntryStem 是存档和注册使用的稳定标识，内容发布后不要因为改名而修改它。",
+    "新增、重命名或删除卡牌与遗物时，必须同时更新本文件、C# 文件、图片资源和中英文本地化。",
+    "nameStatus 为 imported_from_sts1_needs_review 或 provisional 的内容需要由作者最终确认。"
+  ],
+  "nameStatusValues": {
+    "current_localization": "当前塔二本地化正在使用的名称，尚未额外声明为最终锁定。",
+    "imported_from_sts1_needs_review": "从塔一原始文本导入，等待作者确认是否沿用。",
+    "provisional": "开发阶段临时名称，必须在发布前确认。",
+    "confirmed": "作者已经明确确认的正式名称。"
+  },
+  "cards": [
+    {
+      "codeName": "MgrStrike",
+      "sourceFileName": "MgrStrike.cs",
+      "imageFileName": "MgrStrike.png",
+      "stableEntryStem": "strike",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STRIKE",
+      "displayNames": { "zhs": "打击", "eng": "Strike", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Basic",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 6 点伤害。", "eng": "Deal 6 damage." },
+      "upgradeEffect": { "zhs": "伤害增加至 9。", "eng": "Increase damage to 9." },
+      "adaptationNotes": "塔二基础攻击牌。"
+    },
+    {
+      "codeName": "MgrDefend",
+      "sourceFileName": "MgrDefend.cs",
+      "imageFileName": "MgrDefend.png",
+      "stableEntryStem": "defend",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEFEND",
+      "displayNames": { "zhs": "防御", "eng": "Defend", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Basic",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "获得 5 点格挡。", "eng": "Gain 5 Block." },
+      "upgradeEffect": { "zhs": "格挡增加至 8。", "eng": "Increase Block to 8." },
+      "adaptationNotes": "塔二基础防御牌。"
+    },
+    {
+      "codeName": "SoundCheck",
+      "sourceFileName": "SoundCheck.cs",
+      "imageFileName": "SoundCheck.png",
+      "stableEntryStem": "sound_check",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_SOUND_CHECK",
+      "displayNames": { "zhs": "试音", "eng": "Sound Check", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "给予 2 层易伤。", "eng": "Apply 2 Vulnerable." },
+      "upgradeEffect": { "zhs": "易伤增加至 3 层。", "eng": "Increase Vulnerable to 3." },
+      "adaptationNotes": "已从初始卡组移入普通卡池，由 OpeningDuet 取代。"
+    },
+    {
+      "codeName": "OpeningDuet",
+      "sourceFileName": "OpeningDuet.cs",
+      "imageFileName": "OpeningDuet.png",
+      "stableEntryStem": "opening_duet",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_OPENING_DUET",
+      "displayNames": { "zhs": "开场二重奏", "eng": "Opening Duet", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Basic",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "生成 1 个攻击音符和 1 个技能音符；演奏 3。", "eng": "Generate 1 Attack Note and 1 Skill Note; Perform 3." },
+      "upgradeEffect": { "zhs": "演奏增加至 5。", "eng": "Increase Perform to 5." },
+      "adaptationNotes": "新的初始卡；普通打出的第一次不扣演奏次数，因此基础版本共触发 4 次。图片暂用塔一 AlternateSinging.png。"
+    },
+    {
+      "codeName": "StarlitEncore",
+      "sourceFileName": "StarlitEncore.cs",
+      "imageFileName": "StarlitEncore.png",
+      "stableEntryStem": "starlit_encore",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARLIT_ENCORE",
+      "displayNames": { "zhs": "星光返场", "eng": "Starlit Encore", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "星空牌。抽 1 张牌；演奏 2。", "eng": "Starry. Draw 1 card; Perform 2." },
+      "upgradeEffect": { "zhs": "演奏增加至 3。", "eng": "Increase Perform to 3." },
+      "adaptationNotes": "抽牌效果与中英文名均为临时设定，等待作者确认。图片暂用塔一 Kimitomitahosizora.png。"
+    },
+    {
+      "codeName": "FlexibleRange",
+      "sourceFileName": "FlexibleRange.cs",
+      "imageFileName": "FlexibleRange.png",
+      "stableEntryStem": "flexible_range",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_FLEXIBLE_RANGE",
+      "displayNames": { "zhs": "伸缩音域", "eng": "Flexible Range", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "1费。选择增加1个音符槽或减少1个音符槽；消耗。", "eng": "Costs 1. Choose to gain or lose 1 Note slot; Exhaust." },
+      "upgradeEffect": { "zhs": "增加第三个选项：增加2个音符槽。费用仍为1。", "eng": "Add a third option: gain 2 Note slots. The cost remains 1." },
+      "adaptationNotes": "金卡。使用塔二 FromSimpleGrid 二选一界面；名称和图片为临时内容，图片暂用塔一 AdjustTempo.png。"
+    },
+    {
+      "codeName": "ExpandNoteRack",
+      "sourceFileName": "ExpandNoteRack.cs",
+      "imageFileName": "ExpandNoteRack.png",
+      "stableEntryStem": "expand_note_rack",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_EXPAND_NOTE_RACK",
+      "displayNames": { "zhs": "扩展音域", "eng": "Expand Range", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Token",
+      "implementationStatus": "implemented_hidden_choice",
+      "effect": { "zhs": "增加1个音符槽。", "eng": "Gain 1 Note slot." },
+      "upgradeEffect": { "zhs": "无。", "eng": "None." },
+      "adaptationNotes": "仅作为 FlexibleRange 的选择按钮存在，不进入卡牌奖励或图鉴。"
+    },
+    {
+      "codeName": "ContractNoteRack",
+      "sourceFileName": "ContractNoteRack.cs",
+      "imageFileName": "ContractNoteRack.png",
+      "stableEntryStem": "contract_note_rack",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CONTRACT_NOTE_RACK",
+      "displayNames": { "zhs": "收束音域", "eng": "Contract Range", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Token",
+      "implementationStatus": "implemented_hidden_choice",
+      "effect": { "zhs": "减少1个音符槽，最低保留1槽。", "eng": "Lose 1 Note slot, to a minimum of 1." },
+      "upgradeEffect": { "zhs": "无。", "eng": "None." },
+      "adaptationNotes": "仅作为 FlexibleRange 的选择按钮存在；减槽可能立即结算因容量变化而完成的和弦。"
+    },
+    {
+      "codeName": "ExpandNoteRackTwice",
+      "sourceFileName": "ExpandNoteRackTwice.cs",
+      "imageFileName": "ExpandNoteRackTwice.png",
+      "stableEntryStem": "expand_note_rack_twice",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_EXPAND_NOTE_RACK_TWICE",
+      "displayNames": { "zhs": "大幅扩展音域", "eng": "Greatly Expand Range", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Token",
+      "implementationStatus": "implemented_hidden_choice",
+      "effect": { "zhs": "增加2个音符槽。", "eng": "Gain 2 Note slots." },
+      "upgradeEffect": { "zhs": "无。", "eng": "None." },
+      "adaptationNotes": "仅在升级后的 FlexibleRange 选择界面出现，不进入奖励或图鉴。"
+    },
+    {
+      "codeName": "Masterful",
+      "sourceFileName": "Masterful.cs",
+      "imageFileName": "Masterful.png",
+      "stableEntryStem": "masterful",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_MASTERFUL",
+      "displayNames": { "zhs": "全能", "eng": "Masterful", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Skill",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "0费。从抽牌堆中将每种音符类型各1张牌放入手牌；消耗。", "eng": "Costs 0. Move 1 card of each Note type from the draw pile into hand; Exhaust." },
+      "upgradeEffect": { "zhs": "获得固有。", "eng": "Gain Innate." },
+      "adaptationNotes": "金卡。按统一 CardNoteResolver 分类，依次支持攻击、技能、能力、状态、诅咒、任务与星空；不存在的类型会跳过。沿用塔一图片。"
+    },
+    {
+      "codeName": "Lullaby",
+      "sourceFileName": "Lullaby.cs",
+      "imageFileName": "Lullaby.png",
+      "stableEntryStem": "lullaby",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_LULLABY",
+      "displayNames": { "zhs": "安眠曲", "eng": "Lullaby", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Basic",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "获得 9 点格挡，给予所有敌人 1 层虚弱。", "eng": "Gain 9 Block and apply 1 Weak to all enemies." },
+      "upgradeEffect": { "zhs": "格挡增加至 11，虚弱增加至 2 层。", "eng": "Increase Block to 11 and Weak to 2." },
+      "adaptationNotes": "塔二版本不包含注视或姿态逻辑。"
+    },
+    {
+      "codeName": "AccurateShooting",
+      "sourceFileName": "AccurateShooting.cs",
+      "imageFileName": "AccurateShooting.png",
+      "stableEntryStem": "accurate_shooting",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ACCURATE_SHOOTING",
+      "displayNames": { "zhs": "精确射击", "eng": "Accurate Shooting", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 10 点伤害；作为尾音打出时伤害翻倍。", "eng": "Deal 10 damage; double it when played as an Ending." },
+      "upgradeEffect": { "zhs": "基础伤害增加至 14。", "eng": "Increase base damage to 14." },
+      "adaptationNotes": "尾音判定使用当前动态音符槽容量。"
+    },
+    {
+      "codeName": "EnergeticStarting",
+      "sourceFileName": "EnergeticStarting.cs",
+      "imageFileName": "EnergeticStarting.png",
+      "stableEntryStem": "energetic_starting",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ENERGETIC_STARTING",
+      "displayNames": { "zhs": "活力起音", "eng": "Energetic Starting", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "获得 2 点格挡；作为起音打出时抽 1 张牌。", "eng": "Gain 2 Block; draw 1 card when played as a Starting." },
+      "upgradeEffect": { "zhs": "格挡增加至 4。", "eng": "Increase Block to 4." },
+      "adaptationNotes": "起音判定使用当前动态音符槽容量。"
+    },
+    {
+      "codeName": "Dexterous",
+      "sourceFileName": "Dexterous.cs",
+      "imageFileName": "Dexterous.png",
+      "stableEntryStem": "dexterous",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_DEXTEROUS",
+      "displayNames": { "zhs": "灵巧", "eng": "Dexterous", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "获得 7 点格挡；起音时下回合获得 1 能量，尾音时抽 1 张牌。", "eng": "Gain 7 Block; gain 1 Energy next turn as a Starting and draw 1 card as an Ending." },
+      "upgradeEffect": { "zhs": "起音能量与尾音抽牌均增加至 2。", "eng": "Increase both Starting Energy and Ending draw to 2." },
+      "adaptationNotes": "同时适配动态音符槽容量。"
+    },
+    {
+      "codeName": "BroomStrike",
+      "sourceFileName": "BroomStrike.cs",
+      "imageFileName": "BroomStrike.png",
+      "stableEntryStem": "broom_strike",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_BROOM_STRIKE",
+      "displayNames": { "zhs": "扫把打击", "eng": "Broom Strike", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 4 点伤害并额外生成攻击音符；本回合触发过和弦时再获得 4 点格挡并生成技能音符。", "eng": "Deal 4 damage and generate an extra Attack Note; after a Chord this turn, also gain 4 Block and generate a Skill Note." },
+      "upgradeEffect": { "zhs": "伤害和格挡均增加至 6。", "eng": "Increase both damage and Block to 6." },
+      "adaptationNotes": "额外音符与每次打牌自动生成的音符分别结算。"
+    },
+    {
+      "codeName": "AttackTied",
+      "sourceFileName": "AttackTied.cs",
+      "imageFileName": "AttackTied.png",
+      "stableEntryStem": "attack_tied",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ATTACK_TIED",
+      "displayNames": { "zhs": "攻击连音", "eng": "Attack Tied", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 3 点伤害并额外生成 3 个攻击音符。", "eng": "Deal 3 damage and generate 3 additional Attack Notes." },
+      "upgradeEffect": { "zhs": "伤害和额外音符均增加至 4。", "eng": "Increase both damage and additional Notes to 4." },
+      "adaptationNotes": "保留塔一的多音符基础逻辑。"
+    },
+    {
+      "codeName": "MaguroCleave",
+      "sourceFileName": "MaguroCleave.cs",
+      "imageFileName": "MaguroCleave.png",
+      "stableEntryStem": "maguro_cleave",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE",
+      "displayNames": { "zhs": "金枪鱼横斩", "eng": "Maguro Cleave", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "对所有敌人造成 5 点伤害，本回合每触发一次和弦增加 3 点。", "eng": "Deal 5 damage to all enemies, plus 3 per Chord performed this turn." },
+      "upgradeEffect": { "zhs": "基础伤害增加至 7，每次和弦加成增加至 4。", "eng": "Increase base damage to 7 and the per-Chord bonus to 4." },
+      "adaptationNotes": "使用塔二战斗状态中的本回合和弦计数。"
+    },
+    {
+      "codeName": "StardustLaser",
+      "sourceFileName": "StardustLaser.cs",
+      "imageFileName": "StardustLaser.png",
+      "stableEntryStem": "stardust_laser",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARDUST_LASER",
+      "displayNames": { "zhs": "星屑镭射", "eng": "Stardust Laser", "nameStatus": "current_localization" },
+      "type": "Attack",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "星空牌。对所有敌人造成 6 点伤害。", "eng": "Starry. Deal 6 damage to all enemies." },
+      "upgradeEffect": { "zhs": "伤害增加至 9。", "eng": "Increase damage to 9." },
+      "adaptationNotes": "明确覆盖为星空音符，而不是普通攻击音符。"
+    },
+    {
+      "codeName": "Rehearsal",
+      "sourceFileName": "Rehearsal.cs",
+      "imageFileName": "Rehearsal.png",
+      "stableEntryStem": "rehearsal",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_REHEARSAL",
+      "displayNames": { "zhs": "预演", "eng": "Rehearsal", "nameStatus": "current_localization" },
+      "type": "Skill",
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，抽 2 张牌，并根据每张抽到的牌额外生成对应音符；消耗。", "eng": "Costs 1. Draw 2 cards and generate an additional matching Note for each; Exhaust." },
+      "upgradeEffect": { "zhs": "抽牌增加至 3。", "eng": "Increase draw to 3." },
+      "adaptationNotes": "使用统一的卡牌到音符解析函数。"
+    },
+    {
+      "codeName": "MaguroBash",
+      "sourceFileName": "MaguroBash.cs",
+      "imageFileName": "MaguroBash.png",
+      "stableEntryStem": "maguro_bash",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_BASH",
+      "displayNames": { "zhs": "金枪鱼重击", "eng": "Maguro Bash", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 10 点伤害，本回合每触发一次和弦增加 6 点。", "eng": "Deal 10 damage, plus 6 per Chord performed this turn." },
+      "upgradeEffect": { "zhs": "基础伤害增加至 12，每次和弦加成增加至 8。", "eng": "Increase base damage to 12 and the per-Chord bonus to 8." },
+      "adaptationNotes": "直接移植基础逻辑，升级同时提高基础伤害和每次和弦加成。"
+    },
+    {
+      "codeName": "Strafe",
+      "sourceFileName": "Strafe.cs",
+      "imageFileName": "Strafe.png",
+      "stableEntryStem": "strafe",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STRAFE",
+      "displayNames": { "zhs": "扫射", "eng": "Strafe", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 6 点伤害并额外生成 6 个攻击音符。", "eng": "Deal 6 damage and generate 6 additional Attack Notes." },
+      "upgradeEffect": { "zhs": "伤害和额外音符均增加至 8。", "eng": "Increase both damage and additional Notes to 8." },
+      "adaptationNotes": "塔二版本使用独立 Notes 数值，不随力量等最终伤害修正改变生成数量。"
+    },
+    {
+      "codeName": "FolkRhymes",
+      "sourceFileName": "FolkRhymes.cs",
+      "imageFileName": "FolkRhymes.png",
+      "stableEntryStem": "folk_rhymes",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_FOLK_RHYMES",
+      "displayNames": { "zhs": "民谣", "eng": "Folk Rhymes", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power",
+      "rarity": "Uncommon",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "每当触发和弦，获得 2 点格挡。", "eng": "Whenever a Chord is performed, gain 2 Block." },
+      "upgradeEffect": { "zhs": "每次和弦获得的格挡增加至 3。", "eng": "Increase Block per Chord to 3." },
+      "adaptationNotes": "通过 FolkRhymesPower 与统一和弦结算入口实现。"
+    },
+    {
+      "codeName": "MasterSpark",
+      "sourceFileName": "MasterSpark.cs",
+      "imageFileName": "MasterSpark.png",
+      "stableEntryStem": "master_spark",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_MASTER_SPARK",
+      "displayNames": { "zhs": "极限火花", "eng": "Master Spark", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "对所有敌人造成 26 点伤害，失去 1 层强音。", "eng": "Deal 26 damage to all enemies and lose 1 Forte." },
+      "upgradeEffect": { "zhs": "伤害增加至 34。", "eng": "Increase damage to 34." },
+      "adaptationNotes": "保留核心数值，使用塔二内置星形攻击特效；暂未移植塔一专属音效。"
+    },
+    {
+      "codeName": "MaguroAssault",
+      "sourceFileName": "MaguroAssault.cs",
+      "imageFileName": "MaguroAssault.png",
+      "stableEntryStem": "maguro_assault",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_ASSAULT",
+      "displayNames": { "zhs": "金枪鱼强袭", "eng": "Maguro Assault", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "造成 6 点伤害，本场战斗每触发一次和弦增加 2 点；作为尾音时伤害翻倍。", "eng": "Deal 6 damage, plus 2 per Chord this combat; double it when played as an Ending." },
+      "upgradeEffect": { "zhs": "基础伤害增加至 8，每次和弦加成增加至 3。", "eng": "Increase base damage to 8 and the per-Chord bonus to 3." },
+      "adaptationNotes": "删除塔一的开眼/姿态伤害翻倍；和弦加成改为读取本场战斗累计，保留尾音翻倍。"
+    },
+    {
+      "codeName": "StageWarmUp",
+      "sourceFileName": "StageWarmUp.cs",
+      "imageFileName": "StageWarmUp.png",
+      "stableEntryStem": "stage_warm_up",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STAGE_WARM_UP",
+      "displayNames": { "zhs": "舞台预热", "eng": "Stage Warm-Up", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power",
+      "rarity": "Uncommon",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "1费。获得1层强音。", "eng": "Costs 1. Gain 1 Forte." },
+      "upgradeEffect": { "zhs": "强音增加至2层。", "eng": "Increase the Forte gained to 2." },
+      "adaptationNotes": "移除塔一升级后的开眼复制逻辑，改为直接提高强音数值；沿用塔一图片。"
+    },
+    {
+      "codeName": "Shatter",
+      "sourceFileName": "Shatter.cs",
+      "imageFileName": "Shatter.png",
+      "stableEntryStem": "shatter",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_SHATTER",
+      "displayNames": { "zhs": "破碎", "eng": "Shatter", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Skill",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "2费。将所有手牌消耗并转化为对应音符，每张获得3格挡；至少5张时获得1层强音；消耗。", "eng": "Costs 2. Exhaust and transform your hand into Notes, gain 3 Block each, and gain 1 Forte if at least 5 cards were transformed; Exhaust." },
+      "upgradeEffect": { "zhs": "每张牌获得的格挡增加至5。", "eng": "Increase the Block per card to 5." },
+      "adaptationNotes": "按用户新效果接入统一 CardNoteResolver 与音符生成入口；沿用塔一图片。"
+    },
+    {
+      "codeName": "PerformanceImprinting",
+      "sourceFileName": "PerformanceImprinting.cs",
+      "imageFileName": "PerformanceImprinting.png",
+      "stableEntryStem": "performance_imprinting",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_PERFORMANCE_IMPRINTING",
+      "displayNames": { "zhs": "演奏刻印", "eng": "Performance Imprinting", "nameStatus": "provisional" },
+      "type": "Skill",
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "effect": { "zhs": "1费。选择一张手牌，使其在本场战斗中额外获得演奏1；消耗。", "eng": "Costs 1. Choose a card in hand; it gains 1 additional Performance this combat; Exhaust." },
+      "upgradeEffect": { "zhs": "费用降为0。", "eng": "Reduce the cost to 0." },
+      "adaptationNotes": "金卡。名称为临时名称，图片暂用塔一 VocalPreparation。演奏属性附加在当前战斗卡牌实例上；普通牌结束后弃置/消耗，能力牌结束后移出战斗。"
+    },
+    {
+      "codeName": "Confused", "sourceFileName": "Confused.cs", "imageFileName": "Confused.png", "stableEntryStem": "confused", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CONFUSED",
+      "displayNames": { "zhs": "疑惑", "eng": "Doubtful", "nameStatus": "provisional" },
+      "type": "Status", "rarity": "Token", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费。抽1张牌；消耗。", "eng": "Costs 0. Draw 1 card; Exhaust." },
+      "upgradeEffect": { "zhs": "增加保留。", "eng": "Gain Retain." },
+      "adaptationNotes": "由塔一 Confused 改编；作者称其为“疑惑+”，因此塔二中文临时改为疑惑。"
+    },
+    {
+      "codeName": "Romp", "sourceFileName": "Romp.cs", "imageFileName": "Romp.png", "stableEntryStem": "romp", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ROMP",
+      "displayNames": { "zhs": "雀跃", "eng": "Romp", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Skill", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "将2张疑惑置入手牌；消耗。", "eng": "Add 2 Doubtful to hand; Exhaust." },
+      "upgradeEffect": { "zhs": "改为疑惑+，本牌获得保留。", "eng": "Generate Doubtful+ and gain Retain." },
+      "adaptationNotes": "塔一疑惑体系直接适配塔二生成牌命令。"
+    },
+    {
+      "codeName": "Yazyuutokasu", "sourceFileName": "Yazyuutokasu.cs", "imageFileName": "Yazyuutokasu.png", "stableEntryStem": "yazyuutokasu", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_YAZYUUTOKASU",
+      "displayNames": { "zhs": "野兽化", "eng": "Feral", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "每回合开始随机丢弃1张费用最低的牌，获得1张疑惑。", "eng": "At turn start, discard a random lowest-cost card and gain 1 Doubtful." },
+      "upgradeEffect": { "zhs": "疑惑升级为疑惑+。", "eng": "Generate Doubtful+ instead." },
+      "adaptationNotes": "保留塔一 YazyuutokasuPower/PlusPower 双能力实现。"
+    },
+    {
+      "codeName": "Nocturnal", "sourceFileName": "Nocturnal.cs", "imageFileName": "Nocturnal.png", "stableEntryStem": "nocturnal", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOCTURNAL",
+      "displayNames": { "zhs": "夜行", "eng": "Nocturnal", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "加入随机诅咒；每张诅咒对随机敌人造成8点伤害。", "eng": "Add a random Curse; deal 8 random-target damage per Curse." },
+      "upgradeEffect": { "zhs": "伤害增加至12。", "eng": "Increase damage to 12." },
+      "adaptationNotes": "使用塔二诅咒池和随机多段攻击构造器。"
+    },
+    {
+      "codeName": "TheCursed", "sourceFileName": "TheCursed.cs", "imageFileName": "TheCursed.png", "stableEntryStem": "the_cursed", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CURSED",
+      "displayNames": { "zhs": "诅咒之身", "eng": "The Cursed", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "加入随机诅咒；抽到诅咒时抽1并生成1个诅咒音符。", "eng": "Add a random Curse; drawing a Curse draws 1 and generates a Curse Note." },
+      "upgradeEffect": { "zhs": "增加固有。", "eng": "Gain Innate." },
+      "adaptationNotes": "塔一能力按塔二 AfterCardDrawn 钩子重写。"
+    },
+    {
+      "codeName": "CurseWardrobe", "sourceFileName": "CurseWardrobe.cs", "imageFileName": "CurseWardrobe.png", "stableEntryStem": "curse_wardrobe", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CURSE_WARDROBE",
+      "displayNames": { "zhs": "诅咒衣橱", "eng": "Curse Wardrobe", "nameStatus": "provisional" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "诅咒音符额外回复1点生命；生成1个诅咒音符。", "eng": "Curse Notes heal 1 additional HP; generate a Curse Note." },
+      "upgradeEffect": { "zhs": "增加固有。", "eng": "Gain Innate." },
+      "adaptationNotes": "用户新设计蓝卡；名称和复用图片待确认。"
+    },
+    {
+      "codeName": "PurifyingPrelude", "sourceFileName": "PurifyingPrelude.cs", "imageFileName": "PurifyingPrelude.png", "stableEntryStem": "purifying_prelude", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_PURIFYING_PRELUDE",
+      "displayNames": { "zhs": "净化序曲", "eng": "Purifying Prelude", "nameStatus": "confirmed" },
+      "type": "Skill", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，演奏3；仅在演奏结束时，消耗抽牌堆和弃牌堆全部诅咒/状态并逐张生成对应音符；消耗。", "eng": "Costs 1, Perform 3; only when Performance ends, Exhaust all Curses/Statuses in draw and discard and generate matching Notes; Exhaust." },
+      "upgradeEffect": { "zhs": "演奏变为2。", "eng": "Perform becomes 2." },
+      "adaptationNotes": "结算放在统一 OnPerformanceFinished 钩子中，普通打出与每次自动演奏均不会提前净化。"
+    },
+    {
+      "codeName": "CursedGuard", "sourceFileName": "CursedGuard.cs", "imageFileName": "CursedGuard.png", "stableEntryStem": "cursed_guard", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CURSED_GUARD",
+      "displayNames": { "zhs": "咒护", "eng": "Cursed Guard", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费，获得5点格挡，抽1张牌，将1张随机诅咒加入弃牌堆。", "eng": "Costs 0. Gain 5 Block, draw 1, and add a random Curse to the discard pile." },
+      "upgradeEffect": { "zhs": "格挡增加至8。", "eng": "Increase Block to 8." },
+      "adaptationNotes": "用户新设计白卡；名称和图片暂定。调用统一 MgrCurseUtils 随机诅咒入口。"
+    },
+    {
+      "codeName": "EchoingCadence", "sourceFileName": "EchoingCadence.cs", "imageFileName": "EchoingCadence.png", "stableEntryStem": "echoing_cadence", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ECHOING_CADENCE",
+      "displayNames": { "zhs": "回响终止", "eng": "Echoing Cadence", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，抽1张牌；尾音时，本次和弦额外触发一次。", "eng": "Costs 1. Draw 1; as an Ending, trigger this Chord one additional time." },
+      "upgradeEffect": { "zhs": "抽牌增加至2。", "eng": "Increase draw to 2." },
+      "adaptationNotes": "用户新设计蓝卡；名称和图片暂定。OnPlay 预置一次性计数，由本牌随后生成的自动技能音符完成和弦时消耗。"
+    },
+    {
+      "codeName": "CrispEnding", "sourceFileName": "CrispEnding.cs", "imageFileName": "CrispEnding.png", "stableEntryStem": "crisp_ending", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CRISP_ENDING",
+      "displayNames": { "zhs": "轻快尾音", "eng": "Crisp Ending", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费，造成5点伤害；尾音抽1张牌。", "eng": "Costs 0. Deal 5 damage; Ending: draw 1." },
+      "upgradeEffect": { "zhs": "伤害增加至6，并额外生成1个攻击音符。", "eng": "Increase damage to 6 and generate 1 additional Attack Note." },
+      "adaptationNotes": "由塔一已标记 Deprecated 的卡适配；逻辑简单且不依赖注视/姿态，图片暂用现有攻击图。"
+    },
+    {
+      "codeName": "RapidClaw", "sourceFileName": "RapidClaw.cs", "imageFileName": "RapidClaw.png", "stableEntryStem": "rapid_claw", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_RAPID_CLAW",
+      "displayNames": { "zhs": "急速爪击", "eng": "Rapid Claw", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费，造成2点伤害并额外生成1个攻击音符；起音/尾音时获得1张伤害-1的复制；消耗。", "eng": "Costs 0. Deal 2 damage, generate 1 additional Attack Note; Starting/Ending adds a copy with 1 less damage; Exhaust." },
+      "upgradeEffect": { "zhs": "伤害增加至4。", "eng": "Increase damage to 4." },
+      "adaptationNotes": "塔二使用 CardModel.CreateClone 和当前战斗动态数值实现逐次衰减复制；沿用塔一图片。"
+    },
+    {
+      "codeName": "Crescendo", "sourceFileName": "Crescendo.cs", "imageFileName": "Crescendo.png", "stableEntryStem": "crescendo", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CRESCENDO",
+      "displayNames": { "zhs": "渐强音", "eng": "Crescendo", "nameStatus": "confirmed" },
+      "type": "Attack", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "2费，演奏2；造成3点伤害，随后本场战斗伤害增加3点。", "eng": "Costs 2. Perform 2; deal 3 damage, then gain 3 damage this combat." },
+      "upgradeEffect": { "zhs": "初始伤害和每次成长均增加至4。", "eng": "Increase initial damage and growth to 4." },
+      "adaptationNotes": "用户新设计白卡；战斗内成长由统一卡牌动态值状态记录并在战斗结束恢复。"
+    },
+    {
+      "codeName": "ShowWeakness", "sourceFileName": "ShowWeakness.cs", "imageFileName": "ShowWeakness.png", "stableEntryStem": "show_weakness", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_SHOW_WEAKNESS",
+      "displayNames": { "zhs": "示弱", "eng": "Feign Weakness", "nameStatus": "confirmed_zhs_provisional_eng" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，本回合所有生物失去3点力量，额外生成3个技能音符。", "eng": "Costs 1. ALL creatures lose 3 Strength this turn; generate 3 additional Skill Notes." },
+      "upgradeEffect": { "zhs": "力量与音符数均增加至4。", "eng": "Increase both values to 4." },
+      "adaptationNotes": "使用塔二 TemporaryStrengthPower 的负向模式，自动在对应阵营回合结束恢复力量。"
+    },
+    {
+      "codeName": "ClearThroat", "sourceFileName": "ClearThroat.cs", "imageFileName": "ClearThroat.png", "stableEntryStem": "clear_throat", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CLEAR_THROAT",
+      "displayNames": { "zhs": "清嗓子", "eng": "Clear Throat", "nameStatus": "confirmed" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，演奏2；每层能力在回合结束对随机敌人造成1点伤害；演奏结束将1张清嗓子置入抽牌堆。", "eng": "Costs 1. Perform 2; each Power stack deals 1 random-target damage at turn end; finale adds a Clear Throat to draw." },
+      "upgradeEffect": { "zhs": "演奏增加至3，生成清嗓子+。", "eng": "Increase Performance to 3 and generate Clear Throat+." },
+      "adaptationNotes": "用户新设计蓝卡；每次自动演奏仍是真实能力牌打出，因此会增加能力层数。"
+    },
+    {
+      "codeName": "ProlongedNote", "sourceFileName": "ProlongedNote.cs", "imageFileName": "ProlongedNote.png", "stableEntryStem": "prolonged_note", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_PROLONGED_NOTE",
+      "displayNames": { "zhs": "延长音", "eng": "Prolonged Note", "nameStatus": "confirmed_zhs_provisional_eng" },
+      "type": "Skill", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，使演奏队列中所有牌的初始与剩余演奏次数+1；消耗。", "eng": "Costs 1. All queued cards gain 1 initial and remaining Performance; Exhaust." },
+      "upgradeEffect": { "zhs": "获得保留。", "eng": "Gain Retain." },
+      "adaptationNotes": "按用户新要求从修改手牌改为直接修改演奏队列；同时刷新队列数字与悬停卡牌描述。"
+    },
+    {
+      "codeName": "Regulus", "sourceFileName": "Regulus.cs", "imageFileName": "Regulus.png", "stableEntryStem": "regulus", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_REGULUS",
+      "displayNames": { "zhs": "轩辕十四", "eng": "Regulus", "nameStatus": "confirmed" },
+      "type": "Attack", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "14费，星空、保留、消耗；被丢弃或消耗时回手且本场费用-2；对所有敌人造成4点伤害14次。", "eng": "Costs 14. Starry, Retain, Exhaust; discard/Exhaust returns it and reduces cost by 2; deal 4 to ALL enemies 14 times." },
+      "upgradeEffect": { "zhs": "移除消耗。", "eng": "Remove Exhaust." },
+      "adaptationNotes": "用户新设计金卡；回手使用塔二 AfterCardDiscarded/AfterCardExhausted 与原生牌堆命令。"
+    },
+    {
+      "codeName": "EastOfTimeline", "sourceFileName": "EastOfTimeline.cs", "imageFileName": "EastOfTimeline.png", "stableEntryStem": "east_of_timeline", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_EAST_OF_TIMELINE",
+      "displayNames": { "zhs": "时间线之东", "eng": "East of Timeline", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费攻击，额外生成2个攻击音符；首次和最终使用永久+1音符；使用2次后消耗。", "eng": "Costs 1 Attack; generate 2 Attack Notes; first/final use permanently adds 1; Exhaust after 2 uses." },
+      "upgradeEffect": { "zhs": "可使用次数增加至3。", "eng": "Increase available uses to 3." },
+      "adaptationNotes": "按用户要求由技能改为攻击；用塔二 ExhaustOnNextPlay 模拟一代 Exhaustive。"
+    },
+    {
+      "codeName": "HarmonyForm", "sourceFileName": "HarmonyForm.cs", "imageFileName": "HarmonyForm.png", "stableEntryStem": "harmony_form", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_HARMONY_FORM",
+      "displayNames": { "zhs": "和声形态", "eng": "Harmony Form", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "3费，虚无；每个和弦最左与最右音符额外触发一次。", "eng": "Costs 3, Ethereal; the leftmost/rightmost Notes of each Chord trigger again." },
+      "upgradeEffect": { "zhs": "移除虚无。", "eng": "Remove Ethereal." },
+      "adaptationNotes": "直接接入统一和弦逐音符结算层；单音符和弦只按一个端点计算。"
+    },
+    {
+      "codeName": "LightUpTheStage", "sourceFileName": "LightUpTheStage.cs", "imageFileName": "LightUpTheStage.png", "stableEntryStem": "light_up_the_stage", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIGHT_UP_THE_STAGE",
+      "displayNames": { "zhs": "点亮舞台", "eng": "Light Up the Stage", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Attack", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，对随机敌人造成3点伤害3次；打出后本场伤害+3，被丢弃时次数+2。", "eng": "Costs 1. Deal 3 random-target damage 3 times; play grants +3 damage, discard grants +2 hits." },
+      "upgradeEffect": { "zhs": "初始次数增加至4。", "eng": "Increase initial hits to 4." },
+      "adaptationNotes": "使用塔二多段随机攻击与 AfterCardDiscarded；成长值在战斗结束恢复。"
+    },
+    {
+      "codeName": "Stereophonic", "sourceFileName": "Stereophonic.cs", "imageFileName": "Stereophonic.png", "stableEntryStem": "stereophonic", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_STEREOPHONIC",
+      "displayNames": { "zhs": "立体声", "eng": "Stereophonic", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Power", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "2费；攻击音符额外给一半格挡，技能音符额外造成等量随机伤害。", "eng": "Costs 2; Attack Notes also grant half Block and Skill Notes deal equal random damage." },
+      "upgradeEffect": { "zhs": "能力音符额外获得并对所有敌人造成两倍数值的格挡与伤害。", "eng": "Power Notes additionally grant and deal twice their value as Block/damage to ALL enemies." },
+      "adaptationNotes": "将塔一防御音符映射为塔二技能音符、抽牌音符映射为能力音符。"
+    },
+    {
+      "codeName": "ThirdMouth", "sourceFileName": "ThirdMouth.cs", "imageFileName": "ThirdMouth.png", "stableEntryStem": "third_mouth", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_THIRD_MOUTH",
+      "displayNames": { "zhs": "第三口", "eng": "Third Mouth", "nameStatus": "confirmed_zhs_provisional_eng" },
+      "type": "Power", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "2费；失去99强音，音符槽+1，此后生成双倍音符。", "eng": "Costs 2; lose 99 Forte, gain 1 slot, then double all Note generation." },
+      "upgradeEffect": { "zhs": "费用降为1。", "eng": "Cost becomes 1." },
+      "adaptationNotes": "双倍效果接入统一 ChannelNote 入口，因此包含普通打牌、演奏与转化等所有来源；图片暂用塔一 Climax。"
+    },
+    {
+      "codeName": "PolyphonicGuard", "sourceFileName": "PolyphonicGuard.cs", "imageFileName": "PolyphonicGuard.png", "stableEntryStem": "polyphonic_guard", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_POLYPHONIC_GUARD",
+      "displayNames": { "zhs": "复调防御", "eng": "Polyphonic Guard", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；当前每种不同音符获得3格挡并抽1。", "eng": "Costs 1; for each different slotted Note, gain 3 Block and draw 1." },
+      "upgradeEffect": { "zhs": "每种音符格挡增加至4。", "eng": "Increase Block per type to 4." },
+      "adaptationNotes": "按当前音符槽内的 NoteKind 去重；图片暂用塔一 IntertwinedTimbres。"
+    },
+    {
+      "codeName": "NoteTransmutation", "sourceFileName": "NoteTransmutation.cs", "imageFileName": "NoteTransmutation.png", "stableEntryStem": "note_transmutation", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION",
+      "displayNames": { "zhs": "音符转化", "eng": "Note Transmutation", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；获得5格挡，选择并消耗1张手牌，生成其对应音符。", "eng": "Costs 1; gain 5 Block, Exhaust a chosen hand card, and generate its Note." },
+      "upgradeEffect": { "zhs": "格挡增加至8。", "eng": "Increase Block to 8." },
+      "adaptationNotes": "复用统一 CardNoteResolver；图片暂用塔一 SummoningCharm。"
+    },
+    {
+      "codeName": "OneBeatFilter", "sourceFileName": "OneBeatFilter.cs", "imageFileName": "OneBeatFilter.png", "stableEntryStem": "one_beat_filter", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_ONE_BEAT_FILTER",
+      "displayNames": { "zhs": "一拍筛选", "eng": "One-Beat Filter", "nameStatus": "provisional" },
+      "type": "Attack", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；造成7伤害，抽3，丢弃本次抽到且当前费用不为1的牌。", "eng": "Costs 1; deal 7, draw 3, discard cards among them whose current cost is not 1." },
+      "upgradeEffect": { "zhs": "9伤害、抽4。", "eng": "Deal 9 and draw 4." },
+      "adaptationNotes": "只检查本次抽牌结果，费用使用塔二 GetResolved；图片暂用塔一 Rehearsal。"
+    },
+    {
+      "codeName": "HyperSpeed", "sourceFileName": "HyperSpeed.cs", "imageFileName": "HyperSpeed.png", "stableEntryStem": "hyper_speed", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_HYPER_SPEED",
+      "displayNames": { "zhs": "超光速", "eng": "Hyper Speed", "nameStatus": "confirmed_zhs_provisional_eng" },
+      "type": "Skill", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费消耗；获得2能量并抽3；下回合能量和抽牌各-1。", "eng": "Costs 0, Exhaust; gain 2 Energy and draw 3; next turn Energy and hand draw are reduced by 1." },
+      "upgradeEffect": { "zhs": "抽牌增加至4。", "eng": "Draw 4." },
+      "adaptationNotes": "延迟代价由专用能力同时接入能量重置和手牌抽取修正；图片暂用塔一点亮舞台。"
+    },
+    {
+      "codeName": "EmptyOrchestra", "sourceFileName": "EmptyOrchestra.cs", "imageFileName": "EmptyOrchestra.png", "stableEntryStem": "empty_orchestra", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_EMPTY_ORCHESTRA",
+      "displayNames": { "zhs": "散场", "eng": "Empty Orchestra", "nameStatus": "provisional" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "2费；移除当前全部音符，每个获得1力量和1敏捷。", "eng": "Costs 2; remove all slotted Notes, gaining 1 Strength and Dexterity per Note." },
+      "upgradeEffect": { "zhs": "费用降为1。", "eng": "Cost becomes 1." },
+      "adaptationNotes": "移除不会触发和弦；图片暂用塔一 SummoningCharm。"
+    },
+    {
+      "codeName": "Climax", "sourceFileName": "Climax.cs", "imageFileName": "Climax.png", "stableEntryStem": "climax", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_CLIMAX",
+      "displayNames": { "zhs": "高潮！", "eng": "Climax!", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费；本回合获得2强音；消耗。", "eng": "Costs 0; gain 2 Forte this turn; Exhaust." },
+      "upgradeEffect": { "zhs": "移除消耗。", "eng": "Remove Exhaust." },
+      "adaptationNotes": "以永久强音加临时追踪能力实现回合末准确归还；沿用塔一图片。"
+    },
+    {
+      "codeName": "Redshift", "sourceFileName": "Redshift.cs", "imageFileName": "Redshift.png", "stableEntryStem": "redshift", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_REDSHIFT",
+      "displayNames": { "zhs": "红移", "eng": "Redshift", "nameStatus": "provisional" },
+      "type": "Attack", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "3费星空；造成16伤害；上回合每点未用能量使本回合费用-1。", "eng": "Costs 3, Starry; deal 16; costs 1 less per unspent Energy last turn." },
+      "upgradeEffect": { "zhs": "伤害增加至24。", "eng": "Increase damage to 24." },
+      "adaptationNotes": "上回合能量在阵营回合结束时记录，费用通过塔二全局费用钩子动态显示；图片暂用星屑镭射。"
+    },
+    {
+      "codeName": "GhostlyInvitation", "sourceFileName": "GhostlyInvitation.cs", "imageFileName": "GhostlyInvitation.png", "stableEntryStem": "ghostly_invitation", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_GHOSTLY_INVITATION",
+      "displayNames": { "zhs": "幽灵邀约", "eng": "Ghostly Invitation", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费，虚无、消耗、幽灵音符；将3张随机诅咒加入弃牌堆。", "eng": "Costs 1, Ethereal, Exhaust, Ghost Note; add 3 random Curses to discard." },
+      "upgradeEffect": { "zhs": "费用降为0。", "eng": "Cost becomes 0." },
+      "adaptationNotes": "幽灵音符复用塔二 Quest 音符通道并在和弦结算时给予无实体；图片暂用塔一 Obakenoukenerai。"
+    },
+    {
+      "codeName": "LongRest", "sourceFileName": "LongRest.cs", "imageFileName": "LongRest.png", "stableEntryStem": "long_rest", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_LONG_REST",
+      "displayNames": { "zhs": "长休止", "eng": "Long Rest", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；获得2格挡，演奏9。", "eng": "Costs 1; gain 2 Block, Perform 9." },
+      "upgradeEffect": { "zhs": "3格挡，演奏12。", "eng": "Gain 3 Block, Perform 12." },
+      "adaptationNotes": "图片暂用塔一 AlternateSinging。"
+    },
+    {
+      "codeName": "TwinGuardStrike", "sourceFileName": "TwinGuardStrike.cs", "imageFileName": "TwinGuardStrike.png", "stableEntryStem": "twin_guard_strike", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_TWIN_GUARD_STRIKE",
+      "displayNames": { "zhs": "攻守同拍", "eng": "Twin Guard Strike", "nameStatus": "provisional" },
+      "type": "Attack", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "2费；造成8伤害并获得8格挡；若本回合无和弦则效果执行两次。", "eng": "Costs 2; deal 8 and gain 8 Block; repeat the effect if no Chord has triggered this turn." },
+      "upgradeEffect": { "zhs": "伤害与格挡增加至10。", "eng": "Increase damage and Block to 10." },
+      "adaptationNotes": "重复效果不额外视作打出一张牌；图片暂用扫把打击。"
+    },
+    {
+      "codeName": "PhraseBalance", "sourceFileName": "PhraseBalance.cs", "imageFileName": "PhraseBalance.png", "stableEntryStem": "phrase_balance", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_PHRASE_BALANCE",
+      "displayNames": { "zhs": "首尾平衡", "eng": "Phrase Balance", "nameStatus": "provisional" },
+      "type": "Skill", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；获得5格挡；起音获得1力量，尾音获得1敏捷。", "eng": "Costs 1; gain 5 Block; Starting gains 1 Strength, Ending gains 1 Dexterity." },
+      "upgradeEffect": { "zhs": "格挡增加至8。", "eng": "Increase Block to 8." },
+      "adaptationNotes": "起音和尾音在本牌自动生成音符前判定；图片暂用灵巧。"
+    },
+    {
+      "codeName": "InstantEncore", "sourceFileName": "InstantEncore.cs", "imageFileName": "InstantEncore.png", "stableEntryStem": "instant_encore", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_INSTANT_ENCORE",
+      "displayNames": { "zhs": "即刻返场", "eng": "Instant Encore", "nameStatus": "provisional" },
+      "type": "Attack", "rarity": "Rare", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；造成7伤害，立即按队列顺序触发所有演奏牌一次且不扣次数。", "eng": "Costs 1; deal 7, then trigger every queued card once in order without consuming Performance." },
+      "upgradeEffect": { "zhs": "伤害增加至12。", "eng": "Increase damage to 12." },
+      "adaptationNotes": "每次触发仍走真实塔二自动打牌流程，因此生成音符并触发标准钩子；图片暂用星屑镭射。"
+    },
+    {
+      "codeName": "DizzyAndGiddy", "sourceFileName": "DizzyAndGiddy.cs", "imageFileName": "DizzyAndGiddy.png", "stableEntryStem": "dizzy_and_giddy", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_DIZZY_AND_GIDDY",
+      "displayNames": { "zhs": "头晕目眩", "eng": "Dizzy and Giddy", "nameStatus": "imported_from_sts1_needs_review" },
+      "type": "Skill", "rarity": "Common", "implementationStatus": "implemented",
+      "effect": { "zhs": "0费；必须丢弃2张（手牌不足时全部），生成对应音符。", "eng": "Costs 0; discard exactly 2 if possible and generate their Notes." },
+      "upgradeEffect": { "zhs": "改为至多2张。", "eng": "Change to up to 2 cards." },
+      "adaptationNotes": "沿用塔一名称与图片，效果按用户新版本重制。"
+    },
+    {
+      "codeName": "PowerNoteGuard", "sourceFileName": "PowerNoteGuard.cs", "imageFileName": "PowerNoteGuard.png", "stableEntryStem": "power_note_guard", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD",
+      "displayNames": { "zhs": "权能回护", "eng": "Power Note Guard", "nameStatus": "provisional" },
+      "type": "Power", "rarity": "Uncommon", "implementationStatus": "implemented",
+      "effect": { "zhs": "1费；能力音符额外给予3格挡。", "eng": "Costs 1; Power Notes also grant 3 Block." },
+      "upgradeEffect": { "zhs": "获得固有。", "eng": "Gain Innate." },
+      "adaptationNotes": "效果接入统一音符触发层，可叠加；图片暂用塔一 FolkRhymes。"
+    }
+  ],
+  "relics": [
+    {
+      "codeName": "MiniMicrophone",
+      "sourceFileName": "MiniMicrophone.cs",
+      "imageFileName": "MiniMicrophone.png",
+      "outlineImageFileName": "MiniMicrophone_outline.png",
+      "stableEntryStem": "mini_microphone",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE",
+      "displayNames": { "zhs": "迷你麦克风", "eng": "Mini Microphone", "nameStatus": "current_localization" },
+      "rarity": "Starter",
+      "implementationStatus": "implemented",
+      "description": { "zhs": "战斗开始时，依次生成攻击、技能和能力音符各 1 个。", "eng": "At combat start, channel an Attack, Skill, and Power Note in order." },
+      "flavor": { "zhs": "准备好向高塔展示你的歌喉了么？", "eng": "Ready to show the Spire your voice?" },
+      "adaptationNotes": "塔二 MGR 初始遗物。"
+    },
+    {
+      "codeName": "Fumo",
+      "sourceFileName": "Fumo.cs",
+      "imageFileName": "Fumo.png",
+      "outlineImageFileName": "Fumo_outline.png",
+      "stableEntryStem": "fumo",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO",
+      "displayNames": { "zhs": "Fumo", "eng": "Fumo", "nameStatus": "imported_from_sts1_needs_review" },
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "description": { "zhs": "战斗开始时，获得 1 层强音。", "eng": "At the start of combat, gain 1 Forte." },
+      "flavor": { "zhs": "好想要啊。", "eng": "I really want one." },
+      "adaptationNotes": "在战斗初始化阶段、初始音符生成前应用强音。"
+    },
+    {
+      "codeName": "WitchHat",
+      "sourceFileName": "WitchHat.cs",
+      "imageFileName": "WitchHat.png",
+      "outlineImageFileName": "WitchHat_outline.png",
+      "stableEntryStem": "witch_hat",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_WITCH_HAT",
+      "displayNames": { "zhs": "魔女帽", "eng": "Witch Hat", "nameStatus": "imported_from_sts1_needs_review" },
+      "rarity": "Common",
+      "implementationStatus": "implemented",
+      "description": { "zhs": "回合结束时获得 2 点格挡；生命不高于 50% 时改为 4 点。", "eng": "At turn end, gain 2 Block, or 4 Block at or below 50% HP." },
+      "flavor": { "zhs": "轻巧，但也能在关键时候派上用处。", "eng": "Lightweight, but still useful at a critical moment." },
+      "adaptationNotes": "使用塔二阵营回合结束钩子实现。"
+    },
+    {
+      "codeName": "EncoreStage",
+      "sourceFileName": "EncoreStage.cs",
+      "imageFileName": "EncoreStage.png",
+      "outlineImageFileName": "EncoreStage_outline.png",
+      "stableEntryStem": "encore_stage",
+      "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_ENCORE_STAGE",
+      "displayNames": { "zhs": "安可舞台", "eng": "Encore Stage", "nameStatus": "provisional" },
+      "rarity": "Rare",
+      "implementationStatus": "implemented",
+      "description": { "zhs": "每回合手动打出的第一张演奏牌，演奏次数增加1。", "eng": "The first Performance card manually played each turn Performs 1 additional time." },
+      "flavor": { "zhs": "曲终之后，灯光仍不愿熄灭。", "eng": "Even after the song ends, the lights refuse to fade." },
+      "adaptationNotes": "稀有遗物。仅在演奏牌进入队列时检查 IsAutoPlay；自动演奏和其他自动打出不会消耗本回合触发机会。图片暂用塔一 YourExclusiveStage。"
+    },
+    {
+      "codeName": "WeatheredPlectrum", "sourceFileName": "WeatheredPlectrum.cs", "imageFileName": "WeatheredPlectrum.png", "outlineImageFileName": "WeatheredPlectrum_outline.png", "stableEntryStem": "weathered_plectrum", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_WEATHERED_PLECTRUM",
+      "displayNames": { "zhs": "旅途拨片", "eng": "Weathered Plectrum", "nameStatus": "provisional" }, "rarity": "Common", "implementationStatus": "implemented",
+      "description": { "zhs": "战斗开始生成1个攻击音符；获得后累计每受到7点实际伤害，额外生成1个。", "eng": "Start combat with 1 Attack Note, plus 1 per 7 unblocked damage taken since pickup." },
+      "adaptationNotes": "总受伤量用 SavedProperty 跨房间及存档保存；图片暂用塔一 OldBow。"
+    },
+    {
+      "codeName": "DecennialMetronome", "sourceFileName": "DecennialMetronome.cs", "imageFileName": "DecennialMetronome.png", "outlineImageFileName": "DecennialMetronome_outline.png", "stableEntryStem": "decennial_metronome", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_DECENNIAL_METRONOME",
+      "displayNames": { "zhs": "十拍节拍器", "eng": "Decennial Metronome", "nameStatus": "provisional" }, "rarity": "Common", "implementationStatus": "implemented",
+      "description": { "zhs": "每场战斗第10、20、30……次和弦触发两次。", "eng": "Every 10th Chord each combat triggers twice." },
+      "adaptationNotes": "双触发会重复音符效果及和弦触发效果，但和弦统计只增加一次；图片暂用塔一 Telescreen。"
+    },
+    {
+      "codeName": "GoldenRecord", "sourceFileName": "GoldenRecord.cs", "imageFileName": "GoldenRecord.png", "outlineImageFileName": "GoldenRecord_outline.png", "stableEntryStem": "golden_record", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD",
+      "displayNames": { "zhs": "镀金唱片", "eng": "Golden Record", "nameStatus": "provisional" }, "rarity": "Rare", "implementationStatus": "implemented",
+      "description": { "zhs": "每当和弦触发，获得2金币。", "eng": "Whenever a Chord triggers, gain 2 Gold." },
+      "adaptationNotes": "十拍节拍器造成的第二次触发也会再次获得金币；图片暂用塔一 Maguroyaki。"
+    },
+    {
+      "codeName": "ConfusedLocket", "sourceFileName": "ConfusedLocket.cs", "imageFileName": "ConfusedLocket.png", "outlineImageFileName": "ConfusedLocket_outline.png", "stableEntryStem": "confused_locket", "localizationStem": "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET",
+      "displayNames": { "zhs": "疑惑吊坠", "eng": "Doubtful Locket", "nameStatus": "provisional" }, "rarity": "Rare", "implementationStatus": "implemented",
+      "description": { "zhs": "战斗开始时将1张疑惑+置入手牌。", "eng": "At combat start, add 1 Doubtful+ to hand." },
+      "adaptationNotes": "图片暂用塔一 UnknownCreature。"
+    }
+  ]
+}

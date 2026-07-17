@@ -66,8 +66,9 @@ public sealed class StatusNote : MgrNote
 public sealed class CurseNote : MgrNote
 {
     public override NoteKind Kind => NoteKind.Curse;
-    public override int BaseEffectAmount => 1;
-    public override int ForteRate => 4;
+    public override int BaseEffectAmount => 2;
+    public override int ForteRate => int.MaxValue;
+    public override bool IsAffectedByForte => false;
 }
 
 public sealed class QuestNote : MgrNote

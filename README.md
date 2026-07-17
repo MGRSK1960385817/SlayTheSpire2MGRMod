@@ -23,4 +23,4 @@ MGR 人物模组的《杀戮尖塔 2》重制工程。
 dotnet build /p:RunPckExport=false /p:CopyModOnBuild=false
 ```
 
-`塔1老版本/` 仅用于设计参考，已被 Git 忽略，不会进入塔二仓库。
+工作区中的塔一旧模组、狐狸模组和塔二原版源码参考已移到仓库外，与本项目同级存放，不会进入 Git 或 Godot 导出包。

@@ -1,0 +1,59 @@
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
+using SlayTheSpire2MGRMod.Characters;
+using STS2RitsuLib.Interop.AutoRegistration;
+
+namespace SlayTheSpire2MGRMod.Cards;
+
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "phrase_balance")]
+public sealed class PhraseBalance : MgrCard
+{
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new BlockVar(5m, ValueProp.Move),
+        new PowerVar<StrengthPower>(1m),
+        new PowerVar<DexterityPower>(1m)
+    ];
+
+    public PhraseBalance() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    {
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        bool isStart = IsPhraseStart;
+        bool isEnd = IsPhraseEnd;
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
+        if (isStart)
+        {
+            await PowerCmd.Apply<StrengthPower>(
+                choiceContext,
+                Owner.Creature,
+                DynamicVars["StrengthPower"].BaseValue,
+                Owner.Creature,
+                this);
+        }
+
+        if (isEnd)
+        {
+            await PowerCmd.Apply<DexterityPower>(
+                choiceContext,
+                Owner.Creature,
+                DynamicVars["DexterityPower"].BaseValue,
+                Owner.Creature,
+                this);
+        }
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(3m);
+    }
+}
