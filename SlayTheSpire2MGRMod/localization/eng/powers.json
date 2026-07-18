@@ -43,5 +43,8 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_TEMPORARY_FORTE_POWER.smartDescription": "At the end of the turn, lose [blue]{Amount}[/blue] Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.title": "Hyper Speed Debt",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.description": "Gain less Energy and draw fewer cards next turn.",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.smartDescription": "Next turn, gain [red]{Amount}[/red] less Energy and draw [red]{Amount}[/red] fewer cards."
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.smartDescription": "Next turn, gain [red]{Amount}[/red] less Energy and draw [red]{Amount}[/red] fewer cards.",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.title": "Unison",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.description": "Whenever you play a card, generate random basic Notes.",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.smartDescription": "Whenever you play a card, generate [blue]{Amount}[/blue] random basic Notes."
 }

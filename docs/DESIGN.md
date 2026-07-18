@@ -90,9 +90,10 @@ MGR 独有的星空卡通过 `MgrCard.IsStarryCard` 覆盖为 Starry 音符。�
 
 ## 内容名称登记规则
 
-`docs/MGR_content_registry.json` 是卡牌与遗物名称、代码文件、图片文件、稳定注册标识和效果摘要的
+`docs/MGR_content_registry.json` 是卡牌与遗物名称、`codeName`、稳定注册标识和效果摘要的
 唯一开发登记表。以后每新增、重命名或删除一张卡牌或一件遗物，都必须在同一次修改中更新该文件。
-尚未由作者确认的中英文名必须保留 `provisional` 或 `imported_from_sts1_needs_review` 状态，不能默认视为正式名称。
+每个条目的 `status` 使用数字标记内容状态：`1` 表示当前有效，`0` 表示暂时停用。登记表不会被
+游戏运行时直接读取，因此状态修改后仍需同步对应的注册代码、本地化和资源。
 
 ## 开发简称
 

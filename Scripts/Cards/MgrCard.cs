@@ -66,11 +66,11 @@ public abstract class MgrCard(
     /// with combat without exposing it to draw/discard/exhaust effects. The last
     /// automatic play is released to Tower 2's normal result-pile routing.
     /// </summary>
-    protected override (PileType, CardPilePosition) GetResultPileTypeAndPositionForCardPlay() =>
+    protected override CardLocation GetResultLocationForCardPlay() =>
         MgrPerformanceSystem.IsPerformanceCard(this) &&
         !MgrPerformanceSystem.IsCompletingPerformance(this)
-            ? (PileType.Play, CardPilePosition.Bottom)
-            : base.GetResultPileTypeAndPositionForCardPlay();
+            ? new CardLocation(Owner, PileType.Play, CardPilePosition.Bottom)
+            : base.GetResultLocationForCardPlay();
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");

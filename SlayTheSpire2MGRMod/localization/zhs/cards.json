@@ -190,5 +190,22 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DIZZY_AND_GIDDY_CHOOSE": "选择要丢弃并转化为音符的牌。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.title": "权能回护",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.description": "能力牌。能力音符额外给予 {BlockPerNote:diff()} 点格挡。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.smartDescription": "{IfUpgraded:show:固有。|}能力牌。能力音符额外给予 {BlockPerNote:diff()} 点格挡。"
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.smartDescription": "{IfUpgraded:show:固有。|}能力牌。能力音符额外给予 {BlockPerNote:diff()} 点格挡。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.title": "合唱",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.description": "随机生成 {Notes:diff()} 个基础音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.smartDescription": "随机生成 {Notes:diff()} 个基础音符。{IfUpgraded:show:起音：额外随机生成 {StartingBonus:diff()} 个基础音符。|}",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.title": "星空飘浮",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.description": "抽 {Cards:diff()} 张牌，然后丢弃 {Discard:diff()} 张牌。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.smartDescription": "抽 {Cards:diff()} 张牌，然后丢弃 {Discard:diff()} 张牌。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT_CHOOSE": "选择要丢弃的牌。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.title": "两个人的星",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.description": "丢弃至多 {Cards:diff()} 张牌，每张生成1个星空音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.smartDescription": "丢弃至多 {Cards:diff()} 张牌，每张生成1个星空音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI_CHOOSE": "选择要丢弃并转化为星空音符的牌。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.title": "终曲",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.description": "丢弃手牌中所有非攻击牌，每张生成 {NotesPerCard:diff()} 个攻击音符。虚无。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.smartDescription": "丢弃手牌中所有非攻击牌，每张生成 {NotesPerCard:diff()} 个攻击音符。虚无。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.title": "齐谐",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.description": "每当你打出一张牌，随机生成 {Notes:diff()} 个基础音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.smartDescription": "{IfUpgraded:show:固有。|}每当你打出一张牌，随机生成 {Notes:diff()} 个基础音符。"
 }

@@ -43,5 +43,8 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_TEMPORARY_FORTE_POWER.smartDescription": "回合结束时，失去 [blue]{Amount}[/blue] 层强音。",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.title": "超光速负荷",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.description": "下回合少获得能量并少抽牌。",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.smartDescription": "下回合少获得 [red]{Amount}[/red] 点能量并少抽 [red]{Amount}[/red] 张牌。"
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HYPER_SPEED_DEBT_POWER.smartDescription": "下回合少获得 [red]{Amount}[/red] 点能量并少抽 [red]{Amount}[/red] 张牌。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.title": "齐谐",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.description": "每当你打出一张牌，随机生成基础音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_UNISON_POWER.smartDescription": "每当你打出一张牌，随机生成 [blue]{Amount}[/blue] 个基础音符。"
 }

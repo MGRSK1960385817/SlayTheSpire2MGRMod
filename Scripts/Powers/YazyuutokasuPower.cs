@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using SlayTheSpire2MGRMod.Cards;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -76,18 +77,32 @@ public class YazyuutokasuPower : ModPowerTemplate
 
         cardNode.PivotOffset = cardNode.Size * 0.5f;
         cardNode.ZIndex = 500;
-        Vector2 raisedPosition = cardNode.Position + new Vector2(0f, -72f);
-        Vector2 raisedScale = cardNode.Scale * 1.08f;
+        Vector2 raisedPosition = cardNode.Position +
+            new Vector2(0f, -MgrVisualTuning.DiscardReveal.RaiseDistance);
+        Vector2 raisedScale = cardNode.Scale *
+            MgrVisualTuning.DiscardReveal.ScaleMultiplier;
 
         Tween tween = cardNode.CreateTween().SetParallel();
-        tween.TweenProperty(cardNode, "position", raisedPosition, 0.14)
+        tween.TweenProperty(
+                cardNode,
+                "position",
+                raisedPosition,
+                MgrVisualTuning.DiscardReveal.RaiseSeconds)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(cardNode, "scale", raisedScale, 0.14)
+        tween.TweenProperty(
+                cardNode,
+                "scale",
+                raisedScale,
+                MgrVisualTuning.DiscardReveal.RaiseSeconds)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
-        tween.TweenProperty(cardNode, "modulate", new Color(1.2f, 1.12f, 1.24f), 0.14);
-        tween.Chain().TweenInterval(0.22);
+        tween.TweenProperty(
+            cardNode,
+            "modulate",
+            new Color(1.2f, 1.12f, 1.24f),
+            MgrVisualTuning.DiscardReveal.RaiseSeconds);
+        tween.Chain().TweenInterval(MgrVisualTuning.DiscardReveal.HoldSeconds);
 
         await TweenHelper.AwaitFinished(tween, cardNode);
     }

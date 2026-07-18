@@ -83,9 +83,6 @@ public static class MgrPerformanceVisuals
         // Cards are intentionally larger than the old rack and overlap heavily,
         // like a row of playing cards. The exposed strip stays wide enough to
         // hover each entry even when the queue becomes long.
-        private const float DesiredSpacing = 52f;
-        private const float MaximumWidth = 520f;
-
         private readonly Node2D _root;
         private readonly List<PerformanceCardView> _views = [];
 
@@ -96,8 +93,8 @@ public static class MgrPerformanceVisuals
             _root = new Node2D
             {
                 Name = "MgrPerformanceRack",
-                Position = new Vector2(0f, -650f),
-                ZIndex = 55
+                Position = MgrVisualTuning.Performances.RackOffset,
+                ZIndex = MgrVisualTuning.Performances.RackZIndex
             };
             parent.AddChild(_root);
         }
@@ -110,7 +107,9 @@ public static class MgrPerformanceVisuals
 
             float spacing = entries.Count <= 1
                 ? 0f
-                : MathF.Min(DesiredSpacing, MaximumWidth / (entries.Count - 1));
+                : MathF.Min(
+                    MgrVisualTuning.Performances.DesiredSpacing,
+                    MgrVisualTuning.Performances.MaximumWidth / (entries.Count - 1));
             float center = (entries.Count - 1) * 0.5f;
 
             for (int index = 0; index < entries.Count; index++)
@@ -204,17 +203,25 @@ public static class MgrPerformanceVisuals
             Vector2 finalScale = PerformanceCardView.MiniatureScale;
             Vector2 targetPosition = destination - playedCard.Size * finalScale * 0.5f;
             var tween = playedCard.CreateTween().SetParallel();
-            tween.TweenProperty(playedCard, "global_position", targetPosition, 0.28)
+            tween.TweenProperty(
+                    playedCard,
+                    "global_position",
+                    targetPosition,
+                    MgrVisualTuning.Performances.EnterQueueSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
-            tween.TweenProperty(playedCard, "scale", finalScale, 0.28)
+            tween.TweenProperty(
+                    playedCard,
+                    "scale",
+                    finalScale,
+                    MgrVisualTuning.Performances.EnterQueueSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Back);
             tween.TweenProperty(
                 playedCard,
                 "modulate",
                 new Color(1f, 1f, 1f, 0.12f),
-                0.28);
+                MgrVisualTuning.Performances.EnterQueueSeconds);
             tween.Chain().TweenCallback(Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(playedCard))
@@ -270,10 +277,8 @@ public static class MgrPerformanceVisuals
 
     private sealed class PerformanceCardView : IDisposable
     {
-        public static readonly Vector2 MiniatureScale = new(0.25f, 0.25f);
-
-        private static readonly Vector2 HoveredMiniatureScale = new(0.29f, 0.29f);
-        private static readonly Vector2 PreviewScale = new(0.68f, 0.68f);
+        public static Vector2 MiniatureScale =>
+            MgrVisualTuning.Performances.MiniatureScale;
 
         private readonly Node2D _anchor;
         private readonly NCard _cardNode;
@@ -371,22 +376,30 @@ public static class MgrPerformanceVisuals
 
             Tween tween = _anchor.CreateTween();
             _pulseTween = tween;
-            tween.TweenProperty(_anchor, "scale", new Vector2(1.2f, 1.2f), 0.14)
+            tween.TweenProperty(
+                    _anchor,
+                    "scale",
+                    Vector2.One * MgrVisualTuning.Performances.TriggerScale,
+                    MgrVisualTuning.Performances.TriggerGrowSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
             tween.Parallel().TweenProperty(
                 _triggerGlow,
                 "modulate",
                 new Color(1f, 1f, 1f, 0.9f),
-                0.14);
-            tween.TweenProperty(_anchor, "scale", Vector2.One, 0.18)
+                MgrVisualTuning.Performances.TriggerGrowSeconds);
+            tween.TweenProperty(
+                    _anchor,
+                    "scale",
+                    Vector2.One,
+                    MgrVisualTuning.Performances.TriggerSettleSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.Parallel().TweenProperty(
                 _triggerGlow,
                 "modulate",
                 new Color(1f, 1f, 1f, 0f),
-                0.18);
+                MgrVisualTuning.Performances.TriggerSettleSeconds);
 
             bool completed = await TweenHelper.AwaitFinished(tween, _anchor);
             if (completed && ReferenceEquals(_pulseTween, tween))
@@ -405,14 +418,18 @@ public static class MgrPerformanceVisuals
             _anchor.ZIndex = 450;
 
             Tween tween = _anchor.CreateTween().SetParallel();
-            tween.TweenProperty(_anchor, "global_position", destination, 0.38)
+            tween.TweenProperty(
+                    _anchor,
+                    "global_position",
+                    destination,
+                    MgrVisualTuning.Performances.ExitSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.TweenProperty(
                     _anchor,
                     "scale",
                     hasPileDestination ? new Vector2(0.34f, 0.34f) : new Vector2(0.82f, 0.82f),
-                    0.38)
+                    MgrVisualTuning.Performances.ExitSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Back);
             tween.TweenProperty(_anchor, "modulate", new Color(1f, 1f, 1f, 0f), 0.26)
@@ -424,7 +441,7 @@ public static class MgrPerformanceVisuals
         private void OnMouseEntered()
         {
             _anchor.ZIndex = 300;
-            _cardNode.Scale = HoveredMiniatureScale;
+            _cardNode.Scale = MgrVisualTuning.Performances.HoveredMiniatureScale;
             ShowHoverPreview();
         }
 
@@ -460,7 +477,11 @@ public static class MgrPerformanceVisuals
             PositionHoverPreview();
 
             var tween = _hoverPreview.CreateTween();
-            tween.TweenProperty(_hoverPreview, "scale", PreviewScale, 0.12)
+            tween.TweenProperty(
+                    _hoverPreview,
+                    "scale",
+                    MgrVisualTuning.Performances.PreviewScale,
+                    MgrVisualTuning.Performances.PreviewGrowSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
         }
@@ -471,9 +492,10 @@ public static class MgrPerformanceVisuals
                 return;
 
             Vector2 mouse = _anchor.GetGlobalMousePosition();
-            Vector2 scaledSize = _hoverPreview.Size * PreviewScale;
+            Vector2 scaledSize =
+                _hoverPreview.Size * MgrVisualTuning.Performances.PreviewScale;
             Vector2 desired = new(
-                mouse.X + 34f,
+                mouse.X + MgrVisualTuning.Performances.PreviewMouseXOffset,
                 mouse.Y - scaledSize.Y * 0.5f);
 
             Rect2 viewportRect = _anchor.GetViewport().GetVisibleRect();

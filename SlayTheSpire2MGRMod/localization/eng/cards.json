@@ -190,5 +190,22 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_DIZZY_AND_GIDDY_CHOOSE": "Choose cards to discard and transform into Notes.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.title": "Power Note Guard",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.description": "Power. Power Notes also grant {BlockPerNote:diff()} Block.",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.smartDescription": "{IfUpgraded:show:Innate. |}Power. Power Notes also grant {BlockPerNote:diff()} Block."
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_POWER_NOTE_GUARD.smartDescription": "{IfUpgraded:show:Innate. |}Power. Power Notes also grant {BlockPerNote:diff()} Block.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.title": "Chorus",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.description": "Generate {Notes:diff()} random basic Notes.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CHORUS.smartDescription": "Generate {Notes:diff()} random basic Notes.{IfUpgraded:show: Starting: Generate {StartingBonus:diff()} additional random basic Notes.|}",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.title": "Starry Drift",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.description": "Draw {Cards:diff()} cards, then discard {Discard:diff()} cards.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT.smartDescription": "Draw {Cards:diff()} cards, then discard {Discard:diff()} cards.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_DRIFT_CHOOSE": "Choose cards to discard.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.title": "Our Stars",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.description": "Discard up to {Cards:diff()} cards. Generate 1 Starry Note for each.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI.smartDescription": "Discard up to {Cards:diff()} cards. Generate 1 Starry Note for each.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI_CHOOSE": "Choose cards to discard and transform into Starry Notes.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.title": "Finale",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.description": "Discard all non-Attack cards in your hand. Generate {NotesPerCard:diff()} Attack Notes for each. Ethereal.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_FINALE.smartDescription": "Discard all non-Attack cards in your hand. Generate {NotesPerCard:diff()} Attack Notes for each. Ethereal.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.title": "Unison",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.description": "Whenever you play a card, generate {Notes:diff()} random basic Notes.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNISON.smartDescription": "{IfUpgraded:show:Innate. |}Whenever you play a card, generate {Notes:diff()} random basic Notes."
 }

@@ -93,21 +93,20 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrPerformanceSystem.ObserveResolvedCardPlay(cardPlay);
     }
 
-    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+    public override CardLocation ModifyCardPlayResultLocation(
         CardModel card,
         bool isAutoPlay,
         ResourceInfo resources,
-        PileType pileType,
-        CardPilePosition position)
+        CardLocation location)
     {
         if (card.Owner.Character is MgrCharacter &&
             MgrPerformanceSystem.IsPerformanceCard(card) &&
             !MgrPerformanceSystem.IsCompletingPerformance(card))
         {
-            return (PileType.Play, CardPilePosition.Bottom);
+            return new CardLocation(card.Owner, PileType.Play, CardPilePosition.Bottom);
         }
 
-        return (pileType, position);
+        return location;
     }
 
     /// <summary>
@@ -124,6 +123,29 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             await ChannelSingleNote(choiceContext, player, kind);
     }
 
+    /// <summary>
+    /// STS1 "Improvise": generates one weighted random basic note. The original
+    /// distribution is preserved while mapping its old note names to STS2's
+    /// direct card-type names: Attack 35%, Skill 35%, Status 8%, Power 17%,
+    /// and Curse 5%.
+    /// </summary>
+    public static Task ChannelRandomBasicNote(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, 100);
+        NoteKind kind = roll switch
+        {
+            < 35 => NoteKind.Attack,
+            < 70 => NoteKind.Skill,
+            < 78 => NoteKind.Status,
+            < 95 => NoteKind.Power,
+            _ => NoteKind.Curse
+        };
+
+        return ChannelNote(choiceContext, player, kind);
+    }
+
     private static async Task ChannelSingleNote(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -132,18 +154,20 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrNote note = MgrNoteFactory.Create(kind);
         MgrCombatState state = MgrCombatStateStore.For(player);
         state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
+        int enteringIndex = state.Phrase.Notes.Count;
         PhraseResolution? resolution = state.AddNote(note);
 
         MgrAudio.PlayNoteChannel();
 
-        // Like the Defect's OrbQueue/NOrbManager split, state owns the notes and this
-        // adapter only mirrors them into Godot nodes. Completed chords remain visible
-        // briefly before the current display slots return to their empty outlines.
-        MgrNoteVisuals.Show(
+        // Like the Defect's OrbQueue/NOrbManager split, state owns the notes and
+        // this adapter mirrors them into persistent Godot nodes. Awaiting the
+        // entrance tween gives multi-note effects a clear left-to-right rhythm.
+        await MgrNoteVisuals.ShowChanneledNote(
             player,
             resolution?.Notes ?? state.Phrase.Notes,
             state.Phrase.Capacity,
             state.Forte,
+            enteringIndex,
             clearAfterDelay: resolution is not null);
 
         if (resolution is null)
