@@ -14,8 +14,7 @@ public sealed class Strafe : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
-        new IntVar("Notes", 6m)
+        new DamageVar(5m, ValueProp.Move)
     ];
 
     public Strafe() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -26,18 +25,19 @@ public sealed class Strafe : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+        var command = DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
-            .Execute(choiceContext);
+            .Targeting(cardPlay.Target);
+        await command.Execute(choiceContext);
 
-        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
+        int notes = command.Results.SelectMany(result => result)
+            .Sum(result => Math.Max(0, result.UnblockedDamage));
+        for (int index = 0; index < notes; index++)
             await ChannelNote(choiceContext, NoteKind.Attack);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars["Notes"].UpgradeValueBy(2m);
     }
 }

@@ -13,9 +13,9 @@ public sealed class HyperSpeed : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(2),
+        new EnergyVar(3),
         new CardsVar(3),
-        new IntVar("Debt", 1m)
+        new IntVar("Debt", 2m)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
@@ -38,6 +38,6 @@ public sealed class HyperSpeed : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars.Cards.UpgradeValueBy(2m);
     }
 }

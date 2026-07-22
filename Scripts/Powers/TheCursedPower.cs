@@ -12,6 +12,8 @@ namespace SlayTheSpire2MGRMod.Powers;
 [RegisterPower]
 public sealed class TheCursedPower : ModPowerTemplate
 {
+    private bool _triggeredThisTurn;
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
@@ -24,16 +26,24 @@ public sealed class TheCursedPower : ModPowerTemplate
         CardModel card,
         bool fromHandDraw)
     {
-        if (card.Owner.Creature != Owner || card.Type != CardType.Curse || Owner.Player is not { } player)
+        if (_triggeredThisTurn || card.Owner.Creature != Owner || card.Type != CardType.Curse || Owner.Player is not { } player)
             return;
 
         int triggers = Math.Max(0, (int)Amount);
         if (triggers == 0)
             return;
 
+        _triggeredThisTurn = true;
         Flash();
         await CardPileCmd.Draw(choiceContext, triggers, player);
-        for (int index = 0; index < triggers; index++)
-            await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Curse);
+    }
+
+    public override Task AfterPlayerTurnStart(
+        PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Players.Player player)
+    {
+        if (player.Creature == Owner)
+            _triggeredThisTurn = false;
+        return Task.CompletedTask;
     }
 }

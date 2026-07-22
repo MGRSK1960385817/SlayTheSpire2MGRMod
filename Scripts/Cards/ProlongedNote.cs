@@ -13,13 +13,17 @@ public sealed class ProlongedNote : MgrCard
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
-    public ProlongedNote() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public ProlongedNote() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        MgrPerformanceSystem.AddPerformancesToQueuedCards(Owner, 1);
+        foreach (CardModel card in PileType.Hand.GetPile(Owner).Cards.ToArray())
+        {
+            if (MgrPerformanceSystem.IsPerformanceCard(card))
+                MgrPerformanceSystem.GrantAdditionalPerformances(card, 1);
+        }
         return Task.CompletedTask;
     }
 

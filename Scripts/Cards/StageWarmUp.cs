@@ -16,7 +16,7 @@ public sealed class StageWarmUp : MgrCard
         new PowerVar<FortePower>(1m)
     ];
 
-    public StageWarmUp() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public StageWarmUp() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -32,6 +32,6 @@ public sealed class StageWarmUp : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["FortePower"].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

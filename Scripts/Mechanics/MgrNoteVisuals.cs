@@ -19,10 +19,16 @@ public static class MgrNoteVisuals
         IReadOnlyList<MgrNote> notes,
         int capacity,
         int forte,
-        bool clearAfterDelay)
+        bool clearAfterDelay,
+        int chordAnimationIndex = 0)
     {
         NoteRack? rack = GetOrCreateRack(player, notes, capacity);
-        rack?.Show(notes, capacity, forte, clearAfterDelay);
+        rack?.Show(
+            notes,
+            capacity,
+            forte,
+            clearAfterDelay,
+            chordAnimationIndex);
     }
 
     /// <summary>
@@ -36,6 +42,8 @@ public static class MgrNoteVisuals
         int capacity,
         int forte,
         int enteringIndex,
+        int notesGeneratedBefore,
+        int chordsResolvedBefore,
         bool clearAfterDelay)
     {
         NoteRack? rack = GetOrCreateRack(player, notes, capacity);
@@ -44,6 +52,8 @@ public static class MgrNoteVisuals
             capacity,
             forte,
             enteringIndex,
+            notesGeneratedBefore,
+            chordsResolvedBefore,
             clearAfterDelay) ?? Task.CompletedTask;
     }
 
@@ -103,12 +113,13 @@ public static class MgrNoteVisuals
             IReadOnlyList<MgrNote> notes,
             int capacity,
             int forte,
-            bool clearAfterDelay)
+            bool clearAfterDelay,
+            int chordAnimationIndex)
         {
             CancelScheduledClear();
             UpdateSlots(notes, capacity, forte);
             if (clearAfterDelay)
-                ScheduleClear();
+                ScheduleClear(chordAnimationIndex);
         }
 
         public async Task ShowChanneledNote(
@@ -116,6 +127,8 @@ public static class MgrNoteVisuals
             int capacity,
             int forte,
             int enteringIndex,
+            int notesGeneratedBefore,
+            int chordsResolvedBefore,
             bool clearAfterDelay)
         {
             await _channelAnimationGate.WaitAsync();
@@ -128,10 +141,14 @@ public static class MgrNoteVisuals
                 UpdateSlots(notes, capacity, forte);
 
                 if (enteringIndex >= 0 && enteringIndex < _slots.Count)
-                    await _slots[enteringIndex].PlayEntranceAnimation();
+                {
+                    _slots[enteringIndex].RandomizeIdleMotion();
+                    await _slots[enteringIndex].PlayEntranceAnimation(
+                        GetNoteEntranceSeconds(notesGeneratedBefore));
+                }
 
                 if (clearAfterDelay && IsValid)
-                    ScheduleClear();
+                    ScheduleClear(chordsResolvedBefore);
             }
             finally
             {
@@ -177,12 +194,26 @@ public static class MgrNoteVisuals
             _clearTween = null;
         }
 
-        private void ScheduleClear()
+        private void ScheduleClear(int chordsResolvedBefore)
         {
             _clearTween = _root.CreateTween();
-            _clearTween.TweenInterval(MgrVisualTuning.Notes.ChordHoldSeconds);
+            _clearTween.TweenInterval(GetChordHoldSeconds(chordsResolvedBefore));
             _clearTween.TweenCallback(Callable.From(ShowEmptySlots));
         }
+
+        private static double GetNoteEntranceSeconds(int notesGeneratedBefore) =>
+            Math.Max(
+                MgrVisualTuning.Notes.MinimumNoteEntranceSeconds,
+                MgrVisualTuning.Notes.FirstNoteEntranceSeconds -
+                Math.Max(0, notesGeneratedBefore) *
+                MgrVisualTuning.Notes.NoteEntranceAccelerationPerNote);
+
+        private static double GetChordHoldSeconds(int chordsResolvedBefore) =>
+            Math.Max(
+                MgrVisualTuning.Notes.MinimumChordHoldSeconds,
+                MgrVisualTuning.Notes.FirstChordHoldSeconds -
+                Math.Max(0, chordsResolvedBefore) *
+                MgrVisualTuning.Notes.ChordHoldAccelerationPerChord);
 
         private void ShowEmptySlots()
         {
@@ -204,13 +235,9 @@ public static class MgrNoteVisuals
     private sealed class NoteSlot : IDisposable
     {
         private readonly Node2D _anchor;
-        private readonly Polygon2D _slotFill;
-        private readonly Line2D _slotOutline;
-        private readonly Line2D _slotInnerOutline;
-        private readonly Label _emptyGlyph;
+        private readonly Node2D _emptySlotOutline;
         private readonly Node2D _entranceRoot;
         private readonly MgrFloatingNoteVisual _floatingRoot;
-        private readonly Polygon2D _entranceFlash;
 
         private NoteKind? _displayedKind;
         private Label? _amountLabel;
@@ -221,81 +248,8 @@ public static class MgrNoteVisuals
             _anchor = new Node2D { Name = $"NoteSlot{index + 1}" };
             parent.AddChild(_anchor);
 
-            Vector2[] fillPoints = CreateCirclePoints(
-                MgrVisualTuning.Notes.SlotRadius,
-                closeLoop: false);
-            Vector2[] outlinePoints = CreateCirclePoints(
-                MgrVisualTuning.Notes.SlotRadius,
-                closeLoop: true);
-            Vector2[] innerPoints = CreateCirclePoints(
-                MgrVisualTuning.Notes.SlotRadius - 8f,
-                closeLoop: true);
-
-            _slotFill = new Polygon2D
-            {
-                Name = "SlotFill",
-                Polygon = fillPoints,
-                Color = new Color(0.055f, 0.06f, 0.085f, 0.68f),
-                ZIndex = -3
-            };
-            _anchor.AddChild(_slotFill);
-
-            _slotOutline = new Line2D
-            {
-                Name = "SlotOutline",
-                Points = outlinePoints,
-                Width = 5f,
-                DefaultColor = new Color(0.78f, 0.82f, 0.9f, 0.9f),
-                Antialiased = true,
-                JointMode = Line2D.LineJointMode.Round,
-                BeginCapMode = Line2D.LineCapMode.Round,
-                EndCapMode = Line2D.LineCapMode.Round,
-                ZIndex = -1
-            };
-            _anchor.AddChild(_slotOutline);
-
-            _slotInnerOutline = new Line2D
-            {
-                Name = "SlotInnerOutline",
-                Points = innerPoints,
-                Width = 2f,
-                DefaultColor = new Color(0.58f, 0.62f, 0.7f, 0.48f),
-                Antialiased = true,
-                JointMode = Line2D.LineJointMode.Round,
-                ZIndex = -2
-            };
-            _anchor.AddChild(_slotInnerOutline);
-
-            _emptyGlyph = new Label
-            {
-                Name = "EmptyNoteGlyph",
-                Text = "♪",
-                Position = new Vector2(-24f, -28f),
-                Size = new Vector2(48f, 56f),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                MouseFilter = Control.MouseFilterEnum.Ignore
-            };
-            _emptyGlyph.AddThemeFontSizeOverride("font_size", 30);
-            _emptyGlyph.AddThemeColorOverride(
-                "font_color",
-                new Color(0.72f, 0.76f, 0.84f, 0.62f));
-            _emptyGlyph.AddThemeColorOverride(
-                "font_outline_color",
-                new Color(0f, 0f, 0f, 0.85f));
-            _emptyGlyph.AddThemeConstantOverride("outline_size", 5);
-            _anchor.AddChild(_emptyGlyph);
-
-            _entranceFlash = new Polygon2D
-            {
-                Name = "ChannelFlash",
-                Polygon = CreateCirclePoints(
-                    MgrVisualTuning.Notes.SlotRadius + 4f,
-                    closeLoop: false),
-                Color = new Color(1f, 1f, 1f, 0f),
-                ZIndex = -1
-            };
-            _anchor.AddChild(_entranceFlash);
+            _emptySlotOutline = CreateDashedEmptySlot();
+            _anchor.AddChild(_emptySlotOutline);
 
             _entranceRoot = new Node2D { Name = "FilledNoteEntrance" };
             _anchor.AddChild(_entranceRoot);
@@ -312,10 +266,7 @@ public static class MgrNoteVisuals
 
         public void Show(MgrNote? note, int forte)
         {
-            _emptyGlyph.Visible = note is null;
-            _slotOutline.DefaultColor = note is null
-                ? new Color(0.78f, 0.82f, 0.9f, 0.9f)
-                : GetOutlineColor(note.Kind).Lightened(0.2f);
+            _emptySlotOutline.Visible = note is null;
 
             if (note is null)
             {
@@ -330,7 +281,7 @@ public static class MgrNoteVisuals
                 _amountLabel.Text = note.GetEffectAmount(forte).ToString();
         }
 
-        public async Task PlayEntranceAnimation()
+        public async Task PlayEntranceAnimation(double totalSeconds)
         {
             if (_displayedKind is null ||
                 !GodotObject.IsInstanceValid(_entranceRoot) ||
@@ -347,11 +298,9 @@ public static class MgrNoteVisuals
                 MgrVisualTuning.Notes.EntranceStartScale;
             _entranceRoot.Modulate = new Color(1f, 1f, 1f, 0f);
 
-            Color flashColor = GetOutlineColor(_displayedKind.Value);
-            flashColor.A = MgrVisualTuning.Notes.EntranceFlashAlpha;
-            _entranceFlash.Color = flashColor;
-            _entranceFlash.Modulate = Colors.White;
-            _entranceFlash.Scale = new Vector2(0.72f, 0.72f);
+            double growSeconds =
+                totalSeconds * MgrVisualTuning.Notes.EntranceGrowFraction;
+            double settleSeconds = Math.Max(0.01, totalSeconds - growSeconds);
 
             Tween tween = _anchor.CreateTween();
             _entranceTween = tween;
@@ -360,47 +309,39 @@ public static class MgrNoteVisuals
                     _entranceRoot,
                     "position",
                     Vector2.Zero,
-                    MgrVisualTuning.Notes.EntranceGrowSeconds)
+                    growSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.TweenProperty(
                     _entranceRoot,
                     "scale",
                     Vector2.One * MgrVisualTuning.Notes.EntranceOvershootScale,
-                    MgrVisualTuning.Notes.EntranceGrowSeconds)
+                    growSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
             tween.TweenProperty(
                 _entranceRoot,
                 "modulate",
                 Colors.White,
-                MgrVisualTuning.Notes.EntranceGrowSeconds);
-            tween.TweenProperty(
-                    _entranceFlash,
-                    "scale",
-                    Vector2.One * MgrVisualTuning.Notes.EntranceFlashScale,
-                    MgrVisualTuning.Notes.EntranceGrowSeconds +
-                    MgrVisualTuning.Notes.EntranceSettleSeconds)
-                .SetEase(Tween.EaseType.Out)
-                .SetTrans(Tween.TransitionType.Cubic);
-            tween.TweenProperty(
-                _entranceFlash,
-                "modulate:a",
-                0f,
-                MgrVisualTuning.Notes.EntranceGrowSeconds +
-                MgrVisualTuning.Notes.EntranceSettleSeconds);
+                growSeconds);
 
             tween.Chain().TweenProperty(
                     _entranceRoot,
                     "scale",
                     Vector2.One,
-                    MgrVisualTuning.Notes.EntranceSettleSeconds)
+                    settleSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
 
             bool completed = await TweenHelper.AwaitFinished(tween, _anchor);
             if (completed && ReferenceEquals(_entranceTween, tween))
                 _entranceTween = null;
+        }
+
+        public void RandomizeIdleMotion()
+        {
+            if (_displayedKind is not null)
+                _floatingRoot.RandomizeMotion();
         }
 
         private void CreateNote(MgrNote note)
@@ -411,21 +352,11 @@ public static class MgrNoteVisuals
             if (texture is null)
             {
                 Entry.Logger.Warn($"Missing MGR note texture: {note.TexturePath}");
-                _emptyGlyph.Visible = true;
+                _emptySlotOutline.Visible = true;
                 return;
             }
 
             Color noteColor = GetOutlineColor(note.Kind);
-            var glow = new Sprite2D
-            {
-                Name = "NoteGlow",
-                Texture = texture,
-                Scale = MgrVisualTuning.Notes.ArtworkScale * 1.18f,
-                Modulate = new Color(noteColor.R, noteColor.G, noteColor.B, 0.24f),
-                ZIndex = -1
-            };
-            _floatingRoot.AddChild(glow);
-
             var sprite = new Sprite2D
             {
                 Name = $"{note.Name}Note",
@@ -456,18 +387,45 @@ public static class MgrNoteVisuals
             _displayedKind = note.Kind;
         }
 
-        private static Vector2[] CreateCirclePoints(float radius, bool closeLoop)
+        private static Node2D CreateDashedEmptySlot()
         {
-            int segments = MgrVisualTuning.Notes.CircleSegments;
-            int pointCount = segments + (closeLoop ? 1 : 0);
-            var points = new Vector2[pointCount];
-            for (int index = 0; index < pointCount; index++)
+            var root = new Node2D
             {
-                float angle = MathF.Tau * (index % segments) / segments;
-                points[index] = new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * radius;
+                Name = "EmptySlotDashedOutline",
+                ZIndex = -1
+            };
+            Color color = new(0.72f, 0.76f, 0.84f, 0.58f);
+            int dashCount = MgrVisualTuning.Notes.EmptySlotDashCount;
+            float dashAngle =
+                MathF.Tau / dashCount *
+                MgrVisualTuning.Notes.EmptySlotDashFill;
+
+            for (int index = 0; index < dashCount; index++)
+            {
+                float start = MathF.Tau * index / dashCount;
+                float end = start + dashAngle;
+                float middle = (start + end) * 0.5f;
+                float radius = MgrVisualTuning.Notes.SlotRadius;
+                var dash = new Line2D
+                {
+                    Name = $"Dash{index + 1}",
+                    Points =
+                    [
+                        new Vector2(MathF.Cos(start), MathF.Sin(start)) * radius,
+                        new Vector2(MathF.Cos(middle), MathF.Sin(middle)) * radius,
+                        new Vector2(MathF.Cos(end), MathF.Sin(end)) * radius
+                    ],
+                    Width = MgrVisualTuning.Notes.EmptySlotDashWidth,
+                    DefaultColor = color,
+                    Antialiased = true,
+                    JointMode = Line2D.LineJointMode.Round,
+                    BeginCapMode = Line2D.LineCapMode.Round,
+                    EndCapMode = Line2D.LineCapMode.Round
+                };
+                root.AddChild(dash);
             }
 
-            return points;
+            return root;
         }
 
         private static Color GetOutlineColor(NoteKind kind) => kind switch
@@ -479,6 +437,7 @@ public static class MgrNoteVisuals
             NoteKind.Curse => new Color("e8bd00"),
             NoteKind.Quest => new Color("4fc9d1"),
             NoteKind.Starry => new Color("f020c8"),
+            NoteKind.Ghost => new Color("a875ff"),
             _ => Colors.Black
         };
 
@@ -491,9 +450,6 @@ public static class MgrNoteVisuals
             _entranceRoot.Position = Vector2.Zero;
             _entranceRoot.Scale = Vector2.One;
             _entranceRoot.Modulate = Colors.White;
-            _entranceFlash.Color = new Color(1f, 1f, 1f, 0f);
-            _entranceFlash.Modulate = Colors.White;
-            _entranceFlash.Scale = Vector2.One;
 
             foreach (Node child in _floatingRoot.GetChildren())
             {

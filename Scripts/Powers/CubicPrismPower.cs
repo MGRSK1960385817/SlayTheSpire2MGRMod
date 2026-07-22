@@ -1,0 +1,63 @@
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Scaffolding.Content;
+
+namespace SlayTheSpire2MGRMod.Powers;
+
+[RegisterPower]
+public sealed class CubicPrismPower : ModPowerTemplate
+{
+    private int _attacksPlayedThisTurn;
+
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override PowerAssetProfile AssetProfile => new(
+        IconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png");
+
+    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    {
+        if (cardPlay.IsLastInSeries &&
+            cardPlay.Card.Owner.Creature == Owner &&
+            cardPlay.Card.Type == CardType.Attack)
+        {
+            _attacksPlayedThisTurn++;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (side != Owner.Side || Owner.CombatState is not { } combatState)
+            return;
+
+        decimal damage = Math.Max(0m, Amount - 2m * _attacksPlayedThisTurn);
+        _attacksPlayedThisTurn = 0;
+        if (damage <= 0m)
+            return;
+
+        Flash();
+        foreach (Creature enemy in combatState.HittableEnemies.ToArray())
+        {
+            await CreatureCmd.Damage(
+                choiceContext,
+                enemy,
+                damage,
+                ValueProp.Unpowered,
+                Owner,
+                cardSource: null,
+                cardPlay: null);
+        }
+    }
+}

@@ -17,9 +17,6 @@ public sealed class HyperSpeedDebtPower : ModPowerTemplate
         IconPath: $"{Entry.ResPath}/images/powers/HyperSpeedDebtPower.png",
         BigIconPath: $"{Entry.ResPath}/images/powers/HyperSpeedDebtPower.png");
 
-    public override decimal ModifyHandDraw(Player player, decimal amount) =>
-        player.Creature == Owner ? Math.Max(0m, amount - Amount) : amount;
-
     public override async Task AfterEnergyReset(Player player)
     {
         if (player.Creature != Owner)

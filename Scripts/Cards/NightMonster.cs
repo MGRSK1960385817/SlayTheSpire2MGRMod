@@ -10,14 +10,14 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "nocturnal")]
-public sealed class Nocturnal : MgrCard
+public sealed class NightMonster : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move)
+        new DamageVar(7m, ValueProp.Move)
     ];
 
-    public Nocturnal() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+    public NightMonster() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
     {
     }
 
@@ -41,6 +41,6 @@ public sealed class Nocturnal : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

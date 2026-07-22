@@ -12,7 +12,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "shatter")]
-public sealed class Shatter : MgrCard
+public sealed class OtomeDissection : MgrCard
 {
     public override bool GainsBlock => true;
 
@@ -25,7 +25,7 @@ public sealed class Shatter : MgrCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
-    public Shatter() : base(2, CardType.Skill, CardRarity.Rare, TargetType.Self)
+    public OtomeDissection() : base(2, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -53,6 +53,6 @@ public sealed class Shatter : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Block.UpgradeValueBy(1m);
     }
 }

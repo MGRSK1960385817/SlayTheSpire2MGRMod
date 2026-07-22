@@ -32,6 +32,6 @@ public sealed class AccurateShooting : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(5m);
     }
 }

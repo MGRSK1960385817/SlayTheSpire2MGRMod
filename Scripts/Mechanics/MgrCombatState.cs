@@ -10,8 +10,10 @@ public sealed class MgrCombatState
 {
     public PhraseState Phrase { get; } = new();
     public int TotalNotesGenerated { get; private set; }
+    public int NotesGeneratedThisTurn { get; private set; }
     public int ChordsResolvedThisCombat { get; private set; }
     public int ChordsResolvedThisTurn { get; private set; }
+    public int ChordTriggersThisTurn { get; private set; }
     public int Forte { get; private set; }
     public int UnusedEnergyLastTurn { get; private set; }
     public int PendingAdditionalChordTriggers { get; private set; }
@@ -30,6 +32,7 @@ public sealed class MgrCombatState
         ArgumentNullException.ThrowIfNull(note);
         Phrase.Add(note);
         TotalNotesGenerated++;
+        NotesGeneratedThisTurn++;
 
         LastResolution = Phrase.IsComplete ? ResolveCompletedPhrase() : null;
 
@@ -89,9 +92,22 @@ public sealed class MgrCombatState
         return amount;
     }
 
+    /// <summary>
+    /// Counts actual chord effect passes, including one-shot repeats and relic
+    /// duplication. Returns how many had already played this turn.
+    /// </summary>
+    public int RecordChordTrigger()
+    {
+        int previous = ChordTriggersThisTurn;
+        ChordTriggersThisTurn++;
+        return previous;
+    }
+
     public void ResetTurnCounters()
     {
+        NotesGeneratedThisTurn = 0;
         ChordsResolvedThisTurn = 0;
+        ChordTriggersThisTurn = 0;
     }
 }
 

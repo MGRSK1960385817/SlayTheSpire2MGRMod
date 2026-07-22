@@ -14,7 +14,7 @@ public sealed class MaguroAssault : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6m, ValueProp.Move),
-        new IntVar("BonusPerChord", 2m)
+        new IntVar("BonusPerChord", 1m)
     ];
 
     public MaguroAssault() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)

@@ -11,17 +11,6 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "masterful")]
 public sealed class Masterful : MgrCard
 {
-    private static readonly NoteKind[] SelectionOrder =
-    [
-        NoteKind.Attack,
-        NoteKind.Skill,
-        NoteKind.Power,
-        NoteKind.Status,
-        NoteKind.Curse,
-        NoteKind.Quest,
-        NoteKind.Starry
-    ];
-
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     public Masterful() : base(0, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -32,10 +21,15 @@ public sealed class Masterful : MgrCard
     {
         List<CardModel> drawPileSnapshot = PileType.Draw.GetPile(Owner).Cards.ToList();
 
-        foreach (NoteKind kind in SelectionOrder)
+        foreach (NoteKind kind in Enum.GetValues<NoteKind>())
         {
-            CardModel? matchingCard = drawPileSnapshot.FirstOrDefault(
-                card => CardNoteResolver.Resolve(card) == kind);
+            List<CardModel> candidates = drawPileSnapshot
+                .Where(card => CardNoteResolver.Resolve(card) == kind)
+                .ToList();
+            CardModel? matchingCard = MgrWeightedCardRandom.PickOne(
+                candidates,
+                Owner.RunState.Rng.CombatCardGeneration,
+                useRarityWeights: candidates.Count > 3);
             if (matchingCard is null)
                 continue;
 

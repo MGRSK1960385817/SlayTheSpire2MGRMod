@@ -26,7 +26,7 @@ public sealed class Lullaby : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(9m, ValueProp.Move),
-        new PowerVar<WeakPower>(1m)
+        new PowerVar<WeakPower>(2m)
     ];
 
     public Lullaby() : base(2, CardType.Skill, CardRarity.Basic, TargetType.AllEnemies)
@@ -36,7 +36,7 @@ public sealed class Lullaby : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        if (CombatState is not { } combatState)
+        if (!IsPhraseEnd || CombatState is not { } combatState)
             return;
 
         foreach (Creature enemy in combatState.HittableEnemies)
@@ -52,7 +52,7 @@ public sealed class Lullaby : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Block.UpgradeValueBy(3m);
         DynamicVars.Weak.UpgradeValueBy(1m);
     }
 }

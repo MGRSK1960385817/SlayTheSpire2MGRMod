@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.UI;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
@@ -84,6 +85,7 @@ public static class MgrPerformanceVisuals
         // like a row of playing cards. The exposed strip stays wide enough to
         // hover each entry even when the queue becomes long.
         private readonly Node2D _root;
+        private readonly CanvasLayer _previewLayer;
         private readonly List<PerformanceCardView> _views = [];
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
@@ -97,13 +99,28 @@ public static class MgrPerformanceVisuals
                 ZIndex = MgrVisualTuning.Performances.RackZIndex
             };
             parent.AddChild(_root);
+
+            // CardPreviewContainer owns a layout script that moves every child
+            // back to the screen centre. A private canvas layer lets the rack
+            // keep hover previews beside the mouse and above combat UI.
+            _previewLayer = new CanvasLayer
+            {
+                Name = "MgrPerformancePreviewLayer",
+                Layer = 90
+            };
+            parent.AddChild(_previewLayer);
         }
 
         public void Show(IReadOnlyList<MgrPerformanceEntry> entries)
         {
-            ClearViews();
-            if (entries.Count == 0)
-                return;
+            foreach (PerformanceCardView stale in _views
+                         .Where(view => !entries.Any(
+                             entry => ReferenceEquals(entry, view.Entry)))
+                         .ToArray())
+            {
+                stale.Dispose();
+                _views.Remove(stale);
+            }
 
             float spacing = entries.Count <= 1
                 ? 0f
@@ -111,18 +128,27 @@ public static class MgrPerformanceVisuals
                     MgrVisualTuning.Performances.DesiredSpacing,
                     MgrVisualTuning.Performances.MaximumWidth / (entries.Count - 1));
             float center = (entries.Count - 1) * 0.5f;
+            var orderedViews = new List<PerformanceCardView>(entries.Count);
 
             for (int index = 0; index < entries.Count; index++)
             {
                 // The first entry is the rightmost; newer entries extend left.
                 float x = (center - index) * spacing;
-                var view = new PerformanceCardView(_root, entries[index]);
+                PerformanceCardView? view = FindView(entries[index]);
+                view ??= new PerformanceCardView(
+                    _root,
+                    _previewLayer,
+                    entries[index]);
+                view.Refresh();
                 view.SetPosition(new Vector2(x, 0f));
                 // The earliest card is the rightmost and visually sits above
                 // later cards where their bodies overlap.
                 view.SetLayer(entries.Count - index);
-                _views.Add(view);
+                orderedViews.Add(view);
             }
+
+            _views.Clear();
+            _views.AddRange(orderedViews);
         }
 
         public Task PlayTriggerAnimation(MgrPerformanceEntry entry) =>
@@ -225,7 +251,7 @@ public static class MgrPerformanceVisuals
             tween.Chain().TweenCallback(Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(playedCard))
-                    playedCard.QueueFree();
+                    playedCard.QueueFreeSafely();
             }));
         }
 
@@ -272,6 +298,8 @@ public static class MgrPerformanceVisuals
             ClearViews();
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
+            if (GodotObject.IsInstanceValid(_previewLayer))
+                _previewLayer.QueueFree();
         }
     }
 
@@ -281,9 +309,11 @@ public static class MgrPerformanceVisuals
             MgrVisualTuning.Performances.MiniatureScale;
 
         private readonly Node2D _anchor;
+        private readonly Node _previewHost;
         private readonly NCard _cardNode;
         private readonly Control _hoverHitbox;
         private readonly ColorRect _triggerGlow;
+        private readonly Label _remainingLabel;
         private Tween? _pulseTween;
         private NCard? _hoverPreview;
         private int _baseLayer;
@@ -291,22 +321,26 @@ public static class MgrPerformanceVisuals
         public MgrPerformanceEntry Entry { get; }
         public Vector2 GlobalCenter => _anchor.GlobalPosition;
 
-        public PerformanceCardView(Node parent, MgrPerformanceEntry entry)
+        public PerformanceCardView(
+            Node parent,
+            Node previewHost,
+            MgrPerformanceEntry entry)
         {
             Entry = entry;
+            _previewHost = previewHost;
             _anchor = new Node2D { Name = $"Performance_{entry.Card.GetType().Name}" };
             parent.AddChild(_anchor);
 
             _cardNode = NCard.Create(entry.Card, ModelVisibility.Visible)
                 ?? throw new InvalidOperationException("Unable to create an MGR Performance card node.");
             _cardNode.Name = "Card";
-            _cardNode.PivotOffset = _cardNode.Size * 0.5f;
-            _cardNode.Position = -_cardNode.Size * 0.5f;
+            _cardNode.PivotOffset = NCard.defaultSize * 0.5f;
+            _cardNode.Position = -NCard.defaultSize * 0.5f;
             _cardNode.Scale = MiniatureScale;
             _cardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
             _anchor.AddChild(_cardNode);
 
-            Vector2 visualSize = _cardNode.Size * MiniatureScale;
+            Vector2 visualSize = NCard.defaultSize * MiniatureScale;
             Vector2 halfVisualSize = visualSize * 0.5f;
             _triggerGlow = new ColorRect
             {
@@ -333,9 +367,12 @@ public static class MgrPerformanceVisuals
             _hoverHitbox.MouseEntered += OnMouseEntered;
             _hoverHitbox.MouseExited += OnMouseExited;
             _hoverHitbox.GuiInput += OnHoverInput;
-            _anchor.AddChild(_hoverHitbox);
+            // Keep input in the high canvas layer as well. Creature controls and
+            // combat overlays can otherwise intercept GUI hover before a child
+            // Control under the creature node ever sees it.
+            _previewHost.AddChild(_hoverHitbox);
 
-            var remainingLabel = new Label
+            _remainingLabel = new Label
             {
                 Name = "RemainingPerformances",
                 Text = entry.RemainingPerformanceTurns.ToString(),
@@ -346,22 +383,44 @@ public static class MgrPerformanceVisuals
                 MouseFilter = Control.MouseFilterEnum.Ignore,
                 ZIndex = 25
             };
-            remainingLabel.AddThemeFontSizeOverride("font_size", 32);
-            remainingLabel.AddThemeColorOverride("font_color", Colors.White);
-            remainingLabel.AddThemeColorOverride("font_outline_color", new Color("a915b8"));
-            remainingLabel.AddThemeConstantOverride("outline_size", 8);
-            _anchor.AddChild(remainingLabel);
+            _remainingLabel.AddThemeFontSizeOverride("font_size", 32);
+            _remainingLabel.AddThemeColorOverride("font_color", Colors.White);
+            _remainingLabel.AddThemeColorOverride("font_outline_color", new Color("a915b8"));
+            _remainingLabel.AddThemeConstantOverride("outline_size", 8);
+            _anchor.AddChild(_remainingLabel);
+
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            _remainingLabel.Text = Entry.RemainingPerformanceTurns.ToString();
+            if (GodotObject.IsInstanceValid(_cardNode) && _cardNode.IsNodeReady())
+            {
+                _cardNode.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
+            }
+
+            if (_hoverPreview is not null &&
+                GodotObject.IsInstanceValid(_hoverPreview) &&
+                _hoverPreview.IsNodeReady())
+            {
+                _hoverPreview.UpdateVisuals(
+                    PileType.Play,
+                    CardPreviewMode.Normal);
+            }
         }
 
         public void SetPosition(Vector2 position)
         {
             _anchor.Position = position;
+            PositionHoverHitbox();
         }
 
         public void SetLayer(int layer)
         {
             _baseLayer = layer;
             _anchor.ZIndex = layer;
+            _hoverHitbox.ZIndex = layer;
         }
 
         public async Task PlayTriggerAnimation()
@@ -441,6 +500,7 @@ public static class MgrPerformanceVisuals
         private void OnMouseEntered()
         {
             _anchor.ZIndex = 300;
+            _hoverHitbox.ZIndex = 300;
             _cardNode.Scale = MgrVisualTuning.Performances.HoveredMiniatureScale;
             ShowHoverPreview();
         }
@@ -448,6 +508,7 @@ public static class MgrPerformanceVisuals
         private void OnMouseExited()
         {
             _anchor.ZIndex = _baseLayer;
+            _hoverHitbox.ZIndex = _baseLayer;
             _cardNode.Scale = MiniatureScale;
             HideHoverPreview();
         }
@@ -470,10 +531,12 @@ public static class MgrPerformanceVisuals
             _hoverPreview.Name = "HoverPreview";
             _hoverPreview.MouseFilter = Control.MouseFilterEnum.Ignore;
             _hoverPreview.ZIndex = 300;
-            Control? previewContainer = NCombatRoom.Instance?.Ui?.CardPreviewContainer;
-            (previewContainer as Node ?? _anchor).AddChild(_hoverPreview);
-            _hoverPreview.PivotOffset = _hoverPreview.Size * 0.5f;
+            _previewHost.AddChild(_hoverPreview);
+            _hoverPreview.PivotOffset = NCard.defaultSize * 0.5f;
             _hoverPreview.Scale = new Vector2(0.5f, 0.5f);
+            _hoverPreview.UpdateVisuals(
+                PileType.Play,
+                CardPreviewMode.Normal);
             PositionHoverPreview();
 
             var tween = _hoverPreview.CreateTween();
@@ -491,9 +554,9 @@ public static class MgrPerformanceVisuals
             if (_hoverPreview is null || !GodotObject.IsInstanceValid(_hoverPreview))
                 return;
 
-            Vector2 mouse = _anchor.GetGlobalMousePosition();
+            Vector2 mouse = _anchor.GetViewport().GetMousePosition();
             Vector2 scaledSize =
-                _hoverPreview.Size * MgrVisualTuning.Performances.PreviewScale;
+                NCard.defaultSize * MgrVisualTuning.Performances.PreviewScale;
             Vector2 desired = new(
                 mouse.X + MgrVisualTuning.Performances.PreviewMouseXOffset,
                 mouse.Y - scaledSize.Y * 0.5f);
@@ -507,7 +570,16 @@ public static class MgrPerformanceVisuals
                 desired.Y,
                 viewportRect.Position.Y + 8f,
                 viewportRect.End.Y - scaledSize.Y - 8f);
-            _hoverPreview.GlobalPosition = desired;
+            _hoverPreview.Position = desired;
+        }
+
+        private void PositionHoverHitbox()
+        {
+            if (!GodotObject.IsInstanceValid(_hoverHitbox))
+                return;
+
+            _hoverHitbox.Position =
+                _anchor.GlobalPosition - _hoverHitbox.Size * 0.5f;
         }
 
         private void HideHoverPreview()
@@ -516,7 +588,7 @@ public static class MgrPerformanceVisuals
                 return;
 
             if (GodotObject.IsInstanceValid(_hoverPreview))
-                _hoverPreview.QueueFree();
+                _hoverPreview.QueueFreeSafely();
 
             _hoverPreview = null;
         }
@@ -532,7 +604,11 @@ public static class MgrPerformanceVisuals
                 _hoverHitbox.MouseEntered -= OnMouseEntered;
                 _hoverHitbox.MouseExited -= OnMouseExited;
                 _hoverHitbox.GuiInput -= OnHoverInput;
+                _hoverHitbox.QueueFree();
             }
+
+            if (GodotObject.IsInstanceValid(_cardNode))
+                _cardNode.QueueFreeSafely();
 
             if (GodotObject.IsInstanceValid(_anchor))
                 _anchor.QueueFree();

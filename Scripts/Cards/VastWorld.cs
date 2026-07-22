@@ -7,18 +7,20 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "opening_duet")]
-[RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 30)]
-public sealed class OpeningDuet : MgrCard
+/// <summary>
+/// Ancient-card transcendence of Little Parade, obtained through Archaic Tooth.
+/// </summary>
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "vast_world")]
+public sealed class VastWorld : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 3m)
+        new IntVar("Performance", 1m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public OpeningDuet() : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
+    public VastWorld() : base(1, CardType.Skill, CardRarity.Ancient, TargetType.Self)
     {
     }
 
@@ -26,10 +28,11 @@ public sealed class OpeningDuet : MgrCard
     {
         await ChannelNote(choiceContext, NoteKind.Attack);
         await ChannelNote(choiceContext, NoteKind.Skill);
+        await ChannelNote(choiceContext, NoteKind.Power);
+        await ChannelNote(choiceContext, NoteKind.Starry);
+        await ChannelNote(choiceContext, NoteKind.Status);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Performance"].UpgradeValueBy(2m);
-    }
+    protected override void OnUpgrade() =>
+        DynamicVars["Performance"].UpgradeValueBy(1m);
 }

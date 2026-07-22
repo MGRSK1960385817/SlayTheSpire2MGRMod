@@ -10,14 +10,14 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "instant_encore")]
-public sealed class InstantEncore : MgrCard
+public sealed class Adios : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move)
+        new DamageVar(10m, ValueProp.Move)
     ];
 
-    public InstantEncore() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+    public Adios() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
     }
 
@@ -28,11 +28,11 @@ public sealed class InstantEncore : MgrCard
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
-        await MgrPerformanceSystem.TriggerQueuedCardsOnce(choiceContext, Owner);
+        await MgrPerformanceSystem.TriggerQueuedCardsOnceAndConsume(choiceContext, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

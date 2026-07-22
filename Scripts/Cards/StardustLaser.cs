@@ -15,7 +15,7 @@ public sealed class StardustLaser : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move)
+        new DamageVar(5m, ValueProp.Move)
     ];
 
     public StardustLaser() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)

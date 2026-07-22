@@ -1,16 +1,16 @@
 {
-  "schemaVersion": 3,
-  "lastUpdated": "2026-07-18",
+  "schemaVersion": 4,
+  "lastUpdated": "2026-07-21",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
-    "codeName": "C# 类型名，同时作为源代码和默认图片的基本名：代码为 codeName.cs，图片为 codeName.png，遗物描边图为 codeName_outline.png。",
-    "stableEntryStem": "实际注册与存档使用的稳定标识；显示名或 codeName 改名时通常保持不变，如需修改必须同步 C# 并检查存档兼容。",
-    "names": "游戏显示的中文名和英文名。",
+    "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
+    "name": "当前中文显示名；英文、日文及其他语言不在本阶段登记。",
     "status": "内容启用状态：1 表示当前有效，0 表示暂时停用。",
     "typeAndRarity": "卡牌类型与稀有度；遗物只记录稀有度。",
-    "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化，不替代 C# 与本地化。"
+    "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。"
   },
-  "derivedFields": "sourceFileName、imageFileName、outlineImageFileName 和 localizationStem 不再逐项登记；前三者由 codeName 推导，本地化键由实际本地化文件维护。",
+  "derivationGuide": "源码默认为 codeName.cs，图片默认为 codeName.png，遗物描边图默认为 codeName_outline.png。稳定注册键、存档兼容键、本地化键以及 MGR/MGRMOD 命名空间前缀由 C# 注册层和本地化文件维护，不写入本表。",
+  "renameGuide": "修改 name 只需同步中文本地化；修改 codeName 时需同步 C# 类型、源码文件、图片资源和注册代码。注册键是否改动需单独明确，不由本表自动决定。",
   "statusGuide": {
     "1": "当前有效，会作为模组内容维护。",
     "0": "暂时停用，保留登记但不应注册进游戏内容池。"
@@ -18,11 +18,7 @@
   "cards": [
     {
       "codeName": "MgrStrike",
-      "stableEntryStem": "strike",
-      "names": {
-        "zhs": "打击",
-        "eng": "Strike"
-      },
+      "name": "打击",
       "status": 1,
       "type": "Attack",
       "rarity": "Basic",
@@ -30,11 +26,7 @@
     },
     {
       "codeName": "MgrDefend",
-      "stableEntryStem": "defend",
-      "names": {
-        "zhs": "防御",
-        "eng": "Defend"
-      },
+      "name": "防御",
       "status": 1,
       "type": "Skill",
       "rarity": "Basic",
@@ -42,83 +34,55 @@
     },
     {
       "codeName": "SoundCheck",
-      "stableEntryStem": "sound_check",
-      "names": {
-        "zhs": "试音",
-        "eng": "Sound Check"
-      },
-      "status": 1,
+      "name": "试音",
+      "status": 0,
       "type": "Skill",
       "rarity": "Common",
       "summary": "给予 2 层易伤；升级后：易伤增加至 3 层。"
     },
     {
-      "codeName": "OpeningDuet",
-      "stableEntryStem": "opening_duet",
-      "names": {
-        "zhs": "开场二重奏",
-        "eng": "Opening Duet"
-      },
+      "codeName": "LittleParade",
+      "name": "小小游行",
       "status": 1,
       "type": "Skill",
       "rarity": "Basic",
-      "summary": "生成 1 个攻击音符和 1 个技能音符；演奏 3；升级后：演奏增加至 5。"
+      "summary": "1费初始牌；生成1个攻击音符和1个技能音符，演奏3；升级后演奏增加至5；可由古旧之牙转化为大千世界。"
     },
     {
-      "codeName": "StarlitEncore",
-      "stableEntryStem": "starlit_encore",
-      "names": {
-        "zhs": "星光返场",
-        "eng": "Starlit Encore"
-      },
+      "codeName": "LonelyUniverse",
+      "name": "孤独宇宙",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "星空牌。消耗。0费。演奏 2；升级后：演奏增加至 3。"
+    },
+    {
+      "codeName": "Lab01",
+      "name": "Lab=01",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "星空牌。抽 1 张牌；演奏 2；升级后：演奏增加至 3。"
-    },
-    {
-      "codeName": "FlexibleRange",
-      "stableEntryStem": "flexible_range",
-      "names": {
-        "zhs": "伸缩音域",
-        "eng": "Flexible Range"
-      },
-      "status": 1,
-      "type": "Skill",
-      "rarity": "Rare",
-      "summary": "1费。选择增加1个音符槽或减少1个音符槽；消耗；升级后：增加第三个选项：增加2个音符槽。费用仍为1。"
+      "summary": "1费。选择增加1个音符槽或增加2个音符槽。升级后0费。"
     },
     {
       "codeName": "ExpandNoteRack",
-      "stableEntryStem": "expand_note_rack",
-      "names": {
-        "zhs": "扩展音域",
-        "eng": "Expand Range"
-      },
-      "status": 1,
+      "name": "扩展音域",
+      "status": 0,
       "type": "Skill",
       "rarity": "Token",
       "summary": "增加1个音符槽。"
     },
     {
-      "codeName": "ContractNoteRack",
-      "stableEntryStem": "contract_note_rack",
-      "names": {
-        "zhs": "收束音域",
-        "eng": "Contract Range"
-      },
-      "status": 1,
+      "codeName": "Lab010",
+      "name": "收束",
+      "status": 0,
       "type": "Skill",
       "rarity": "Token",
-      "summary": "减少1个音符槽，最低保留1槽。"
+      "summary": "减少1个音符槽，不少于1槽。"
     },
     {
-      "codeName": "ExpandNoteRackTwice",
-      "stableEntryStem": "expand_note_rack_twice",
-      "names": {
-        "zhs": "大幅扩展音域",
-        "eng": "Greatly Expand Range"
-      },
+      "codeName": "Lab011",
+      "name": "裂分",
       "status": 1,
       "type": "Skill",
       "rarity": "Token",
@@ -126,71 +90,47 @@
     },
     {
       "codeName": "Masterful",
-      "stableEntryStem": "masterful",
-      "names": {
-        "zhs": "全能",
-        "eng": "Masterful"
-      },
+      "name": "全能",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "0费。从抽牌堆中将每种音符类型各1张牌放入手牌；消耗；升级后：获得固有。"
+      "summary": "0费。从抽牌堆中随机将每种音符类型（包括星空、幽灵等特殊类型）各1张牌放入手牌；同类候选超过3张时按白/其他1、蓝2、金3加权；消耗；升级后获得固有。"
     },
     {
       "codeName": "Lullaby",
-      "stableEntryStem": "lullaby",
-      "names": {
-        "zhs": "安眠曲",
-        "eng": "Lullaby"
-      },
+      "name": "安眠曲",
       "status": 1,
       "type": "Skill",
       "rarity": "Basic",
-      "summary": "获得 9 点格挡，给予所有敌人 1 层虚弱；升级后：格挡增加至 11，虚弱增加至 2 层。"
+      "summary": "获得 9 （12）点格挡，尾音：给予所有敌人2（3）层虚弱"
     },
     {
       "codeName": "AccurateShooting",
-      "stableEntryStem": "accurate_shooting",
-      "names": {
-        "zhs": "精确射击",
-        "eng": "Accurate Shooting"
-      },
+      "name": "精确射击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "造成 10 点伤害；作为尾音打出时伤害翻倍；升级后：基础伤害增加至 14。"
+      "summary": "造成 10 点伤害；作为尾音打出时伤害翻倍；升级后：基础伤害增加至 15。"
     },
     {
       "codeName": "EnergeticStarting",
-      "stableEntryStem": "energetic_starting",
-      "names": {
-        "zhs": "活力起音",
-        "eng": "Energetic Starting"
-      },
-      "status": 1,
+      "name": "活力起音",
+      "status": 0,
       "type": "Skill",
       "rarity": "Common",
       "summary": "获得 2 点格挡；作为起音打出时抽 1 张牌；升级后：格挡增加至 4。"
     },
     {
       "codeName": "Dexterous",
-      "stableEntryStem": "dexterous",
-      "names": {
-        "zhs": "灵巧",
-        "eng": "Dexterous"
-      },
+      "name": "灵巧",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "获得 7 点格挡；起音时下回合获得 1 能量，尾音时抽 1 张牌；升级后：起音能量与尾音抽牌均增加至 2。"
+      "summary": "获得 7 点格挡；起音：抽 1 张牌；升级后：起音抽牌 2，格挡加2。"
     },
     {
       "codeName": "BroomStrike",
-      "stableEntryStem": "broom_strike",
-      "names": {
-        "zhs": "扫把打击",
-        "eng": "Broom Strike"
-      },
+      "name": "扫把打击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -198,11 +138,7 @@
     },
     {
       "codeName": "AttackTied",
-      "stableEntryStem": "attack_tied",
-      "names": {
-        "zhs": "攻击连音",
-        "eng": "Attack Tied"
-      },
+      "name": "攻击连音",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -210,47 +146,31 @@
     },
     {
       "codeName": "MaguroCleave",
-      "stableEntryStem": "maguro_cleave",
-      "names": {
-        "zhs": "金枪鱼横斩",
-        "eng": "Maguro Cleave"
-      },
+      "name": "金枪鱼横斩",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "对所有敌人造成 5 点伤害，本回合每触发一次和弦增加 3 点；升级后：基础伤害增加至 7，每次和弦加成增加至 4。"
+      "summary": "对所有敌人造成 5 点伤害，本回合每触发一次和弦增加 3 点；升级后：基础伤害增加至 6，每次和弦加成增加至 4。"
     },
     {
       "codeName": "StardustLaser",
-      "stableEntryStem": "stardust_laser",
-      "names": {
-        "zhs": "星屑镭射",
-        "eng": "Stardust Laser"
-      },
+      "name": "星屑镭射",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "星空牌。对所有敌人造成 6 点伤害；升级后：伤害增加至 9。"
+      "summary": "星空牌。对所有敌人造成 5点伤害；升级后：伤害增加至 8。"
     },
     {
       "codeName": "Rehearsal",
-      "stableEntryStem": "rehearsal",
-      "names": {
-        "zhs": "预演",
-        "eng": "Rehearsal"
-      },
+      "name": "试音",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费，抽 2 张牌，并根据每张抽到的牌额外生成对应音符；消耗；升级后：抽牌增加至 3。"
+      "summary": "1费，抽 3 张牌。并根据每张抽到的牌额外生成对应音符；消耗；升级后：抽牌增加至 4。"
     },
     {
       "codeName": "MaguroBash",
-      "stableEntryStem": "maguro_bash",
-      "names": {
-        "zhs": "金枪鱼重击",
-        "eng": "Maguro Bash"
-      },
+      "name": "金枪鱼重击",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -258,23 +178,15 @@
     },
     {
       "codeName": "Strafe",
-      "stableEntryStem": "strafe",
-      "names": {
-        "zhs": "扫射",
-        "eng": "Strafe"
-      },
+      "name": "扫射",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "造成 6 点伤害并额外生成 6 个攻击音符；升级后：伤害和额外音符均增加至 8。"
+      "summary": "造成 5（7）点伤害，生成相当于未被阻挡伤害的攻击音符。"
     },
     {
       "codeName": "FolkRhymes",
-      "stableEntryStem": "folk_rhymes",
-      "names": {
-        "zhs": "民谣",
-        "eng": "Folk Rhymes"
-      },
+      "name": "民谣",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
@@ -282,11 +194,7 @@
     },
     {
       "codeName": "MasterSpark",
-      "stableEntryStem": "master_spark",
-      "names": {
-        "zhs": "极限火花",
-        "eng": "Master Spark"
-      },
+      "name": "极限火花",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
@@ -294,47 +202,31 @@
     },
     {
       "codeName": "MaguroAssault",
-      "stableEntryStem": "maguro_assault",
-      "names": {
-        "zhs": "金枪鱼强袭",
-        "eng": "Maguro Assault"
-      },
+      "name": "金枪鱼强袭",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "造成 6 点伤害，本场战斗每触发一次和弦增加 2 点；作为尾音时伤害翻倍；升级后：基础伤害增加至 8，每次和弦加成增加至 3。"
+      "summary": "造成 6 点伤害，本场战斗每触发一次和弦增加 1 点；作为尾音时伤害翻倍；升级后：基础伤害增加至 8，每次和弦加成增加至 2。"
     },
     {
       "codeName": "StageWarmUp",
-      "stableEntryStem": "stage_warm_up",
-      "names": {
-        "zhs": "舞台预热",
-        "eng": "Stage Warm-Up"
-      },
+      "name": "舞台预热",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费。获得1层强音；升级后：强音增加至2层。"
+      "summary": "2费。获得1层强音；升级后：1费。"
     },
     {
-      "codeName": "Shatter",
-      "stableEntryStem": "shatter",
-      "names": {
-        "zhs": "破碎",
-        "eng": "Shatter"
-      },
+      "codeName": "OtomeDissection",
+      "name": "乙女解剖",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "2费。将所有手牌消耗并转化为对应音符，每张获得3格挡；至少5张时获得1层强音；消耗；升级后：每张牌获得的格挡增加至5。"
+      "summary": "2费。将所有手牌消耗并转化为对应音符，每张获得3格挡；至少5张时获得1层强音；消耗；升级后：每张牌获得的格挡增加至4。"
     },
     {
       "codeName": "PerformanceImprinting",
-      "stableEntryStem": "performance_imprinting",
-      "names": {
-        "zhs": "演奏刻印",
-        "eng": "Performance Imprinting"
-      },
+      "name": "演奏刻印",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
@@ -342,11 +234,7 @@
     },
     {
       "codeName": "Confused",
-      "stableEntryStem": "confused",
-      "names": {
-        "zhs": "疑惑",
-        "eng": "Doubtful"
-      },
+      "name": "疑惑",
       "status": 1,
       "type": "Status",
       "rarity": "Token",
@@ -354,11 +242,7 @@
     },
     {
       "codeName": "Romp",
-      "stableEntryStem": "romp",
-      "names": {
-        "zhs": "雀跃",
-        "eng": "Romp"
-      },
+      "name": "雀跃",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -366,83 +250,55 @@
     },
     {
       "codeName": "Yazyuutokasu",
-      "stableEntryStem": "yazyuutokasu",
-      "names": {
-        "zhs": "野兽化",
-        "eng": "Feral"
-      },
+      "name": "野兽化",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
       "summary": "每回合开始随机丢弃1张费用最低的牌，获得1张疑惑；升级后：疑惑升级为疑惑+。"
     },
     {
-      "codeName": "Nocturnal",
-      "stableEntryStem": "nocturnal",
-      "names": {
-        "zhs": "夜行",
-        "eng": "Nocturnal"
-      },
+      "codeName": "NightMonster",
+      "name": "夜想怪物",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "加入随机诅咒；每张诅咒对随机敌人造成8点伤害；升级后：伤害增加至12。"
+      "summary": "加入随机诅咒；每张诅咒对随机敌人造成7点伤害；升级后：伤害增加至10。"
     },
     {
       "codeName": "TheCursed",
-      "stableEntryStem": "the_cursed",
-      "names": {
-        "zhs": "诅咒之身",
-        "eng": "The Cursed"
-      },
+      "name": "诅咒之身",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "加入随机诅咒；抽到诅咒时抽1并生成1个诅咒音符；升级后：增加固有。"
+      "summary": "加入随机诅咒；每回合第一次抽到诅咒时抽1（2）张牌"
     },
     {
-      "codeName": "CurseWardrobe",
-      "stableEntryStem": "curse_wardrobe",
-      "names": {
-        "zhs": "诅咒衣橱",
-        "eng": "Curse Wardrobe"
-      },
+      "codeName": "StainedNocturne",
+      "name": "涅染夜曲",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
       "summary": "诅咒音符额外回复1点生命；生成1个诅咒音符；升级后：增加固有。"
     },
     {
-      "codeName": "PurifyingPrelude",
-      "stableEntryStem": "purifying_prelude",
-      "names": {
-        "zhs": "净化序曲",
-        "eng": "Purifying Prelude"
-      },
+      "codeName": "DaybreakFrontline",
+      "name": "黎明前线",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费，演奏3；仅在演奏结束时，消耗抽牌堆和弃牌堆全部诅咒/状态并逐张生成对应音符；消耗；升级后：演奏变为2。"
+      "summary": "1费，演奏3；仅在演奏结束时，消耗抽牌堆和弃牌堆全部诅咒/状态并逐张生成对应音符；消耗；升级后0费。"
     },
     {
       "codeName": "CursedGuard",
-      "stableEntryStem": "cursed_guard",
-      "names": {
-        "zhs": "咒护",
-        "eng": "Cursed Guard"
-      },
+      "name": "咒护",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费，获得5点格挡，抽1张牌，将1张随机诅咒加入弃牌堆；升级后：格挡增加至8。"
+      "summary": "0费，获得5点格挡，抽2张牌，将1张随机诅咒加入弃牌堆；升级后：格挡增加至8。"
     },
     {
-      "codeName": "EchoingCadence",
-      "stableEntryStem": "echoing_cadence",
-      "names": {
-        "zhs": "回响终止",
-        "eng": "Echoing Cadence"
-      },
+      "codeName": "CumulonimbusGraffiti",
+      "name": "积雨云涂鸦",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -450,35 +306,23 @@
     },
     {
       "codeName": "CrispEnding",
-      "stableEntryStem": "crisp_ending",
-      "names": {
-        "zhs": "轻快尾音",
-        "eng": "Crisp Ending"
-      },
-      "status": 1,
+      "name": "轻快尾音",
+      "status": 0,
       "type": "Attack",
       "rarity": "Common",
       "summary": "0费，造成5点伤害；尾音抽1张牌；升级后：伤害增加至6，并额外生成1个攻击音符。"
     },
     {
       "codeName": "RapidClaw",
-      "stableEntryStem": "rapid_claw",
-      "names": {
-        "zhs": "急速爪击",
-        "eng": "Rapid Claw"
-      },
+      "name": "急速爪击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "0费，造成2点伤害并额外生成1个攻击音符；起音/尾音时获得1张伤害-1的复制；消耗；升级后：伤害增加至4。"
+      "summary": "0费，造成4点伤害 起音：抽1张牌"
     },
     {
       "codeName": "Crescendo",
-      "stableEntryStem": "crescendo",
-      "names": {
-        "zhs": "渐强音",
-        "eng": "Crescendo"
-      },
+      "name": "渐强音",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -486,47 +330,31 @@
     },
     {
       "codeName": "ShowWeakness",
-      "stableEntryStem": "show_weakness",
-      "names": {
-        "zhs": "示弱",
-        "eng": "Feign Weakness"
-      },
+      "name": "示弱",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
       "summary": "1费，本回合所有生物失去3点力量，额外生成3个技能音符；升级后：力量与音符数均增加至4。"
     },
     {
-      "codeName": "ClearThroat",
-      "stableEntryStem": "clear_throat",
-      "names": {
-        "zhs": "清嗓子",
-        "eng": "Clear Throat"
-      },
+      "codeName": "HayakuNaru",
+      "name": "逐渐加快",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费，演奏2；每层能力在回合结束对随机敌人造成1点伤害；演奏结束将1张清嗓子置入抽牌堆；升级后：演奏增加至3，生成清嗓子+。"
+      "summary": "1费，演奏2；每层能力在回合结束对随机敌人造成1点伤害；演奏结束将1张清嗓子置入弃牌堆；升级后：演奏增加至3，生成清嗓子+。"
     },
     {
       "codeName": "ProlongedNote",
-      "stableEntryStem": "prolonged_note",
-      "names": {
-        "zhs": "延长音",
-        "eng": "Prolonged Note"
-      },
+      "name": "延长音",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费，使演奏队列中所有牌的初始与剩余演奏次数+1；消耗；升级后：获得保留。"
+      "summary": "0费，使手牌中延奏牌的演奏次数+1；消耗；升级后：获得保留。"
     },
     {
       "codeName": "Regulus",
-      "stableEntryStem": "regulus",
-      "names": {
-        "zhs": "轩辕十四",
-        "eng": "Regulus"
-      },
+      "name": "轩辕十四",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
@@ -534,11 +362,7 @@
     },
     {
       "codeName": "EastOfTimeline",
-      "stableEntryStem": "east_of_timeline",
-      "names": {
-        "zhs": "时间线之东",
-        "eng": "East of Timeline"
-      },
+      "name": "时间线之东",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
@@ -546,11 +370,7 @@
     },
     {
       "codeName": "HarmonyForm",
-      "stableEntryStem": "harmony_form",
-      "names": {
-        "zhs": "和声形态",
-        "eng": "Harmony Form"
-      },
+      "name": "和声形态",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
@@ -558,11 +378,7 @@
     },
     {
       "codeName": "LightUpTheStage",
-      "stableEntryStem": "light_up_the_stage",
-      "names": {
-        "zhs": "点亮舞台",
-        "eng": "Light Up the Stage"
-      },
+      "name": "点亮舞台",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
@@ -570,11 +386,7 @@
     },
     {
       "codeName": "Stereophonic",
-      "stableEntryStem": "stereophonic",
-      "names": {
-        "zhs": "立体声",
-        "eng": "Stereophonic"
-      },
+      "name": "立体声",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
@@ -582,11 +394,7 @@
     },
     {
       "codeName": "ThirdMouth",
-      "stableEntryStem": "third_mouth",
-      "names": {
-        "zhs": "第三口",
-        "eng": "Third Mouth"
-      },
+      "name": "第三口",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
@@ -594,11 +402,7 @@
     },
     {
       "codeName": "PolyphonicGuard",
-      "stableEntryStem": "polyphonic_guard",
-      "names": {
-        "zhs": "复调防御",
-        "eng": "Polyphonic Guard"
-      },
+      "name": "复调防御",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -606,47 +410,31 @@
     },
     {
       "codeName": "NoteTransmutation",
-      "stableEntryStem": "note_transmutation",
-      "names": {
-        "zhs": "音符转化",
-        "eng": "Note Transmutation"
-      },
+      "name": "音符转化",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；获得5格挡，选择并消耗1张手牌，生成其对应音符；升级后：格挡增加至8。"
+      "summary": "1费；获得5格挡，随机消耗1张手牌，生成其对应音符；升级后：格挡增加至7，选择一张手牌而不是随机。"
     },
     {
-      "codeName": "OneBeatFilter",
-      "stableEntryStem": "one_beat_filter",
-      "names": {
-        "zhs": "一拍筛选",
-        "eng": "One-Beat Filter"
-      },
+      "codeName": "Yaaaaaa",
+      "name": "呀啊啊啊",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费；造成7伤害，抽3，丢弃本次抽到且当前费用不为1的牌；升级后：9伤害、抽4。"
+      "summary": "1费；造成7伤害，抽3，丢弃本次抽到且当前费用不为1的牌；升级后：7伤害、抽4。"
     },
     {
       "codeName": "HyperSpeed",
-      "stableEntryStem": "hyper_speed",
-      "names": {
-        "zhs": "超光速",
-        "eng": "Hyper Speed"
-      },
+      "name": "流星一过",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "0费消耗；获得2能量并抽3；下回合能量和抽牌各-1；升级后：抽牌增加至4。"
+      "summary": "0费消耗；获得3能量并抽3；下回合能量-2；升级后：抽牌增加至5。"
     },
     {
-      "codeName": "EmptyOrchestra",
-      "stableEntryStem": "empty_orchestra",
-      "names": {
-        "zhs": "散场",
-        "eng": "Empty Orchestra"
-      },
+      "codeName": "OnewayTrain",
+      "name": "单向列车",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
@@ -654,11 +442,7 @@
     },
     {
       "codeName": "Climax",
-      "stableEntryStem": "climax",
-      "names": {
-        "zhs": "高潮！",
-        "eng": "Climax!"
-      },
+      "name": "高潮！",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -666,11 +450,7 @@
     },
     {
       "codeName": "Redshift",
-      "stableEntryStem": "redshift",
-      "names": {
-        "zhs": "红移",
-        "eng": "Redshift"
-      },
+      "name": "红移",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -678,11 +458,7 @@
     },
     {
       "codeName": "GhostlyInvitation",
-      "stableEntryStem": "ghostly_invitation",
-      "names": {
-        "zhs": "幽灵邀约",
-        "eng": "Ghostly Invitation"
-      },
+      "name": "幽灵邀约",
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
@@ -690,11 +466,7 @@
     },
     {
       "codeName": "LongRest",
-      "stableEntryStem": "long_rest",
-      "names": {
-        "zhs": "长休止",
-        "eng": "Long Rest"
-      },
+      "name": "长休止",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -702,11 +474,7 @@
     },
     {
       "codeName": "TwinGuardStrike",
-      "stableEntryStem": "twin_guard_strike",
-      "names": {
-        "zhs": "攻守同拍",
-        "eng": "Twin Guard Strike"
-      },
+      "name": "攻守同拍",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -714,35 +482,23 @@
     },
     {
       "codeName": "PhraseBalance",
-      "stableEntryStem": "phrase_balance",
-      "names": {
-        "zhs": "首尾平衡",
-        "eng": "Phrase Balance"
-      },
+      "name": "首尾平衡",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
       "summary": "1费；获得5格挡；起音获得1力量，尾音获得1敏捷；升级后：格挡增加至8。"
     },
     {
-      "codeName": "InstantEncore",
-      "stableEntryStem": "instant_encore",
-      "names": {
-        "zhs": "即刻返场",
-        "eng": "Instant Encore"
-      },
+      "codeName": "Adios",
+      "name": "Adios",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "1费；造成7伤害，立即按队列顺序触发所有演奏牌一次且不扣次数；升级后：伤害增加至12。"
+      "summary": "1费；造成10伤害，立即触发所有演奏牌一次（会扣除次数）；升级后：伤害增加至14。"
     },
     {
       "codeName": "DizzyAndGiddy",
-      "stableEntryStem": "dizzy_and_giddy",
-      "names": {
-        "zhs": "头晕目眩",
-        "eng": "Dizzy and Giddy"
-      },
+      "name": "头晕目眩",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -750,11 +506,7 @@
     },
     {
       "codeName": "PowerNoteGuard",
-      "stableEntryStem": "power_note_guard",
-      "names": {
-        "zhs": "权能回护",
-        "eng": "Power Note Guard"
-      },
+      "name": "权能回护",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
@@ -762,11 +514,7 @@
     },
     {
       "codeName": "Chorus",
-      "stableEntryStem": "chorus",
-      "names": {
-        "zhs": "合唱",
-        "eng": "Chorus"
-      },
+      "name": "合唱",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -774,23 +522,15 @@
     },
     {
       "codeName": "StarryDrift",
-      "stableEntryStem": "starry_drift",
-      "names": {
-        "zhs": "星空飘浮",
-        "eng": "Starry Drift"
-      },
-      "status": 1,
+      "name": "星空飘浮",
+      "status": 0,
       "type": "Skill",
       "rarity": "Common",
       "summary": "1费星空牌，抽2张牌后丢弃3张；升级后抽3张。"
     },
     {
       "codeName": "Futariboshi",
-      "stableEntryStem": "futariboshi",
-      "names": {
-        "zhs": "两个人的星",
-        "eng": "Our Stars"
-      },
+      "name": "两个人的星",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -798,11 +538,7 @@
     },
     {
       "codeName": "Finale",
-      "stableEntryStem": "finale",
-      "names": {
-        "zhs": "终曲",
-        "eng": "Finale"
-      },
+      "name": "终曲",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -810,102 +546,138 @@
     },
     {
       "codeName": "Unison",
-      "stableEntryStem": "unison",
-      "names": {
-        "zhs": "齐谐",
-        "eng": "Unison"
-      },
+      "name": "齐谐",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
       "summary": "1费能力，每当打出一张牌随机生成1个基础音符；升级后获得固有。"
+    },
+    {
+      "codeName": "OrangePoint",
+      "name": "橙一点",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "summary": "1费金卡群攻，造成1点伤害后将本牌伤害数字翻倍，演奏2；升级后获得固有。"
+    },
+    {
+      "codeName": "AmbiguousLiar",
+      "name": "暧昧骗子",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "暂定名。1费蓝卡，从3张随机MGR牌中选择1张直接置入演奏堆，消耗；升级后3张候选均为升级版。"
+    },
+    {
+      "codeName": "TwoSidedOperation",
+      "name": "双面作战",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Rare",
+      "summary": "2费能力；使抽牌堆中所有攻击牌获得演奏1，此后无法生成攻击音符；升级后获得固有。"
+    },
+    {
+      "codeName": "WhiteSouthWind",
+      "name": "白南风",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "1费；丢弃所有非攻击手牌，每张获得2点格挡；升级后每张获得3点格挡。"
+    },
+    {
+      "codeName": "CowardRocket",
+      "name": "胆小鬼火箭",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "summary": "1费；获得5点格挡；若回合结束时仍在手牌中，进入演奏队列并演奏1；升级后格挡增加至7。"
+    },
+    {
+      "codeName": "CubicPrism",
+      "name": "立方棱镜",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "summary": "1费能力；回合结束时对所有敌人造成6点伤害，本回合每打出一张攻击牌伤害减少2；升级后基础伤害增加至8。"
+    },
+    {
+      "codeName": "WaterColorInvasion",
+      "name": "水色侵略",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "summary": "X费攻击；造成3X点伤害并演奏X；升级后伤害增加至4X。"
+    },
+    {
+      "codeName": "VastWorld",
+      "name": "大千世界",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Ancient",
+      "summary": "1费先古技能；依次生成攻击、技能、能力、星空、状态音符各1个，演奏1；升级后演奏增加至2；由古旧之牙将小小游行转化获得。"
+    },
+    {
+      "codeName": "UnnamedAncient",
+      "name": "无名古曲",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Ancient",
+      "summary": "1费先古能力占位牌，暂未设定效果；由陈旧典籍给予，后续需替换名称和正式效果。"
     }
   ],
   "relics": [
     {
       "codeName": "MiniMicrophone",
-      "stableEntryStem": "mini_microphone",
-      "names": {
-        "zhs": "迷你麦克风",
-        "eng": "Mini Microphone"
-      },
+      "name": "迷你麦克风",
       "status": 1,
       "rarity": "Starter",
       "summary": "战斗开始时，依次生成攻击、技能和能力音符各 1 个。"
     },
     {
       "codeName": "Fumo",
-      "stableEntryStem": "fumo",
-      "names": {
-        "zhs": "Fumo",
-        "eng": "Fumo"
-      },
+      "name": "Fumo",
       "status": 1,
       "rarity": "Rare",
       "summary": "战斗开始时，获得 1 层强音。"
     },
     {
       "codeName": "WitchHat",
-      "stableEntryStem": "witch_hat",
-      "names": {
-        "zhs": "魔女帽",
-        "eng": "Witch Hat"
-      },
+      "name": "魔女帽",
       "status": 1,
       "rarity": "Common",
       "summary": "回合结束时获得 2 点格挡；生命不高于 50% 时改为 4 点。"
     },
     {
       "codeName": "EncoreStage",
-      "stableEntryStem": "encore_stage",
-      "names": {
-        "zhs": "安可舞台",
-        "eng": "Encore Stage"
-      },
+      "name": "安可舞台",
       "status": 1,
       "rarity": "Rare",
       "summary": "每回合手动打出的第一张演奏牌，演奏次数增加1。"
     },
     {
       "codeName": "WeatheredPlectrum",
-      "stableEntryStem": "weathered_plectrum",
-      "names": {
-        "zhs": "旅途拨片",
-        "eng": "Weathered Plectrum"
-      },
+      "name": "旅途拨片",
       "status": 1,
       "rarity": "Common",
       "summary": "战斗开始生成1个攻击音符；获得后累计每受到7点实际伤害，额外生成1个。"
     },
     {
       "codeName": "DecennialMetronome",
-      "stableEntryStem": "decennial_metronome",
-      "names": {
-        "zhs": "十拍节拍器",
-        "eng": "Decennial Metronome"
-      },
+      "name": "十拍节拍器",
       "status": 1,
       "rarity": "Common",
       "summary": "每场战斗第10、20、30……次和弦触发两次。"
     },
     {
       "codeName": "GoldenRecord",
-      "stableEntryStem": "golden_record",
-      "names": {
-        "zhs": "镀金唱片",
-        "eng": "Golden Record"
-      },
+      "name": "镀金唱片",
       "status": 1,
       "rarity": "Rare",
-      "summary": "每当和弦触发，获得2金币。"
+      "summary": "每当和弦触发，获得1金币。"
     },
     {
       "codeName": "ConfusedLocket",
-      "stableEntryStem": "confused_locket",
-      "names": {
-        "zhs": "疑惑吊坠",
-        "eng": "Doubtful Locket"
-      },
+      "name": "疑惑吊坠",
       "status": 1,
       "rarity": "Rare",
       "summary": "战斗开始时将1张疑惑+置入手牌。"

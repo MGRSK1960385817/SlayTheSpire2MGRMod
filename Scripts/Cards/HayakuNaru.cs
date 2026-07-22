@@ -12,7 +12,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "clear_throat")]
-public sealed class ClearThroat : MgrCard
+public sealed class HayakuNaru : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -21,7 +21,7 @@ public sealed class ClearThroat : MgrCard
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public ClearThroat() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public HayakuNaru() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -42,14 +42,13 @@ public sealed class ClearThroat : MgrCard
         if (context.Player.Creature.CombatState is not { } combatState)
             return;
 
-        ClearThroat copy = combatState.CreateCard<ClearThroat>(context.Player);
+        HayakuNaru copy = combatState.CreateCard<HayakuNaru>(context.Player);
         if (IsUpgraded)
             CardCmd.Upgrade(copy, CardPreviewStyle.None);
         CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
             copy,
-            PileType.Draw,
-            context.Player,
-            CardPilePosition.Random);
+            PileType.Discard,
+            context.Player);
         CardCmd.PreviewCardPileAdd(result);
     }
 

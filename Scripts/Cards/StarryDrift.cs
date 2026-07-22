@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "starry_drift")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "starry_drift")]
 public sealed class StarryDrift : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

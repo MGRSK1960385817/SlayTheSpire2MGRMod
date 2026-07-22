@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "one_beat_filter")]
-public sealed class OneBeatFilter : MgrCard
+public sealed class Yaaaaaa : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -19,7 +19,7 @@ public sealed class OneBeatFilter : MgrCard
         new IntVar("RequiredCost", 1m)
     ];
 
-    public OneBeatFilter() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+    public Yaaaaaa() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
     {
     }
 
@@ -47,7 +47,6 @@ public sealed class OneBeatFilter : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
         DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

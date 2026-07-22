@@ -8,9 +8,9 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards.Choices;
 
 [RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "expand_note_rack_twice")]
-public sealed class ExpandNoteRackTwice : MgrCard, INoteSlotChoice
+public sealed class Lab011 : MgrCard, INoteSlotChoice
 {
-    public ExpandNoteRackTwice() : base(
+    public Lab011() : base(
         0,
         CardType.Skill,
         CardRarity.Token,

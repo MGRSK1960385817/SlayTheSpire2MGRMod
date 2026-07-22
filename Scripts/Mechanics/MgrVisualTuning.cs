@@ -18,27 +18,39 @@ public static class MgrVisualTuning
         public const float DesiredSlotSpacing = 96f;
         public const float MaximumRackWidth = 480f;
         public const float SlotRadius = 42f;
-        public const int CircleSegments = 48;
+        public const int EmptySlotDashCount = 12;
+        public const float EmptySlotDashFill = 0.48f;
+        public const float EmptySlotDashWidth = 3f;
 
-        // A completed chord remains visible for this long before the rack clears.
-        public const double ChordHoldSeconds = 0.45;
+        // Repeated note/chord activity in one turn accelerates presentation, but
+        // both paths retain a visible minimum duration.
+        public const double FirstNoteEntranceSeconds = 0.28;
+        public const double MinimumNoteEntranceSeconds = 0.10;
+        public const double NoteEntranceAccelerationPerNote = 0.018;
+        public const double FirstChordHoldSeconds = 0.42;
+        public const double MinimumChordHoldSeconds = 0.12;
+        public const double ChordHoldAccelerationPerChord = 0.05;
+        public const int FastChordCommandThreshold = 2;
 
         // Newly generated notes pop in one after another. ChannelSingleNote awaits
         // this animation, so cards that create several notes naturally serialize.
         public const float EntranceStartScale = 0.28f;
         public const float EntranceOvershootScale = 1.18f;
-        public const double EntranceGrowSeconds = 0.13;
-        public const double EntranceSettleSeconds = 0.09;
+        public const float EntranceGrowFraction = 0.62f;
         public const float EntranceStartYOffset = 18f;
-        public const float EntranceFlashScale = 1.38f;
-        public const float EntranceFlashAlpha = 0.52f;
 
-        // Idle movement. Phase staggering keeps a row from moving as one rigid bar.
+        // Each generated note samples a small visual-only variance around these
+        // values. This deliberately uses chaotic randomness: it never affects
+        // combat state or replay determinism.
         public const float BobAmplitude = 5f;
         public const float BobAngularSpeed = 1.75f;
         public const float BreathAmplitude = 0.055f;
         public const float BreathAngularSpeed = 2.05f;
         public const float PhaseStep = 0.72f;
+        public const float BobSpeedVariance = 0.22f;
+        public const float BreathSpeedVariance = 0.20f;
+        public const float InitialScaleVariance = 0.07f;
+        public const float PhaseVariance = 0.65f;
     }
 
     public static class Performances

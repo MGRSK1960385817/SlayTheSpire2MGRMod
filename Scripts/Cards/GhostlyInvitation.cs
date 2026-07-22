@@ -18,7 +18,7 @@ public sealed class GhostlyInvitation : MgrCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         [CardKeyword.Ethereal, CardKeyword.Exhaust];
 
-    public override NoteKind? NoteOverride => NoteKind.Quest;
+    public override NoteKind? NoteOverride => NoteKind.Ghost;
 
     public GhostlyInvitation() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {

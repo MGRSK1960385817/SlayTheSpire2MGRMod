@@ -11,7 +11,7 @@ public abstract class MgrNote
     public abstract int ForteRate { get; }
     public virtual bool IsAffectedByForte => true;
     public string Name => Kind.ToString();
-    public string TexturePath => $"{Entry.ResPath}/images/notes/{Name}.png";
+    public virtual string TexturePath => $"{Entry.ResPath}/images/notes/{Name}.png";
 
     /// <summary>
     /// Reproduces STS1's positive/negative Forte scaling. Integer division intentionally
@@ -84,4 +84,17 @@ public sealed class StarryNote : MgrNote
     public override int BaseEffectAmount => 1;
     public override int ForteRate => int.MaxValue;
     public override bool IsAffectedByForte => false;
+}
+
+public sealed class GhostNote : MgrNote
+{
+    public override NoteKind Kind => NoteKind.Ghost;
+    public override int BaseEffectAmount => 1;
+    public override int ForteRate => int.MaxValue;
+    public override bool IsAffectedByForte => false;
+
+    // Quest.png already contains the STS1 Ghost note artwork. Reuse it so the
+    // new semantic distinction does not require another duplicate asset.
+    public override string TexturePath =>
+        $"{Entry.ResPath}/images/notes/Quest.png";
 }

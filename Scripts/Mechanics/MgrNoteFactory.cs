@@ -14,6 +14,7 @@ public static class MgrNoteFactory
         NoteKind.Curse => new CurseNote(),
         NoteKind.Quest => new QuestNote(),
         NoteKind.Starry => new StarryNote(),
+        NoteKind.Ghost => new GhostNote(),
         _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown MGR note kind.")
     };
 }

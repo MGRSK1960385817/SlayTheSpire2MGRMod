@@ -17,12 +17,20 @@ public static class MgrNoteEffects
         PlayerChoiceContext choiceContext,
         Player player,
         IReadOnlyList<MgrNote> notes,
-        int forte)
+        int forte,
+        int chordTriggersBefore)
     {
+        // Standard commands deliberately spend time on hit/block/heal feedback.
+        // Once a turn contains several chord passes, use their supported fast
+        // presentation paths while preserving the same hooks and game state.
+        bool fastPresentation =
+            chordTriggersBefore >=
+            MgrVisualTuning.Notes.FastChordCommandThreshold;
+
         if (player.GetRelic<GoldenRecord>() is { } goldenRecord)
         {
             goldenRecord.Flash();
-            await PlayerCmd.GainGold(2m, player);
+            await PlayerCmd.GainGold(1m, player);
         }
 
         int harmonyRepeats = Math.Max(
@@ -36,7 +44,14 @@ public static class MgrNoteEffects
                 repeats += harmonyRepeats;
 
             for (int repeat = 0; repeat < repeats; repeat++)
-                await Trigger(choiceContext, player, note, forte);
+            {
+                await Trigger(
+                    choiceContext,
+                    player,
+                    note,
+                    forte,
+                    fastPresentation);
+            }
         }
 
         decimal folkRhymesBlock = player.Creature.GetPowerAmount<FolkRhymesPower>();
@@ -46,7 +61,8 @@ public static class MgrNoteEffects
                 player.Creature,
                 folkRhymesBlock,
                 ValueProp.Unpowered,
-                cardPlay: null);
+                cardPlay: null,
+                fast: fastPresentation);
         }
     }
 
@@ -54,7 +70,8 @@ public static class MgrNoteEffects
         PlayerChoiceContext choiceContext,
         Player player,
         MgrNote note,
-        int forte)
+        int forte,
+        bool fastPresentation = false)
     {
         int amount = note.GetEffectAmount(forte);
         if (amount <= 0)
@@ -80,7 +97,9 @@ public static class MgrNoteEffects
                     choiceContext,
                     target,
                     amount,
-                    ValueProp.Unpowered,
+                    fastPresentation
+                        ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
+                        : ValueProp.Unpowered,
                     owner,
                     cardSource: null,
                     cardPlay: null);
@@ -89,13 +108,25 @@ public static class MgrNoteEffects
                 {
                     decimal block = amount / 2;
                     if (block > 0m)
-                        await CreatureCmd.GainBlock(owner, block, ValueProp.Unpowered, cardPlay: null);
+                    {
+                        await CreatureCmd.GainBlock(
+                            owner,
+                            block,
+                            ValueProp.Unpowered,
+                            cardPlay: null,
+                            fast: fastPresentation);
+                    }
                 }
                 return;
             }
             case NoteKind.Skill:
             {
-                await CreatureCmd.GainBlock(owner, amount, ValueProp.Unpowered, cardPlay: null);
+                await CreatureCmd.GainBlock(
+                    owner,
+                    amount,
+                    ValueProp.Unpowered,
+                    cardPlay: null,
+                    fast: fastPresentation);
                 if (owner.Powers.OfType<StereophonicPower>().Any() &&
                     combatState is not null &&
                     combatState.HittableEnemies.Count > 0)
@@ -107,7 +138,9 @@ public static class MgrNoteEffects
                             choiceContext,
                             target,
                             amount,
-                            ValueProp.Unpowered,
+                            fastPresentation
+                                ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
+                                : ValueProp.Unpowered,
                             owner,
                             cardSource: null,
                             cardPlay: null);
@@ -125,12 +158,18 @@ public static class MgrNoteEffects
                         owner,
                         powerNoteBlock,
                         ValueProp.Unpowered,
-                        cardPlay: null);
+                        cardPlay: null,
+                        fast: fastPresentation);
                 }
                 if (owner.GetPowerAmount<StereophonicPlusPower>() > 0m)
                 {
                     decimal doubled = amount * 2m;
-                    await CreatureCmd.GainBlock(owner, doubled, ValueProp.Unpowered, cardPlay: null);
+                    await CreatureCmd.GainBlock(
+                        owner,
+                        doubled,
+                        ValueProp.Unpowered,
+                        cardPlay: null,
+                        fast: fastPresentation);
                     if (combatState is not null)
                     {
                         foreach (var target in combatState.HittableEnemies.ToArray())
@@ -139,7 +178,9 @@ public static class MgrNoteEffects
                                 choiceContext,
                                 target,
                                 doubled,
-                                ValueProp.Unpowered,
+                                fastPresentation
+                                    ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
+                                    : ValueProp.Unpowered,
                                 owner,
                                 cardSource: null,
                                 cardPlay: null);
@@ -166,16 +207,27 @@ public static class MgrNoteEffects
                 // Curse notes deliberately ignore Forte, but Curse Wardrobe is
                 // a separate flat bonus and therefore applies afterward.
                 int wardrobeBonus = Math.Max(0, (int)owner.GetPowerAmount<CurseWardrobePower>());
-                await CreatureCmd.Heal(owner, amount + wardrobeBonus);
+                await CreatureCmd.Heal(
+                    owner,
+                    amount + wardrobeBonus,
+                    playAnim: !fastPresentation);
                 return;
             }
             case NoteKind.Quest:
-                // STS1's special Ghost note used this artwork and granted Intangible.
-                // Quest is the new STS2 card type, so it becomes the direct-name carrier.
+                // Keep the existing Quest behavior for compatibility. Ghost is
+                // now a distinct special note type instead of borrowing Quest.
                 await PowerCmd.Apply<IntangiblePower>(choiceContext, owner, amount, owner, cardSource: null);
                 return;
             case NoteKind.Starry:
                 await PlayerCmd.GainEnergy(amount, player);
+                return;
+            case NoteKind.Ghost:
+                await PowerCmd.Apply<IntangiblePower>(
+                    choiceContext,
+                    owner,
+                    amount,
+                    owner,
+                    cardSource: null);
                 return;
             default:
                 throw new ArgumentOutOfRangeException(nameof(note), note.Kind, "Unknown MGR note kind.");

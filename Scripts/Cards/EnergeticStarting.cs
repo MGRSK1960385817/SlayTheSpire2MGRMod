@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "energetic_starting")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "energetic_starting")]
 public sealed class EnergeticStarting : MgrCard
 {
     public override bool GainsBlock => true;

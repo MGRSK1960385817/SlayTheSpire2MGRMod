@@ -9,9 +9,9 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "curse_wardrobe")]
-public sealed class CurseWardrobe : MgrCard
+public sealed class StainedNocturne : MgrCard
 {
-    public CurseWardrobe() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public StainedNocturne() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

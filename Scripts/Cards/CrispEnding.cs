@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "crisp_ending")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "crisp_ending")]
 public sealed class CrispEnding : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

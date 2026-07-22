@@ -9,9 +9,9 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "empty_orchestra")]
-public sealed class EmptyOrchestra : MgrCard
+public sealed class OnewayTrain : MgrCard
 {
-    public EmptyOrchestra() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public OnewayTrain() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

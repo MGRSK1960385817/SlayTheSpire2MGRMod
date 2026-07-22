@@ -8,5 +8,6 @@ public enum NoteKind
     Status,
     Curse,
     Quest,
-    Starry
+    Starry,
+    Ghost
 }

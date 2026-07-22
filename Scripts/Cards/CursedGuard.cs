@@ -17,7 +17,7 @@ public sealed class CursedGuard : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(5m, ValueProp.Move),
-        new CardsVar(1)
+        new CardsVar(2)
     ];
 
     public CursedGuard() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)

@@ -118,6 +118,12 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Player player,
         NoteKind kind)
     {
+        if (kind == NoteKind.Attack &&
+            player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
+        {
+            return;
+        }
+
         int copies = player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ? 2 : 1;
         for (int copy = 0; copy < copies; copy++)
             await ChannelSingleNote(choiceContext, player, kind);
@@ -155,6 +161,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrCombatState state = MgrCombatStateStore.For(player);
         state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
         int enteringIndex = state.Phrase.Notes.Count;
+        int notesGeneratedBefore = state.NotesGeneratedThisTurn;
+        int chordTriggersBefore = state.ChordTriggersThisTurn;
         PhraseResolution? resolution = state.AddNote(note);
 
         MgrAudio.PlayNoteChannel();
@@ -168,6 +176,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             state.Phrase.Capacity,
             state.Forte,
             enteringIndex,
+            notesGeneratedBefore,
+            chordTriggersBefore,
             clearAfterDelay: resolution is not null);
 
         if (resolution is null)
@@ -241,7 +251,6 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         IReadOnlyList<PhraseResolution> resolutions = state.SetPhraseCapacity(newCapacity);
         state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
-
         if (resolutions.Count == 0)
         {
             MgrNoteVisuals.Show(
@@ -256,6 +265,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         for (int index = 0; index < resolutions.Count; index++)
         {
             PhraseResolution resolution = resolutions[index];
+            int chordTriggersBefore = state.ChordTriggersThisTurn;
             bool isLastWithNoRemainder =
                 index == resolutions.Count - 1 && state.Phrase.Notes.Count == 0;
 
@@ -265,7 +275,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 resolution.Notes,
                 state.Phrase.Capacity,
                 state.Forte,
-                clearAfterDelay: isLastWithNoRemainder);
+                clearAfterDelay: isLastWithNoRemainder,
+                chordAnimationIndex: chordTriggersBefore);
             await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
         }
 
@@ -333,6 +344,14 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             triggerCount++;
 
         for (int index = 0; index < triggerCount; index++)
-            await MgrNoteEffects.TriggerChord(choiceContext, player, notes, forte);
+        {
+            int chordTriggersBefore = state.RecordChordTrigger();
+            await MgrNoteEffects.TriggerChord(
+                choiceContext,
+                player,
+                notes,
+                forte,
+                chordTriggersBefore);
+        }
     }
 }

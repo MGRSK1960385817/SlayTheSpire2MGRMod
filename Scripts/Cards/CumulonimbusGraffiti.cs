@@ -8,11 +8,11 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "echoing_cadence")]
-public sealed class EchoingCadence : MgrCard
+public sealed class CumulonimbusGraffiti : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
-    public EchoingCadence() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public CumulonimbusGraffiti() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

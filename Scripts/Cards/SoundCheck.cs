@@ -10,7 +10,7 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "sound_check")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "sound_check")]
 public sealed class SoundCheck : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

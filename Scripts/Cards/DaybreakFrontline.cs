@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "purifying_prelude")]
-public sealed class PurifyingPrelude : MgrCard
+public sealed class DaybreakFrontline : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -21,7 +21,7 @@ public sealed class PurifyingPrelude : MgrCard
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public PurifyingPrelude() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
+    public DaybreakFrontline() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -47,6 +47,6 @@ public sealed class PurifyingPrelude : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(-1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

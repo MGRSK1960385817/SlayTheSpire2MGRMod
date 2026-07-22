@@ -71,6 +71,67 @@ public static class MgrPerformanceSystem
     }
 
     /// <summary>
+    /// Registers a newly generated combat card directly in the Performance
+    /// sequence without resolving an ordinary card play first. Cards with a
+    /// printed Performance value keep it; all other cards perform once.
+    /// </summary>
+    public static async Task<MgrPerformanceEntry> EnqueueGeneratedCard(
+        Player player,
+        CardModel card)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+        ArgumentNullException.ThrowIfNull(card);
+        if (card.Pile is not null)
+        {
+            throw new InvalidOperationException(
+                $"Generated Performance card {card.Id} already belongs to {card.Pile.Type}.");
+        }
+
+        await CardPileCmd.AddGeneratedCardToCombat(
+            card,
+            PileType.Play,
+            player);
+
+        int initialTurns = Math.Max(1, GetInitialPerformanceTurns(card));
+        MgrPerformanceState state = MgrPerformanceStateStore.For(player);
+        MgrPerformanceEntry? entry = state.Enqueue(card, initialTurns);
+        if (entry is null)
+        {
+            throw new InvalidOperationException(
+                $"Could not enqueue generated Performance card {card.Id}.");
+        }
+
+        MgrPerformanceVisuals.Show(player, state.Entries);
+        return entry;
+    }
+
+    /// <summary>
+    /// Moves an existing hand card through Tower 2's normal pile command and
+    /// then holds it in the Performance rack. This is used by delayed hand
+    /// effects such as Coward Rocket and deliberately does not count as a play.
+    /// </summary>
+    public static async Task<MgrPerformanceEntry?> EnqueueCardFromHand(
+        Player player,
+        CardModel card,
+        int initialTurns)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+        ArgumentNullException.ThrowIfNull(card);
+        if (card.Pile?.Type != PileType.Hand || initialTurns <= 0)
+            return null;
+
+        await CardPileCmd.Add(card, PileType.Play);
+        MgrPerformanceState state = MgrPerformanceStateStore.For(player);
+        MgrPerformanceEntry? entry = state.Enqueue(card, initialTurns);
+        if (entry is null)
+            return null;
+
+        MgrPerformanceVisuals.Show(player, state.Entries);
+        MgrPerformanceVisuals.QueueEntryAnimation(player, entry);
+        return entry;
+    }
+
+    /// <summary>
     /// Plays every queued card once in entry order without consuming any of its
     /// remaining Performance count. The cards use the same real autoplay path as
     /// turn-start performances, so card-play hooks and note generation still fire.
@@ -100,6 +161,15 @@ public static class MgrPerformanceSystem
 
         MgrPerformanceVisuals.Show(player, state.Entries);
     }
+
+    /// <summary>
+    /// Immediately resolves one ordinary Performance step for every queued
+    /// card. Unlike TriggerQueuedCardsOnce, this consumes remaining turns and
+    /// completes/routs cards whose counter reaches zero.
+    /// </summary>
+    public static Task TriggerQueuedCardsOnceAndConsume(
+        PlayerChoiceContext choiceContext,
+        Player player) => ConsumeOnePass(choiceContext, player);
 
     public static void ObserveResolvedCardPlay(CardPlay cardPlay)
     {
@@ -133,6 +203,10 @@ public static class MgrPerformanceSystem
     }
 
     public static async Task PerformAtTurnStart(
+        PlayerChoiceContext choiceContext,
+        Player player) => await ConsumeOnePass(choiceContext, player);
+
+    private static async Task ConsumeOnePass(
         PlayerChoiceContext choiceContext,
         Player player)
     {

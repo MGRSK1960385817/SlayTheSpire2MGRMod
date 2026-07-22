@@ -12,24 +12,15 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "flexible_range")]
-public sealed class FlexibleRange : MgrCard
+public sealed class Lab01 : MgrCard
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromCard<ExpandNoteRack>(),
+        HoverTipFactory.FromCard<Lab011>()
+    ];
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips => IsUpgraded
-        ?
-        [
-            HoverTipFactory.FromCard<ExpandNoteRack>(),
-            HoverTipFactory.FromCard<ContractNoteRack>(),
-            HoverTipFactory.FromCard<ExpandNoteRackTwice>()
-        ]
-        :
-        [
-            HoverTipFactory.FromCard<ExpandNoteRack>(),
-            HoverTipFactory.FromCard<ContractNoteRack>()
-        ];
-
-    public FlexibleRange() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
+    public Lab01() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -41,10 +32,8 @@ public sealed class FlexibleRange : MgrCard
         List<CardModel> options =
         [
             combatState.CreateCard<ExpandNoteRack>(Owner),
-            combatState.CreateCard<ContractNoteRack>(Owner)
+            combatState.CreateCard<Lab011>(Owner)
         ];
-        if (IsUpgraded)
-            options.Add(combatState.CreateCard<ExpandNoteRackTwice>(Owner));
 
         var prompt = new LocString(
             "cards",
@@ -71,5 +60,6 @@ public sealed class FlexibleRange : MgrCard
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

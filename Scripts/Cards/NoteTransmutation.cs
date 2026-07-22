@@ -32,16 +32,25 @@ public sealed class NoteTransmutation : MgrCard
         if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
             return;
 
-        var prompt = new LocString(
-            "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION_CHOOSE");
-        var prefs = new CardSelectorPrefs(prompt, 1);
-        CardModel? chosen = (await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            null,
-            this)).FirstOrDefault();
+        CardModel? chosen;
+        if (IsUpgraded)
+        {
+            var prompt = new LocString(
+                "cards",
+                "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION_CHOOSE");
+            var prefs = new CardSelectorPrefs(prompt, 1);
+            chosen = (await CardSelectCmd.FromHand(
+                choiceContext,
+                Owner,
+                prefs,
+                null,
+                this)).FirstOrDefault();
+        }
+        else
+        {
+            chosen = Owner.RunState.Rng.CombatCardSelection.NextItem(
+                PileType.Hand.GetPile(Owner).Cards);
+        }
         if (chosen is null)
             return;
 
@@ -52,6 +61,6 @@ public sealed class NoteTransmutation : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
@@ -11,6 +12,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "the_cursed")]
 public sealed class TheCursed : MgrCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
+
     public TheCursed() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
@@ -20,7 +23,7 @@ public sealed class TheCursed : MgrCard
         await PowerCmd.Apply<TheCursedPower>(
             choiceContext,
             Owner.Creature,
-            1m,
+            DynamicVars.Cards.BaseValue,
             Owner.Creature,
             this);
         await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Draw);
@@ -28,6 +31,6 @@ public sealed class TheCursed : MgrCard
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Innate);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }
