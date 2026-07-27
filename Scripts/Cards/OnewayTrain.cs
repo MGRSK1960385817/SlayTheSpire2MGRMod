@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -11,6 +12,12 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "empty_orchestra")]
 public sealed class OnewayTrain : MgrCard
 {
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromPower<StrengthPower>(),
+        HoverTipFactory.FromPower<DexterityPower>()
+    ];
+
     public OnewayTrain() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
@@ -37,6 +44,6 @@ public sealed class OnewayTrain : MgrCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        AddKeyword(CardKeyword.Retain);
     }
 }

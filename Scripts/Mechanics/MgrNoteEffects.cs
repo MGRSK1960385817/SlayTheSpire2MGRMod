@@ -73,6 +73,29 @@ public static class MgrNoteEffects
         int forte,
         bool fastPresentation = false)
     {
+        if (note.Kind == NoteKind.Everything)
+        {
+            NoteKind[] componentKinds =
+            [
+                NoteKind.Attack,
+                NoteKind.Skill,
+                NoteKind.Power,
+                NoteKind.Status,
+                NoteKind.Curse,
+                NoteKind.Starry
+            ];
+            foreach (NoteKind kind in componentKinds)
+            {
+                await Trigger(
+                    choiceContext,
+                    player,
+                    MgrNoteFactory.Create(kind),
+                    forte,
+                    fastPresentation);
+            }
+            return;
+        }
+
         int amount = note.GetEffectAmount(forte);
         if (amount <= 0)
             return;
@@ -213,16 +236,11 @@ public static class MgrNoteEffects
                     playAnim: !fastPresentation);
                 return;
             }
-            case NoteKind.Quest:
-                // Keep the existing Quest behavior for compatibility. Ghost is
-                // now a distinct special note type instead of borrowing Quest.
-                await PowerCmd.Apply<IntangiblePower>(choiceContext, owner, amount, owner, cardSource: null);
-                return;
             case NoteKind.Starry:
                 await PlayerCmd.GainEnergy(amount, player);
                 return;
             case NoteKind.Ghost:
-                await PowerCmd.Apply<IntangiblePower>(
+                await PowerCmd.Apply<BufferPower>(
                     choiceContext,
                     owner,
                     amount,

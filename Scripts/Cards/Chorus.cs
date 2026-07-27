@@ -12,8 +12,8 @@ public sealed class Chorus : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 5m),
-        new IntVar("StartingBonus", 0m)
+        new IntVar("CardsPerBatch", 5m),
+        new IntVar("Notes", 2m)
     ];
 
     public Chorus() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -22,17 +22,14 @@ public sealed class Chorus : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int notes = DynamicVars["Notes"].IntValue;
-        if (IsPhraseStart)
-            notes += DynamicVars["StartingBonus"].IntValue;
-
-        for (int index = 0; index < notes; index++)
+        int deckBatches = Owner.Deck.Cards.Count / DynamicVars["CardsPerBatch"].IntValue;
+        int notesToGenerate = deckBatches * DynamicVars["Notes"].IntValue;
+        for (int index = 0; index < notesToGenerate; index++)
             await MgrNoteSystem.ChannelRandomBasicNote(choiceContext, Owner);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars["Notes"].UpgradeValueBy(1m);
-        DynamicVars["StartingBonus"].UpgradeValueBy(2m);
     }
 }

@@ -1,166 +1,221 @@
 # MGR 视觉特效参数表
 
-本表面向手动调整。战斗 UI 的集中参数优先修改：
+本表只面向表现调整。音符与演奏牌的集中参数位于：
 
 `Scripts/Mechanics/MgrVisualTuning.cs`
 
-修改数值后重新编译即可；不需要改卡牌逻辑。
+只改该文件中的数值不会改变音符、和弦或演奏的战斗规则。完整关系图见 `docs/MGR架构图.md`。
 
 ## 1. 音符槽与音符
 
 实现文件：
 
-- `Scripts/Mechanics/MgrNoteVisuals.cs`：槽位、入场 Tween、数字、颜色与 Glow。
-- `Scripts/Mechanics/MgrFloatingNoteVisual.cs`：持续的上下漂浮和呼吸。
-- `Scripts/Mechanics/MgrVisualTuning.cs` 的 `Notes`：集中参数。
+- `Scripts/Mechanics/MgrNoteVisuals.cs`：槽位布局、虚线空槽、音符入场、数字与颜色。
+- `Scripts/Mechanics/MgrFloatingNoteVisual.cs`：每颗音符持续的漂浮、呼吸和随机差异。
+- `Scripts/Mechanics/MgrNoteSystem.cs`：提供“本回合已生成音符数”和“本回合已触发和弦数”。
 
-当前参数：
+### 整体布局
 
-| 参数 | 默认值 | 作用 |
+| 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RackOffset` | `(0, -430)` | 整排音符相对角色节点的位置 |
-| `RackZIndex` | `50` | 整排音符层级 |
-| `ArtworkScale` | `(0.68, 0.68)` | 音符图片大小 |
-| `DesiredSlotSpacing` | `96` | 槽位理想间距 |
-| `MaximumRackWidth` | `480` | 槽位总宽度上限；槽多时自动压缩间距 |
-| `SlotRadius` | `42` | 空槽半径 |
-| `ChordHoldSeconds` | `0.45 秒` | 和弦完成后，满槽画面保留多久 |
-| `EntranceStartScale` | `0.28` | 新音符出现时的初始大小 |
-| `EntranceOvershootScale` | `1.18` | 弹出时最大大小 |
-| `EntranceGrowSeconds` | `0.13 秒` | 放大阶段时长 |
-| `EntranceSettleSeconds` | `0.09 秒` | 回落到正常大小的时长 |
-| `EntranceStartYOffset` | `18` | 新音符从槽位下方多少像素开始 |
-| `EntranceFlashScale` | `1.38` | 入场色环最大大小 |
-| `EntranceFlashAlpha` | `0.52` | 入场色环初始透明度 |
-| `BobAmplitude` | `5` | 上下漂浮幅度，像素 |
-| `BobAngularSpeed` | `1.75` | 上下漂浮速度 |
-| `BreathAmplitude` | `0.055` | 呼吸缩放幅度，即约 ±5.5% |
-| `BreathAngularSpeed` | `2.05` | 呼吸速度 |
-| `PhaseStep` | `0.72` | 相邻音符的相位差；越大越不像同步运动 |
+| `Notes.RackOffset` | `(0, -430)` | 整排音符相对战斗人物节点的位置；X 向右，Y 向下 |
+| `Notes.RackZIndex` | `50` | 音符排层级 |
+| `Notes.ArtworkScale` | `(0.68, 0.68)` | 音符图片缩放 |
+| `Notes.DesiredSlotSpacing` | `96` | 槽位理想中心间距 |
+| `Notes.MaximumRackWidth` | `480` | 音符排最大宽度；槽位增多后自动压缩间距 |
 
-入场先后顺序由 `MgrNoteSystem.ChannelSingleNote` 等待每个入场 Tween 实现。当前每颗音符完整入场约 `0.22 秒`，因此一次生成四颗时会按槽位从左到右依次出现。
+实际间距公式：
 
-音符效果数字仍位于 `MgrNoteVisuals.cs`：
+`min(DesiredSlotSpacing, MaximumRackWidth / (槽位数 - 1))`
 
-- 位置：`(-36, 21)`，尺寸 `(72, 36)`。
-- 字号：`24`。
-- 描边：`8`。
-- 阴影描边：`2`。
+### 空槽
 
-空槽图形仍位于同一文件：
+当前空槽只有虚线圆框，不再给已填充音符绘制外环。
 
-- 空槽符号位置：`(-24, -28)`，尺寸 `(48, 56)`。
-- 空槽符号字号：`30`，描边 `5`。
-- 外圈宽度：`5`；内圈宽度：`2`。
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Notes.SlotRadius` | `42` | 虚线圆半径 |
+| `Notes.EmptySlotDashCount` | `12` | 虚线段数 |
+| `Notes.EmptySlotDashFill` | `0.48` | 每一段占其扇区的比例 |
+| `Notes.EmptySlotDashWidth` | `3` | 线宽 |
+
+空槽颜色仍在 `MgrNoteVisuals.CreateDashedEmptySlot` 中：`(0.72, 0.76, 0.84, 0.58)`。
+
+### 音符入场与连续生成加速
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Notes.FirstNoteEntranceSeconds` | `0.28s` | 本回合第一颗音符的总入场时间 |
+| `Notes.MinimumNoteEntranceSeconds` | `0.10s` | 连续生成时的时间下限 |
+| `Notes.NoteEntranceAccelerationPerNote` | `0.018s` | 本回合每已有一颗音符，后续入场减少的时间 |
+| `Notes.EntranceStartScale` | `0.28` | 起始缩放 |
+| `Notes.EntranceOvershootScale` | `1.18` | 放大阶段的过冲缩放 |
+| `Notes.EntranceGrowFraction` | `0.62` | 总时间中用于淡入、上移和放大的比例 |
+| `Notes.EntranceStartYOffset` | `18` | 从目标槽位下方多少像素开始 |
+
+总时间公式：
+
+`max(0.10, 0.28 - 本回合此前生成音符数 × 0.018)`
+
+每个音符排共用一个动画门，因此同一个效果生成多颗音符时会按调用顺序逐个出现，不会同帧一起刷出。
+
+### 和弦完成后的停留与连续触发加速
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Notes.FirstChordHoldSeconds` | `0.42s` | 本回合第一次和弦完成后的满槽停留 |
+| `Notes.MinimumChordHoldSeconds` | `0.12s` | 连续触发时的停留下限 |
+| `Notes.ChordHoldAccelerationPerChord` | `0.05s` | 本回合每已有一次触发，后续停留减少的时间 |
+| `Notes.FastChordCommandThreshold` | `2` | 已触发两次后，伤害/格挡等原生命令使用快速表现路径 |
+
+停留公式：
+
+`max(0.12, 0.42 - 本回合此前触发和弦数 × 0.05)`
+
+### 漂浮、呼吸与随机差异
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Notes.BobAmplitude` | `5px` | 上下浮动幅度 |
+| `Notes.BobAngularSpeed` | `1.75` | 基础浮动速度 |
+| `Notes.BobSpeedVariance` | `0.22` | 每颗音符的浮动速度随机范围约 ±22% |
+| `Notes.BreathAmplitude` | `0.055` | 呼吸缩放约 ±5.5% |
+| `Notes.BreathAngularSpeed` | `2.05` | 基础呼吸速度 |
+| `Notes.BreathSpeedVariance` | `0.20` | 每颗音符的呼吸速度随机范围约 ±20% |
+| `Notes.InitialScaleVariance` | `0.07` | 每颗音符的基础缩放随机范围约 ±7% |
+| `Notes.PhaseStep` | `0.72` | 相邻槽位的固定相位差 |
+| `Notes.PhaseVariance` | `0.65` | 每颗音符额外随机相位范围 |
+
+这些随机数只控制视觉，不参与战斗 RNG 和机制结算。
+
+### 音符数值标签与颜色
+
+这些值目前写在 `MgrNoteVisuals.cs`，尚未集中到 `MgrVisualTuning.cs`：
+
+- 标签位置 `(-36, 21)`，尺寸 `(72, 36)`。
+- 字号 `24`，彩色描边 `8`，黑色阴影描边 `2`。
+- 攻击 `#ff3b30`；技能 `#22d967`；能力 `#1f9eff`；状态 `#60666d`。
+- 诅咒 `#e8bd00`；任务 `#4fc9d1`；星空 `#f020c8`；幽灵 `#a875ff`。
 
 ## 2. 演奏牌队列
 
 实现文件：
 
-- `Scripts/Mechanics/MgrPerformanceVisuals.cs`
-- `Scripts/Mechanics/MgrVisualTuning.cs` 的 `Performances`
+- `Scripts/Mechanics/MgrPerformanceVisuals.cs`：整排布局、入队、触发、悬停预览和离队。
+- `Scripts/Mechanics/MgrPerformanceSystem.cs`：触发动画的时机与最终牌堆路由。
 
-当前参数：
+### 整排布局与重叠
 
-| 参数 | 默认值 | 作用 |
+| 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RackOffset` | `(0, -650)` | 演奏牌堆相对角色的位置 |
-| `RackZIndex` | `55` | 演奏牌堆基础层级 |
-| `MiniatureScale` | `0.25` | 队列中卡牌大小 |
-| `HoveredMiniatureScale` | `0.29` | 鼠标移上去时的小幅放大 |
-| `PreviewScale` | `0.68` | 鼠标右侧详情卡大小 |
-| `DesiredSpacing` | `52` | 相邻演奏牌露出的宽度 |
-| `MaximumWidth` | `520` | 整排最大宽度 |
-| `EnterQueueSeconds` | `0.28 秒` | 普通打出后飞入演奏堆的时长 |
-| `TriggerScale` | `1.2` | 回合开始触发时跳动的最大大小 |
-| `TriggerGrowSeconds` | `0.14 秒` | 触发放大时长 |
-| `TriggerSettleSeconds` | `0.18 秒` | 触发回落时长 |
-| `ExitSeconds` | `0.38 秒` | 演奏结束飞向弃牌/消耗堆的时长 |
-| `PreviewGrowSeconds` | `0.12 秒` | 右侧详情卡弹出时长 |
-| `PreviewMouseXOffset` | `34` | 详情卡与鼠标的横向距离 |
+| `Performances.RackOffset` | `(0, -650)` | 演奏排相对战斗人物节点的位置 |
+| `Performances.RackZIndex` | `55` | 基础层级 |
+| `Performances.MiniatureScale` | `(0.25, 0.25)` | 队列中卡牌大小 |
+| `Performances.HoveredMiniatureScale` | `(0.29, 0.29)` | 鼠标移入时的缩略牌大小 |
+| `Performances.DesiredSpacing` | `52` | 相邻演奏牌露出的理想宽度 |
+| `Performances.MaximumWidth` | `520` | 整排最大宽度；牌多后自动加重重叠 |
 
-其他仍在 `MgrPerformanceVisuals.cs` 内的数字：
+实际间距公式：
 
-- 进入演奏堆后，原打出卡牌淡到 `12%` 再删除视觉节点。
-- 触发 Glow 边距：四周 `11` 像素。
-- 剩余演奏次数：字号 `32`，描边 `8`。
-- 触发 Glow 最高透明度：`0.9`。
-- 离开队列时，有牌堆目标缩放到 `0.34`；无牌堆目标缩放到 `0.82`。
-- 详情卡被限制在屏幕边缘 `8` 像素内。
+`min(DesiredSpacing, MaximumWidth / (演奏牌数 - 1))`
 
-## 3. 野兽化弃牌前展示
+队列中最早进入的牌位于最右侧，层级也最高；新牌从左侧继续加入。
 
-实现文件：
+### 入队动画
 
-- `Scripts/Powers/YazyuutokasuPower.cs`
-- `Scripts/Mechanics/MgrVisualTuning.cs` 的 `DiscardReveal`
-
-参数：
-
-| 参数 | 默认值 | 作用 |
+| 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RaiseDistance` | `72` | 被丢弃牌向上抬起的距离 |
-| `ScaleMultiplier` | `1.08` | 抬起时放大倍数 |
-| `RaiseSeconds` | `0.14 秒` | 抬起动画时长 |
-| `HoldSeconds` | `0.22 秒` | 抬起后给玩家辨认的停留时间 |
+| `Performances.EnterQueueSeconds` | `0.28s` | 原打出卡牌飞入演奏槽位的时长 |
 
-高亮颜色目前写在 `YazyuutokasuPower.cs`：`(1.2, 1.12, 1.24)`。
+流程中的硬编码细节位于 `MgrPerformanceVisuals.cs`：
 
-## 4. 能量框
+- 最多搜索原始 `NCard` 节点 `30` 帧。
+- 找到后终止其原生 `PlayPileTween`，同时移动、缩小并淡出。
+- 淡到 `12%` 不透明度后释放原节点；演奏排中的缩略牌是另一张持续存在的视图。
 
-场景：
+### 回合开始触发
 
-`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Performances.TriggerScale` | `1.2` | 原地跳动的峰值缩放 |
+| `Performances.TriggerGrowSeconds` | `0.14s` | 放大与亮起阶段 |
+| `Performances.TriggerSettleSeconds` | `0.18s` | 回落与熄灭阶段 |
 
-主要手调位置：
+触发 Glow 仍写在 `MgrPerformanceVisuals.cs`：
 
-- 根控件尺寸：`128 × 128`，中心点 `(64, 64)`。
-- 能量数字边距：左 `16`、上 `-29`、右 `-16`、下 `29`。
-- 数字字号：`36`。
-- 数字描边：`16`；阴影描边 `16`；阴影偏移 `(3, 2)`。
-- 内部两组粒子目前主要作为兼容占位，`amount = 1`；其中一个寿命 `0.5 秒`。
+- 颜色 `#d73ee7`，峰值透明度 `0.9`。
+- 比缩略牌四周各多 `11px`。
+- 只在原位置跳动，不把牌移到屏幕中央。
 
-贴图和能量颜色来源：
+### 剩余次数
 
-- `Scripts/Characters/MgrCardPool.cs`
-- `Scripts/Characters/MgrCharacter.cs`
-- `SlayTheSpire2MGRMod/images/placeholders/winefox/energy_card_icon.png`
+剩余演奏次数现在按缩略牌右下角计算，并已集中到
+`MgrVisualTuning.Performances`：
 
-## 5. 角色与选人画面
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `RemainingLabelSize` | `(56, 48)` | 次数标签的控件尺寸 |
+| `RemainingLabelBottomRightInset` | `(18, 18)` | 标签中心相对右下角向左、向上内缩的距离；越小越靠外 |
+| `RemainingLabelFontSize` | `32` | 字号 |
+| `RemainingLabelOutlineSize` | `8` | 描边大小 |
+| `RemainingLabelColor` | 白色 | 数字颜色 |
+| `RemainingLabelOutlineColor` | `#a915b8` | 描边颜色 |
+| `RemainingLabelZIndex` | `25` | 标签相对缩略牌的层级 |
 
-场景和资源：
+每次演奏后仍由 `Refresh` 读取 `RemainingPerformanceTurns`。标签位置公式为：
 
-- 战斗人物：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character.tscn`
-  - 图片边界：左 `-120`、上 `-322`、右 `120`、下 `8`。
-- 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`
-  - 设计区域：`1920 × 1200`，从 `(-960, -600)` 到 `(960, 600)`。
-  - 使用图片：`images/characters/Mgr_character_select_background.jpg`。
-- 选人图标注册：`Scripts/Characters/MgrCharacterAssets.cs`
-  - 使用图片：`images/characters/Mgr_character_select.png`。
-- 选人音效：`Scripts/Characters/MgrAudio.cs` 与
-  `Scripts/Patches/MgrCharacterSelectSfxPatch.cs`
-  - 音频文件：`SlayTheSpire2MGRMod/audio/MGR_charselect.ogg`。
-- 营火人物：`Mgr_rest_site.tscn`，主体大致范围 `260 × 340`。
-- 商店人物：`Mgr_merchant.tscn`。
+`右下角 - BottomRightInset - LabelSize / 2`
 
-这些角色场景的布局数字仍应直接在 Godot 编辑器里调，编辑 `.tscn` 也可以，但不建议把它们搬进战斗 UI 的集中参数类。
+### 鼠标悬停预览
 
-## 6. 声音反馈
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Performances.PreviewScale` | `(0.68, 0.68)` | 完整详情牌大小 |
+| `Performances.PreviewGrowSeconds` | `0.12s` | 从 `0.5` 缩放弹到目标大小的时间 |
+| `Performances.PreviewMouseXOffset` | `34px` | 详情牌出现在鼠标右侧的距离 |
 
-实现文件：`Scripts/Characters/MgrAudio.cs`
+其他细节：
 
-- 生成音符：`audio/NoteChannel.ogg`，默认音量 `0.2`。
-- 触发和弦：`audio/Chord.ogg`，默认音量 `0.2`。
-- 角色选择：`audio/MGR_charselect.ogg`。
+- 预览与 HoverHitbox 位于私有 `CanvasLayer 90`，避免被战斗 UI 截走输入。
+- 详情牌始终限制在屏幕边缘内 `8px`。
+- 缩略牌和 HoverHitbox 悬停时提升到 `ZIndex 300`。
 
-声音属于反馈特效，但没有大小或位置参数。
+### 演奏结束与离队
 
-## 调整建议
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `Performances.ExitSeconds` | `0.38s` | 飞向真实弃牌/消耗/抽牌堆的时长 |
 
-一次只改一组：
+仍写在 `MgrPerformanceVisuals.cs`：
 
-1. 先调 `RackOffset` 和尺寸。
-2. 再调间距与最大宽度。
-3. 最后调动画时间、漂浮幅度和呼吸幅度。
+- 有真实牌堆目标时缩放到 `0.34`；找不到目标时缩放到 `0.82`，并向上 `100px`。
+- `0.12s` 后开始淡出，淡出用时 `0.26s`。
+- 牌堆数量由最终自动打出的塔二原生结果路由更新；这个动画只提供视觉反馈。
 
-这样游戏内出现偏移时，容易判断是“布局”还是“动画”造成的。
+## 3. 音频反馈
+
+实现文件：`Scripts/Characters/MgrAudio.cs`。
+
+| 事件 | 资源 | 默认音量 |
+| --- | --- | ---: |
+| 生成音符 | `audio/NoteChannel.ogg` | `0.2` |
+| 触发和弦 | `audio/Chord.ogg` | `0.2` |
+| 角色选择 | `audio/MGR_charselect.ogg` | `1.0` |
+
+## 4. 角色静态 UI
+
+这些位置优先在 Godot 场景编辑器中调整，不属于音符/演奏的集中动画参数：
+
+- 战斗人物：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character.tscn`。
+- 能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`。
+- 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`。
+- 选人/地图/能量等资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
+
+## 调参顺序
+
+1. 先改两套 `RackOffset`，确认整体位置。
+2. 再改缩放、槽位/卡牌间距和最大宽度。
+3. 然后改入场、触发与离队时长。
+4. 最后调整漂浮、呼吸、随机差异、颜色和文字。
+
+这样发现异常时，能较容易区分是“布局”“动画”还是“战斗状态”造成的。

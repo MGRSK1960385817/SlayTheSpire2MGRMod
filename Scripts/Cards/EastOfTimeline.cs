@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
@@ -11,6 +12,11 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "east_of_timeline")]
 public sealed class EastOfTimeline : MgrCard
 {
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromKeyword(CardKeyword.Exhaust)
+    ];
+
     private int _playsThisCombat;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

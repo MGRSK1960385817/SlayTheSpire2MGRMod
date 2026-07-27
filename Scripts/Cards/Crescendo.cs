@@ -14,8 +14,8 @@ public sealed class Crescendo : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(3m, ValueProp.Move),
-        new IntVar("Growth", 3m),
+        new DamageVar(4m, ValueProp.Move),
+        new IntVar("Growth", 4m),
         new IntVar("Performance", 2m)
     ];
 
@@ -39,7 +39,6 @@ public sealed class Crescendo : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
-        DynamicVars["Growth"].UpgradeValueBy(1m);
+        DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 }

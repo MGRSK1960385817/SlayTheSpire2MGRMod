@@ -8,7 +8,7 @@ namespace SlayTheSpire2MGRMod.Relics;
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "fumo")]
 public sealed class Fumo : ModRelicTemplate
 {
-    public override RelicRarity Rarity => RelicRarity.Uncommon;
+    public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override RelicAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/relics/Fumo.png",

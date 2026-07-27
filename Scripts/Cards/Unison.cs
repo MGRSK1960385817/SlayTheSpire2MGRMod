@@ -8,7 +8,6 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "unison")]
 public sealed class Unison : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

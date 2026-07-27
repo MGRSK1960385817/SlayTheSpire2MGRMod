@@ -18,8 +18,8 @@ public sealed class OtomeDissection : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(3m, ValueProp.Move),
-        new IntVar("Threshold", 5m),
+        new BlockVar(4m, ValueProp.Move),
+        new IntVar("Threshold", 4m),
         new PowerVar<FortePower>(1m)
     ];
 
@@ -53,6 +53,6 @@ public sealed class OtomeDissection : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(1m);
+        AddKeyword(CardKeyword.Retain);
     }
 }

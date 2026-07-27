@@ -5,13 +5,14 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
-using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "crisp_ending")]
 public sealed class CrispEnding : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseEnd;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(5m, ValueProp.Move),

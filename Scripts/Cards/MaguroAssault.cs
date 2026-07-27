@@ -11,6 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "maguro_assault")]
 public sealed class MaguroAssault : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseEnd;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6m, ValueProp.Move),

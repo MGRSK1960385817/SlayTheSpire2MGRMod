@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -13,6 +14,11 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "show_weakness")]
 public sealed class ShowWeakness : MgrCard
 {
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromPower<StrengthPower>()
+    ];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("StrengthLoss", 3m),

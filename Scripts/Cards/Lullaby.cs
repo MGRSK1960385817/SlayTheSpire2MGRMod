@@ -17,6 +17,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class Lullaby : MgrCard
 {
     public override bool GainsBlock => true;
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseEnd;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [

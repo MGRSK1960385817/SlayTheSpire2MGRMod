@@ -11,6 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "rapid_claw")]
 public sealed class RapidClaw : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseStart;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4m, ValueProp.Move),

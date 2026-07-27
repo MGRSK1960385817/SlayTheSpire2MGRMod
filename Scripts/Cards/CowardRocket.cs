@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -13,11 +12,10 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class CowardRocket : MgrCard
 {
     public override bool GainsBlock => true;
-    public override bool HasTurnEndInHandEffect => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move)
+        new BlockVar(4m, ValueProp.Move)
     ];
 
     public CowardRocket() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -27,8 +25,5 @@ public sealed class CowardRocket : MgrCard
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-    protected override Task OnTurnEndInHand(PlayerChoiceContext choiceContext) =>
-        MgrPerformanceSystem.EnqueueCardFromHand(Owner, this, 1);
-
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
 }

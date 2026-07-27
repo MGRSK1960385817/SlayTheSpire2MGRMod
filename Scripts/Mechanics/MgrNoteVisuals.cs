@@ -248,7 +248,7 @@ public static class MgrNoteVisuals
             _anchor = new Node2D { Name = $"NoteSlot{index + 1}" };
             parent.AddChild(_anchor);
 
-            _emptySlotOutline = CreateDashedEmptySlot();
+            _emptySlotOutline = CreateDashedEmptySlot(index);
             _anchor.AddChild(_emptySlotOutline);
 
             _entranceRoot = new Node2D { Name = "FilledNoteEntrance" };
@@ -348,21 +348,42 @@ public static class MgrNoteVisuals
         {
             ClearNote();
 
-            Texture2D? texture = ResourceLoader.Load<Texture2D>(note.TexturePath);
-            if (texture is null)
+            Sprite2D sprite;
+            if (note.Kind == NoteKind.Everything)
             {
-                Entry.Logger.Warn($"Missing MGR note texture: {note.TexturePath}");
-                _emptySlotOutline.Visible = true;
-                return;
+                var everythingVisual = new MgrEverythingNoteVisual
+                {
+                    Name = $"{note.Name}Note",
+                    Scale = MgrVisualTuning.Notes.ArtworkScale
+                };
+                if (!everythingVisual.Initialize())
+                {
+                    everythingVisual.QueueFree();
+                    _emptySlotOutline.Visible = true;
+                    return;
+                }
+
+                sprite = everythingVisual;
+            }
+            else
+            {
+                Texture2D? texture = ResourceLoader.Load<Texture2D>(note.TexturePath);
+                if (texture is null)
+                {
+                    Entry.Logger.Warn($"Missing MGR note texture: {note.TexturePath}");
+                    _emptySlotOutline.Visible = true;
+                    return;
+                }
+
+                sprite = new Sprite2D
+                {
+                    Name = $"{note.Name}Note",
+                    Texture = texture,
+                    Scale = MgrVisualTuning.Notes.ArtworkScale
+                };
             }
 
             Color noteColor = GetOutlineColor(note.Kind);
-            var sprite = new Sprite2D
-            {
-                Name = $"{note.Name}Note",
-                Texture = texture,
-                Scale = MgrVisualTuning.Notes.ArtworkScale
-            };
             _floatingRoot.AddChild(sprite);
 
             _amountLabel = new Label
@@ -374,6 +395,7 @@ public static class MgrNoteVisuals
                 VerticalAlignment = VerticalAlignment.Center,
                 MouseFilter = Control.MouseFilterEnum.Ignore
             };
+            _amountLabel.Visible = note.Kind != NoteKind.Everything;
             _amountLabel.AddThemeFontSizeOverride("font_size", 24);
             _amountLabel.AddThemeColorOverride("font_color", Colors.White);
             _amountLabel.AddThemeColorOverride("font_outline_color", noteColor);
@@ -387,13 +409,14 @@ public static class MgrNoteVisuals
             _displayedKind = note.Kind;
         }
 
-        private static Node2D CreateDashedEmptySlot()
+        private static Node2D CreateDashedEmptySlot(int slotIndex)
         {
-            var root = new Node2D
+            var root = new MgrRotatingNoteSlotFrame
             {
                 Name = "EmptySlotDashedOutline",
                 ZIndex = -1
             };
+            root.Initialize(slotIndex);
             Color color = new(0.72f, 0.76f, 0.84f, 0.58f);
             int dashCount = MgrVisualTuning.Notes.EmptySlotDashCount;
             float dashAngle =
@@ -435,9 +458,9 @@ public static class MgrNoteVisuals
             NoteKind.Power => new Color("1f9eff"),
             NoteKind.Status => new Color("60666d"),
             NoteKind.Curse => new Color("e8bd00"),
-            NoteKind.Quest => new Color("4fc9d1"),
             NoteKind.Starry => new Color("f020c8"),
             NoteKind.Ghost => new Color("a875ff"),
+            NoteKind.Everything => Colors.White,
             _ => Colors.Black
         };
 

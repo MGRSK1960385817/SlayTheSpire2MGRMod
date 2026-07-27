@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -13,25 +14,33 @@ public sealed class StageWarmUp : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<FortePower>(1m)
+        new PowerVar<FortePower>(1m),
+        new IntVar("Performance", 2m)
     ];
 
-    public StageWarmUp() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
+
+    public StageWarmUp() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
+
+    public override async Task OnPerformanceFinished(
+        PlayerChoiceContext choiceContext,
+        PerformanceCompletionContext context)
     {
         await PowerCmd.Apply<FortePower>(
             choiceContext,
-            Owner.Creature,
+            context.Player.Creature,
             DynamicVars["FortePower"].BaseValue,
-            Owner.Creature,
+            context.Player.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Performance"].UpgradeValueBy(-1m);
     }
 }

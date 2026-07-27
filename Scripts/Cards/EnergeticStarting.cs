@@ -4,14 +4,14 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
-using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "energetic_starting")]
 public sealed class EnergeticStarting : MgrCard
 {
     public override bool GainsBlock => true;
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseStart;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

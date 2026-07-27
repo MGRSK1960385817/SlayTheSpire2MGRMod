@@ -47,6 +47,6 @@ public sealed class DaybreakFrontline : MgrCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Performance"].UpgradeValueBy(-1m);
     }
 }

@@ -5,8 +5,11 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Rooms;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Powers;
 using SlayTheSpire2MGRMod.Relics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -64,7 +67,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 state.Forte,
                 clearAfterDelay: false);
 
-            if (player.GetRelic<WeatheredPlectrum>() is { } plectrum)
+            if (player.GetRelic<BookOfGrudges>() is { } plectrum)
             {
                 plectrum.Flash();
                 for (int index = 0; index < plectrum.CombatStartAttackNotes; index++)
@@ -164,6 +167,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int notesGeneratedBefore = state.NotesGeneratedThisTurn;
         int chordTriggersBefore = state.ChordTriggersThisTurn;
         PhraseResolution? resolution = state.AddNote(note);
+        RefreshConditionalCardGlows(player);
 
         MgrAudio.PlayNoteChannel();
 
@@ -196,6 +200,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrCombatState state = MgrCombatStateStore.For(player);
         MgrNote[] removed = state.Phrase.Notes.ToArray();
         state.Phrase.Clear();
+        RefreshConditionalCardGlows(player);
         MgrNoteVisuals.Show(
             player,
             state.Phrase.Notes,
@@ -206,9 +211,77 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     }
 
     /// <summary>
+    /// Removes notes from the right edge without resolving their effects.
+    /// Cards can require a full amount before calling this method when partial
+    /// payment is not allowed.
+    /// </summary>
+    public static IReadOnlyList<MgrNote> RemoveRightmostNotes(Player player, int count)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        IReadOnlyList<MgrNote> removed = state.Phrase.RemoveRightmost(count);
+        if (removed.Count == 0)
+            return removed;
+
+        RefreshConditionalCardGlows(player);
+        MgrNoteVisuals.Show(
+            player,
+            state.Phrase.Notes,
+            state.Phrase.Capacity,
+            state.Forte,
+            clearAfterDelay: false);
+        return removed;
+    }
+
+    /// <summary>
+    /// Generates a copy of the rightmost note through the ordinary channeling
+    /// path. It therefore respects Double Notes and all normal chord handling.
+    /// </summary>
+    public static async Task<bool> CopyRightmostNote(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        MgrNote? rightmost = state.Phrase.Notes.LastOrDefault();
+        if (rightmost is null)
+            return false;
+
+        await ChannelNote(choiceContext, player, rightmost.Kind);
+        return true;
+    }
+
+    /// <summary>
+    /// Replaces every currently slotted note without treating the replacement as
+    /// newly generated notes and without resolving a chord. This is deliberately
+    /// separate from <see cref="ChannelNote"/> so replacement effects are not
+    /// doubled by Double Notes or blocked by Attack Note Silence.
+    /// </summary>
+    public static int ReplaceAllNotes(Player player, NoteKind replacementKind)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        int count = state.Phrase.Notes.Count;
+        if (count == 0)
+            return 0;
+
+        state.Phrase.Clear();
+        for (int index = 0; index < count; index++)
+            state.Phrase.Add(MgrNoteFactory.Create(replacementKind));
+
+        state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
+        RefreshConditionalCardGlows(player);
+        MgrNoteVisuals.Show(
+            player,
+            state.Phrase.Notes,
+            state.Phrase.Capacity,
+            state.Forte,
+            clearAfterDelay: false);
+        return count;
+    }
+
+    /// <summary>
     /// STS1 Starting: the phrase has no notes before the current card generates one.
     /// </summary>
     public static bool IsStarting(Player player) =>
+        player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ||
         MgrCombatStateStore.For(player).Phrase.IsStarting;
 
     /// <summary>
@@ -216,6 +289,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// This stays correct when cards later increase or decrease slot capacity.
     /// </summary>
     public static bool IsEnding(Player player) =>
+        player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ||
         MgrCombatStateStore.For(player).Phrase.IsEnding;
 
     /// <summary>
@@ -251,6 +325,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         IReadOnlyList<PhraseResolution> resolutions = state.SetPhraseCapacity(newCapacity);
         state.SetForteSnapshot(player.Creature.GetPowerAmount<FortePower>());
+        RefreshConditionalCardGlows(player);
         if (resolutions.Count == 0)
         {
             MgrNoteVisuals.Show(
@@ -296,7 +371,10 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Player player)
     {
         if (MgrCombatStateStore.TryGet(player, out MgrCombatState state))
+        {
             state.ResetTurnCounters();
+            RefreshConditionalCardGlows(player);
+        }
 
         if (player.Character is MgrCharacter)
             await MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
@@ -323,6 +401,37 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Runs immediately before Tower 2 snapshots the hand for its end-of-turn
+    /// flush. Coward Rocket leaves Hand here, so the native bulk discard never
+    /// includes it and the visual path is directly Hand -> Performance.
+    /// </summary>
+    public override async Task BeforeFlush(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        if (player.Character is not MgrCharacter ||
+            player.PlayerCombatState is null)
+        {
+            return;
+        }
+
+        CowardRocket[] rockets = player.PlayerCombatState.Hand.Cards
+            .OfType<CowardRocket>()
+            .ToArray();
+
+        foreach (CowardRocket rocket in rockets)
+        {
+            if (rocket.Pile?.Type == PileType.Hand)
+            {
+                await MgrPerformanceSystem.EnqueueCardFromHand(
+                    player,
+                    rocket,
+                    initialTurns: 1);
+            }
+        }
+    }
+
     public override Task AfterCombatEnd(CombatRoom room)
     {
         MgrPerformanceSystem.ClearAll();
@@ -340,7 +449,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     {
         MgrCombatState state = MgrCombatStateStore.For(player);
         int triggerCount = 1 + state.ConsumePendingChordTriggers();
-        if (player.GetRelic<DecennialMetronome>()?.TryDoubleCurrentChord() == true)
+        if (player.GetRelic<Metronome>()?.TryDoubleCurrentChord() == true)
             triggerCount++;
 
         for (int index = 0; index < triggerCount; index++)
@@ -352,6 +461,24 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 notes,
                 forte,
                 chordTriggersBefore);
+        }
+    }
+
+    /// <summary>
+    /// MGR's phrase and chord counters live outside Tower 2's immutable combat
+    /// state, so changing them does not itself raise CombatStateChanged. Refresh
+    /// the native hand holders explicitly so ShouldGlowGoldInternal is re-read
+    /// immediately instead of waiting for an unrelated engine state update.
+    /// </summary>
+    private static void RefreshConditionalCardGlows(Player player)
+    {
+        if (NPlayerHand.Instance is not { } hand)
+            return;
+
+        foreach (CardModel card in PileType.Hand.GetPile(player).Cards)
+        {
+            if (hand.GetCardHolder(card) is NHandCardHolder holder)
+                holder.UpdateCard();
         }
     }
 }

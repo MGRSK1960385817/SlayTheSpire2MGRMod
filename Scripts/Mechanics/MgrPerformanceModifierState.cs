@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Models;
+using STS2RitsuLib.Keywords;
 using SlayTheSpire2MGRMod.Cards;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
@@ -12,6 +13,7 @@ public static class MgrPerformanceModifierState
 {
     private static readonly Dictionary<CardModel, int> AdditionalPerformances = [];
     private static readonly Dictionary<CardModel, int> DirectPerformanceDeltas = [];
+    private static readonly HashSet<CardModel> PerformanceKeywordAddedByModifier = [];
 
     public static int GetAdditionalPerformances(CardModel card) =>
         AdditionalPerformances.TryGetValue(card, out int amount) ? amount : 0;
@@ -36,6 +38,11 @@ public static class MgrPerformanceModifierState
 
         int updated = checked(GetAdditionalPerformances(card) + amount);
         AdditionalPerformances[card] = updated;
+        if (!card.Keywords.Contains(MgrKeywords.PerformanceKeyword))
+        {
+            card.AddModKeyword(MgrKeywords.PerformanceKeyword);
+            PerformanceKeywordAddedByModifier.Add(card);
+        }
         return updated;
     }
 
@@ -49,5 +56,12 @@ public static class MgrPerformanceModifierState
 
         DirectPerformanceDeltas.Clear();
         AdditionalPerformances.Clear();
+
+        foreach (CardModel card in PerformanceKeywordAddedByModifier)
+        {
+            if (card.IsMutable)
+                card.RemoveModKeyword(MgrKeywords.PerformanceKeyword);
+        }
+        PerformanceKeywordAddedByModifier.Clear();
     }
 }

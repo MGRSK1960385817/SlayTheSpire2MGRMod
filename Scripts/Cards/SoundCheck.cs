@@ -5,12 +5,10 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using SlayTheSpire2MGRMod.Characters;
-using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "sound_check")]
 public sealed class SoundCheck : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

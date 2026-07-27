@@ -7,7 +7,7 @@ public enum NoteKind
     Power,
     Status,
     Curse,
-    Quest,
     Starry,
-    Ghost
+    Ghost,
+    Everything
 }

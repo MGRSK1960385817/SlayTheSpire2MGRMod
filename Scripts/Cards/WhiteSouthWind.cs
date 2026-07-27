@@ -13,6 +13,7 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class WhiteSouthWind : MgrCard
 {
     public override bool GainsBlock => true;
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -25,9 +26,7 @@ public sealed class WhiteSouthWind : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CardModel[] cards = PileType.Hand.GetPile(Owner).Cards
-            .Where(card => card.Type != CardType.Attack)
-            .ToArray();
+        CardModel[] cards = PileType.Hand.GetPile(Owner).Cards.ToArray();
         foreach (CardModel card in cards)
         {
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);

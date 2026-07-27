@@ -26,7 +26,7 @@ public sealed class NightMonster : MgrCard
         if (Owner.Creature.CombatState is not { } combatState)
             return;
 
-        await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Draw);
+        await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Discard);
         int curseCount = MgrCurseUtils.CountCurses(Owner);
         if (curseCount <= 0 || combatState.HittableEnemies.Count == 0)
             return;

@@ -6,11 +6,9 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
-using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "starry_drift")]
 public sealed class StarryDrift : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

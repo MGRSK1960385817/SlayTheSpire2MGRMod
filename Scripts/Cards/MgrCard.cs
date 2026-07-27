@@ -3,8 +3,20 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Scaffolding.Content;
 using SlayTheSpire2MGRMod.Mechanics;
+using SlayTheSpire2MGRMod.Powers;
 
 namespace SlayTheSpire2MGRMod.Cards;
+
+[Flags]
+public enum MgrGoldGlowCondition
+{
+    None = 0,
+    PhraseStart = 1 << 0,
+    PhraseEnd = 1 << 1,
+    ChordResolvedThisTurn = 1 << 2,
+    NoChordResolvedThisTurn = 1 << 3,
+    AtLeastTwoNotes = 1 << 4
+}
 
 /// <summary>
 /// Shared base for every MGR card.
@@ -20,6 +32,22 @@ public abstract class MgrCard(
     : ModCardTemplate(baseCost, type, rarity, target, showInCardLibrary)
 {
     /// <summary>
+    /// Extra concepts named by this card's rules text. Identity keywords such as
+    /// Starry and Performance, plus gold-glow phrase conditions, are added by the
+    /// shared base automatically.
+    /// </summary>
+    protected virtual MgrKeywordKind KeywordKinds => MgrKeywordKind.None;
+
+    internal MgrKeywordKind DeclaredKeywordKinds => KeywordKinds;
+    internal MgrGoldGlowCondition DeclaredGoldGlowConditions => GoldGlowConditions;
+
+#pragma warning disable CS0672
+    [Obsolete("RitsuLib uses this channel to seed registered mod CardKeyword values independently of vanilla keywords.")]
+    protected override IEnumerable<string> RegisteredKeywordIds =>
+        MgrKeywords.GetIds(this);
+#pragma warning restore CS0672
+
+    /// <summary>
     /// Marks an MGR card as a Starry card, overriding its ordinary card-type note.
     /// </summary>
     public virtual bool IsStarryCard => false;
@@ -30,6 +58,47 @@ public abstract class MgrCard(
     /// value and the mutable queue state cannot be confused.
     /// </summary>
     public virtual int InitialPerformanceTurns => 0;
+
+    /// <summary>
+    /// Declares the combat condition that makes this card stronger and should
+    /// therefore use Tower 2's native gold hand-card glow. Multiple flags use
+    /// OR semantics: the card glows when any declared bonus is currently active.
+    /// </summary>
+    protected virtual MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.None;
+
+    /// <summary>
+    /// Uses the same native hook as cards such as Evil Eye. Keeping the mapping
+    /// here makes future MGR conditional cards opt in with one declarative line.
+    /// </summary>
+    protected override bool ShouldGlowGoldInternal
+    {
+        get
+        {
+            MgrGoldGlowCondition conditions = GoldGlowConditions;
+            if (conditions == MgrGoldGlowCondition.None ||
+                CombatState is null ||
+                !MgrCombatStateStore.TryGet(Owner, out MgrCombatState state))
+            {
+                return false;
+            }
+
+            bool alwaysPhrase =
+                Owner.Creature.GetPowerAmount<DoubleNotesPower>() > 0m;
+
+            return
+                conditions.HasFlag(MgrGoldGlowCondition.PhraseStart) &&
+                (state.Phrase.IsStarting || alwaysPhrase) ||
+                conditions.HasFlag(MgrGoldGlowCondition.PhraseEnd) &&
+                (state.Phrase.IsEnding || alwaysPhrase) ||
+                conditions.HasFlag(MgrGoldGlowCondition.ChordResolvedThisTurn) &&
+                state.ChordsResolvedThisTurn > 0 ||
+                conditions.HasFlag(MgrGoldGlowCondition.NoChordResolvedThisTurn) &&
+                state.ChordsResolvedThisTurn == 0 ||
+                conditions.HasFlag(MgrGoldGlowCondition.AtLeastTwoNotes) &&
+                state.Phrase.Notes.Count >= 2;
+        }
+    }
 
     /// <summary>
     /// Called after the final performance play and its native result-pile routing

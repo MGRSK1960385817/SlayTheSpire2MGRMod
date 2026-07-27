@@ -17,7 +17,8 @@ public static class MgrCurseUtils
         PileType.Hand,
         PileType.Draw,
         PileType.Discard,
-        PileType.Exhaust
+        PileType.Exhaust,
+        PileType.Play
     ];
 
     public static CardModel CreateRandomCurse(Player player)

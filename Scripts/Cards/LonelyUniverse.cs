@@ -18,9 +18,7 @@ public sealed class LonelyUniverse : MgrCard
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
-
-    public LonelyUniverse() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public LonelyUniverse() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

@@ -10,6 +10,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "echoing_cadence")]
 public sealed class CumulonimbusGraffiti : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseEnd;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
     public CumulonimbusGraffiti() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)

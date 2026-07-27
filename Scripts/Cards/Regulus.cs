@@ -16,13 +16,13 @@ public sealed class Regulus : MgrCard
     [
         new DamageVar(4m, ValueProp.Move),
         new IntVar("Hits", 14m),
-        new IntVar("CostReduction", 2m)
+        new IntVar("CostReduction", 3m)
     ];
 
     public override bool IsStarryCard => true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [CardKeyword.Retain, CardKeyword.Exhaust];
+        [CardKeyword.Retain];
 
     public Regulus() : base(14, CardType.Attack, CardRarity.Rare, TargetType.AllEnemies)
     {
@@ -62,6 +62,6 @@ public sealed class Regulus : MgrCard
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Exhaust);
+        DynamicVars["CostReduction"].UpgradeValueBy(1m);
     }
 }

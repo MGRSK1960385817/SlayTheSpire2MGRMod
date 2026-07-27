@@ -8,23 +8,19 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 
 /// <summary>
 /// Shared rarity-compensated random selection for MGR effects.
-/// Common and all other rarities have weight 1, Uncommon has weight 2,
-/// and Rare has weight 3.
+/// Common and all other rarities have weight 1, Uncommon has weight 1.5,
+/// and Rare has weight 2. Integer weights are doubled to preserve the ratio.
 /// </summary>
 public static class MgrWeightedCardRandom
 {
     public static CardModel? PickOne(
         IReadOnlyList<CardModel> candidates,
-        Rng rng,
-        bool useRarityWeights)
+        Rng rng)
     {
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentNullException.ThrowIfNull(rng);
         if (candidates.Count == 0)
             return null;
-
-        if (!useRarityWeights)
-            return candidates[rng.NextInt(0, candidates.Count)];
 
         int totalWeight = candidates.Sum(GetRarityWeight);
         int roll = rng.NextInt(0, totalWeight);
@@ -43,8 +39,7 @@ public static class MgrWeightedCardRandom
         Player player,
         IEnumerable<CardModel> canonicalCandidates,
         int count,
-        Rng rng,
-        bool useRarityWeights)
+        Rng rng)
     {
         ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(canonicalCandidates);
@@ -59,7 +54,7 @@ public static class MgrWeightedCardRandom
 
         while (result.Count < count && available.Count > 0)
         {
-            CardModel? canonical = PickOne(available, rng, useRarityWeights);
+            CardModel? canonical = PickOne(available, rng);
             if (canonical is null)
                 break;
 
@@ -72,8 +67,8 @@ public static class MgrWeightedCardRandom
 
     private static int GetRarityWeight(CardModel card) => card.Rarity switch
     {
-        CardRarity.Uncommon => 2,
-        CardRarity.Rare => 3,
-        _ => 1
+        CardRarity.Uncommon => 3,
+        CardRarity.Rare => 4,
+        _ => 2
     };
 }

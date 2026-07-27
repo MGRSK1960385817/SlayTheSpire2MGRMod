@@ -12,9 +12,9 @@ public static class MgrNoteFactory
         NoteKind.Power => new PowerNote(),
         NoteKind.Status => new StatusNote(),
         NoteKind.Curse => new CurseNote(),
-        NoteKind.Quest => new QuestNote(),
         NoteKind.Starry => new StarryNote(),
         NoteKind.Ghost => new GhostNote(),
+        NoteKind.Everything => new EverythingNote(),
         _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown MGR note kind.")
     };
 }

@@ -1,12 +1,12 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
-using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -16,40 +16,40 @@ public sealed class HayakuNaru : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
+        new CardsVar(1),
         new IntVar("Performance", 2m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
-    public HayakuNaru() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public HayakuNaru() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ClearThroatPower>(
-            choiceContext,
-            Owner.Creature,
-            1m,
-            Owner.Creature,
-            this);
-    }
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
 
-    public override async Task OnPerformanceFinished(
-        PlayerChoiceContext choiceContext,
-        PerformanceCompletionContext context)
-    {
-        if (context.Player.Creature.CombatState is not { } combatState)
+        if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
             return;
 
-        HayakuNaru copy = combatState.CreateCard<HayakuNaru>(context.Player);
-        if (IsUpgraded)
-            CardCmd.Upgrade(copy, CardPreviewStyle.None);
-        CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
-            copy,
-            PileType.Discard,
-            context.Player);
-        CardCmd.PreviewCardPileAdd(result);
+        var prompt = new LocString(
+            "cards",
+            "SLAY_THE_SPIRE2_MGR_MOD_CARD_CLEAR_THROAT_CHOOSE");
+        var prefs = new CardSelectorPrefs(prompt, 1);
+        CardModel? chosen = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            prefs,
+            null,
+            this)).FirstOrDefault();
+        if (chosen is null)
+            return;
+
+        NoteKind kind = CardNoteResolver.Resolve(chosen);
+        await CardCmd.Exhaust(choiceContext, chosen);
+        await ChannelNote(choiceContext, kind);
     }
 
     protected override void OnUpgrade()

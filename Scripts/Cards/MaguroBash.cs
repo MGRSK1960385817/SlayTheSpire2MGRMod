@@ -11,6 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "maguro_bash")]
 public sealed class MaguroBash : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.ChordResolvedThisTurn;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(10m, ValueProp.Move),

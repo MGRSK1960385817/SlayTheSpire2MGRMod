@@ -40,6 +40,18 @@ public sealed class PhraseState
         _notes.Add(note);
     }
 
+    public IReadOnlyList<MgrNote> RemoveRightmost(int count)
+    {
+        if (count <= 0 || _notes.Count == 0)
+            return [];
+
+        int removedCount = Math.Min(count, _notes.Count);
+        int startIndex = _notes.Count - removedCount;
+        MgrNote[] removed = _notes.GetRange(startIndex, removedCount).ToArray();
+        _notes.RemoveRange(startIndex, removedCount);
+        return removed;
+    }
+
     public PhraseResolution Resolve()
     {
         if (!IsComplete)

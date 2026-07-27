@@ -10,12 +10,12 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "strike")]
-[RegisterCharacterStarterCard(typeof(MgrCharacter), 4, Order = 10)]
+[RegisterCharacterStarterCard(typeof(MgrCharacter), 5, Order = 10)]
 public sealed class MgrStrike : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move)
+        new DamageVar(5m, ValueProp.Move)
     ];
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };

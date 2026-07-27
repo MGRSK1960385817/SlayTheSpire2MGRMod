@@ -15,7 +15,7 @@ public abstract class MgrNote
 
     /// <summary>
     /// Reproduces STS1's positive/negative Forte scaling. Integer division intentionally
-    /// truncates toward zero, so a rate-4 note changes once per four Forte.
+    /// truncates toward zero, so a rate-3 note changes once per three Forte.
     /// </summary>
     public virtual int GetEffectAmount(int forte)
     {
@@ -53,14 +53,15 @@ public sealed class PowerNote : MgrNote
 {
     public override NoteKind Kind => NoteKind.Power;
     public override int BaseEffectAmount => 1;
-    public override int ForteRate => 4;
+    public override int ForteRate => 2;
 }
 
 public sealed class StatusNote : MgrNote
 {
     public override NoteKind Kind => NoteKind.Status;
     public override int BaseEffectAmount => 1;
-    public override int ForteRate => 2;
+    public override int ForteRate => int.MaxValue;
+    public override bool IsAffectedByForte => false;
 }
 
 public sealed class CurseNote : MgrNote
@@ -69,13 +70,6 @@ public sealed class CurseNote : MgrNote
     public override int BaseEffectAmount => 2;
     public override int ForteRate => int.MaxValue;
     public override bool IsAffectedByForte => false;
-}
-
-public sealed class QuestNote : MgrNote
-{
-    public override NoteKind Kind => NoteKind.Quest;
-    public override int BaseEffectAmount => 1;
-    public override int ForteRate => 6;
 }
 
 public sealed class StarryNote : MgrNote
@@ -93,8 +87,23 @@ public sealed class GhostNote : MgrNote
     public override int ForteRate => int.MaxValue;
     public override bool IsAffectedByForte => false;
 
-    // Quest.png already contains the STS1 Ghost note artwork. Reuse it so the
-    // new semantic distinction does not require another duplicate asset.
     public override string TexturePath =>
-        $"{Entry.ResPath}/images/notes/Quest.png";
+        $"{Entry.ResPath}/images/notes/Ghost.png";
+}
+
+/// <summary>
+/// A single rack slot whose resolution contains all five basic Note effects
+/// plus the Starry Note effect. Its animated presentation cycles through those
+/// six component shapes rather than requiring a dedicated static texture.
+/// </summary>
+public sealed class EverythingNote : MgrNote
+{
+    public override NoteKind Kind => NoteKind.Everything;
+    public override int BaseEffectAmount => 1;
+    public override int ForteRate => int.MaxValue;
+    public override bool IsAffectedByForte => false;
+
+    // Used only as a safe initial texture before the animated visual begins.
+    public override string TexturePath =>
+        $"{Entry.ResPath}/images/notes/Attack.png";
 }

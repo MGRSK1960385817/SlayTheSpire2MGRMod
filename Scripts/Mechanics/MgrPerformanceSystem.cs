@@ -17,10 +17,12 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public static class MgrPerformanceSystem
 {
     private static readonly HashSet<CardModel> CompletingCards = [];
+    private static readonly Dictionary<CardModel, int> PendingEnqueueBonuses = [];
 
     public static void ClearAll()
     {
         CompletingCards.Clear();
+        PendingEnqueueBonuses.Clear();
         MgrPerformanceVisuals.ClearAll();
         MgrPerformanceStateStore.Clear();
         MgrPerformanceModifierState.Clear();
@@ -70,6 +72,44 @@ public static class MgrPerformanceSystem
         return state.Entries.Count;
     }
 
+    public static int AddPerformancesToRightmostQueuedCards(
+        Player player,
+        int cardCount,
+        int amount)
+    {
+        if (cardCount <= 0 || amount <= 0 ||
+            !MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state))
+        {
+            return 0;
+        }
+
+        MgrPerformanceEntry[] targets = state.Entries.Take(cardCount).ToArray();
+        foreach (MgrPerformanceEntry entry in targets)
+        {
+            MgrPerformanceModifierState.Grant(entry.Card, amount);
+            entry.AddPerformanceTurns(amount);
+        }
+
+        if (targets.Length > 0)
+            MgrPerformanceVisuals.Show(player, state.Entries);
+        return targets.Length;
+    }
+
+    /// <summary>
+    /// Adds a one-shot bonus to the next manual play that enters Performance.
+    /// Unlike combat card mutation, this changes only that queue entry and is
+    /// consumed immediately after the resolved play.
+    /// </summary>
+    public static void AddPendingEnqueueBonus(CardModel card, int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        PendingEnqueueBonuses[card] = checked(
+            (PendingEnqueueBonuses.TryGetValue(card, out int current) ? current : 0) +
+            amount);
+    }
+
     /// <summary>
     /// Registers a newly generated combat card directly in the Performance
     /// sequence without resolving an ordinary card play first. Cards with a
@@ -110,14 +150,24 @@ public static class MgrPerformanceSystem
     /// then holds it in the Performance rack. This is used by delayed hand
     /// effects such as Coward Rocket and deliberately does not count as a play.
     /// </summary>
-    public static async Task<MgrPerformanceEntry?> EnqueueCardFromHand(
+    public static Task<MgrPerformanceEntry?> EnqueueCardFromHand(
         Player player,
         CardModel card,
-        int initialTurns)
+        int initialTurns) => EnqueueCardFromPile(
+            player,
+            card,
+            initialTurns,
+            PileType.Hand);
+
+    private static async Task<MgrPerformanceEntry?> EnqueueCardFromPile(
+        Player player,
+        CardModel card,
+        int initialTurns,
+        PileType expectedSourcePile)
     {
         ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(card);
-        if (card.Pile?.Type != PileType.Hand || initialTurns <= 0)
+        if (card.Pile?.Type != expectedSourcePile || initialTurns <= 0)
             return null;
 
         await CardPileCmd.Add(card, PileType.Play);
@@ -171,6 +221,76 @@ public static class MgrPerformanceSystem
         PlayerChoiceContext choiceContext,
         Player player) => ConsumeOnePass(choiceContext, player);
 
+    /// <summary>
+    /// Immediately finishes every currently queued Performance card without
+    /// playing its remaining steps. Cards use their normal completion
+    /// destination and still receive their Performance-finished hook.
+    /// </summary>
+    public static async Task<int> EndAllPerformances(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        if (!MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
+            state.Entries.Count == 0)
+        {
+            return 0;
+        }
+
+        int ended = 0;
+        foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
+        {
+            if (!state.Entries.Contains(entry))
+                continue;
+
+            bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
+            bool willExhaust = !isOrdinaryPower &&
+                (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
+                 entry.Card.ExhaustOnNextPlay);
+
+            if (isOrdinaryPower)
+            {
+                entry.Card.RemoveFromState();
+            }
+            else if (willExhaust)
+            {
+                await CardCmd.Exhaust(
+                    choiceContext,
+                    entry.Card,
+                    skipVisuals: true);
+            }
+            else
+            {
+                await CardPileCmd.Add(
+                    entry.Card,
+                    PileType.Discard,
+                    skipVisuals: true);
+            }
+
+            if (entry.Card is MgrCard mgrCard)
+            {
+                await mgrCard.OnPerformanceFinished(
+                    choiceContext,
+                    new PerformanceCompletionContext(
+                        player,
+                        entry.InitialPerformanceTurns,
+                        willExhaust));
+            }
+
+            await MgrPerformanceVisuals.PlayExitAnimation(
+                player,
+                entry,
+                entry.Card.Pile?.Type);
+            NotifySkippedPileAnimationFinished(entry.Card);
+
+            state.Remove(entry);
+            entry.ResetRemainingTurns();
+            ended++;
+            MgrPerformanceVisuals.Show(player, state.Entries);
+        }
+
+        return ended;
+    }
+
     public static void ObserveResolvedCardPlay(CardPlay cardPlay)
     {
         if (!cardPlay.IsLastInSeries)
@@ -190,6 +310,10 @@ public static class MgrPerformanceSystem
             bonusPerformances = 1;
         }
 
+
+        if (PendingEnqueueBonuses.Remove(card, out int pendingBonus))
+            bonusPerformances = checked(bonusPerformances + pendingBonus);
+
         MgrPerformanceEntry? entry = state.Enqueue(
             card,
             initialPerformanceTurns,
@@ -198,8 +322,13 @@ public static class MgrPerformanceSystem
             return;
 
         // The normal play that entered the sequence does not consume a turn.
-        MgrPerformanceVisuals.Show(card.Owner, state.Entries);
-        MgrPerformanceVisuals.QueueEntryAnimation(card.Owner, entry);
+        // Both the rack replica and its entry animation are deferred until the
+        // native play pipeline emits Played. Creating a second NCard earlier can
+        // confuse Tower 2's model-based NCard.FindOnTable result routing.
+        MgrPerformanceVisuals.QueueEntryAnimationAfterPlay(
+            card.Owner,
+            state.Entries,
+            entry);
     }
 
     public static async Task PerformAtTurnStart(
@@ -269,17 +398,30 @@ public static class MgrPerformanceSystem
             }
 
             // The final autoplay has already used the engine's normal result
-            // routing, so its CardAddFinished/CardRemoveFinished events update
-            // the pile counters correctly. The rack supplies a short, explicit
-            // destination animation because autoplay pile visuals were skipped.
+            // routing. Because its native pile VFX was skipped, the rack supplies
+            // both the destination animation and the CardAddFinished notification
+            // that NCardFlyVfx would ordinarily emit when it reaches the pile.
             await MgrPerformanceVisuals.PlayExitAnimation(
                 player,
                 entry,
                 entry.Card.Pile?.Type);
 
+            NotifySkippedPileAnimationFinished(entry.Card);
+
             state.Remove(entry);
             entry.ResetRemainingTurns();
             MgrPerformanceVisuals.Show(player, state.Entries);
         }
+    }
+
+    /// <summary>
+    /// CardPileCmd normally lets NCardFlyVfx emit this notification after the
+    /// physical card reaches Discard/Exhaust. Performance uses its own rack
+    /// animation, so this is the matching completion point for skipped VFX.
+    /// </summary>
+    private static void NotifySkippedPileAnimationFinished(CardModel card)
+    {
+        if (card.Pile is { Type: PileType.Discard or PileType.Exhaust } resultPile)
+            resultPile.InvokeCardAddFinished();
     }
 }

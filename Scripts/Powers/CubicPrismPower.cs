@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.ValueProps;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -13,26 +14,12 @@ namespace SlayTheSpire2MGRMod.Powers;
 [RegisterPower]
 public sealed class CubicPrismPower : ModPowerTemplate
 {
-    private int _attacksPlayedThisTurn;
-
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png",
         BigIconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png");
-
-    public override Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
-    {
-        if (cardPlay.IsLastInSeries &&
-            cardPlay.Card.Owner.Creature == Owner &&
-            cardPlay.Card.Type == CardType.Attack)
-        {
-            _attacksPlayedThisTurn++;
-        }
-
-        return Task.CompletedTask;
-    }
 
     public override async Task AfterSideTurnEnd(
         PlayerChoiceContext choiceContext,
@@ -42,8 +29,11 @@ public sealed class CubicPrismPower : ModPowerTemplate
         if (side != Owner.Side || Owner.CombatState is not { } combatState)
             return;
 
-        decimal damage = Math.Max(0m, Amount - 2m * _attacksPlayedThisTurn);
-        _attacksPlayedThisTurn = 0;
+        int chordTriggers = Owner.Player is { } player &&
+            MgrCombatStateStore.TryGet(player, out MgrCombatState state)
+                ? state.ChordTriggersThisTurn
+                : 0;
+        decimal damage = Math.Max(0m, Amount - 3m * chordTriggers);
         if (damage <= 0m)
             return;
 

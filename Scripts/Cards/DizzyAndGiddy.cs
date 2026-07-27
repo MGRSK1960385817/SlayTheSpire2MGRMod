@@ -30,7 +30,7 @@ public sealed class DizzyAndGiddy : MgrCard
             return;
 
         int maxSelect = Math.Min(DynamicVars.Cards.IntValue, handCount);
-        int minSelect = IsUpgraded ? 0 : maxSelect;
+        const int minSelect = 0;
         var prompt = new LocString(
             "cards",
             "SLAY_THE_SPIRE2_MGR_MOD_CARD_DIZZY_AND_GIDDY_CHOOSE");
@@ -52,5 +52,6 @@ public sealed class DizzyAndGiddy : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Cards.UpgradeValueBy(2m);
     }
 }
