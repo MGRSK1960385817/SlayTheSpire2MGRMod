@@ -127,7 +127,6 @@ public static class MgrKeywords
         BroomStrike => MgrKeywordKind.AttackNote,
         Strafe => MgrKeywordKind.AttackNote,
         SatelliteGirl => MgrKeywordKind.Chord,
-        MasterSpark => MgrKeywordKind.Forte,
         MaguroAssault => MgrKeywordKind.Chord,
         StageWarmUp => MgrKeywordKind.Forte,
         OtomeDissection => MgrKeywordKind.Forte,
@@ -138,10 +137,6 @@ public static class MgrKeywords
         LittleMiracles => MgrKeywordKind.BasicNotes,
         Resonate => MgrKeywordKind.Performance,
         EastOfTimeline => MgrKeywordKind.AttackNote,
-        HarmonyForm => MgrKeywordKind.Chord,
-        Stereophonic => MgrKeywordKind.AttackNote |
-                       MgrKeywordKind.SkillNote |
-                       MgrKeywordKind.PowerNote,
         Higan => MgrKeywordKind.Forte |
                  MgrKeywordKind.PhraseStart |
                  MgrKeywordKind.PhraseEnd,

@@ -33,25 +33,15 @@ public static class MgrNoteEffects
             await PlayerCmd.GainGold(1m, player);
         }
 
-        int harmonyRepeats = Math.Max(
-            0,
-            (int)player.Creature.GetPowerAmount<HarmonyFormPower>());
         for (int noteIndex = 0; noteIndex < notes.Count; noteIndex++)
         {
             MgrNote note = notes[noteIndex];
-            int repeats = 1;
-            if (noteIndex == 0 || noteIndex == notes.Count - 1)
-                repeats += harmonyRepeats;
-
-            for (int repeat = 0; repeat < repeats; repeat++)
-            {
-                await Trigger(
-                    choiceContext,
-                    player,
-                    note,
-                    forte,
-                    fastPresentation);
-            }
+            await Trigger(
+                choiceContext,
+                player,
+                note,
+                forte,
+                fastPresentation);
         }
 
         decimal folkRhymesBlock = player.Creature.GetPowerAmount<FolkRhymesPower>();
@@ -127,19 +117,6 @@ public static class MgrNoteEffects
                     cardSource: null,
                     cardPlay: null);
 
-                if (owner.Powers.OfType<StereophonicPower>().Any())
-                {
-                    decimal block = amount / 2;
-                    if (block > 0m)
-                    {
-                        await CreatureCmd.GainBlock(
-                            owner,
-                            block,
-                            ValueProp.Unpowered,
-                            cardPlay: null,
-                            fast: fastPresentation);
-                    }
-                }
                 return;
             }
             case NoteKind.Skill:
@@ -150,25 +127,6 @@ public static class MgrNoteEffects
                     ValueProp.Unpowered,
                     cardPlay: null,
                     fast: fastPresentation);
-                if (owner.Powers.OfType<StereophonicPower>().Any() &&
-                    combatState is not null &&
-                    combatState.HittableEnemies.Count > 0)
-                {
-                    var target = player.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies);
-                    if (target is not null)
-                    {
-                        await CreatureCmd.Damage(
-                            choiceContext,
-                            target,
-                            amount,
-                            fastPresentation
-                                ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
-                                : ValueProp.Unpowered,
-                            owner,
-                            cardSource: null,
-                            cardPlay: null);
-                    }
-                }
                 return;
             }
             case NoteKind.Power:
@@ -183,32 +141,6 @@ public static class MgrNoteEffects
                         ValueProp.Unpowered,
                         cardPlay: null,
                         fast: fastPresentation);
-                }
-                if (owner.GetPowerAmount<StereophonicPlusPower>() > 0m)
-                {
-                    decimal doubled = amount * 2m;
-                    await CreatureCmd.GainBlock(
-                        owner,
-                        doubled,
-                        ValueProp.Unpowered,
-                        cardPlay: null,
-                        fast: fastPresentation);
-                    if (combatState is not null)
-                    {
-                        foreach (var target in combatState.HittableEnemies.ToArray())
-                        {
-                            await CreatureCmd.Damage(
-                                choiceContext,
-                                target,
-                                doubled,
-                                fastPresentation
-                                    ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
-                                    : ValueProp.Unpowered,
-                                owner,
-                                cardSource: null,
-                                cardPlay: null);
-                        }
-                    }
                 }
                 return;
             }
