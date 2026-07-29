@@ -9,7 +9,7 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "defend")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "mgr_defend")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), 4, Order = 20)]
 public sealed class MgrDefend : MgrCard
 {

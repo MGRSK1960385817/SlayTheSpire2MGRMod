@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "prolonged_note")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "little_miracles")]
 public sealed class LittleMiracles : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

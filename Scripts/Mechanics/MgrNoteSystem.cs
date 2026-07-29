@@ -67,6 +67,12 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 state.Forte,
                 clearAfterDelay: false);
 
+            // Create the empty Performance rack together with the note rack so
+            // its staff is already present before the first Performance card.
+            MgrPerformanceState performanceState =
+                MgrPerformanceStateStore.For(player);
+            MgrPerformanceVisuals.Show(player, performanceState.Entries);
+
             if (player.GetRelic<BookOfGrudges>() is { } plectrum)
             {
                 plectrum.Flash();
@@ -92,7 +98,14 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (player.Character is not MgrCharacter)
             return;
 
-        await ChannelNote(choiceContext, player, CardNoteResolver.Resolve(cardPlay.Card));
+        NoteKind playedKind = CardNoteResolver.Resolve(cardPlay.Card);
+        bool generated = await ChannelNote(choiceContext, player, playedKind);
+        if (generated &&
+            player.Creature.GetPower<HappySynthesizerPower>() is { } synthesizer)
+        {
+            await synthesizer.ObservePlayedNoteKind(choiceContext, playedKind);
+        }
+
         MgrPerformanceSystem.ObserveResolvedCardPlay(cardPlay);
     }
 
@@ -103,8 +116,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         CardLocation location)
     {
         if (card.Owner.Character is MgrCharacter &&
-            MgrPerformanceSystem.IsPerformanceCard(card) &&
-            !MgrPerformanceSystem.IsCompletingPerformance(card))
+            MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, resources))
         {
             return new CardLocation(card.Owner, PileType.Play, CardPilePosition.Bottom);
         }
@@ -116,20 +128,22 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// Unified entry point for card plays, discard-based generation and future card effects.
     /// Filling the current capacity resolves a chord and triggers its notes from left to right.
     /// </summary>
-    public static async Task ChannelNote(
+    public static async Task<bool> ChannelNote(
         PlayerChoiceContext choiceContext,
         Player player,
         NoteKind kind)
     {
-        if (kind == NoteKind.Attack &&
+        if (player.Creature.GetPowerAmount<NoteGenerationLockPower>() > 0m ||
+            kind == NoteKind.Attack &&
             player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
         {
-            return;
+            return false;
         }
 
         int copies = player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ? 2 : 1;
         for (int copy = 0; copy < copies; copy++)
             await ChannelSingleNote(choiceContext, player, kind);
+        return true;
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "purifying_prelude")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "daybreak_frontline")]
 public sealed class DaybreakFrontline : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

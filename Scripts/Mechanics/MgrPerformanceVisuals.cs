@@ -77,23 +77,46 @@ public static class MgrPerformanceVisuals
             rack.QueuePlayedCardAnimation(entry);
     }
 
-    public static Task PlayTriggerAnimation(Player player, MgrPerformanceEntry entry)
+    public static Task PlayTriggerAnimation(
+        Player player,
+        MgrPerformanceEntry entry,
+        bool consumesRemaining,
+        float durationScale)
     {
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.PlayTriggerAnimation(entry);
+        return rack.PlayTriggerAnimation(entry, consumesRemaining, durationScale);
+    }
+
+    public static Task PlayTriggerCompletionAnimation(
+        Player player,
+        MgrPerformanceEntry entry,
+        float durationScale)
+    {
+        if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
+            return Task.CompletedTask;
+
+        return rack.PlayTriggerCompletionAnimation(entry, durationScale);
+    }
+
+    public static void SetPerforming(Player player, bool isPerforming)
+    {
+        MgrNoteVisuals.SetPerforming(player, isPerforming);
+        if (Racks.TryGetValue(player, out PerformanceRack? rack) && rack.IsValid)
+            rack.SetStaffPerforming(isPerforming);
     }
 
     public static Task PlayExitAnimation(
         Player player,
         MgrPerformanceEntry entry,
-        PileType? destinationPile)
+        PileType? destinationPile,
+        float durationScale = 1f)
     {
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.PlayExitAnimation(entry, destinationPile);
+        return rack.PlayExitAnimation(entry, destinationPile, durationScale);
     }
 
     public static void ClearAll()
@@ -131,6 +154,7 @@ public static class MgrPerformanceVisuals
         // like a row of playing cards. The exposed strip stays wide enough to
         // hover each entry even when the queue becomes long.
         private readonly Node2D _root;
+        private readonly MgrPerformanceStaffVisual _staff;
         private readonly CanvasLayer _previewLayer;
         private readonly List<PerformanceCardView> _views = [];
 
@@ -146,6 +170,13 @@ public static class MgrPerformanceVisuals
             };
             parent.AddChild(_root);
 
+            _staff = new MgrPerformanceStaffVisual
+            {
+                Name = "MgrPerformanceStaff"
+            };
+            _root.AddChild(_staff);
+            _staff.SetActive(false);
+
             // CardPreviewContainer owns a layout script that moves every child
             // back to the screen centre. A private canvas layer lets the rack
             // keep hover previews beside the mouse and above combat UI.
@@ -159,6 +190,10 @@ public static class MgrPerformanceVisuals
 
         public void Show(IReadOnlyList<MgrPerformanceEntry> entries)
         {
+            // The staff is the permanent visual home of the queue and remains
+            // visible even while no Performance cards are currently queued.
+            _staff.SetActive(true);
+
             foreach (PerformanceCardView stale in _views
                          .Where(view => !entries.Any(
                              entry => ReferenceEquals(entry, view.Entry)))
@@ -197,12 +232,40 @@ public static class MgrPerformanceVisuals
             _views.AddRange(orderedViews);
         }
 
-        public Task PlayTriggerAnimation(MgrPerformanceEntry entry) =>
-            FindView(entry)?.PlayTriggerAnimation() ?? Task.CompletedTask;
+        public async Task PlayTriggerAnimation(
+            MgrPerformanceEntry entry,
+            bool consumesRemaining,
+            float durationScale)
+        {
+            PerformanceCardView? view = FindView(entry);
+            if (view is null)
+                return;
+
+            view.SetTriggering(true);
+            await _staff.PrepareTrigger(
+                view.LocalCenterX - MgrVisualTuning.Performances.StaffOffset.X,
+                durationScale);
+            _staff.Pulse();
+            await view.PlayTriggerAnimation(consumesRemaining, durationScale);
+        }
+
+        public async Task PlayTriggerCompletionAnimation(
+            MgrPerformanceEntry entry,
+            float durationScale)
+        {
+            await _staff.CompleteTrigger(durationScale);
+            FindView(entry)?.SetTriggering(false);
+        }
+
+        public void SetStaffPerforming(bool isPerforming) =>
+            _staff.SetPerforming(isPerforming);
+
+        public void PulseStaff() => _staff.Pulse();
 
         public Task PlayExitAnimation(
             MgrPerformanceEntry entry,
-            PileType? destinationPile)
+            PileType? destinationPile,
+            float durationScale)
         {
             PerformanceCardView? view = FindView(entry);
             if (view is null)
@@ -228,7 +291,10 @@ public static class MgrPerformanceVisuals
                 }
             }
 
-            return view.PlayExitAnimation(destination, hasPileDestination);
+            return view.PlayExitAnimation(
+                destination,
+                hasPileDestination,
+                durationScale);
         }
 
         public void QueuePlayedCardAnimation(MgrPerformanceEntry entry)
@@ -401,12 +467,15 @@ public static class MgrPerformanceVisuals
         private readonly Control _cardBody;
         private readonly MgrPerformanceHoverProxy _hoverHitbox;
         private readonly ColorRect _triggerGlow;
-        private readonly Label _remainingLabel;
+        private readonly MgrPerformanceCardBurstVisual _triggerBurst;
+        private readonly MgrPerformanceIdleEdgeVisual _idleEdge;
+        private readonly MgrPerformanceCounterVisual _remainingCounter;
         private Tween? _pulseTween;
         private NCard? _hoverPreview;
         private int _baseLayer;
 
         public MgrPerformanceEntry Entry { get; }
+        public float LocalCenterX => _anchor.Position.X;
         public Vector2 ViewportCenter =>
             _cardBody.GetGlobalTransformWithCanvas() *
             VisibleCardRect.GetCenter();
@@ -439,7 +508,19 @@ public static class MgrPerformanceVisuals
             _cardNode.PivotOffset = Vector2.Zero;
             _cardNode.Position = Vector2.Zero;
             _cardNode.Scale = MiniatureScale;
+            // NCard is pooled. Explicitly clear any Z state left by a previous
+            // pile animation so a newly appended card cannot jump above the
+            // older card that is supposed to cover it.
+            _cardNode.ZIndex = 0;
+            _cardNode.ZAsRelative = true;
+            _cardNode.Modulate = Colors.White;
             _cardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+            _triggerBurst = new MgrPerformanceCardBurstVisual
+            {
+                Name = "PerformanceStarBurst"
+            };
+            _anchor.AddChild(_triggerBurst);
 
             Vector2 unscaledGlowMargin = new(
                 11f / MiniatureScale.X,
@@ -449,7 +530,7 @@ public static class MgrPerformanceVisuals
                 Name = "TriggerGlow",
                 Position = VisibleCardRect.Position - unscaledGlowMargin,
                 Size = VisibleCardRect.Size + unscaledGlowMargin * 2f,
-                Color = new Color("d73ee7"),
+                Color = new Color("fff0b8"),
                 Modulate = new Color(1f, 1f, 1f, 0f),
                 MouseFilter = Control.MouseFilterEnum.Ignore,
                 ZIndex = -1
@@ -459,6 +540,13 @@ public static class MgrPerformanceVisuals
             // separate the card face from its glow or counter.
             _cardBody.AddChild(_triggerGlow);
             _cardBody.MoveChild(_triggerGlow, 0);
+
+            _idleEdge = new MgrPerformanceIdleEdgeVisual
+            {
+                Name = "PerformanceIdleEdge"
+            };
+            _cardBody.AddChild(_idleEdge);
+            _idleEdge.Initialize(VisibleCardRect, MiniatureScale.X);
 
             _hoverHitbox = new MgrPerformanceHoverProxy
             {
@@ -477,49 +565,21 @@ public static class MgrPerformanceVisuals
             // Control under the creature node ever sees it.
             _previewHost.AddChild(_hoverHitbox);
 
-            _remainingLabel = new Label
+            _remainingCounter = new MgrPerformanceCounterVisual
             {
-                Name = "RemainingPerformances",
-                Text = entry.RemainingPerformanceTurns.ToString(),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                MouseFilter = Control.MouseFilterEnum.Ignore,
-                ZIndex = MgrVisualTuning.Performances.RemainingLabelZIndex
+                Name = "RemainingPerformanceBeat"
             };
-
-            // Tuning values are expressed in final screen pixels. The label is
-            // now inside the miniature's scaled Body, so compensate once here.
-            Vector2 unscaledLabelSize = new(
-                MgrVisualTuning.Performances.RemainingLabelSize.X / MiniatureScale.X,
-                MgrVisualTuning.Performances.RemainingLabelSize.Y / MiniatureScale.Y);
-            Vector2 unscaledLabelInset = new(
-                MgrVisualTuning.Performances.RemainingLabelBottomRightInset.X / MiniatureScale.X,
-                MgrVisualTuning.Performances.RemainingLabelBottomRightInset.Y / MiniatureScale.Y);
-            _remainingLabel.Position =
-                VisibleCardRect.End - unscaledLabelInset - unscaledLabelSize;
-            _remainingLabel.Size = unscaledLabelSize;
-            _remainingLabel.AddThemeFontSizeOverride(
-                "font_size",
-                ScaleThemeValueForMiniature(
-                    MgrVisualTuning.Performances.RemainingLabelFontSize));
-            _remainingLabel.AddThemeColorOverride(
-                "font_color",
-                MgrVisualTuning.Performances.RemainingLabelColor);
-            _remainingLabel.AddThemeColorOverride(
-                "font_outline_color",
-                MgrVisualTuning.Performances.RemainingLabelOutlineColor);
-            _remainingLabel.AddThemeConstantOverride(
-                "outline_size",
-                ScaleThemeValueForMiniature(
-                    MgrVisualTuning.Performances.RemainingLabelOutlineSize));
-            _cardBody.AddChild(_remainingLabel);
+            _anchor.AddChild(_remainingCounter);
+            _remainingCounter.Initialize(
+                entry.RemainingPerformanceTurns,
+                NCard.defaultSize.Y * MiniatureScale.Y);
 
             Refresh();
         }
 
         public void Refresh()
         {
-            _remainingLabel.Text = Entry.RemainingPerformanceTurns.ToString();
+            _remainingCounter.Refresh(Entry.RemainingPerformanceTurns);
             if (GodotObject.IsInstanceValid(_cardNode) && _cardNode.IsNodeReady())
             {
                 _cardNode.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
@@ -548,7 +608,12 @@ public static class MgrPerformanceVisuals
             _hoverHitbox.ZIndex = layer;
         }
 
-        public async Task PlayTriggerAnimation()
+        public void SetTriggering(bool isTriggering) =>
+            _idleEdge.SetTriggering(isTriggering);
+
+        public async Task PlayTriggerAnimation(
+            bool consumesRemaining,
+            float durationScale)
         {
             if (!GodotObject.IsInstanceValid(_anchor) || !_anchor.IsInsideTree())
                 return;
@@ -557,6 +622,15 @@ public static class MgrPerformanceVisuals
             _pulseTween?.Kill();
             _anchor.Scale = Vector2.One;
             _triggerGlow.Modulate = new Color(1f, 1f, 1f, 0f);
+            _triggerBurst.Burst();
+            float clampedDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
+            _remainingCounter.PlayTrigger(consumesRemaining, clampedDurationScale);
+            double growSeconds =
+                MgrVisualTuning.Performances.TriggerGrowSeconds *
+                clampedDurationScale;
+            double settleSeconds =
+                MgrVisualTuning.Performances.TriggerSettleSeconds *
+                clampedDurationScale;
 
             Tween tween = _anchor.CreateTween();
             _pulseTween = tween;
@@ -564,26 +638,26 @@ public static class MgrPerformanceVisuals
                     _anchor,
                     "scale",
                     Vector2.One * MgrVisualTuning.Performances.TriggerScale,
-                    MgrVisualTuning.Performances.TriggerGrowSeconds)
+                    growSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
             tween.Parallel().TweenProperty(
                 _triggerGlow,
                 "modulate",
-                new Color(1f, 1f, 1f, 0.9f),
-                MgrVisualTuning.Performances.TriggerGrowSeconds);
+                new Color(1f, 1f, 1f, 0.78f),
+                growSeconds);
             tween.TweenProperty(
                     _anchor,
                     "scale",
                     Vector2.One,
-                    MgrVisualTuning.Performances.TriggerSettleSeconds)
+                    settleSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.Parallel().TweenProperty(
                 _triggerGlow,
                 "modulate",
                 new Color(1f, 1f, 1f, 0f),
-                MgrVisualTuning.Performances.TriggerSettleSeconds);
+                settleSeconds);
 
             bool completed = await TweenHelper.AwaitFinished(tween, _anchor);
             if (completed && ReferenceEquals(_pulseTween, tween))
@@ -592,7 +666,8 @@ public static class MgrPerformanceVisuals
 
         public async Task PlayExitAnimation(
             Vector2 destinationInViewport,
-            bool hasPileDestination)
+            bool hasPileDestination,
+            float durationScale)
         {
             if (!GodotObject.IsInstanceValid(_anchor) || !_anchor.IsInsideTree())
                 return;
@@ -606,24 +681,32 @@ public static class MgrPerformanceVisuals
             Vector2 destinationInRackCanvas =
                 _anchor.GetCanvasTransform().AffineInverse() *
                 destinationInViewport;
+            float clampedDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
+            double exitSeconds =
+                MgrVisualTuning.Performances.ExitSeconds *
+                clampedDurationScale;
 
             Tween tween = _anchor.CreateTween().SetParallel();
             tween.TweenProperty(
                     _anchor,
                     "global_position",
                     destinationInRackCanvas,
-                    MgrVisualTuning.Performances.ExitSeconds)
+                    exitSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.TweenProperty(
                     _anchor,
                     "scale",
                     hasPileDestination ? new Vector2(0.34f, 0.34f) : new Vector2(0.82f, 0.82f),
-                    MgrVisualTuning.Performances.ExitSeconds)
+                    exitSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Back);
-            tween.TweenProperty(_anchor, "modulate", new Color(1f, 1f, 1f, 0f), 0.26)
-                .SetDelay(0.12);
+            tween.TweenProperty(
+                    _anchor,
+                    "modulate",
+                    new Color(1f, 1f, 1f, 0f),
+                    0.26 * clampedDurationScale)
+                .SetDelay(0.12 * clampedDurationScale);
 
             await TweenHelper.AwaitFinished(tween, _anchor);
         }
@@ -713,12 +796,6 @@ public static class MgrPerformanceVisuals
             _hoverHitbox.SyncToTarget();
         }
 
-        private static int ScaleThemeValueForMiniature(int value)
-        {
-            float scale = MathF.Max(0.01f, MiniatureScale.X);
-            return Math.Max(1, Mathf.RoundToInt(value / scale));
-        }
-
         private void HideHoverPreview()
         {
             if (_hoverPreview is null)
@@ -748,8 +825,8 @@ public static class MgrPerformanceVisuals
             // must be detached before QueueFreeSafely returns the card to that
             // pool, otherwise the counter/glow reappear on whichever discard,
             // reward or preview card receives this NCard instance next.
-            DetachAndFreeDecoration(_remainingLabel);
             DetachAndFreeDecoration(_triggerGlow);
+            DetachAndFreeDecoration(_idleEdge);
 
             if (GodotObject.IsInstanceValid(_cardNode))
                 _cardNode.QueueFreeSafely();

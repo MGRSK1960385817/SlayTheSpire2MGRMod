@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "third_mouth")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "higan")]
 public sealed class Higan : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

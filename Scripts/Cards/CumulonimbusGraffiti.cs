@@ -7,7 +7,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "echoing_cadence")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cumulonimbus_graffiti")]
 public sealed class CumulonimbusGraffiti : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>

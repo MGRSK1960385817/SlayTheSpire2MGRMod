@@ -44,7 +44,7 @@ public static class MgrNoteEffects
                 fastPresentation);
         }
 
-        decimal folkRhymesBlock = player.Creature.GetPowerAmount<FolkRhymesPower>();
+        decimal folkRhymesBlock = player.Creature.GetPowerAmount<SatelliteGirlPower>();
         if (folkRhymesBlock > 0m)
         {
             await CreatureCmd.GainBlock(
@@ -63,7 +63,7 @@ public static class MgrNoteEffects
         int forte,
         bool fastPresentation = false)
     {
-        if (note.Kind == NoteKind.Everything)
+        if (note.Kind == NoteKind.OmniaNote)
         {
             NoteKind[] componentKinds =
             [
@@ -132,7 +132,7 @@ public static class MgrNoteEffects
             case NoteKind.Power:
             {
                 await CardPileCmd.Draw(choiceContext, amount, player);
-                decimal powerNoteBlock = owner.GetPowerAmount<PowerNoteBlockPower>();
+                decimal powerNoteBlock = owner.GetPowerAmount<MindMiragePower>();
                 if (powerNoteBlock > 0m)
                 {
                     await CreatureCmd.GainBlock(
@@ -161,7 +161,7 @@ public static class MgrNoteEffects
             {
                 // Curse notes deliberately ignore Forte, but Curse Wardrobe is
                 // a separate flat bonus and therefore applies afterward.
-                int wardrobeBonus = Math.Max(0, (int)owner.GetPowerAmount<CurseWardrobePower>());
+                int wardrobeBonus = Math.Max(0, (int)owner.GetPowerAmount<StainedNocturnePower>());
                 await CreatureCmd.Heal(
                     owner,
                     amount + wardrobeBonus,

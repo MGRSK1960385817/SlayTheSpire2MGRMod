@@ -13,6 +13,7 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public static class MgrNoteVisuals
 {
     private static readonly Dictionary<Player, NoteRack> Racks = [];
+    private static readonly Dictionary<Player, bool> PerformingStates = [];
 
     public static void Show(
         Player player,
@@ -63,6 +64,14 @@ public static class MgrNoteVisuals
             rack.Dispose();
 
         Racks.Clear();
+        PerformingStates.Clear();
+    }
+
+    public static void SetPerforming(Player player, bool isPerforming)
+    {
+        PerformingStates[player] = isPerforming;
+        if (Racks.TryGetValue(player, out NoteRack? rack) && rack.IsValid)
+            rack.SetPerforming(isPerforming);
     }
 
     private static NoteRack? GetOrCreateRack(
@@ -83,6 +92,7 @@ public static class MgrNoteVisuals
         {
             rack?.Dispose();
             rack = new NoteRack(creatureNode);
+            rack.SetPerforming(PerformingStates.GetValueOrDefault(player));
             Racks[player] = rack;
         }
 
@@ -95,6 +105,7 @@ public static class MgrNoteVisuals
         private readonly List<NoteSlot> _slots = [];
         private readonly SemaphoreSlim _channelAnimationGate = new(1, 1);
         private Tween? _clearTween;
+        private bool _isPerforming;
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
 
@@ -148,7 +159,11 @@ public static class MgrNoteVisuals
                 }
 
                 if (clearAfterDelay && IsValid)
+                {
+                    foreach (NoteSlot slot in _slots)
+                        slot.PlayChordTriggerAnimation();
                     ScheduleClear(chordsResolvedBefore);
+                }
             }
             finally
             {
@@ -169,7 +184,11 @@ public static class MgrNoteVisuals
         private void EnsureCapacity(int capacity)
         {
             while (_slots.Count < capacity)
-                _slots.Add(new NoteSlot(_root, _slots.Count));
+            {
+                var slot = new NoteSlot(_root, _slots.Count);
+                slot.SetPerforming(_isPerforming);
+                _slots.Add(slot);
+            }
 
             while (_slots.Count > capacity)
             {
@@ -186,6 +205,13 @@ public static class MgrNoteVisuals
             float center = (capacity - 1) * 0.5f;
             for (int index = 0; index < capacity; index++)
                 _slots[index].SetPosition(new Vector2((index - center) * spacing, 0f));
+        }
+
+        public void SetPerforming(bool isPerforming)
+        {
+            _isPerforming = isPerforming;
+            foreach (NoteSlot slot in _slots)
+                slot.SetPerforming(isPerforming);
         }
 
         private void CancelScheduledClear()
@@ -235,21 +261,39 @@ public static class MgrNoteVisuals
     private sealed class NoteSlot : IDisposable
     {
         private readonly Node2D _anchor;
-        private readonly Node2D _emptySlotOutline;
+        private readonly Node2D _emptySlotTransitionRoot;
+        private readonly MgrRotatingNoteSlotFrame _emptySlotOutline;
         private readonly Node2D _entranceRoot;
         private readonly MgrFloatingNoteVisual _floatingRoot;
+        private readonly MgrNoteBurstVisual _burst;
 
         private NoteKind? _displayedKind;
+        private Color _noteColor = Colors.White;
         private Label? _amountLabel;
         private Tween? _entranceTween;
+        private Tween? _chordTween;
+        private Tween? _emptySlotTransitionTween;
+        private bool _emptySlotPresented;
 
         public NoteSlot(Node parent, int index)
         {
             _anchor = new Node2D { Name = $"NoteSlot{index + 1}" };
             parent.AddChild(_anchor);
 
+            _emptySlotTransitionRoot = new Node2D
+            {
+                Name = "EmptySlotTransition"
+            };
+            _anchor.AddChild(_emptySlotTransitionRoot);
+
             _emptySlotOutline = CreateDashedEmptySlot(index);
-            _anchor.AddChild(_emptySlotOutline);
+            _emptySlotTransitionRoot.AddChild(_emptySlotOutline);
+
+            _burst = new MgrNoteBurstVisual
+            {
+                Name = "NoteGlowAndStars"
+            };
+            _anchor.AddChild(_burst);
 
             _entranceRoot = new Node2D { Name = "FilledNoteEntrance" };
             _anchor.AddChild(_entranceRoot);
@@ -264,18 +308,27 @@ public static class MgrNoteVisuals
             _anchor.Position = position;
         }
 
+        public void SetPerforming(bool isPerforming) =>
+            _emptySlotOutline.SetPerforming(isPerforming);
+
         public void Show(MgrNote? note, int forte)
         {
-            _emptySlotOutline.Visible = note is null;
-
             if (note is null)
             {
+                bool shouldAnimate = _displayedKind is not null ||
+                    !_emptySlotPresented;
                 ClearNote();
+                if (shouldAnimate)
+                    PlayEmptySlotAppearAnimation();
                 return;
             }
 
+            bool replacesEmptySlot = _displayedKind is null;
             if (_displayedKind != note.Kind || _amountLabel is null)
                 CreateNote(note);
+
+            if (replacesEmptySlot && _displayedKind is not null)
+                PlayEmptySlotCollapseAnimation();
 
             if (_amountLabel is not null)
                 _amountLabel.Text = note.GetEffectAmount(forte).ToString();
@@ -297,6 +350,7 @@ public static class MgrNoteVisuals
             _entranceRoot.Scale = Vector2.One *
                 MgrVisualTuning.Notes.EntranceStartScale;
             _entranceRoot.Modulate = new Color(1f, 1f, 1f, 0f);
+            _burst.Burst(_noteColor, MgrNoteBurstStyle.Entrance);
 
             double growSeconds =
                 totalSeconds * MgrVisualTuning.Notes.EntranceGrowFraction;
@@ -344,26 +398,161 @@ public static class MgrNoteVisuals
                 _floatingRoot.RandomizeMotion();
         }
 
+        public void PlayChordTriggerAnimation()
+        {
+            if (_displayedKind is null ||
+                !GodotObject.IsInstanceValid(_entranceRoot) ||
+                !_entranceRoot.IsInsideTree())
+            {
+                return;
+            }
+
+            _burst.Burst(_noteColor, MgrNoteBurstStyle.Chord);
+            _chordTween?.Kill();
+            _entranceRoot.Scale = Vector2.One;
+            Tween tween = _anchor.CreateTween();
+            _chordTween = tween;
+            tween.TweenProperty(
+                    _entranceRoot,
+                    "scale",
+                    Vector2.One * MgrVisualTuning.Notes.ChordTriggerScale,
+                    MgrVisualTuning.Notes.ChordTriggerGrowSeconds)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Back);
+            tween.TweenProperty(
+                    _entranceRoot,
+                    "scale",
+                    Vector2.One,
+                    MgrVisualTuning.Notes.ChordTriggerSettleSeconds)
+                .SetEase(Tween.EaseType.InOut)
+                .SetTrans(Tween.TransitionType.Cubic);
+            tween.TweenCallback(Callable.From(() =>
+            {
+                if (ReferenceEquals(_chordTween, tween))
+                    _chordTween = null;
+            }));
+        }
+
+        private void PlayEmptySlotCollapseAnimation()
+        {
+            _emptySlotPresented = false;
+            _emptySlotTransitionTween?.Kill();
+            _emptySlotTransitionRoot.Visible = true;
+            _emptySlotTransitionRoot.Scale = Vector2.One;
+            _emptySlotTransitionRoot.Rotation = 0f;
+            _emptySlotTransitionRoot.Modulate = Colors.White;
+            _burst.Burst(
+                MgrVisualTuning.Performances.PerformanceAccentColor,
+                MgrNoteBurstStyle.SlotTransition);
+
+            Tween tween = _anchor.CreateTween().SetParallel();
+            _emptySlotTransitionTween = tween;
+            tween.TweenProperty(
+                    _emptySlotTransitionRoot,
+                    "scale",
+                    Vector2.One * 0.04f,
+                    MgrVisualTuning.Notes.EmptySlotCollapseSeconds)
+                .SetEase(Tween.EaseType.In)
+                .SetTrans(Tween.TransitionType.Back);
+            tween.TweenProperty(
+                    _emptySlotTransitionRoot,
+                    "rotation",
+                    MgrVisualTuning.Notes.EmptySlotTransitionRotation,
+                    MgrVisualTuning.Notes.EmptySlotCollapseSeconds)
+                .SetEase(Tween.EaseType.In)
+                .SetTrans(Tween.TransitionType.Cubic);
+            tween.TweenProperty(
+                _emptySlotTransitionRoot,
+                "modulate",
+                new Color(1f, 1f, 1f, 0f),
+                MgrVisualTuning.Notes.EmptySlotCollapseSeconds);
+            tween.Chain().TweenCallback(Callable.From(() =>
+            {
+                if (!ReferenceEquals(_emptySlotTransitionTween, tween) ||
+                    !GodotObject.IsInstanceValid(_emptySlotTransitionRoot))
+                {
+                    return;
+                }
+
+                _emptySlotTransitionRoot.Visible = false;
+                _emptySlotTransitionTween = null;
+            }));
+        }
+
+        private void PlayEmptySlotAppearAnimation()
+        {
+            _emptySlotPresented = true;
+            _emptySlotTransitionTween?.Kill();
+            _emptySlotTransitionRoot.Visible = true;
+            _emptySlotTransitionRoot.Scale = Vector2.One * 0.04f;
+            _emptySlotTransitionRoot.Rotation =
+                -MgrVisualTuning.Notes.EmptySlotTransitionRotation;
+            _emptySlotTransitionRoot.Modulate = new Color(1f, 1f, 1f, 0f);
+            _burst.Burst(
+                MgrVisualTuning.Performances.PerformanceAccentColor,
+                MgrNoteBurstStyle.SlotTransition);
+
+            double growSeconds =
+                MgrVisualTuning.Notes.EmptySlotAppearSeconds * 0.72;
+            double settleSeconds = Math.Max(
+                0.01,
+                MgrVisualTuning.Notes.EmptySlotAppearSeconds - growSeconds);
+            Tween tween = _anchor.CreateTween().SetParallel();
+            _emptySlotTransitionTween = tween;
+            tween.TweenProperty(
+                    _emptySlotTransitionRoot,
+                    "scale",
+                    Vector2.One *
+                        MgrVisualTuning.Notes.EmptySlotAppearOvershootScale,
+                    growSeconds)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Back);
+            tween.TweenProperty(
+                    _emptySlotTransitionRoot,
+                    "rotation",
+                    0f,
+                    growSeconds)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Cubic);
+            tween.TweenProperty(
+                _emptySlotTransitionRoot,
+                "modulate",
+                Colors.White,
+                growSeconds);
+            tween.Chain().TweenProperty(
+                    _emptySlotTransitionRoot,
+                    "scale",
+                    Vector2.One,
+                    settleSeconds)
+                .SetEase(Tween.EaseType.InOut)
+                .SetTrans(Tween.TransitionType.Cubic);
+            tween.TweenCallback(Callable.From(() =>
+            {
+                if (ReferenceEquals(_emptySlotTransitionTween, tween))
+                    _emptySlotTransitionTween = null;
+            }));
+        }
+
         private void CreateNote(MgrNote note)
         {
             ClearNote();
 
             Sprite2D sprite;
-            if (note.Kind == NoteKind.Everything)
+            if (note.Kind == NoteKind.OmniaNote)
             {
-                var everythingVisual = new MgrEverythingNoteVisual
+                var omniaNoteVisual = new MgrOmniaNoteVisual
                 {
                     Name = $"{note.Name}Note",
                     Scale = MgrVisualTuning.Notes.ArtworkScale
                 };
-                if (!everythingVisual.Initialize())
+                if (!omniaNoteVisual.Initialize())
                 {
-                    everythingVisual.QueueFree();
+                    omniaNoteVisual.QueueFree();
                     _emptySlotOutline.Visible = true;
                     return;
                 }
 
-                sprite = everythingVisual;
+                sprite = omniaNoteVisual;
             }
             else
             {
@@ -384,6 +573,7 @@ public static class MgrNoteVisuals
             }
 
             Color noteColor = GetOutlineColor(note.Kind);
+            _noteColor = noteColor;
             _floatingRoot.AddChild(sprite);
 
             _amountLabel = new Label
@@ -395,7 +585,7 @@ public static class MgrNoteVisuals
                 VerticalAlignment = VerticalAlignment.Center,
                 MouseFilter = Control.MouseFilterEnum.Ignore
             };
-            _amountLabel.Visible = note.Kind != NoteKind.Everything;
+            _amountLabel.Visible = note.Kind != NoteKind.OmniaNote;
             _amountLabel.AddThemeFontSizeOverride("font_size", 24);
             _amountLabel.AddThemeColorOverride("font_color", Colors.White);
             _amountLabel.AddThemeColorOverride("font_outline_color", noteColor);
@@ -409,7 +599,7 @@ public static class MgrNoteVisuals
             _displayedKind = note.Kind;
         }
 
-        private static Node2D CreateDashedEmptySlot(int slotIndex)
+        private static MgrRotatingNoteSlotFrame CreateDashedEmptySlot(int slotIndex)
         {
             var root = new MgrRotatingNoteSlotFrame
             {
@@ -417,7 +607,8 @@ public static class MgrNoteVisuals
                 ZIndex = -1
             };
             root.Initialize(slotIndex);
-            Color color = new(0.72f, 0.76f, 0.84f, 0.58f);
+            Color color = MgrVisualTuning.Notes.EmptySlotBaseColor;
+            color.A = MgrVisualTuning.Notes.EmptySlotBaseAlpha;
             int dashCount = MgrVisualTuning.Notes.EmptySlotDashCount;
             float dashAngle =
                 MathF.Tau / dashCount *
@@ -460,7 +651,7 @@ public static class MgrNoteVisuals
             NoteKind.Curse => new Color("e8bd00"),
             NoteKind.Starry => new Color("f020c8"),
             NoteKind.Ghost => new Color("a875ff"),
-            NoteKind.Everything => Colors.White,
+            NoteKind.OmniaNote => Colors.White,
             _ => Colors.Black
         };
 
@@ -468,6 +659,8 @@ public static class MgrNoteVisuals
         {
             _entranceTween?.Kill();
             _entranceTween = null;
+            _chordTween?.Kill();
+            _chordTween = null;
             _displayedKind = null;
             _amountLabel = null;
             _entranceRoot.Position = Vector2.Zero;
@@ -485,6 +678,10 @@ public static class MgrNoteVisuals
         {
             _entranceTween?.Kill();
             _entranceTween = null;
+            _chordTween?.Kill();
+            _chordTween = null;
+            _emptySlotTransitionTween?.Kill();
+            _emptySlotTransitionTween = null;
             if (GodotObject.IsInstanceValid(_anchor))
                 _anchor.QueueFree();
         }

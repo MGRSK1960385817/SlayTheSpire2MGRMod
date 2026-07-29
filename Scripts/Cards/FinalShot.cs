@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "accurate_shooting")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "final_shot")]
 public sealed class FinalShot : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>

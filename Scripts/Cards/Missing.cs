@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cursed_guard")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "missing")]
 public sealed class Missing : MgrCard
 {
     public override bool GainsBlock => true;

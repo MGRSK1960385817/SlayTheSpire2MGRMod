@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "keep_time")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "beat_time")]
 public sealed class BeatTime : MgrCard
 {
     public override bool GainsBlock => true;

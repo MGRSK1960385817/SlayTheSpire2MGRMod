@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "two_sided_operation")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "dual_lovers")]
 public sealed class DualLovers : MgrCard
 {
     public DualLovers() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)

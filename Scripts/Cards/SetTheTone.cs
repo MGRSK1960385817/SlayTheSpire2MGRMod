@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "opening_tuning")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "set_the_tone")]
 public sealed class SetTheTone : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>

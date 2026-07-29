@@ -2,42 +2,41 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "forced_curtain_call")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "last_singer")]
 public sealed class LastSinger : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move)
+        new IntVar("NotesPerCard", 2m)
     ];
 
-    public LastSinger() : base(
-        1,
-        CardType.Attack,
-        CardRarity.Uncommon,
-        TargetType.AllEnemies)
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Ethereal];
+
+    public LastSinger() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await AttackAll(choiceContext, cardPlay);
-        int ended = await MgrPerformanceSystem.EndAllPerformances(choiceContext, Owner);
-        for (int index = 0; index < ended; index++)
-            await AttackAll(choiceContext, cardPlay);
+        CardModel[] discarded = PileType.Hand.GetPile(Owner).Cards.ToArray();
+
+        foreach (CardModel card in discarded)
+            await CardCmd.Discard(choiceContext, card);
+
+        int notes = discarded.Length * DynamicVars["NotesPerCard"].IntValue;
+        for (int index = 0; index < notes; index++)
+            await ChannelNote(choiceContext, NoteKind.Attack);
     }
 
-    private Task AttackAll(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this, cardPlay)
-            .TargetingAllOpponents(Owner.Creature.CombatState!)
-            .Execute(choiceContext);
-
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars["NotesPerCard"].UpgradeValueBy(1m);
+    }
 }

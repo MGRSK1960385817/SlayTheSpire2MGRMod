@@ -204,17 +204,17 @@ flowchart LR
 
 | 想调整的东西 | 优先修改 | 当前关键值 |
 | --- | --- | --- |
-| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkScale / DesiredSlotSpacing / MaximumRackWidth` | `(0,-430)`、`0.68`、`96`、`480` |
-| 空槽外观 | `SlotRadius / EmptySlotDashCount / EmptySlotDashFill / EmptySlotDashWidth` | `42`、`12`、`0.48`、`3` |
+| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkScale / DesiredSlotSpacing / MaximumRackWidth` | `(0,-350)`、`0.76`、`96`、`480` |
+| 空槽外观 | `SlotRadius / EmptySlotDashCount / EmptySlotDashFill / EmptySlotDashWidth` | `30`、`8`、`0.48`、`2.5` |
 | 单颗音符入场 | `FirstNoteEntranceSeconds / MinimumNoteEntranceSeconds / Entrance*` | 首颗 `0.28s`，最低 `0.10s`，起始缩放 `0.28`，过冲 `1.18` |
 | 多音符生成加速 | `NoteEntranceAccelerationPerNote` | 本回合每已有一颗减 `0.018s` |
 | 和弦满槽停留 | `FirstChordHoldSeconds / MinimumChordHoldSeconds / ChordHoldAccelerationPerChord` | `0.42s` → 最低 `0.12s`，每次减 `0.05s` |
 | 音符漂浮与呼吸差异 | `Bob* / Breath* / InitialScaleVariance / PhaseVariance` | 上下 `5px`；缩放约 `±5.5%`；速度随机约 `±20%` |
-| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / MiniatureScale / DesiredSpacing / MaximumWidth` | `(0,-650)`、`0.25`、`52`、`520` |
+| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / MiniatureScale / DesiredSpacing / MaximumWidth` | `(0,-500)`、`0.33`、`52`、`520` |
 | 演奏牌入队 | `EnterQueueSeconds` | `0.28s` |
 | 演奏触发跳动 | `TriggerScale / TriggerGrowSeconds / TriggerSettleSeconds` | `1.2`、`0.14s`、`0.18s` |
 | 演奏结束离队 | `ExitSeconds` | `0.38s` |
-| 悬停详情大小与位置 | `PreviewScale / PreviewGrowSeconds / PreviewMouseXOffset` | `0.68`、`0.12s`、鼠标右侧 `34px` |
+| 悬停详情大小与位置 | `PreviewScale / PreviewGrowSeconds / PreviewMouseXOffset` | `0.8`、`0.12s`、鼠标右侧 `34px` |
 
 完整的逐项说明见 `docs/MGR视觉特效参数表.md`。
 

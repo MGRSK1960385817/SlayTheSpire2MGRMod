@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "ghostly_invitation")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "pleasing_ghosts")]
 public sealed class PleasingGhosts : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

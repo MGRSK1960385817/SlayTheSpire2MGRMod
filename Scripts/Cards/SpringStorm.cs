@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "climax")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "spring_storm")]
 public sealed class SpringStorm : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

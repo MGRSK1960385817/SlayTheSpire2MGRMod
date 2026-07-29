@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "folk_rhymes")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "satellite_girl")]
 public sealed class SatelliteGirl : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -21,7 +21,7 @@ public sealed class SatelliteGirl : MgrCard
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<FolkRhymesPower>(
+        PowerCmd.Apply<SatelliteGirlPower>(
             choiceContext,
             Owner.Creature,
             DynamicVars["BlockPerChord"].BaseValue,

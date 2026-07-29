@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "search_through")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "procrastination")]
 public sealed class Procrastination : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -32,10 +32,14 @@ public sealed class Procrastination : MgrCard
         PlayerChoiceContext choiceContext,
         PerformanceCompletionContext context)
     {
+        // PotionFactory returns a canonical database model. As with the
+        // original random-potion procurement flow, the player must receive a
+        // mutable combat instance rather than the shared canonical template.
         PotionModel potion = PotionFactory.CreateRandomPotionInCombat(
-            context.Player,
-            context.Player.RunState.Rng.CombatPotionGeneration,
-            []);
+                context.Player,
+                context.Player.RunState.Rng.CombatPotionGeneration,
+                [])
+            .ToMutable();
         await PotionCmd.TryToProcure(potion, context.Player);
     }
 

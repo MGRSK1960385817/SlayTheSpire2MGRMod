@@ -56,8 +56,10 @@ public sealed class Regulus : MgrCard
             return;
 
         EnergyCost.AddThisCombat(-DynamicVars["CostReduction"].IntValue);
-        CardPileAddResult result = await CardPileCmd.Add(this, PileType.Hand);
-        CardCmd.PreviewCardPileAdd(result);
+        // This is an existing combat card, not a generated card. Keep the
+        // native pile-to-hand move, but do not add the slow centre-screen pile
+        // preview that generated hand cards such as Shivs never use.
+        await CardPileCmd.Add(this, PileType.Hand);
     }
 
     protected override void OnUpgrade()

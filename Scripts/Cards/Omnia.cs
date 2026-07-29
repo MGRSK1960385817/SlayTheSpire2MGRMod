@@ -8,10 +8,10 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace SlayTheSpire2MGRMod.Cards;
 
 /// <summary>
-/// Ancient-card transcendence of Song of Beginning, obtained through Archaic Tooth.
+/// Ancient-card transcendence of Little Parade, obtained through Archaic Tooth.
 /// </summary>
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "vast_world")]
-public sealed class SongOfEverything : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "omnia")]
+public sealed class Omnia : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -19,9 +19,9 @@ public sealed class SongOfEverything : MgrCard
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
-    public override NoteKind? NoteOverride => NoteKind.Everything;
+    public override NoteKind? NoteOverride => NoteKind.OmniaNote;
 
-    public SongOfEverything() : base(1, CardType.Skill, CardRarity.Ancient, TargetType.Self)
+    public Omnia() : base(1, CardType.Skill, CardRarity.Ancient, TargetType.Self)
     {
     }
 

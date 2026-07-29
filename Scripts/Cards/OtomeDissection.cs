@@ -11,7 +11,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "shatter")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "otome_dissection")]
 public sealed class OtomeDissection : MgrCard
 {
     public override bool GainsBlock => true;

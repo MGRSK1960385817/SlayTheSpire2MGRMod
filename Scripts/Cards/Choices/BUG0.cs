@@ -7,7 +7,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards.Choices;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "contract_note_rack")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "bug_0")]
 public sealed class BUG0 : MgrCard, INoteSlotChoice
 {
     public BUG0() : base(

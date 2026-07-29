@@ -12,7 +12,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "note_transmutation")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hibana")]
 public sealed class Hibana : MgrCard
 {
     public override bool GainsBlock => true;

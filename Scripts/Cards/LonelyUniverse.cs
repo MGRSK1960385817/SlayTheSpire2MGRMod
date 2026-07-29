@@ -6,7 +6,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "starlit_encore")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "lonely_universe")]
 public sealed class LonelyUniverse : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

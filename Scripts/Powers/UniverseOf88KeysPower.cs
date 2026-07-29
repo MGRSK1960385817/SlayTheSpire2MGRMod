@@ -12,14 +12,14 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class CubicPrismPower : ModPowerTemplate
+public sealed class UniverseOf88KeysPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/CubicPrismPower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/UniverseOf88KeysPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/UniverseOf88KeysPower.png");
 
     public override async Task AfterSideTurnEnd(
         PlayerChoiceContext choiceContext,

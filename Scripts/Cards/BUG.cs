@@ -11,7 +11,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "flexible_range")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "bug")]
 public sealed class BUG : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "improvised_entry")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "delusional_sketch")]
 public sealed class DelusionalSketch : MgrCard
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

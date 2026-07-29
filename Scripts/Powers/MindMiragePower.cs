@@ -5,12 +5,12 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class FolkRhymesPower : ModPowerTemplate
+public sealed class MindMiragePower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/FolkRhymesPower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/FolkRhymesPower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/MindMiragePower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/MindMiragePower.png");
 }

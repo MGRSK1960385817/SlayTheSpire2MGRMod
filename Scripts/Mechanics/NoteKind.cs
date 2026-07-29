@@ -9,5 +9,5 @@ public enum NoteKind
     Curse,
     Starry,
     Ghost,
-    Everything
+    OmniaNote
 }

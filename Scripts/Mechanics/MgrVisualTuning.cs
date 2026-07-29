@@ -12,7 +12,7 @@ public static class MgrVisualTuning
     public static class Notes
     {
         public static readonly Vector2 RackOffset = new(0f, -350f);
-        public static readonly Vector2 ArtworkScale = new(0.7f, 0.7f);
+        public static readonly Vector2 ArtworkScale = new(0.76f, 0.76f);
 
         public const int RackZIndex = 50;
         public const float DesiredSlotSpacing = 96f;
@@ -22,14 +22,28 @@ public static class MgrVisualTuning
         public const float EmptySlotDashFill = 0.48f;
         public const float EmptySlotDashWidth = 2.5f;
 
-        // Empty note-slot borders rotate continuously. Each slot samples a
-        // small presentation-only variance so the rack does not move in lockstep.
-        // The wobble makes the motion feel less mechanical than a perfect turntable.
-        public const float EmptySlotRotationDegreesPerSecond = 16f;
-        public const float EmptySlotRotationSpeedVariance = 0.18f;
-        public const float EmptySlotRotationWobbleDegrees = 4.5f;
-        public const float EmptySlotRotationWobbleAngularSpeed = 0.72f;
-        public const float EmptySlotRotationWobbleSpeedVariance = 0.20f;
+        // Empty-slot frames rotate and carry a fixed-color traveling highlight.
+        // Wide speed ranges deliberately keep neighboring slots out of lockstep.
+        public static readonly Color EmptySlotBaseColor = new("b8c2d6");
+        public const float EmptySlotBaseAlpha = 0.36f;
+        public const float EmptySlotHighlightAlpha = 0.96f;
+        public const float EmptySlotHighlightWidthBoost = 1.9f;
+        public const float EmptySlotRotationDegreesPerSecond = 18f;
+        public const float EmptySlotRotationMultiplierMin = 0.35f;
+        public const float EmptySlotRotationMultiplierMax = 1.90f;
+        public const float EmptySlotHighlightAngularSpeedMin = 0.85f;
+        public const float EmptySlotHighlightAngularSpeedMax = 3.65f;
+        public const float EmptySlotGlowOrbitRadius = 31f;
+        public const float EmptySlotGlowLeadDegrees = 28f;
+        public const float EmptySlotGlowCoreRadius = 2.8f;
+        public const float EmptySlotGlowHaloRadius = 9.5f;
+        public const float EmptySlotGlowStarLength = 6.5f;
+        public const float EmptySlotBreathAmplitude = 0.035f;
+        public const float EmptySlotBreathSpeed = 1.25f;
+        public const double EmptySlotCollapseSeconds = 0.24;
+        public const double EmptySlotAppearSeconds = 0.34;
+        public const float EmptySlotTransitionRotation = 2.35f;
+        public const float EmptySlotAppearOvershootScale = 1.32f;
 
         // Repeated note/chord activity in one turn accelerates presentation, but
         // both paths retain a visible minimum duration.
@@ -48,6 +62,23 @@ public static class MgrVisualTuning
         public const float EntranceGrowFraction = 0.62f;
         public const float EntranceStartYOffset = 18f;
 
+        // Shared star/glow language for note generation, chord resolution and
+        // the transition between a filled note and its empty slot.
+        public const int EntranceBurstParticleCount = 7;
+        public const int ChordBurstParticleCount = 20;
+        public const int SlotTransitionBurstParticleCount = 11;
+        public const double EntranceBurstSeconds = 0.30;
+        public const double ChordBurstSeconds = 0.46;
+        public const double SlotTransitionBurstSeconds = 0.36;
+        public const float EntranceBurstEndRadius = 44f;
+        public const float ChordBurstEndRadius = 82f;
+        public const float SlotTransitionBurstEndRadius = 58f;
+        public const float NoteBurstStartRadius = 10f;
+        public const float NoteBurstStarSize = 3.2f;
+        public const float ChordTriggerScale = 1.16f;
+        public const double ChordTriggerGrowSeconds = 0.10;
+        public const double ChordTriggerSettleSeconds = 0.16;
+
         // Each generated note samples a small visual-only variance around these
         // values. This deliberately uses chaotic randomness: it never affects
         // combat state or replay determinism.
@@ -61,37 +92,115 @@ public static class MgrVisualTuning
         public const float InitialScaleVariance = 0.07f;
         public const float PhaseVariance = 0.65f;
 
-        // Everything Notes cycle through all five basic Note silhouettes and
+        // Omnia Notes cycle through all five basic Note silhouettes and
         // the Starry silhouette while a rainbow flows across the current shape.
-        public const double EverythingShapeSeconds = 0.30;
-        public const float EverythingRainbowSpeed = 0.22f;
-        public const float EverythingRainbowFrequency = 1.35f;
+        public const double OmniaNoteShapeSeconds = 0.30;
+        public const float OmniaNoteRainbowSpeed = 0.22f;
+        public const float OmniaNoteRainbowFrequency = 1.35f;
     }
 
     public static class Performances
     {
-        public static readonly Vector2 RackOffset = new(0f, -500f);
-        public static readonly Vector2 MiniatureScale = new(0.33f, 0.33f);
+        public static readonly Vector2 RackOffset = new(0f, -470f);
+        // The staff is a presentation-only child of the rack. Its local offset
+        // can be tuned without changing card positions, hover hitboxes, or the
+        // coordinate chain used by performance animations.
+        public static readonly Vector2 StaffOffset = new(0f, 0f);
+        public static readonly Vector2 MiniatureScale = new(0.35f, 0.35f);
         public static readonly Vector2 HoveredMiniatureScale = new(0.5f, 0.5f);
         public static readonly Vector2 PreviewScale = new(0.8f, 0.8f);
-        public static readonly Vector2 RemainingLabelSize = new(28f, 24f);
-        public static readonly Vector2 RemainingLabelBottomRightInset = new(0f, 0f);
-        public static readonly Color RemainingLabelColor = Colors.White;
-        public static readonly Color RemainingLabelOutlineColor = new("a915b8");
+        public static readonly Color StaffLineColor = new("9b87c7");
+        public static readonly Color StaffMarkerColor = new("d8c8ff");
+        public static readonly Color StaffFlashColor = new("fff2b8");
+        public static readonly Color PerformanceAccentColor = new("fff2b8");
 
         public const int RackZIndex = 55;
-        public const int RemainingLabelZIndex = 25;
-        public const int RemainingLabelFontSize = 24;
-        public const int RemainingLabelOutlineSize = 6;
-        public const float DesiredSpacing = 52f;
+        public const int StaffZIndex = -20;
+        // Remaining Performance turns use a small floating beat marker above
+        // the card rather than a purple badge on its lower-right corner.
+        public static readonly Vector2 RemainingCounterSize = new(62f, 40f);
+        public static readonly Color RemainingCounterColor = PerformanceAccentColor;
+        public static readonly Color RemainingCounterOutlineColor = new("443552");
+        public const int RemainingCounterZIndex = 34;
+        public const int RemainingCounterFontSize = 30;
+        public const int RemainingCounterOutlineSize = 6;
+        public const float RemainingCounterTopGap = 10f;
+        public const float RemainingCounterWingLength = 29f;
+        public const float RemainingCounterSingleWingLengthScale = 0.76f;
+        public const float RemainingCounterDoubleWingLengthScale = 0.88f;
+        public const float RemainingCounterWingGap = 16f;
+        public const float RemainingCounterWingSpacing = 6f;
+        public const int RemainingCounterWingLineCount = 3;
+        public const float RemainingCounterLineWidth = 1.9f;
+        public const double RemainingCounterPulseSeconds = 0.30;
+        public const float RemainingCounterChangeFraction = 0.36f;
+        public const float DesiredSpacing = 56f;
         public const float MaximumWidth = 520f;
         public const double EnterQueueSeconds = 0.28;
         public const float TriggerScale = 1.2f;
         public const double TriggerGrowSeconds = 0.14;
         public const double TriggerSettleSeconds = 0.18;
+        public const float SequentialTriggerAccelerationPerCard = 0.07f;
+        public const float MinimumSequentialTriggerDurationScale = 0.68f;
         public const double ExitSeconds = 0.38;
         public const double PreviewGrowSeconds = 0.12;
         public const float PreviewMouseXOffset = 34f;
+
+        // Four stationary corner brackets use the same fixed accent color as
+        // the remaining-turn counter; no particles orbit the card.
+        public const float IdleEdgeMargin = 5f;
+        public const float IdleEdgeBaseWidth = 1.65f;
+        public const float IdleEdgeGlowWidth = 4.8f;
+        public const float IdleEdgeBaseAlpha = 0.34f;
+        public const float IdleEdgeGlowAlpha = 0.10f;
+
+        // Code-drawn music staff behind the performance cards.
+        public const int StaffLineCount = 5;
+        public const float StaffWidth = 620f;
+        public const float StaffLineSpacing = 18f;
+        public const float StaffLineThickness = 2f;
+        public const float StaffLineAlpha = 0.25f;
+        public const int StaffInitialMarkerCount = 5;
+        public const int StaffIdleMaximumMarkers = 7;
+        public const int StaffPerformingMaximumMarkers = 15;
+        // While the whole performance queue is resolving, the staff advances
+        // through the same ambient simulation at this global fast-forward rate.
+        // It accelerates marker travel, spawn timers and line-spacing cooldowns
+        // together instead of injecting a fixed number of extra markers.
+        public const float StaffPerformingFlowSpeedMultiplier = 1.75f;
+        public const double StaffMarkerSpawnMinSeconds = 0.78;
+        public const double StaffMarkerSpawnMaxSeconds = 1.22;
+        public const double StaffMarkerSpawnRetrySeconds = 0.18;
+        public const float StaffSameLineSpawnCooldownSeconds = 0.48f;
+        public const float StaffAdjacentLineSpawnCooldownSeconds = 0.42f;
+        public const float StaffMarkerSpeedMin = 25f;
+        public const float StaffMarkerSpeedMax = 43f;
+        public const float StaffMarkerRadiusMin = 4.5f;
+        public const float StaffMarkerRadiusMax = 6f;
+        public const float StaffMarkerGapPadding = 7f;
+        public const float StaffMarkerBobAmplitude = 1.8f;
+        public const float StaffMarkerBobSpeedMin = 1.1f;
+        public const float StaffMarkerBobSpeedMax = 1.9f;
+        public const float StaffMarkerAlpha = 0.62f;
+        public const double StaffGlowFadeSeconds = 0.16;
+        public const float StaffFlashGlowWidth = 7f;
+        public const double StaffTriggerPulseSeconds = 0.34;
+        public const float StaffSweepSpeed = 235f;
+        public const float StaffSweepHalfWidth = 76f;
+        public const int StaffSweepCount = 4;
+        public const int StaffSparkleCount = 20;
+        public const float StaffSparkleRadius = 2.6f;
+        public const float StaffSparkleVerticalHalfExtent = 112f;
+        public const double StaffPlayheadApproachSeconds = 0.20;
+        public const double StaffPlayheadDepartureSeconds = 0.22;
+        public const float StaffPlayheadEdgePadding = 38f;
+        public const float StaffPlayheadHeight = 188f;
+        public const float StaffPlayheadCoreWidth = 2.4f;
+        public const float StaffPlayheadGlowWidth = 12f;
+        public const double CardBurstSeconds = 0.46;
+        public const int CardBurstParticleCount = 22;
+        public const float CardBurstStartRadius = 32f;
+        public const float CardBurstEndRadius = 104f;
     }
 
     public static class DiscardReveal

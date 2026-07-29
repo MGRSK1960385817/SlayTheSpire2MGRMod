@@ -1,13 +1,14 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Characters/MgrEnergyCounter.cs" id="1_counter_script"]
 [ext_resource type="Script" path="res://Scripts/Characters/MgrEnergyVfxParticles.cs" id="2_vfx_script"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_gear_bottom.png" id="3_bottom"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_gear_middle.png" id="4_middle"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_gear_inner.png" id="5_inner"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_gear_top.png" id="6_top"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_orb_shine.png" id="7_shine"]
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/placeholders/winefox/energy_orb_burst.png" id="8_burst"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer0.png" id="3_layer0"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer1.png" id="4_layer1"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer2.png" id="5_layer2"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer3.png" id="6_layer3"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer4.png" id="7_layer4"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/layer5.png" id="8_layer5"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/energy/energyRefreshVFX.png" id="11_refresh"]
 [ext_resource type="Script" path="res://Scripts/Characters/MgrCounterLabel.cs" id="9_label_script"]
 [ext_resource type="FontFile" path="res://SlayTheSpire2MGRMod/fonts/kreon_bold.ttf" id="10_font"]
 
@@ -58,7 +59,7 @@ material = SubResource("CanvasItemMaterial_additive")
 position = Vector2(64, 64)
 emitting = false
 amount = 1
-texture = ExtResource("7_shine")
+texture = ExtResource("11_refresh")
 one_shot = true
 local_coords = true
 gravity = Vector2(0, 0)
@@ -80,23 +81,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Layer1" type="TextureRect" parent="Layers"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = 25.0
-offset_right = -20.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_bottom")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Layer4" type="TextureRect" parent="Layers"]
+[node name="Layer0" type="TextureRect" parent="Layers"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -104,7 +89,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("6_top")
+texture = ExtResource("3_layer0")
 expand_mode = 1
 stretch_mode = 5
 
@@ -118,23 +103,33 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="Layer1" type="TextureRect" parent="Layers/RotationLayers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_layer1")
+expand_mode = 1
+stretch_mode = 5
+scale = Vector2(1, 1)
+pivot_offset = Vector2(64, 64)
+
 [node name="Layer2" type="TextureRect" parent="Layers/RotationLayers"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -0.44
-offset_top = -0.44
-offset_right = 0.22
-offset_bottom = 0.22
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.645, 0.645)
-pivot_offset = Vector2(64, 64)
 mouse_filter = 2
-texture = ExtResource("4_middle")
+texture = ExtResource("5_layer2")
 expand_mode = 1
 stretch_mode = 5
+scale = Vector2(1, 1)
+pivot_offset = Vector2(64, 64)
 
 [node name="Layer3" type="TextureRect" parent="Layers/RotationLayers"]
 layout_mode = 1
@@ -143,12 +138,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.475, 0.475)
-pivot_offset = Vector2(64, 64)
 mouse_filter = 2
-texture = ExtResource("5_inner")
+texture = ExtResource("6_layer3")
 expand_mode = 1
 stretch_mode = 5
+scale = Vector2(1, 1)
+pivot_offset = Vector2(64, 64)
+
+[node name="Layer4" type="TextureRect" parent="Layers/RotationLayers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_layer4")
+expand_mode = 1
+stretch_mode = 5
+scale = Vector2(1, 1)
+pivot_offset = Vector2(64, 64)
+
+[node name="Layer5" type="TextureRect" parent="Layers/RotationLayers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_layer5")
+expand_mode = 1
+stretch_mode = 5
+scale = Vector2(1, 1)
+pivot_offset = Vector2(64, 64)
 
 [node name="BurstFront" type="CPUParticles2D" parent="."]
 unique_name_in_owner = true
@@ -156,7 +179,7 @@ material = SubResource("CanvasItemMaterial_additive")
 position = Vector2(64, 64)
 emitting = false
 amount = 1
-texture = ExtResource("8_burst")
+texture = ExtResource("11_refresh")
 lifetime = 0.5
 one_shot = true
 local_coords = true

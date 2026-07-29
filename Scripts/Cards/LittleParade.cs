@@ -7,10 +7,10 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "opening_duet")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "little_parade")]
 [RegisterCharacterStarterCard(typeof(MgrCharacter), Order = 30)]
-[RegisterArchaicToothTranscendence(typeof(SongOfEverything))]
-public sealed class SongOfBeginning : MgrCard
+[RegisterArchaicToothTranscendence(typeof(Omnia))]
+public sealed class LittleParade : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -19,7 +19,7 @@ public sealed class SongOfBeginning : MgrCard
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public SongOfBeginning() : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
+    public LittleParade() : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
     {
     }
 

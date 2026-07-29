@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "polyphonic_guard")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "rainbow_scale")]
 public sealed class RainbowScale : MgrCard
 {
     public override bool GainsBlock => true;

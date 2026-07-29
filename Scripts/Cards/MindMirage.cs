@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "power_note_guard")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "mind_mirage")]
 public sealed class MindMirage : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -21,7 +21,7 @@ public sealed class MindMirage : MgrCard
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<PowerNoteBlockPower>(
+        PowerCmd.Apply<MindMiragePower>(
             choiceContext,
             Owner.Creature,
             DynamicVars["BlockPerNote"].BaseValue,

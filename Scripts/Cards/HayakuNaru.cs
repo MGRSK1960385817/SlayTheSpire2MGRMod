@@ -11,7 +11,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "clear_throat")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hayaku_naru")]
 public sealed class HayakuNaru : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

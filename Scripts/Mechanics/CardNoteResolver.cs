@@ -15,9 +15,15 @@ public static class CardNoteResolver
     {
         ArgumentNullException.ThrowIfNull(card);
 
-        // A Tale of Mine replaces the actual combat type. Once replaced, the
-        // chosen basic type also takes precedence over special MGR note
-        // overrides (Starry cards are never eligible for this replacement).
+        // Starry is an intrinsic MGR card identity rather than an ordinary card
+        // type. Imagine, Create may change the visible/gameplay type of a
+        // Starry card, but that card must continue to generate a Starry Note.
+        if (card is MgrCard { IsStarryCard: true })
+            return NoteKind.Starry;
+
+        // Imagine, Create replaces the actual combat type. Once replaced, the
+        // chosen basic type takes precedence over other special MGR note
+        // overrides.
         if (MgrCardTypeOverrideState.TryGet(card, out _))
             return ResolveCardType(card);
 

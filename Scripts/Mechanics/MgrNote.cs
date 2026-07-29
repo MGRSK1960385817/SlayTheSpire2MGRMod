@@ -96,9 +96,9 @@ public sealed class GhostNote : MgrNote
 /// plus the Starry Note effect. Its animated presentation cycles through those
 /// six component shapes rather than requiring a dedicated static texture.
 /// </summary>
-public sealed class EverythingNote : MgrNote
+public sealed class OmniaNote : MgrNote
 {
-    public override NoteKind Kind => NoteKind.Everything;
+    public override NoteKind Kind => NoteKind.OmniaNote;
     public override int BaseEffectAmount => 1;
     public override int ForteRate => int.MaxValue;
     public override bool IsAffectedByForte => false;

@@ -5,7 +5,7 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "decennial_metronome")]
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "metronome")]
 public sealed class Metronome : ModRelicTemplate
 {
     private const int ChordInterval = 7;

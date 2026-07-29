@@ -13,7 +13,7 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "persecutory_delusion")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "paranoia_girl")]
 public sealed class ParanoiaGirl : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

@@ -11,16 +11,18 @@
 实现文件：
 
 - `Scripts/Mechanics/MgrNoteVisuals.cs`：槽位布局、虚线空槽、音符入场、数字与颜色。
+- `Scripts/Mechanics/MgrRotatingNoteSlotFrame.cs`：每个空槽独立的虚线旋转、定色游光、轨道光点与呼吸。
 - `Scripts/Mechanics/MgrFloatingNoteVisual.cs`：每颗音符持续的漂浮、呼吸和随机差异。
+- `Scripts/Mechanics/MgrNoteBurstVisual.cs`：音符生成、和弦触发及空槽切换时的代码绘制光晕与星芒。
 - `Scripts/Mechanics/MgrNoteSystem.cs`：提供“本回合已生成音符数”和“本回合已触发和弦数”。
 
 ### 整体布局
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Notes.RackOffset` | `(0, -430)` | 整排音符相对战斗人物节点的位置；X 向右，Y 向下 |
+| `Notes.RackOffset` | `(0, -350)` | 整排音符相对战斗人物节点的位置；X 向右，Y 向下 |
 | `Notes.RackZIndex` | `50` | 音符排层级 |
-| `Notes.ArtworkScale` | `(0.68, 0.68)` | 音符图片缩放 |
+| `Notes.ArtworkScale` | `(0.76, 0.76)` | 音符图片缩放 |
 | `Notes.DesiredSlotSpacing` | `96` | 槽位理想中心间距 |
 | `Notes.MaximumRackWidth` | `480` | 音符排最大宽度；槽位增多后自动压缩间距 |
 
@@ -30,16 +32,29 @@
 
 ### 空槽
 
-当前空槽只有虚线圆框，不再给已填充音符绘制外环。
+空槽由八段淡色虚线构成，整框持续旋转；一段高亮游光沿八段虚线移动，另有一个小型发光星星沿槽边缘环绕。星星与游光共用同一个初始相位、速度和方向，并固定处于游光前端，形成“星星牵引游光”的效果。所有发光均使用与演奏次数横杠一致的固定颜色 X（`Performances.PerformanceAccentColor`），不会做彩虹变色。每个槽仍会独立抽取较大范围的框体旋转速度与游光速度，因此相邻槽不会整齐同步；已填充音符仍不绘制外环。
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Notes.SlotRadius` | `42` | 虚线圆半径 |
-| `Notes.EmptySlotDashCount` | `12` | 虚线段数 |
+| `Notes.SlotRadius` | `30` | 虚线圆半径 |
+| `Notes.EmptySlotDashCount` | `8` | 虚线段数 |
 | `Notes.EmptySlotDashFill` | `0.48` | 每一段占其扇区的比例 |
-| `Notes.EmptySlotDashWidth` | `3` | 线宽 |
+| `Notes.EmptySlotDashWidth` | `2.5` | 基础线宽 |
+| `Notes.EmptySlotBaseAlpha` | `0.36` | 淡色虚线框透明度 |
+| `Notes.EmptySlotHighlightAlpha` | `0.96` | 当前高亮虚线段的透明度 |
+| `Notes.EmptySlotHighlightWidthBoost` | `1.9` | 高亮段相对基础线宽的增量 |
+| `Notes.EmptySlotRotationDegreesPerSecond` | `18` | 整个八段虚线框的基础旋转速度（度/秒） |
+| `Notes.EmptySlotRotationMultiplierMin / Max` | `0.35 / 1.90` | 每个槽的旋转速度倍率范围；部分槽会反向 |
+| `Notes.EmptySlotHighlightAngularSpeedMin / Max` | `0.85 / 3.65` | 沿虚线框移动的高亮速度范围 |
+| `Notes.EmptySlotGlowOrbitRadius` | `31px` | 小型发光物体的轨道半径 |
+| `Notes.EmptySlotGlowLeadDegrees` | `28°` | 星星沿运动方向领先游光中心的角度；方向反转时领先方向也随之反转。增大即让星星更靠前 |
+| `Notes.EmptySlotGlowCoreRadius` | `2.8px` | 发光物体亮核半径 |
+| `Notes.EmptySlotGlowHaloRadius` | `9.5px` | 发光物体柔光半径 |
+| `Notes.EmptySlotGlowStarLength` | `6.5px` | 发光物体十字星芒长度 |
+| `Notes.EmptySlotBreathAmplitude` | `0.035` | 空槽整体呼吸缩放幅度 |
+| `Notes.EmptySlotBreathSpeed` | `1.25` | 空槽整体呼吸速度 |
 
-空槽颜色仍在 `MgrNoteVisuals.CreateDashedEmptySlot` 中：`(0.72, 0.76, 0.84, 0.58)`。
+空槽消失时会旋转收缩至中心；音符离开后，空槽会旋转、过冲放大后落回正常尺寸。`EmptySlotCollapseSeconds`、`EmptySlotAppearSeconds`、`EmptySlotTransitionRotation` 与 `EmptySlotAppearOvershootScale` 分别控制这两段过渡。
 
 ### 音符入场与连续生成加速
 
@@ -59,6 +74,8 @@
 
 每个音符排共用一个动画门，因此同一个效果生成多颗音符时会按调用顺序逐个出现，不会同帧一起刷出。
 
+生成时还会播放少量、与该音符颜色一致的星芒与柔光。`EntranceBurstParticleCount`、`EntranceBurstSeconds` 和 `EntranceBurstEndRadius` 分别控制数量、时长与扩散范围。
+
 ### 和弦完成后的停留与连续触发加速
 
 | 参数 | 当前值 | 作用 |
@@ -71,6 +88,8 @@
 停留公式：
 
 `max(0.12, 0.42 - 本回合此前触发和弦数 × 0.05)`
+
+和弦开始结算时，每个已填充音符都会略微放大，并喷射较生成动画更多的同色星芒和柔光；`ChordBurstParticleCount`、`ChordBurstSeconds`、`ChordBurstEndRadius` 与 `ChordTriggerScale` 控制该效果。动画与战斗结算重叠播放，不会额外串行拖慢和弦。
 
 ### 漂浮、呼吸与随机差异
 
@@ -103,16 +122,25 @@
 
 - `Scripts/Mechanics/MgrPerformanceVisuals.cs`：整排布局、入队、触发、悬停预览和离队。
 - `Scripts/Mechanics/MgrPerformanceSystem.cs`：触发动画的时机与最终牌堆路由。
+- `Scripts/Mechanics/MgrPerformanceStaffVisual.cs`：五线谱、游动音符、扫线和整排发光。
+- `Scripts/Mechanics/MgrPerformanceIdleEdgeVisual.cs`：待机卡牌边缘流光。
+- `Scripts/Mechanics/MgrPerformanceCounterVisual.cs`：卡牌上方的剩余次数节拍标记。
+
+线谱使用 `MgrMusicGlyphRenderer.cs` 的八种代码绘制字形：四分音符、八分音符、十六分音符、二分音符、连梁双音、宽连梁三音、宽连梁四音，以及纵向跨越两根谱线的双行和声音符。已移除“大椭圆套小椭圆”的全音符。宽符号会自动为线谱留出更大的断口；双行和声音符会在相同 X 坐标同时切开相邻两根谱线。
+
+线谱音符以特殊字形为高权重。待机时最多显示 `7` 个，整段演奏触发期间允许最多显示 `15` 个；两种状态共享 `0.78～1.22s` 的模拟生成间隔、`0.18s` 的失败重试时间、`0.48s` 的同排冷却和 `0.42s` 的相邻排规避窗口。
+
+演奏开始后，整套谱线音符模拟由 `StaffPerformingFlowSpeedMultiplier = 1.75` 统一快进：游动速度、上下浮动速度、生成倒计时及生成避让冷却都同步变为 `1.75` 倍。空音符槽也复用这个全局倍率，槽框旋转、发光条沿框移动及牵引星运动会同步加速，但空槽本身的呼吸速度保持不变。它不会按战斗中生成了多少音符来额外硬塞固定数量的谱面符号。最后一张演奏牌结束后恢复 `1.0` 倍，并重新开始正常待机计时。
 
 ### 整排布局与重叠
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.RackOffset` | `(0, -650)` | 演奏排相对战斗人物节点的位置 |
+| `Performances.RackOffset` | `(0, -470)` | 演奏排与线谱整体相对战斗人物节点的位置 |
 | `Performances.RackZIndex` | `55` | 基础层级 |
-| `Performances.MiniatureScale` | `(0.25, 0.25)` | 队列中卡牌大小 |
-| `Performances.HoveredMiniatureScale` | `(0.29, 0.29)` | 鼠标移入时的缩略牌大小 |
-| `Performances.DesiredSpacing` | `52` | 相邻演奏牌露出的理想宽度 |
+| `Performances.MiniatureScale` | `(0.35, 0.35)` | 队列中卡牌大小 |
+| `Performances.HoveredMiniatureScale` | `(0.5, 0.5)` | 鼠标移入时的缩略牌大小 |
+| `Performances.DesiredSpacing` | `56` | 相邻演奏牌露出的理想宽度 |
 | `Performances.MaximumWidth` | `520` | 整排最大宽度；牌多后自动加重重叠 |
 
 实际间距公式：
@@ -140,37 +168,57 @@
 | `Performances.TriggerScale` | `1.2` | 原地跳动的峰值缩放 |
 | `Performances.TriggerGrowSeconds` | `0.14s` | 放大与亮起阶段 |
 | `Performances.TriggerSettleSeconds` | `0.18s` | 回落与熄灭阶段 |
+| `Performances.SequentialTriggerAccelerationPerCard` | `0.07` | 同一轮中每完成一张演奏牌，后续动画时长减少的比例 |
+| `Performances.MinimumSequentialTriggerDurationScale` | `0.68` | 连续演奏动画的最低时长倍率 |
+
+同一轮演奏从第一张的 `1.00×` 时长开始，之后依次为 `0.93×`、`0.86×`、`0.79×`、`0.72×`，第六张及以后固定为 `0.68×`。这个倍率同时作用于扫线靠近、卡牌跳动、次数变化、扫线离开以及完成演奏后的离队动画；卡牌本身的战斗效果仍完整结算，不做跳帧。
 
 触发 Glow 仍写在 `MgrPerformanceVisuals.cs`：
 
-- 颜色 `#d73ee7`，峰值透明度 `0.9`。
+- 颜色 `#fff0b8`，峰值透明度 `0.78`。
 - 比缩略牌四周各多 `11px`。
 - 只在原位置跳动，不把牌移到屏幕中央。
 
-### 剩余次数
+触发时还会由 `MgrPerformanceCardBurstVisual.cs` 绘制黄白、粉、青、绿等星芒。`CardBurstSeconds`、`CardBurstParticleCount`、`CardBurstStartRadius` 与 `CardBurstEndRadius` 分别控制持续时间、数量和扩散范围。
 
-剩余演奏次数现在按缩略牌右下角计算，并已集中到
-`MgrVisualTuning.Performances`：
+### 待机边缘装饰
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RemainingLabelSize` | `(56, 48)` | 次数标签的控件尺寸 |
-| `RemainingLabelBottomRightInset` | `(18, 18)` | 标签中心相对右下角向左、向上内缩的距离；越小越靠外 |
-| `RemainingLabelFontSize` | `32` | 字号 |
-| `RemainingLabelOutlineSize` | `8` | 描边大小 |
-| `RemainingLabelColor` | 白色 | 数字颜色 |
-| `RemainingLabelOutlineColor` | `#a915b8` | 描边颜色 |
-| `RemainingLabelZIndex` | `25` | 标签相对缩略牌的层级 |
+| `IdleEdgeMargin` | `5px` | 装饰线相对卡面边缘向外扩张的距离 |
+| `IdleEdgeBaseWidth` | `1.65px` | 四角装饰线的屏幕线宽 |
+| `IdleEdgeGlowWidth` | `4.8px` | 装饰线后方的柔光宽度 |
+| `IdleEdgeBaseAlpha` | `0.34` | 装饰线透明度 |
+| `IdleEdgeGlowAlpha` | `0.10` | 柔光透明度 |
 
-每次演奏后仍由 `Refresh` 读取 `RemainingPerformanceTurns`。标签位置公式为：
+只保留四个角的 L 形框，不再绘制四条边中点装饰，也没有物体绕卡牌运动。角框与次数横杠共用固定颜色 X，不做变色；演奏开始时会淡到约 `18%`，扫线离开后恢复。
 
-`右下角 - BottomRightInset - LabelSize / 2`
+### 剩余次数
+
+剩余演奏次数显示为卡牌上方的“节拍标记”：数字两侧横线的数量跟随当前显示次数，最多三条，不再绘制数字下方的小点。它与缩略牌共用同一锚点，但不附着到会被塔二复用的 `NCard` 节点。
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `RemainingCounterSize` | `(62, 40)` | 数字控件尺寸 |
+| `RemainingCounterTopGap` | `10px` | 标记与卡牌顶边的距离 |
+| `RemainingCounterFontSize` | `30` | 数字字号 |
+| `RemainingCounterOutlineSize` | `6` | 深色文字描边大小 |
+| `RemainingCounterWingLength` | `29px` | 两侧第一条横线长度；其后两条依次缩短 |
+| `RemainingCounterSingleWingLengthScale` | `0.76` | 只剩一次时，居中单横线相对标准长度的倍率 |
+| `RemainingCounterDoubleWingLengthScale` | `0.88` | 剩余两次时，两条横线相对标准长度的倍率 |
+| `RemainingCounterWingGap` | `16px` | 数字与横线的间隙 |
+| `RemainingCounterWingSpacing` | `6px` | 相邻横线的纵向间距 |
+| `RemainingCounterWingLineCount` | `3` | 数字每侧最多绘制的横线数量 |
+| `RemainingCounterPulseSeconds` | `0.30s` | 触发时标记跳动的总时长 |
+| `RemainingCounterChangeFraction` | `0.36` | 跳动进行到 36% 时更新数字 |
+
+显示为 `0` 时两侧均没有横线；显示为 `1` 时只有一条经过专门缩短、垂直居中的横线；显示为 `2` 时绘制上下对称的两条；显示为 `3` 或更多时统一绘制三条。多条横线仍从上到下依次缩短。数字及其横杠始终固定在同一个位置，不再上下漂浮。回合开始的普通演奏会在扫线停于卡牌、卡牌发光时先把显示数字减一；不消耗次数的“立即触发”只播放同样的缩放跳动，不修改数字。
 
 ### 鼠标悬停预览
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.PreviewScale` | `(0.68, 0.68)` | 完整详情牌大小 |
+| `Performances.PreviewScale` | `(0.8, 0.8)` | 完整详情牌大小 |
 | `Performances.PreviewGrowSeconds` | `0.12s` | 从 `0.5` 缩放弹到目标大小的时间 |
 | `Performances.PreviewMouseXOffset` | `34px` | 详情牌出现在鼠标右侧的距离 |
 
@@ -209,7 +257,9 @@
 - 战斗人物：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character.tscn`。
 - 能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`。
 - 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`。
-- 选人/地图/能量等资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
+- 选人和地图资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
+- 卡面与文本能量图标：`Scripts/Characters/MgrCardPool.cs`、`MgrRelicPool.cs`、`MgrPotionPool.cs`，使用 `images/characters/energy_big.png` 与 `energy_text.png`。
+- 战斗能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`，使用从塔一移入的 `images/characters/energy/layer0.png` 至 `layer5.png` 与 `energyRefreshVFX.png`。其中 layer1～5 保留塔一各自的旋转方向和速度。
 
 ## 调参顺序
 

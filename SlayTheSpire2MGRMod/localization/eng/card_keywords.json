@@ -27,6 +27,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_GHOST_NOTE.description": "Grants 1 Buffer when triggered and is unaffected by Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.title": "Chord",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.description": "When all Note slots are filled, resolves every slotted Note in order and empties the rack.",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EVERYTHING.title": "Everything",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EVERYTHING.description": "Has the effects of all 5 Basic Notes and the Starry Note."
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.title": "Omnia Note",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.description": "Has the effects of all 5 Basic Notes and the Starry Note."
 }

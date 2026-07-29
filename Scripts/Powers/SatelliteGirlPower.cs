@@ -5,12 +5,12 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class CurseWardrobePower : ModPowerTemplate
+public sealed class SatelliteGirlPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/CurseWardrobePower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/CurseWardrobePower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/SatelliteGirlPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/SatelliteGirlPower.png");
 }

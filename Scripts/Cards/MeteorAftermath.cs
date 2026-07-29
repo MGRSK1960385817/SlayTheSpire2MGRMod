@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hyper_speed")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "meteor_aftermath")]
 public sealed class MeteorAftermath : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

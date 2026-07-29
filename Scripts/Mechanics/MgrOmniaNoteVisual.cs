@@ -3,11 +3,11 @@ using Godot;
 namespace SlayTheSpire2MGRMod.Mechanics;
 
 /// <summary>
-/// Animated artwork for the Everything Note. The shape cycles through the five
+/// Animated artwork for the Omnia Note. The shape cycles through the five
 /// basic Notes and the Starry Note while a shader continuously moves a rainbow
 /// across the currently displayed silhouette.
 /// </summary>
-public partial class MgrEverythingNoteVisual : Sprite2D
+public partial class MgrOmniaNoteVisual : Sprite2D
 {
     private static readonly NoteKind[] ShapeKinds =
     [
@@ -30,7 +30,7 @@ public partial class MgrEverythingNoteVisual : Sprite2D
             string path = $"{Entry.ResPath}/images/notes/{kind}.png";
             if (ResourceLoader.Load<Texture2D>(path) is not { } texture)
             {
-                Entry.Logger.Warn($"Missing Everything Note component texture: {path}");
+                Entry.Logger.Warn($"Missing Omnia Note component texture: {path}");
                 continue;
             }
 
@@ -53,9 +53,9 @@ public partial class MgrEverythingNoteVisual : Sprite2D
             return;
 
         _shapeElapsed += delta;
-        while (_shapeElapsed >= MgrVisualTuning.Notes.EverythingShapeSeconds)
+        while (_shapeElapsed >= MgrVisualTuning.Notes.OmniaNoteShapeSeconds)
         {
-            _shapeElapsed -= MgrVisualTuning.Notes.EverythingShapeSeconds;
+            _shapeElapsed -= MgrVisualTuning.Notes.OmniaNoteShapeSeconds;
             _shapeIndex = (_shapeIndex + 1) % _textures.Count;
             Texture = _textures[_shapeIndex];
         }
@@ -87,10 +87,10 @@ public partial class MgrEverythingNoteVisual : Sprite2D
         var material = new ShaderMaterial { Shader = shader };
         material.SetShaderParameter(
             "rainbow_speed",
-            MgrVisualTuning.Notes.EverythingRainbowSpeed);
+            MgrVisualTuning.Notes.OmniaNoteRainbowSpeed);
         material.SetShaderParameter(
             "rainbow_frequency",
-            MgrVisualTuning.Notes.EverythingRainbowFrequency);
+            MgrVisualTuning.Notes.OmniaNoteRainbowFrequency);
         return material;
     }
 }

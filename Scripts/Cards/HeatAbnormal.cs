@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "orange_point")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "heat_abnormal")]
 public sealed class HeatAbnormal : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>

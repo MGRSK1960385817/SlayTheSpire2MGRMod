@@ -9,8 +9,8 @@
     "typeAndRarity": "卡牌类型与稀有度；遗物只记录稀有度。",
     "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。"
   },
-  "derivationGuide": "源码默认为 codeName.cs，图片默认为 codeName.png，遗物描边图默认为 codeName_outline.png。稳定注册键、存档兼容键、本地化键以及 MGR/MGRMOD 命名空间前缀由 C# 注册层和本地化文件维护，不写入本表。",
-  "renameGuide": "修改 name 只需同步中文本地化；修改 codeName 时需同步 C# 类型、源码文件、图片资源和注册代码。注册键是否改动需单独明确，不由本表自动决定。",
+  "derivationGuide": "源码默认为 codeName.cs，图片默认为 codeName.png，遗物描边图默认为 codeName_outline.png；开发阶段的稳定注册键由 codeName 转为 lower_snake_case，卡牌与遗物本地化键由该注册键转为大写形式。",
+  "renameGuide": "修改 name 时同步中文本地化；修改 codeName 时同步 C# 类型、源码文件、图片资源、lower_snake_case 注册键和本地化键。当前开发阶段无需兼容旧测试存档；正式发布后再冻结注册键。",
   "descriptionStyleGuide": "所有卡牌描述必须遵循 docs/CARD_DESCRIPTION_STYLE_GUIDE.md。",
   "statusGuide": {
     "1": "当前有效，会作为模组内容维护。",
@@ -34,8 +34,8 @@
       "summary": "获得 5 点格挡；升级后：格挡增加至 8。"
     },
     {
-      "codeName": "SongOfBeginning",
-      "name": "起始之歌",
+      "codeName": "LittleParade",
+      "name": "小小游行",
       "status": 1,
       "type": "Skill",
       "rarity": "Basic",
@@ -351,7 +351,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "2费；移除当前全部音符，每个获得1力量和1敏捷；升级后：获得保留。"
+      "summary": "1费能力；移除所有音符，每种获得1力量和1敏捷，本回合无法再生成音符；升级后获得保留。"
     },
     {
       "codeName": "SpringStorm",
@@ -442,8 +442,8 @@
       "summary": "1费蓝卡星空技能；移除2个音符，生成1个星空音符；升级后获得保留。"
     },
     {
-      "codeName": "InfernoLoveLetter",
-      "name": "地狱恋文",
+      "codeName": "LastSinger",
+      "name": "世末歌者",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -546,8 +546,8 @@
       "summary": "0费状态牌；保留。什么都不做；升级后抽1张牌。"
     },
     {
-      "codeName": "LastSinger",
-      "name": "世末歌者",
+      "codeName": "MaguroDash",
+      "name": "金枪鱼冲锋",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -570,12 +570,20 @@
       "summary": "1费，造成5点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至8。"
     },
     {
-      "codeName": "SongOfEverything",
+      "codeName": "Omnia",
       "name": "森罗万象",
       "status": 1,
       "type": "Skill",
       "rarity": "Ancient",
-      "summary": "1费先古技能；演奏1（升级后2）。万象；由古旧之牙将起始之歌转化获得。"
+      "summary": "1费先古技能；演奏1（升级后2）。万象；由古旧之牙将小小游行转化获得。"
+    },
+    {
+      "codeName": "HappySynthesizer",
+      "name": "快乐合成器",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Rare",
+      "summary": "1费金卡能力；本回合每打出3种不同音符对应的牌，获得1力量和1敏捷；打出6种时可再次触发；升级后获得固有。"
     },
     {
       "codeName": "ImagineCreate",
@@ -583,7 +591,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Ancient",
-      "summary": "1费先古能力；每回合开始时可跳过，或选择1张非星空手牌，再将其类型改为攻击、技能、能力、诅咒或状态之一；升级后获得固有。"
+      "summary": "1费先古能力；每回合开始时可跳过，或选择1张手牌，再将其类型改为攻击、技能、能力、诅咒或状态之一；星空牌仍生成星空音符；升级后获得固有。"
     }
   ],
   "relics": [

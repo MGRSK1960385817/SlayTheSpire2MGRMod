@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "twin_guard_strike")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "maguro_reversal")]
 public sealed class MaguroReversal : MgrCard
 {
     public override bool GainsBlock => true;

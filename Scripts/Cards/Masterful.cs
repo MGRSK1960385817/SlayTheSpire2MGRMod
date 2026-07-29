@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "phrase_balance")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "masterful")]
 public sealed class Masterful : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

@@ -9,13 +9,16 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "water_color_invasion")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cubic_prism")]
 public sealed class CubicPrism : MgrCard
 {
     private int _performanceX;
 
     protected override bool HasEnergyCostX => true;
     public override int InitialPerformanceTurns => _performanceX;
+
+    internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
+        Math.Max(_performanceX, resources.EnergySpent);
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

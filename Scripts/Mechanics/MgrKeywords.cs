@@ -24,7 +24,7 @@ public enum MgrKeywordKind
     StarryNote = 1 << 12,
     GhostNote = 1 << 13,
     Chord = 1 << 14,
-    Everything = 1 << 15
+    OmniaNote = 1 << 15
 }
 
 /// <summary>
@@ -48,7 +48,7 @@ public static class MgrKeywords
     public const string StarryNoteKey = "starry_note";
     public const string GhostNoteKey = "ghost_note";
     public const string ChordKey = "chord";
-    public const string EverythingKey = "everything";
+    public const string OmniaNoteKey = "omnia_note";
 
     public static readonly string Forte = Qualify(ForteKey);
     public static readonly string PhraseStart = Qualify(PhraseStartKey);
@@ -64,7 +64,7 @@ public static class MgrKeywords
     public static readonly string StarryNote = Qualify(StarryNoteKey);
     public static readonly string GhostNote = Qualify(GhostNoteKey);
     public static readonly string Chord = Qualify(ChordKey);
-    public static readonly string Everything = Qualify(EverythingKey);
+    public static readonly string OmniaNote = Qualify(OmniaNoteKey);
 
     public static CardKeyword PerformanceKeyword => Performance.GetModCardKeyword();
 
@@ -87,7 +87,7 @@ public static class MgrKeywords
             NoteKind.Curse => MgrKeywordKind.CurseNote,
             NoteKind.Starry => MgrKeywordKind.StarryNote,
             NoteKind.Ghost => MgrKeywordKind.GhostNote,
-            NoteKind.Everything => MgrKeywordKind.Everything,
+            NoteKind.OmniaNote => MgrKeywordKind.OmniaNote,
             _ => MgrKeywordKind.None
         };
 
@@ -120,7 +120,7 @@ public static class MgrKeywords
     /// </summary>
     private static MgrKeywordKind InferKinds(MgrCard card) => card switch
     {
-        SongOfBeginning => MgrKeywordKind.AttackNote | MgrKeywordKind.SkillNote,
+        LittleParade => MgrKeywordKind.AttackNote | MgrKeywordKind.SkillNote,
         LightSong => MgrKeywordKind.BasicNotes |
                      MgrKeywordKind.StarryNote |
                      MgrKeywordKind.GhostNote,
@@ -141,7 +141,7 @@ public static class MgrKeywords
                  MgrKeywordKind.PhraseStart |
                  MgrKeywordKind.PhraseEnd,
         SpringStorm => MgrKeywordKind.Forte,
-        InfernoLoveLetter => MgrKeywordKind.AttackNote,
+        LastSinger => MgrKeywordKind.AttackNote,
         Adios => MgrKeywordKind.Performance,
         Encore => MgrKeywordKind.Performance,
         MindMirage => MgrKeywordKind.PowerNote,
@@ -151,13 +151,13 @@ public static class MgrKeywords
         DelusionalSketch => MgrKeywordKind.Performance,
         DualLovers => MgrKeywordKind.Performance | MgrKeywordKind.AttackNote,
         CowardRocket => MgrKeywordKind.Performance,
-        LastSinger => MgrKeywordKind.Performance,
+        MaguroDash => MgrKeywordKind.Performance,
         UniverseOf88Keys => MgrKeywordKind.Chord,
         CubicPrism => MgrKeywordKind.Performance,
         GalaxyLamp => MgrKeywordKind.StarryNote,
         TheCrowd => MgrKeywordKind.BasicNotes,
         TheCrowdChoice => MgrKeywordKind.BasicNotes,
-        SongOfEverything => MgrKeywordKind.Everything,
+        Omnia => MgrKeywordKind.OmniaNote,
         _ => MgrKeywordKind.None
     };
 
@@ -169,7 +169,7 @@ public static class MgrKeywords
         (MgrKeywordKind.PhraseStart, PhraseStart),
         (MgrKeywordKind.PhraseEnd, PhraseEnd),
         (MgrKeywordKind.Chord, Chord),
-        (MgrKeywordKind.Everything, Everything),
+        (MgrKeywordKind.OmniaNote, OmniaNote),
         (MgrKeywordKind.BasicNotes, BasicNotes),
         (MgrKeywordKind.AttackNote, AttackNote),
         (MgrKeywordKind.SkillNote, SkillNote),
@@ -241,7 +241,7 @@ internal static class MgrKeywordRegistration
         IconPath = $"res://{Entry.ModId}/images/notes/BasicNotes.png")]
     private sealed class Chord;
 
-    [RegisterOwnedCardKeyword(MgrKeywords.EverythingKey,
+    [RegisterOwnedCardKeyword(MgrKeywords.OmniaNoteKey,
         IconPath = $"res://{Entry.ModId}/images/notes/BasicNotes.png")]
-    private sealed class Everything;
+    private sealed class OmniaNote;
 }

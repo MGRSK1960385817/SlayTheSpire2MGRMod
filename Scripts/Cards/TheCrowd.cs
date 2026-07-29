@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "puzzle")]
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd")]
 public sealed class TheCrowd : MgrCard
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];

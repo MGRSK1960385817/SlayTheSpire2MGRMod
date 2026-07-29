@@ -60,6 +60,15 @@ public abstract class MgrCard(
     public virtual int InitialPerformanceTurns => 0;
 
     /// <summary>
+    /// Resolves Performance for result-pile routing. Most cards use their
+    /// printed/combat-modified value; X-cost cards may instead use the resource
+    /// snapshot captured for the current play, which exists before OnPlay has
+    /// finished updating card-local state.
+    /// </summary>
+    internal virtual int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
+        MgrPerformanceSystem.GetInitialPerformanceTurns(this);
+
+    /// <summary>
     /// Declares the combat condition that makes this card stronger and should
     /// therefore use Tower 2's native gold hand-card glow. Multiple flags use
     /// OR semantics: the card glows when any declared bonus is currently active.

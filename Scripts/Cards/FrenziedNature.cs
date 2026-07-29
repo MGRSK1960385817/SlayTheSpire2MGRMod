@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "the_cursed")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "frenzied_nature")]
 public sealed class FrenziedNature : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
@@ -20,7 +20,7 @@ public sealed class FrenziedNature : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<TheCursedPower>(
+        await PowerCmd.Apply<FrenziedNaturePower>(
             choiceContext,
             Owner.Creature,
             DynamicVars.Cards.BaseValue,

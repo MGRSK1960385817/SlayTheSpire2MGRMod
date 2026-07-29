@@ -11,7 +11,7 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "weathered_plectrum")]
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "book_of_grudges")]
 public sealed class BookOfGrudges : ModRelicTemplate
 {
     private const int DamagePerExtraNote = 7;

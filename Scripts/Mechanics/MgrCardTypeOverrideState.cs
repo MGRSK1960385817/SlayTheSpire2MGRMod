@@ -11,7 +11,8 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// instance backing field. Writing that field makes the frame, type plaque,
 /// play routing and all game rules observe the same authoritative type.
 /// The weak marker additionally tells MGR note resolution to ignore special
-/// non-Starry NoteOverride values after a card has been converted.
+/// non-Starry NoteOverride values after a card has been converted. A Starry
+/// card keeps its intrinsic Starry Note identity even after its type changes.
 /// </summary>
 public static class MgrCardTypeOverrideState
 {

@@ -15,7 +15,7 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class ATaleOfMinePower : ModPowerTemplate
+public sealed class ImagineCreatePower : ModPowerTemplate
 {
     private static readonly CardType[] TypeOptions =
     [
@@ -110,8 +110,7 @@ public sealed class ATaleOfMinePower : ModPowerTemplate
         }
     }
 
-    private static bool IsEligible(CardModel card) =>
-        card is not MgrCard { IsStarryCard: true };
+    private static bool IsEligible(CardModel card) => true;
 
     private static CardModel CreateTypeOption(CardModel original, CardType type)
     {

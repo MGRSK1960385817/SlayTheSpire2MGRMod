@@ -8,12 +8,12 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cubic_prism")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "universe_of_88_keys")]
 public sealed class UniverseOf88Keys : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<CubicPrismPower>(8m)
+        new PowerVar<UniverseOf88KeysPower>(8m)
     ];
 
     public UniverseOf88Keys() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -21,13 +21,13 @@ public sealed class UniverseOf88Keys : MgrCard
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<CubicPrismPower>(
+        PowerCmd.Apply<UniverseOf88KeysPower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars["CubicPrismPower"].BaseValue,
+            DynamicVars["UniverseOf88KeysPower"].BaseValue,
             Owner.Creature,
             this);
 
     protected override void OnUpgrade() =>
-        DynamicVars["CubicPrismPower"].UpgradeValueBy(2m);
+        DynamicVars["UniverseOf88KeysPower"].UpgradeValueBy(2m);
 }

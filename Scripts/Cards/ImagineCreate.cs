@@ -7,9 +7,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-// Keep the published entry stem so existing saves and Dusty Tome registration
-// continue to identify this card after its development code name changes.
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "unnamed_ancient")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "imagine_create")]
 [RegisterDustyTomeCard(typeof(MgrCharacter))]
 public sealed class ImagineCreate : MgrCard
 {
@@ -25,7 +23,7 @@ public sealed class ImagineCreate : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ATaleOfMinePower>(
+        await PowerCmd.Apply<ImagineCreatePower>(
             choiceContext,
             Owner.Creature,
             1m,

@@ -37,6 +37,19 @@ public static class MgrPerformanceSystem
     public static bool IsPerformanceCard(CardModel card) =>
         GetInitialPerformanceTurns(card) > 0;
 
+    public static bool ShouldHoldForResolvedPlay(
+        CardModel card,
+        ResourceInfo resources)
+    {
+        if (IsCompletingPerformance(card))
+            return false;
+
+        int turns = card is MgrCard mgrCard
+            ? mgrCard.GetPerformanceTurnsForResultRouting(resources)
+            : GetInitialPerformanceTurns(card);
+        return turns > 0;
+    }
+
     /// <summary>
     /// The final automatic play must use Tower 2's ordinary result-pile path.
     /// Earlier plays remain held in Play, while this marker lets the last play
@@ -196,17 +209,43 @@ public static class MgrPerformanceSystem
             return;
         }
 
-        foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
+        MgrPerformanceVisuals.SetPerforming(player, true);
+        try
         {
-            if (!state.Entries.Contains(entry))
-                continue;
+            int animationIndex = 0;
+            foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
+            {
+                if (!state.Entries.Contains(entry))
+                    continue;
 
-            await MgrPerformanceVisuals.PlayTriggerAnimation(player, entry);
-            await CardCmd.AutoPlay(
-                choiceContext,
-                entry.Card,
-                target: null,
-                skipCardPileVisuals: true);
+                float durationScale = GetSequentialAnimationDurationScale(animationIndex);
+                await MgrPerformanceVisuals.PlayTriggerAnimation(
+                    player,
+                    entry,
+                    consumesRemaining: false,
+                    durationScale: durationScale);
+                try
+                {
+                    await CardCmd.AutoPlay(
+                        choiceContext,
+                        entry.Card,
+                        target: null,
+                        skipCardPileVisuals: true);
+                }
+                finally
+                {
+                    await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
+                        player,
+                        entry,
+                        durationScale);
+                }
+
+                animationIndex++;
+            }
+        }
+        finally
+        {
+            MgrPerformanceVisuals.SetPerforming(player, false);
         }
 
         MgrPerformanceVisuals.Show(player, state.Entries);
@@ -346,73 +385,100 @@ public static class MgrPerformanceSystem
         }
 
         MgrPerformanceEntry[] turnOrder = state.Entries.ToArray();
-        foreach (MgrPerformanceEntry entry in turnOrder)
+        MgrPerformanceVisuals.SetPerforming(player, true);
+        try
         {
-            if (!state.Entries.Contains(entry))
-                continue;
-
-            bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
-            bool willExhaust = !isOrdinaryPower &&
-                (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
-                 entry.Card.ExhaustOnNextPlay);
-            bool isFinalPerformance = entry.RemainingPerformanceTurns <= 1;
-
-            await MgrPerformanceVisuals.PlayTriggerAnimation(player, entry);
-
-            // This is a real card play. It therefore runs every standard hook,
-            // including the MGR global note-generation hook. Tower 2's central
-            // autoplay presentation is skipped because the rack supplies a
-            // compact in-place pulse instead.
-            if (isFinalPerformance)
-                CompletingCards.Add(entry.Card);
-
-            try
+            int animationIndex = 0;
+            foreach (MgrPerformanceEntry entry in turnOrder)
             {
-                await CardCmd.AutoPlay(
-                    choiceContext,
-                    entry.Card,
-                    target: null,
-                    skipCardPileVisuals: true);
-            }
-            finally
-            {
-                CompletingCards.Remove(entry.Card);
-            }
+                if (!state.Entries.Contains(entry))
+                    continue;
 
-            entry.ConsumeOnePerformance();
+                float durationScale = GetSequentialAnimationDurationScale(animationIndex);
+                bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
+                bool willExhaust = !isOrdinaryPower &&
+                    (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
+                     entry.Card.ExhaustOnNextPlay);
+                bool isFinalPerformance = entry.RemainingPerformanceTurns <= 1;
 
-            if (entry.RemainingPerformanceTurns > 0)
-            {
-                MgrPerformanceVisuals.Show(player, state.Entries);
-                continue;
-            }
+                await MgrPerformanceVisuals.PlayTriggerAnimation(
+                    player,
+                    entry,
+                    consumesRemaining: true,
+                    durationScale: durationScale);
 
-            if (entry.Card is MgrCard mgrCard)
-            {
-                await mgrCard.OnPerformanceFinished(
-                    choiceContext,
-                    new PerformanceCompletionContext(
+                // This is a real card play. It therefore runs every standard hook,
+                // including the MGR global note-generation hook. Tower 2's central
+                // autoplay presentation is skipped because the rack supplies a
+                // compact in-place pulse instead.
+                if (isFinalPerformance)
+                    CompletingCards.Add(entry.Card);
+
+                try
+                {
+                    await CardCmd.AutoPlay(
+                        choiceContext,
+                        entry.Card,
+                        target: null,
+                        skipCardPileVisuals: true);
+                }
+                finally
+                {
+                    CompletingCards.Remove(entry.Card);
+                    await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
-                        entry.InitialPerformanceTurns,
-                        willExhaust));
+                        entry,
+                        durationScale);
+                }
+
+                entry.ConsumeOnePerformance();
+
+                if (entry.RemainingPerformanceTurns > 0)
+                {
+                    animationIndex++;
+                    MgrPerformanceVisuals.Show(player, state.Entries);
+                    continue;
+                }
+
+                if (entry.Card is MgrCard mgrCard)
+                {
+                    await mgrCard.OnPerformanceFinished(
+                        choiceContext,
+                        new PerformanceCompletionContext(
+                            player,
+                            entry.InitialPerformanceTurns,
+                            willExhaust));
+                }
+
+                // The final autoplay has already used the engine's normal result
+                // routing. Because its native pile VFX was skipped, the rack supplies
+                // both the destination animation and the CardAddFinished notification
+                // that NCardFlyVfx would ordinarily emit when it reaches the pile.
+                await MgrPerformanceVisuals.PlayExitAnimation(
+                    player,
+                    entry,
+                    entry.Card.Pile?.Type,
+                    durationScale);
+
+                NotifySkippedPileAnimationFinished(entry.Card);
+
+                state.Remove(entry);
+                entry.ResetRemainingTurns();
+                MgrPerformanceVisuals.Show(player, state.Entries);
+                animationIndex++;
             }
-
-            // The final autoplay has already used the engine's normal result
-            // routing. Because its native pile VFX was skipped, the rack supplies
-            // both the destination animation and the CardAddFinished notification
-            // that NCardFlyVfx would ordinarily emit when it reaches the pile.
-            await MgrPerformanceVisuals.PlayExitAnimation(
-                player,
-                entry,
-                entry.Card.Pile?.Type);
-
-            NotifySkippedPileAnimationFinished(entry.Card);
-
-            state.Remove(entry);
-            entry.ResetRemainingTurns();
-            MgrPerformanceVisuals.Show(player, state.Entries);
+        }
+        finally
+        {
+            MgrPerformanceVisuals.SetPerforming(player, false);
         }
     }
+
+    private static float GetSequentialAnimationDurationScale(int animationIndex) =>
+        MathF.Max(
+            MgrVisualTuning.Performances.MinimumSequentialTriggerDurationScale,
+            1f - Math.Max(0, animationIndex) *
+            MgrVisualTuning.Performances.SequentialTriggerAccelerationPerCard);
 
     /// <summary>
     /// CardPileCmd normally lets NCardFlyVfx emit this notification after the

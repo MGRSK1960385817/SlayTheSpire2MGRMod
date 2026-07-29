@@ -5,11 +5,12 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
+using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "empty_orchestra")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "oneway_train")]
 public sealed class OnewayTrain : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
@@ -18,26 +19,37 @@ public sealed class OnewayTrain : MgrCard
         HoverTipFactory.FromPower<DexterityPower>()
     ];
 
-    public OnewayTrain() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public OnewayTrain() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int removed = MgrNoteSystem.RemoveAllNotes(Owner).Count;
-        if (removed <= 0)
-            return;
+        int distinctKinds = MgrNoteSystem.RemoveAllNotes(Owner)
+            .Select(note => note.Kind)
+            .Distinct()
+            .Count();
 
-        await PowerCmd.Apply<StrengthPower>(
+        if (distinctKinds > 0)
+        {
+            await PowerCmd.Apply<StrengthPower>(
+                choiceContext,
+                Owner.Creature,
+                distinctKinds,
+                Owner.Creature,
+                this);
+            await PowerCmd.Apply<DexterityPower>(
+                choiceContext,
+                Owner.Creature,
+                distinctKinds,
+                Owner.Creature,
+                this);
+        }
+
+        await PowerCmd.Apply<NoteGenerationLockPower>(
             choiceContext,
             Owner.Creature,
-            removed,
-            Owner.Creature,
-            this);
-        await PowerCmd.Apply<DexterityPower>(
-            choiceContext,
-            Owner.Creature,
-            removed,
+            1m,
             Owner.Creature,
             this);
     }

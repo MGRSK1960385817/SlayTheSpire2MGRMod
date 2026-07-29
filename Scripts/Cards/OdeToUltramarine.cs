@@ -8,7 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "long_rest")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "ode_to_ultramarine")]
 public sealed class OdeToUltramarine : MgrCard
 {
     public override bool GainsBlock => true;

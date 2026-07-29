@@ -27,6 +27,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_GHOST_NOTE.description": "获得1层缓冲，不受强音影响。",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.title": "和弦",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.description": "音符槽填满时触发，结算所有音符的效果。",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EVERYTHING.title": "万象",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EVERYTHING.description": "具有5种基础音符和星空音符的效果。"
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.title": "万象",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.description": "具有5种基础音符和星空音符的效果。"
 }

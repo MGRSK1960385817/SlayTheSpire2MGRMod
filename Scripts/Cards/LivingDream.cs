@@ -2,14 +2,13 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "dreamlike_life")]
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "living_dream")]
 public sealed class LivingDream : MgrCard
 {
     public LivingDream() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -25,11 +24,14 @@ public sealed class LivingDream : MgrCard
             if (card is null)
                 continue;
 
-            CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
+            // Match Blade Dance's fast hand-generation presentation: let the
+            // native hand add animate the card and avoid the separate 1.2s
+            // centre-screen pile preview.
+            await CardPileCmd.AddGeneratedCardToCombat(
                 card,
                 PileType.Hand,
                 Owner);
-            CardCmd.PreviewCardPileAdd(result);
+            await Cmd.Wait(0.1f);
         }
     }
 

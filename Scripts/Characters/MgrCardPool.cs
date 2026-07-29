@@ -11,8 +11,8 @@ public sealed class MgrCardPool : TypeListCardPoolModel
 
     public override string Title => "MGR";
     public override string EnergyColorName => "MGR";
-    public override string? BigEnergyIconPath => $"{Entry.ResPath}/images/placeholders/winefox/energy_card_icon.png";
-    public override string? TextEnergyIconPath => $"{Entry.ResPath}/images/placeholders/winefox/energy_card_icon.png";
+    public override string? BigEnergyIconPath => $"{Entry.ResPath}/images/characters/energy_big.png";
+    public override string? TextEnergyIconPath => $"{Entry.ResPath}/images/characters/energy_text.png";
     public override Color DeckEntryCardColor => MgrCharacter.ThemeColor;
     public override Color EnergyOutlineColor => new(0.32f, 0.08f, 0.02f);
     public override Material? PoolFrameMaterial => FrameTint;
