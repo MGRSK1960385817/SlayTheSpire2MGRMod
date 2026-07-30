@@ -36,6 +36,7 @@ public sealed class LightSong : MgrCard
             // the same model if mapping rules gain aliases in the future.
             drawPileSnapshot.Remove(matchingCard);
             await CardPileCmd.Add(matchingCard, PileType.Hand);
+            await Cmd.Wait(0.1f);
         }
     }
 

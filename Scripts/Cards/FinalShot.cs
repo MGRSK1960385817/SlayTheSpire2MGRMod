@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -16,7 +17,12 @@ public sealed class FinalShot : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(12m, ValueProp.Move)
+        new CalculationBaseVar(0m),
+        new ExtraDamageVar(12m),
+        new MgrConditionalCalculatedDamageVar(
+                ValueProp.Move,
+                card => card is FinalShot shot && shot.IsPhraseEndBonusActive)
+            .WithMultiplier(static (_, _) => 1m)
     ];
 
     public FinalShot() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -26,8 +32,7 @@ public sealed class FinalShot : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        decimal damage = DynamicVars.Damage.BaseValue * (IsPhraseEnd ? 2m : 1m);
-        await DamageCmd.Attack(damage)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
@@ -35,6 +40,6 @@ public sealed class FinalShot : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(5m);
     }
 }

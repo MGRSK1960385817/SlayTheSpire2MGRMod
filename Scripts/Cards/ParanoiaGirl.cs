@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -53,11 +52,11 @@ public sealed class ParanoiaGirl : MgrCard
         if (Owner.Creature.CombatState is not { } combatState)
             return;
         Doubt doubt = combatState.CreateCard<Doubt>(Owner);
-        CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
+        await CardPileCmd.AddGeneratedCardToCombat(
             doubt,
             PileType.Hand,
             Owner);
-        CardCmd.PreviewCardPileAdd(result);
+        await Cmd.Wait(0.1f);
     }
 
     protected override void OnUpgrade()

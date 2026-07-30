@@ -26,11 +26,11 @@ public sealed class ConfusedLocket : ModRelicTemplate
 
         Confused confused = combatState.CreateCard<Confused>(Owner);
         CardCmd.Upgrade(confused, CardPreviewStyle.None);
-        CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
+        await CardPileCmd.AddGeneratedCardToCombat(
             confused,
             PileType.Hand,
             Owner);
         Flash();
-        CardCmd.PreviewCardPileAdd(result);
+        await Cmd.Wait(0.1f);
     }
 }

@@ -50,7 +50,21 @@ public static class MgrCurseUtils
             pileType,
             player,
             position);
-        CardCmd.PreviewCardPileAdd(result);
+
+        if (pileType == PileType.Hand)
+        {
+            // Blade Dance-style generated hand card: use only the native hand
+            // fly-in and its short cadence, without a centre-screen preview.
+            await Cmd.Wait(0.1f);
+        }
+        else
+        {
+            // Gunk Up-style generated pile card: preview the destination and
+            // leave the same short beat used by the original card.
+            CardCmd.PreviewCardPileAdd(result);
+            await Cmd.Wait(0.5f);
+        }
+
         return curse;
     }
 

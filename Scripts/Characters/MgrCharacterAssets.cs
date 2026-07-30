@@ -36,5 +36,6 @@ internal static class MgrCharacterAssets
             CharacterTransitionSfx: SilentTransitionSfx,
             AttackSfx: SilentAttackSfx,
             CastSfx: SilentCastSfx,
-            DeathSfx: SilentDeathSfx));
+            DeathSfx: SilentDeathSfx))
+        .WithVisualCues(MgrCharacterAnimation.CombatCues);
 }

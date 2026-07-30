@@ -28,10 +28,9 @@ public sealed class WhiteSouthWind : MgrCard
     {
         CardModel[] cards = PileType.Hand.GetPile(Owner).Cards.ToArray();
         foreach (CardModel card in cards)
-        {
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-            await CardCmd.Discard(choiceContext, card);
-        }
+
+        await CardCmd.Discard(choiceContext, cards);
     }
 
     protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(1m);

@@ -35,6 +35,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
 
     private readonly List<DriftingMarker> _markers = [];
     private float[] _lastMarkerSpawnTimes = [];
+    private float[] _lineSpawnCooldownUntilTimes = [];
     private double _spawnSeconds;
     private float _glowAmount;
     private float _triggerPulse;
@@ -501,12 +502,8 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
         int lastLine = firstLine + occupiedLineCount - 1;
         for (int line = firstLine; line <= lastLine; line++)
         {
-            if (_animationTime - _lastMarkerSpawnTimes[line] <
-                GetSpawnCooldown(
-                    MgrVisualTuning.Performances.StaffSameLineSpawnCooldownSeconds))
-            {
+            if (_animationTime < _lineSpawnCooldownUntilTimes[line])
                 return false;
-            }
         }
 
         for (int adjacent = Math.Max(0, firstLine - 1);
@@ -517,8 +514,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
                 continue;
 
             if (_animationTime - _lastMarkerSpawnTimes[adjacent] <
-                GetSpawnCooldown(
-                    MgrVisualTuning.Performances.StaffAdjacentLineSpawnCooldownSeconds))
+                MgrVisualTuning.Performances.StaffAdjacentLineSpawnCooldownSeconds)
             {
                 return false;
             }
@@ -563,28 +559,47 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
                 MgrVisualTuning.Performances.StaffMarkerBobSpeedMax),
             TintMix = Random.Shared.NextSingle()
         });
-        for (int line = lineIndex;
+        float sameLineCooldown = RandomRange(
+            MgrVisualTuning.Performances.StaffSameLineSpawnCooldownMinSeconds,
+            MgrVisualTuning.Performances.StaffSameLineSpawnCooldownMaxSeconds);
+        _lineSpawnCooldownUntilTimes[lineIndex] = MathF.Max(
+            _lineSpawnCooldownUntilTimes[lineIndex],
+            _animationTime + sameLineCooldown);
+        _lastMarkerSpawnTimes[lineIndex] = _animationTime;
+
+        // A glyph such as TwoLineChord interrupts two staff lines. Its anchor
+        // line gets the normal randomized cooldown, while the crossed line gets
+        // only a short reservation: enough to avoid visual stacking without
+        // leaving a conspicuous empty lane.
+        for (int line = lineIndex + 1;
              line < lineIndex + occupiedLineCount;
              line++)
         {
             _lastMarkerSpawnTimes[line] = _animationTime;
+            float crossLineCooldown = RandomRange(
+                MgrVisualTuning.Performances.StaffCrossLineSpawnCooldownMinSeconds,
+                MgrVisualTuning.Performances.StaffCrossLineSpawnCooldownMaxSeconds);
+            _lineSpawnCooldownUntilTimes[line] = MathF.Max(
+                _lineSpawnCooldownUntilTimes[line],
+                _animationTime + crossLineCooldown);
         }
     }
 
     private static MgrMusicSymbol SelectRandomMusicSymbol()
     {
-        // Special long/wide symbols intentionally receive more weight so they
-        // are a visible part of the staff rather than rare curiosities.
+        // Keep the staff readable: simple single notes dominate, pairs are
+        // occasional, and progressively wider/denser glyphs are progressively
+        // rarer. These are relative weights, not percentages.
         ReadOnlySpan<(MgrMusicSymbol Symbol, float Weight)> weights =
         [
-            (MgrMusicSymbol.QuarterNote, 0.8f),
-            (MgrMusicSymbol.EighthNote, 0.9f),
-            (MgrMusicSymbol.SixteenthNote, 1.1f),
-            (MgrMusicSymbol.HalfNote, 0.7f),
-            (MgrMusicSymbol.BeamedPair, 1.8f),
-            (MgrMusicSymbol.BeamedTriplet, 2.4f),
-            (MgrMusicSymbol.BeamedQuartet, 2.0f),
-            (MgrMusicSymbol.TwoLineChord, 2.6f)
+            (MgrMusicSymbol.QuarterNote, 3.0f),
+            (MgrMusicSymbol.EighthNote, 7.8f),
+            (MgrMusicSymbol.SixteenthNote, 0.8f),
+            (MgrMusicSymbol.HalfNote, 5.2f),
+            (MgrMusicSymbol.BeamedPair, 3.7f),
+            (MgrMusicSymbol.TwoLineChord, 2.1f),
+            (MgrMusicSymbol.BeamedTriplet, 2.3f),
+            (MgrMusicSymbol.BeamedQuartet, 1.4f)
         ];
         float total = 0f;
         foreach ((_, float weight) in weights)
@@ -607,6 +622,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             return;
 
         _lastMarkerSpawnTimes = Enumerable.Repeat(-1000f, lineCount).ToArray();
+        _lineSpawnCooldownUntilTimes = new float[lineCount];
     }
 
     private void ResetSpawnTimer()
@@ -624,8 +640,6 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
 
     private static double GetSpawnRetrySeconds() =>
         MgrVisualTuning.Performances.StaffMarkerSpawnRetrySeconds;
-
-    private static float GetSpawnCooldown(float cooldown) => cooldown;
 
     private static float RandomRange(float minimum, float maximum) =>
         minimum + Random.Shared.NextSingle() * (maximum - minimum);

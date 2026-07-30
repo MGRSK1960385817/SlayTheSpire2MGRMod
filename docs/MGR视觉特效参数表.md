@@ -168,10 +168,10 @@
 | `Performances.TriggerScale` | `1.2` | 原地跳动的峰值缩放 |
 | `Performances.TriggerGrowSeconds` | `0.14s` | 放大与亮起阶段 |
 | `Performances.TriggerSettleSeconds` | `0.18s` | 回落与熄灭阶段 |
-| `Performances.SequentialTriggerAccelerationPerCard` | `0.07` | 同一轮中每完成一张演奏牌，后续动画时长减少的比例 |
-| `Performances.MinimumSequentialTriggerDurationScale` | `0.68` | 连续演奏动画的最低时长倍率 |
+| `Performances.SequentialTriggerAccelerationPerCard` | `0.10` | 同一轮中每完成一张演奏牌，后续动画时长减少的比例 |
+| `Performances.MinimumSequentialTriggerDurationScale` | `0.60` | 连续演奏动画的最低时长倍率 |
 
-同一轮演奏从第一张的 `1.00×` 时长开始，之后依次为 `0.93×`、`0.86×`、`0.79×`、`0.72×`，第六张及以后固定为 `0.68×`。这个倍率同时作用于扫线靠近、卡牌跳动、次数变化、扫线离开以及完成演奏后的离队动画；卡牌本身的战斗效果仍完整结算，不做跳帧。
+同一轮演奏从第一张的 `1.00×` 时长开始，之后依次为 `0.90×`、`0.80×`、`0.70×`，第五张及以后固定为 `0.60×`。这个倍率同时作用于扫线靠近、卡牌跳动、次数变化、扫线离开以及完成演奏后的离队动画；卡牌本身的战斗效果仍完整结算，不做跳帧。
 
 触发 Glow 仍写在 `MgrPerformanceVisuals.cs`：
 

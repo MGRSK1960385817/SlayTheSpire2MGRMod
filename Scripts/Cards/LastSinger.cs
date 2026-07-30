@@ -26,9 +26,7 @@ public sealed class LastSinger : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         CardModel[] discarded = PileType.Hand.GetPile(Owner).Cards.ToArray();
-
-        foreach (CardModel card in discarded)
-            await CardCmd.Discard(choiceContext, card);
+        await CardCmd.Discard(choiceContext, discarded);
 
         int notes = discarded.Length * DynamicVars["NotesPerCard"].IntValue;
         for (int index = 0; index < notes; index++)

@@ -1,9 +1,11 @@
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Characters;
 using STS2RitsuLib.Scaffolding.Godot;
+using STS2RitsuLib.Scaffolding.Visuals.StateMachine;
 
 namespace SlayTheSpire2MGRMod.Characters;
 
@@ -34,6 +36,25 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
     protected override NCreatureVisuals? TryCreateCreatureVisuals()
     {
         return RitsuGodotNodeFactories.CreateFromScenePath<NCreatureVisuals>(CharacterScenePath);
+    }
+
+    protected override ModAnimStateMachine? SetupCustomCombatAnimationStateMachine(
+        Node visualsRoot,
+        CharacterModel character)
+    {
+        // Only an idle loop is available for now. StandardCue deliberately maps
+        // missing combat cues back to idle, so attacks, casts, hits and death cannot
+        // leave the character on a missing texture or a stalled animation state.
+        return ModAnimStateMachines.StandardCue(
+            visualsRoot,
+            character,
+            idleName: MgrCharacterAnimation.IdleCue,
+            deadName: null,
+            hitName: null,
+            attackName: null,
+            castName: null,
+            relaxedName: MgrCharacterAnimation.IdleCue,
+            cueSet: MgrCharacterAnimation.CombatCues);
     }
 
     public override List<string> GetArchitectAttackVfx()

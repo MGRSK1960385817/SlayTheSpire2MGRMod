@@ -1,31 +1,56 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/Mgr_character.png" id="1_character"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/animations/idle/idle_001.png" id="1_character"]
+[ext_resource type="Script" path="res://Scripts/Characters/MgrGroundShadow.cs" id="2_shadow"]
 
 [node name="MgrCharacter" type="Node2D"]
 
+[node name="GroundShadow" type="Node2D" parent="."]
+position = Vector2(-20, 0)
+script = ExtResource("2_shadow")
+
+[node name="Outer" type="Polygon2D" parent="GroundShadow"]
+position = Vector2(18, -4)
+modulate = Color(0.09, 0.035, 0.13, 0.075)
+polygon = PackedVector2Array(-180, 0, -166, -10, -127, -18, -69, -23, 0, -25, 69, -23, 127, -18, 166, -10, 180, 0, 166, 10, 127, 18, 69, 23, 0, 25, -69, 23, -127, 18, -166, 10)
+antialiased = true
+
+[node name="Middle" type="Polygon2D" parent="GroundShadow"]
+position = Vector2(18, -4)
+modulate = Color(0.06, 0.02, 0.095, 0.115)
+polygon = PackedVector2Array(-150, 0, -139, -7, -106, -13, -57, -17, 0, -18, 57, -17, 106, -13, 139, -7, 150, 0, 139, 7, 106, 13, 57, 17, 0, 18, -57, 17, -106, 13, -139, 7)
+antialiased = true
+
+[node name="Core" type="Polygon2D" parent="GroundShadow"]
+position = Vector2(24, -4)
+modulate = Color(0.035, 0.009, 0.06, 0.16)
+polygon = PackedVector2Array(-108, 0, -100, -5, -76, -9, -41, -11, 0, -12, 41, -11, 76, -9, 100, -5, 108, 0, 100, 5, 76, 9, 41, 11, 0, 12, -41, 11, -76, 9, -100, 5)
+antialiased = true
+
 [node name="Visuals" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -250)
+self_modulate = Color(0.9, 0.9, 0.9, 1)
+position = Vector2(0, -180)
+scale = Vector2(0.38, 0.38)
 texture = ExtResource("1_character")
 
 [node name="Bounds" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
-offset_left = -120.0
-offset_top = -322.0
-offset_right = 120.0
+offset_left = -180.0
+offset_top = -360.0
+offset_right = 180.0
 offset_bottom = 8.0
 
 [node name="IntentPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -360)
+position = Vector2(0, -390)
 
 [node name="CenterPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -160)
+position = Vector2(0, -180)
 
 [node name="TalkPos" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -285)
+position = Vector2(0, -300)

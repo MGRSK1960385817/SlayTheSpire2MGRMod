@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -16,8 +17,16 @@ public sealed class MaguroAssault : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
-        new IntVar("BonusPerChord", 1m)
+        new CalculationBaseVar(6m),
+        new ExtraDamageVar(1m),
+        new MgrConditionalCalculatedDamageVar(
+                ValueProp.Move,
+                card => card is MaguroAssault assault &&
+                    assault.IsPhraseEndBonusActive)
+            .WithMultiplier(static (card, _) =>
+                card is MaguroAssault assault
+                    ? assault.NoteState.ChordsResolvedThisCombat
+                    : 0m)
     ];
 
     public MaguroAssault() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -28,12 +37,7 @@ public sealed class MaguroAssault : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        decimal damage = DynamicVars.Damage.BaseValue +
-            DynamicVars["BonusPerChord"].BaseValue * NoteState.ChordsResolvedThisCombat;
-        if (IsPhraseEnd)
-            damage *= 2m;
-
-        await DamageCmd.Attack(damage)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -42,7 +46,7 @@ public sealed class MaguroAssault : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars["BonusPerChord"].UpgradeValueBy(1m);
+        DynamicVars.CalculationBase.UpgradeValueBy(2m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 }

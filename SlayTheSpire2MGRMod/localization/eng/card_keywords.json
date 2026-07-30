@@ -8,7 +8,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_PERFORMANCE.title": "Performance",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_PERFORMANCE.description": "Played at the start of the next several turns.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY.title": "Starry",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY.description": "Playing this card generates a Starry Note, which grants {energyPrefix:energyIcons(1)} when triggered.",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY.description": "Playing this card generates a Starry Note, which grants [img]res://SlayTheSpire2MGRMod/images/characters/energy_text.png[/img] when triggered.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_BASIC_NOTES.title": "Basic Notes",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_BASIC_NOTES.description": "Attack, Skill, Power, Status, and Curse Notes correspond to the five basic card types.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_ATTACK_NOTE.title": "Attack Note",
@@ -22,11 +22,13 @@
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CURSE_NOTE.title": "Curse Note",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CURSE_NOTE.description": "Heals 2 HP when triggered and is unaffected by Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY_NOTE.title": "Starry Note",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY_NOTE.description": "Gain {energyPrefix:energyIcons(1)}. Unaffected by Forte.",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY_NOTE.description": "Gain [img]res://SlayTheSpire2MGRMod/images/characters/energy_text.png[/img]. Unaffected by Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_GHOST_NOTE.title": "Ghost Note",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_GHOST_NOTE.description": "Grants 1 Buffer when triggered and is unaffected by Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.title": "Chord",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_CHORD.description": "When all Note slots are filled, resolves every slotted Note in order and empties the rack.",
   "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.title": "Omnia Note",
-  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.description": "Has the effects of all 5 Basic Notes and the Starry Note."
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_OMNIA_NOTE.description": "Has the effects of all 5 Basic Notes and the Starry Note.",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EMPTY_NOTE_SLOT.title": "Empty Note Slot",
+  "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_EMPTY_NOTE_SLOT.description": "Playing a card generates the corresponding Note based on its type. When all Note slots are filled, trigger a Chord and resolve every Note."
 }

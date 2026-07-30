@@ -49,6 +49,7 @@ public static class MgrKeywords
     public const string GhostNoteKey = "ghost_note";
     public const string ChordKey = "chord";
     public const string OmniaNoteKey = "omnia_note";
+    public const string EmptyNoteSlotKey = "empty_note_slot";
 
     public static readonly string Forte = Qualify(ForteKey);
     public static readonly string PhraseStart = Qualify(PhraseStartKey);
@@ -65,6 +66,7 @@ public static class MgrKeywords
     public static readonly string GhostNote = Qualify(GhostNoteKey);
     public static readonly string Chord = Qualify(ChordKey);
     public static readonly string OmniaNote = Qualify(OmniaNoteKey);
+    public static readonly string EmptyNoteSlot = Qualify(EmptyNoteSlotKey);
 
     public static CardKeyword PerformanceKeyword => Performance.GetModCardKeyword();
 
@@ -244,4 +246,7 @@ internal static class MgrKeywordRegistration
     [RegisterOwnedCardKeyword(MgrKeywords.OmniaNoteKey,
         IconPath = $"res://{Entry.ModId}/images/notes/BasicNotes.png")]
     private sealed class OmniaNote;
+
+    [RegisterOwnedCardKeyword(MgrKeywords.EmptyNoteSlotKey)]
+    private sealed class EmptyNoteSlot;
 }

@@ -57,11 +57,11 @@ public class YazyuutokasuPower : ModPowerTemplate
             Confused confused = combatState.CreateCard<Confused>(player);
             if (CreatesUpgradedConfused)
                 CardCmd.Upgrade(confused, CardPreviewStyle.None);
-            CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
+            await CardPileCmd.AddGeneratedCardToCombat(
                 confused,
                 PileType.Hand,
                 player);
-            CardCmd.PreviewCardPileAdd(result);
+            await Cmd.Wait(0.1f);
         }
     }
 

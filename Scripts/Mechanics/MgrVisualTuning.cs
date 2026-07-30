@@ -33,8 +33,8 @@ public static class MgrVisualTuning
         public const float EmptySlotRotationMultiplierMax = 1.90f;
         public const float EmptySlotHighlightAngularSpeedMin = 0.85f;
         public const float EmptySlotHighlightAngularSpeedMax = 3.65f;
-        public const float EmptySlotGlowOrbitRadius = 31f;
-        public const float EmptySlotGlowLeadDegrees = 28f;
+        public const float EmptySlotGlowOrbitRadius = 32f;
+        public const float EmptySlotGlowLeadDegrees = 36f;
         public const float EmptySlotGlowCoreRadius = 2.8f;
         public const float EmptySlotGlowHaloRadius = 9.5f;
         public const float EmptySlotGlowStarLength = 6.5f;
@@ -140,8 +140,8 @@ public static class MgrVisualTuning
         public const float TriggerScale = 1.2f;
         public const double TriggerGrowSeconds = 0.14;
         public const double TriggerSettleSeconds = 0.18;
-        public const float SequentialTriggerAccelerationPerCard = 0.07f;
-        public const float MinimumSequentialTriggerDurationScale = 0.68f;
+        public const float SequentialTriggerAccelerationPerCard = 0.10f;
+        public const float MinimumSequentialTriggerDurationScale = 0.60f;
         public const double ExitSeconds = 0.38;
         public const double PreviewGrowSeconds = 0.12;
         public const float PreviewMouseXOffset = 34f;
@@ -171,8 +171,14 @@ public static class MgrVisualTuning
         public const double StaffMarkerSpawnMinSeconds = 0.78;
         public const double StaffMarkerSpawnMaxSeconds = 1.22;
         public const double StaffMarkerSpawnRetrySeconds = 0.18;
-        public const float StaffSameLineSpawnCooldownSeconds = 0.48f;
-        public const float StaffAdjacentLineSpawnCooldownSeconds = 0.42f;
+        // Each staff line rolls its own cooldown after receiving a marker.
+        // Cross-line glyphs briefly reserve their second line as well, while
+        // neighboring lines only receive a tiny anti-overlap guard.
+        public const float StaffSameLineSpawnCooldownMinSeconds = 0.34f;
+        public const float StaffSameLineSpawnCooldownMaxSeconds = 0.72f;
+        public const float StaffCrossLineSpawnCooldownMinSeconds = 0.10f;
+        public const float StaffCrossLineSpawnCooldownMaxSeconds = 0.20f;
+        public const float StaffAdjacentLineSpawnCooldownSeconds = 0.14f;
         public const float StaffMarkerSpeedMin = 25f;
         public const float StaffMarkerSpeedMax = 43f;
         public const float StaffMarkerRadiusMin = 4.5f;

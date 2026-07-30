@@ -1,7 +1,12 @@
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using STS2RitsuLib.Content;
+using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -266,6 +271,7 @@ public static class MgrNoteVisuals
         private readonly Node2D _entranceRoot;
         private readonly MgrFloatingNoteVisual _floatingRoot;
         private readonly MgrNoteBurstVisual _burst;
+        private readonly Control _hoverBounds;
 
         private NoteKind? _displayedKind;
         private Color _noteColor = Colors.White;
@@ -274,6 +280,7 @@ public static class MgrNoteVisuals
         private Tween? _chordTween;
         private Tween? _emptySlotTransitionTween;
         private bool _emptySlotPresented;
+        private bool _isHovered;
 
         public NoteSlot(Node parent, int index)
         {
@@ -301,6 +308,20 @@ public static class MgrNoteVisuals
             _floatingRoot = new MgrFloatingNoteVisual { Name = "FilledNoteIdle" };
             _floatingRoot.Initialize(index);
             _entranceRoot.AddChild(_floatingRoot);
+
+            float hoverRadius = MgrVisualTuning.Notes.SlotRadius + 13f;
+            _hoverBounds = new Control
+            {
+                Name = "HoverBounds",
+                Position = Vector2.One * -hoverRadius,
+                Size = Vector2.One * hoverRadius * 2f,
+                MouseFilter = Control.MouseFilterEnum.Stop,
+                MouseDefaultCursorShape = Control.CursorShape.PointingHand,
+                ZIndex = 20
+            };
+            _hoverBounds.MouseEntered += OnMouseEntered;
+            _hoverBounds.MouseExited += OnMouseExited;
+            _anchor.AddChild(_hoverBounds);
         }
 
         public void SetPosition(Vector2 position)
@@ -320,6 +341,7 @@ public static class MgrNoteVisuals
                 ClearNote();
                 if (shouldAnimate)
                     PlayEmptySlotAppearAnimation();
+                RefreshHoverTip();
                 return;
             }
 
@@ -332,6 +354,8 @@ public static class MgrNoteVisuals
 
             if (_amountLabel is not null)
                 _amountLabel.Text = note.GetEffectAmount(forte).ToString();
+
+            RefreshHoverTip();
         }
 
         public async Task PlayEntranceAnimation(double totalSeconds)
@@ -599,6 +623,60 @@ public static class MgrNoteVisuals
             _displayedKind = note.Kind;
         }
 
+        private void OnMouseEntered()
+        {
+            _isHovered = true;
+            ShowHoverTip();
+        }
+
+        private void OnMouseExited()
+        {
+            _isHovered = false;
+            NHoverTipSet.Remove(_hoverBounds);
+        }
+
+        private void RefreshHoverTip()
+        {
+            if (!_isHovered)
+                return;
+
+            NHoverTipSet.Remove(_hoverBounds);
+            ShowHoverTip();
+        }
+
+        private void ShowHoverTip()
+        {
+            string keywordId = _displayedKind switch
+            {
+                NoteKind.Attack => MgrKeywords.AttackNote,
+                NoteKind.Skill => MgrKeywords.SkillNote,
+                NoteKind.Power => MgrKeywords.PowerNote,
+                NoteKind.Status => MgrKeywords.StatusNote,
+                NoteKind.Curse => MgrKeywords.CurseNote,
+                NoteKind.Starry => MgrKeywords.StarryNote,
+                NoteKind.Ghost => MgrKeywords.GhostNote,
+                NoteKind.OmniaNote => MgrKeywords.OmniaNote,
+                _ => MgrKeywords.EmptyNoteSlot
+            };
+
+            IHoverTip tip = HoverTipFactory.FromKeyword(
+                keywordId.GetModCardKeyword());
+            NHoverTipSet? hoverTipSet = NHoverTipSet.CreateAndShow(
+                    _hoverBounds,
+                    [tip],
+                    HoverTip.GetHoverTipAlignment(_hoverBounds));
+            if (hoverTipSet is null)
+                return;
+
+            // The Note rack deliberately has a raised combat Z index. Native
+            // hover tips otherwise inherit a lower canvas order and can appear
+            // behind the Note artwork. Make this popup absolute and topmost,
+            // matching the visual precedence of vanilla Orb hover tips.
+            hoverTipSet.ZAsRelative = false;
+            hoverTipSet.ZIndex = 4096;
+            hoverTipSet.SetFollowOwner();
+        }
+
         private static MgrRotatingNoteSlotFrame CreateDashedEmptySlot(int slotIndex)
         {
             var root = new MgrRotatingNoteSlotFrame
@@ -676,6 +754,9 @@ public static class MgrNoteVisuals
 
         public void Dispose()
         {
+            NHoverTipSet.Remove(_hoverBounds);
+            _hoverBounds.MouseEntered -= OnMouseEntered;
+            _hoverBounds.MouseExited -= OnMouseExited;
             _entranceTween?.Kill();
             _entranceTween = null;
             _chordTween?.Kill();

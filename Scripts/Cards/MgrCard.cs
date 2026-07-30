@@ -133,6 +133,15 @@ public abstract class MgrCard(
     /// </summary>
     protected bool IsPhraseEnd => MgrNoteSystem.IsEnding(Owner);
 
+    /// <summary>
+    /// Shared condition for effects whose final value is doubled by Ending.
+    /// Forte makes both phrase-edge conditions active, matching the hand glow
+    /// and the rest of MGR's Phrase Start / Phrase End handling.
+    /// </summary>
+    internal bool IsPhraseEndBonusActive =>
+        CombatState is not null &&
+        (IsPhraseEnd || Owner.Creature.GetPowerAmount<DoubleNotesPower>() > 0m);
+
     protected MgrCombatState NoteState => MgrCombatStateStore.For(Owner);
 
     protected Task ChannelNote(PlayerChoiceContext choiceContext, NoteKind kind) =>
