@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -203,7 +204,8 @@ public static class MgrPerformanceSystem
         PlayerChoiceContext choiceContext,
         Player player)
     {
-        if (!MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
+        if (ShouldStopPerformanceSequence(player) ||
+            !MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
             state.Entries.Count == 0)
         {
             return;
@@ -215,6 +217,9 @@ public static class MgrPerformanceSystem
             int animationIndex = 0;
             foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
             {
+                if (ShouldStopPerformanceSequence(player))
+                    break;
+
                 if (!state.Entries.Contains(entry))
                     continue;
 
@@ -239,6 +244,13 @@ public static class MgrPerformanceSystem
                         entry,
                         durationScale);
                 }
+
+                // AutoPlay returns only after the card and its queued effects have
+                // resolved. Re-check the engine's combat-ending flag here so a
+                // lethal performance immediately hands control back to Tower 2's
+                // normal victory flow instead of starting the next rack card.
+                if (ShouldStopPerformanceSequence(player))
+                    break;
 
                 animationIndex++;
             }
@@ -360,6 +372,8 @@ public static class MgrPerformanceSystem
         if (entry is null)
             return;
 
+        int queuedBeforeThisTurn = state.RecordPlayedEntryQueuedThisTurn();
+
         // The normal play that entered the sequence does not consume a turn.
         // Both the rack replica and its entry animation are deferred until the
         // native play pipeline emits Played. Creating a second NCard earlier can
@@ -367,7 +381,8 @@ public static class MgrPerformanceSystem
         MgrPerformanceVisuals.QueueEntryAnimationAfterPlay(
             card.Owner,
             state.Entries,
-            entry);
+            entry,
+            queuedBeforeThisTurn);
     }
 
     public static async Task PerformAtTurnStart(
@@ -378,7 +393,8 @@ public static class MgrPerformanceSystem
         PlayerChoiceContext choiceContext,
         Player player)
     {
-        if (!MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
+        if (ShouldStopPerformanceSequence(player) ||
+            !MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
             state.Entries.Count == 0)
         {
             return;
@@ -391,6 +407,9 @@ public static class MgrPerformanceSystem
             int animationIndex = 0;
             foreach (MgrPerformanceEntry entry in turnOrder)
             {
+                if (ShouldStopPerformanceSequence(player))
+                    break;
+
                 if (!state.Entries.Contains(entry))
                     continue;
 
@@ -432,15 +451,26 @@ public static class MgrPerformanceSystem
                 }
 
                 entry.ConsumeOnePerformance();
+                bool combatEnded = ShouldStopPerformanceSequence(player);
 
                 if (entry.RemainingPerformanceTurns > 0)
                 {
-                    animationIndex++;
                     MgrPerformanceVisuals.Show(player, state.Entries);
+
+                    // This card really did perform once, so its counter is kept.
+                    // Later cards in the snapshot have not acted and retain their
+                    // counters untouched while the combat transitions to results.
+                    if (combatEnded)
+                        break;
+
+                    animationIndex++;
                     continue;
                 }
 
-                if (entry.Card is MgrCard mgrCard)
+                // Do not start any Performance-finished gameplay after victory.
+                // The just-played card has already completed its ordinary effects;
+                // only its bookkeeping must now be detached from the rack.
+                if (!combatEnded && entry.Card is MgrCard mgrCard)
                 {
                     await mgrCard.OnPerformanceFinished(
                         choiceContext,
@@ -454,17 +484,24 @@ public static class MgrPerformanceSystem
                 // routing. Because its native pile VFX was skipped, the rack supplies
                 // both the destination animation and the CardAddFinished notification
                 // that NCardFlyVfx would ordinarily emit when it reaches the pile.
-                await MgrPerformanceVisuals.PlayExitAnimation(
-                    player,
-                    entry,
-                    entry.Card.Pile?.Type,
-                    durationScale);
+                if (!combatEnded)
+                {
+                    await MgrPerformanceVisuals.PlayExitAnimation(
+                        player,
+                        entry,
+                        entry.Card.Pile?.Type,
+                        durationScale);
+                }
 
                 NotifySkippedPileAnimationFinished(entry.Card);
 
                 state.Remove(entry);
                 entry.ResetRemainingTurns();
                 MgrPerformanceVisuals.Show(player, state.Entries);
+
+                if (combatEnded)
+                    break;
+
                 animationIndex++;
             }
         }
@@ -479,6 +516,9 @@ public static class MgrPerformanceSystem
             MgrVisualTuning.Performances.MinimumSequentialTriggerDurationScale,
             1f - Math.Max(0, animationIndex) *
             MgrVisualTuning.Performances.SequentialTriggerAccelerationPerCard);
+
+    private static bool ShouldStopPerformanceSequence(Player player) =>
+        CombatManager.Instance.IsOverOrEnding || player.Creature.IsDead;
 
     /// <summary>
     /// CardPileCmd normally lets NCardFlyVfx emit this notification after the

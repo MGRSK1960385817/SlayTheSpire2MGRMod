@@ -7,6 +7,9 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
+using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -33,7 +36,8 @@ public static class MgrPerformanceVisuals
     public static void QueueEntryAnimationAfterPlay(
         Player player,
         IReadOnlyList<MgrPerformanceEntry> entries,
-        MgrPerformanceEntry entry)
+        MgrPerformanceEntry entry,
+        int queuedBeforeThisTurn)
     {
         CardModel card = entry.Card;
         if (PendingPlayedCallbacks.Remove(card, out Action? oldCallback))
@@ -50,7 +54,10 @@ public static class MgrPerformanceVisuals
             try
             {
                 Show(player, entries);
-                QueueEntryAnimation(player, entry);
+                QueueEntryAnimation(
+                    player,
+                    entry,
+                    GetEntryAnimationDurationScale(queuedBeforeThisTurn));
             }
             catch (Exception exception)
             {
@@ -71,11 +78,20 @@ public static class MgrPerformanceVisuals
     /// remains available for effects that enqueue a hand/generated card without
     /// resolving a normal card play.
     /// </summary>
-    public static void QueueEntryAnimation(Player player, MgrPerformanceEntry entry)
+    public static void QueueEntryAnimation(
+        Player player,
+        MgrPerformanceEntry entry,
+        float durationScale = 1f)
     {
         if (Racks.TryGetValue(player, out PerformanceRack? rack) && rack.IsValid)
-            rack.QueuePlayedCardAnimation(entry);
+            rack.QueuePlayedCardAnimation(entry, durationScale);
     }
+
+    private static float GetEntryAnimationDurationScale(int queuedBeforeThisTurn) =>
+        MathF.Max(
+            MgrVisualTuning.Performances.MinimumEntryAnimationDurationScale,
+            1f - Math.Max(0, queuedBeforeThisTurn) *
+                MgrVisualTuning.Performances.EntryAnimationAccelerationPerCard);
 
     public static Task PlayTriggerAnimation(
         Player player,
@@ -157,6 +173,9 @@ public static class MgrPerformanceVisuals
         private readonly MgrPerformanceStaffVisual _staff;
         private readonly CanvasLayer _previewLayer;
         private readonly List<PerformanceCardView> _views = [];
+        private NOverlayStack? _overlayStack;
+        private NCapstoneContainer? _capstoneContainer;
+        private NMapScreen? _mapScreen;
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
 
@@ -186,10 +205,13 @@ public static class MgrPerformanceVisuals
                 Layer = 90
             };
             parent.AddChild(_previewLayer);
+
+            EnsureScreenVisibilitySubscriptions();
         }
 
         public void Show(IReadOnlyList<MgrPerformanceEntry> entries)
         {
+            EnsureScreenVisibilitySubscriptions();
             // The staff is the permanent visual home of the queue and remains
             // visible even while no Performance cards are currently queued.
             _staff.SetActive(true);
@@ -203,18 +225,18 @@ public static class MgrPerformanceVisuals
                 _views.Remove(stale);
             }
 
-            float spacing = entries.Count <= 1
-                ? 0f
-                : MathF.Min(
-                    MgrVisualTuning.Performances.DesiredSpacing,
-                    MgrVisualTuning.Performances.MaximumWidth / (entries.Count - 1));
-            float center = (entries.Count - 1) * 0.5f;
+            bool isFilled =
+                entries.Count >= MgrVisualTuning.Performances.FilledRackCardThreshold;
+            float spacing = CalculateCardSpacing(entries.Count, isFilled);
+            float rightEdge = isFilled
+                ? (entries.Count - 1) * spacing * 0.5f
+                : CalculateUnfilledRightEdge();
             var orderedViews = new List<PerformanceCardView>(entries.Count);
 
             for (int index = 0; index < entries.Count; index++)
             {
                 // The first entry is the rightmost; newer entries extend left.
-                float x = (center - index) * spacing;
+                float x = rightEdge - index * spacing;
                 PerformanceCardView? view = FindView(entries[index]);
                 view ??= new PerformanceCardView(
                     _root,
@@ -230,6 +252,123 @@ public static class MgrPerformanceVisuals
 
             _views.Clear();
             _views.AddRange(orderedViews);
+        }
+
+        private void EnsureScreenVisibilitySubscriptions()
+        {
+            NOverlayStack? currentStack = NOverlayStack.Instance;
+            if (!ReferenceEquals(_overlayStack, currentStack))
+            {
+                if (_overlayStack is not null &&
+                    GodotObject.IsInstanceValid(_overlayStack))
+                {
+                    _overlayStack.Changed -= OnOverlayStackChanged;
+                }
+
+                _overlayStack = currentStack;
+                if (_overlayStack is not null &&
+                    GodotObject.IsInstanceValid(_overlayStack))
+                {
+                    _overlayStack.Changed += OnOverlayStackChanged;
+                }
+            }
+
+            NCapstoneContainer? currentCapstone = NCapstoneContainer.Instance;
+            if (!ReferenceEquals(_capstoneContainer, currentCapstone))
+            {
+                if (_capstoneContainer is not null &&
+                    GodotObject.IsInstanceValid(_capstoneContainer))
+                {
+                    _capstoneContainer.Changed -= OnCapstoneChanged;
+                }
+
+                _capstoneContainer = currentCapstone;
+                if (_capstoneContainer is not null &&
+                    GodotObject.IsInstanceValid(_capstoneContainer))
+                {
+                    _capstoneContainer.Changed += OnCapstoneChanged;
+                }
+            }
+
+            NMapScreen? currentMap = NMapScreen.Instance;
+            if (!ReferenceEquals(_mapScreen, currentMap))
+            {
+                if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+                {
+                    _mapScreen.Opened -= OnMapVisibilityChanged;
+                    _mapScreen.Closed -= OnMapVisibilityChanged;
+                }
+
+                _mapScreen = currentMap;
+                if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+                {
+                    _mapScreen.Opened += OnMapVisibilityChanged;
+                    _mapScreen.Closed += OnMapVisibilityChanged;
+                }
+            }
+
+            RefreshScreenVisibility();
+        }
+
+        private void OnOverlayStackChanged() => RefreshScreenVisibility();
+
+        private void OnCapstoneChanged() => RefreshScreenVisibility();
+
+        private void OnMapVisibilityChanged() => RefreshScreenVisibility();
+
+        private void RefreshScreenVisibility()
+        {
+            bool hasOverlay =
+                _overlayStack is not null &&
+                GodotObject.IsInstanceValid(_overlayStack) &&
+                _overlayStack.ScreenCount > 0;
+            bool hasCapstone =
+                _capstoneContainer is not null &&
+                GodotObject.IsInstanceValid(_capstoneContainer) &&
+                _capstoneContainer.InUse;
+            bool hasOpenMap =
+                _mapScreen is not null &&
+                GodotObject.IsInstanceValid(_mapScreen) &&
+                _mapScreen.IsOpen;
+            bool shouldShow = !hasOverlay && !hasCapstone && !hasOpenMap;
+
+            // The rack belongs to the combat field, not to any full-screen or
+            // capstone UI. Hide both its world-space presentation and its private
+            // hover-preview canvas together so neither can leak above those screens.
+            _root.Visible = shouldShow;
+            _previewLayer.Visible = shouldShow;
+            if (!shouldShow)
+            {
+                foreach (PerformanceCardView view in _views)
+                    view.HidePreviewForOverlay();
+            }
+        }
+
+        private static float CalculateCardSpacing(int cardCount, bool isFilled)
+        {
+            if (cardCount <= 1)
+                return 0f;
+
+            if (!isFilled)
+                return MgrVisualTuning.Performances.UnfilledCardSpacing;
+
+            int extraCards = Math.Max(
+                0,
+                cardCount - MgrVisualTuning.Performances.FilledRackCardThreshold);
+            float occupiedWidth = MathF.Min(
+                MgrVisualTuning.Performances.FilledRackMaximumWidth,
+                MgrVisualTuning.Performances.FilledRackBaseWidth +
+                extraCards * MgrVisualTuning.Performances.FilledRackWidthPerExtraCard);
+            return occupiedWidth / (cardCount - 1);
+        }
+
+        private static float CalculateUnfilledRightEdge()
+        {
+            int maximumUnfilledCount = Math.Max(
+                1,
+                MgrVisualTuning.Performances.FilledRackCardThreshold - 1);
+            return (maximumUnfilledCount - 1) *
+                MgrVisualTuning.Performances.UnfilledCardSpacing * 0.5f;
         }
 
         public async Task PlayTriggerAnimation(
@@ -297,7 +436,9 @@ public static class MgrPerformanceVisuals
                 durationScale);
         }
 
-        public void QueuePlayedCardAnimation(MgrPerformanceEntry entry)
+        public void QueuePlayedCardAnimation(
+            MgrPerformanceEntry entry,
+            float durationScale)
         {
             PerformanceCardView? destination = FindView(entry);
             if (destination is null)
@@ -306,10 +447,16 @@ public static class MgrPerformanceVisuals
             // Capture the slot now: the entry may complete and disappear while
             // the final autoplay view is still finishing its pile transition.
             TaskHelper.RunSafely(
-                AwaitPlayedCardAndAnimate(entry.Card, destination.ViewportCenter));
+                AwaitPlayedCardAndAnimate(
+                    entry.Card,
+                    destination.ViewportCenter,
+                    durationScale));
         }
 
-        private async Task AwaitPlayedCardAndAnimate(CardModel card, Vector2 destination)
+        private async Task AwaitPlayedCardAndAnimate(
+            CardModel card,
+            Vector2 destination,
+            float durationScale)
         {
             // Start with an immediate lookup while AfterCardPlayed still owns the
             // play view, then allow routing a short window to reparent it.
@@ -321,7 +468,7 @@ public static class MgrPerformanceVisuals
                 NCard? playedCard = FindPlayedCardNode(card);
                 if (playedCard is not null)
                 {
-                    AnimatePlayedCardTo(destination, playedCard);
+                    AnimatePlayedCardTo(destination, playedCard, durationScale);
                     return;
                 }
 
@@ -333,7 +480,8 @@ public static class MgrPerformanceVisuals
 
         private static void AnimatePlayedCardTo(
             Vector2 destinationInViewport,
-            NCard playedCard)
+            NCard playedCard,
+            float durationScale)
         {
             if (!GodotObject.IsInstanceValid(playedCard))
                 return;
@@ -363,26 +511,29 @@ public static class MgrPerformanceVisuals
                 (visibleCenterInCard - playedCard.PivotOffset) * finalScale;
             Vector2 targetPosition =
                 destinationInCardCanvas - visibleCenterOffsetAtFinalScale;
+            double enterSeconds =
+                MgrVisualTuning.Performances.EnterQueueSeconds *
+                Math.Clamp(durationScale, 0.1f, 1f);
             var tween = playedCard.CreateTween().SetParallel();
             tween.TweenProperty(
                     playedCard,
                     "global_position",
                     targetPosition,
-                    MgrVisualTuning.Performances.EnterQueueSeconds)
+                    enterSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
             tween.TweenProperty(
                     playedCard,
                     "scale",
                     finalScale,
-                    MgrVisualTuning.Performances.EnterQueueSeconds)
+                    enterSeconds)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Back);
             tween.TweenProperty(
                 playedCard,
                 "modulate",
                 new Color(1f, 1f, 1f, 0.12f),
-                MgrVisualTuning.Performances.EnterQueueSeconds);
+                enterSeconds);
             tween.Chain().TweenCallback(Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(playedCard))
@@ -441,6 +592,27 @@ public static class MgrPerformanceVisuals
 
         public void Dispose()
         {
+            if (_overlayStack is not null &&
+                GodotObject.IsInstanceValid(_overlayStack))
+            {
+                _overlayStack.Changed -= OnOverlayStackChanged;
+            }
+
+            if (_capstoneContainer is not null &&
+                GodotObject.IsInstanceValid(_capstoneContainer))
+            {
+                _capstoneContainer.Changed -= OnCapstoneChanged;
+            }
+
+            if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+            {
+                _mapScreen.Opened -= OnMapVisibilityChanged;
+                _mapScreen.Closed -= OnMapVisibilityChanged;
+            }
+
+            _overlayStack = null;
+            _capstoneContainer = null;
+            _mapScreen = null;
             ClearViews();
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
@@ -473,6 +645,7 @@ public static class MgrPerformanceVisuals
         private Tween? _pulseTween;
         private NCard? _hoverPreview;
         private int _baseLayer;
+        private bool _isTriggering;
 
         public MgrPerformanceEntry Entry { get; }
         public float LocalCenterX => _anchor.Position.X;
@@ -513,7 +686,11 @@ public static class MgrPerformanceVisuals
             // older card that is supposed to cover it.
             _cardNode.ZIndex = 0;
             _cardNode.ZAsRelative = true;
-            _cardNode.Modulate = Colors.White;
+            _cardNode.Modulate = new Color(
+                1f,
+                1f,
+                1f,
+                MgrVisualTuning.Performances.RackCardOpacity);
             _cardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
 
             _triggerBurst = new MgrPerformanceCardBurstVisual
@@ -599,6 +776,7 @@ public static class MgrPerformanceVisuals
         {
             _anchor.Position = position;
             PositionHoverHitbox();
+            ReconcileHoverPresentation();
         }
 
         public void SetLayer(int layer)
@@ -608,8 +786,17 @@ public static class MgrPerformanceVisuals
             _hoverHitbox.ZIndex = layer;
         }
 
-        public void SetTriggering(bool isTriggering) =>
+        public void SetTriggering(bool isTriggering)
+        {
+            _isTriggering = isTriggering;
             _idleEdge.SetTriggering(isTriggering);
+            if (isTriggering)
+                SetHoveredPresentation(false);
+            else
+                ReconcileHoverPresentation();
+        }
+
+        public void HidePreviewForOverlay() => HideHoverPreview();
 
         public async Task PlayTriggerAnimation(
             bool consumesRemaining,
@@ -621,6 +808,7 @@ public static class MgrPerformanceVisuals
             HideHoverPreview();
             _pulseTween?.Kill();
             _anchor.Scale = Vector2.One;
+            SetHoveredPresentation(false);
             _triggerGlow.Modulate = new Color(1f, 1f, 1f, 0f);
             _triggerBurst.Burst();
             float clampedDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
@@ -713,24 +901,52 @@ public static class MgrPerformanceVisuals
 
         private void OnMouseEntered()
         {
-            _anchor.ZIndex = 300;
-            _hoverHitbox.ZIndex = 300;
-            _cardNode.Scale = MgrVisualTuning.Performances.HoveredMiniatureScale;
-            ShowHoverPreview();
+            SetHoveredPresentation(true);
         }
 
         private void OnMouseExited()
         {
-            _anchor.ZIndex = _baseLayer;
-            _hoverHitbox.ZIndex = _baseLayer;
-            _cardNode.Scale = MiniatureScale;
-            HideHoverPreview();
+            SetHoveredPresentation(false);
         }
 
         private void OnHoverInput(InputEvent inputEvent)
         {
             if (inputEvent is InputEventMouseMotion)
+            {
+                ReconcileHoverPresentation();
                 PositionHoverPreview();
+            }
+        }
+
+        private void ReconcileHoverPresentation()
+        {
+            if (!GodotObject.IsInstanceValid(_hoverHitbox) ||
+                !_hoverHitbox.Visible)
+            {
+                SetHoveredPresentation(false);
+                return;
+            }
+
+            Vector2 localMouse = _hoverHitbox.GetLocalMousePosition();
+            bool isActuallyHovered = new Rect2(
+                Vector2.Zero,
+                _hoverHitbox.Size).HasPoint(localMouse);
+            SetHoveredPresentation(isActuallyHovered);
+        }
+
+        private void SetHoveredPresentation(bool isHovered)
+        {
+            isHovered &= !_isTriggering;
+            _anchor.ZIndex = isHovered ? 300 : _baseLayer;
+            _hoverHitbox.ZIndex = isHovered ? 300 : _baseLayer;
+            _cardNode.Scale = isHovered
+                ? MgrVisualTuning.Performances.HoveredMiniatureScale
+                : MiniatureScale;
+
+            if (isHovered)
+                ShowHoverPreview();
+            else
+                HideHoverPreview();
         }
 
         private void ShowHoverPreview()

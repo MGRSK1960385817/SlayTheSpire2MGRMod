@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -16,6 +17,18 @@ namespace SlayTheSpire2MGRMod.Patches;
 /// </summary>
 public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
 {
+    private static readonly CardKeyword[] CompactTerminalKeywords =
+    [
+        CardKeyword.Retain,
+        CardKeyword.Ethereal,
+        CardKeyword.Exhaust
+    ];
+
+    private static readonly string[] NamedColorTags =
+    [
+        "gold", "blue", "green", "red", "purple", "orange"
+    ];
+
     public static string PatchId => "mgr_performance_description";
     public static string Description => "Shows combat-only Performance on modified cards";
 
@@ -58,21 +71,74 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             __result = string.IsNullOrWhiteSpace(__result)
                 ? starryText
                 : $"{starryText} {__result}";
-            return;
+        }
+        else
+        {
+            string? identityLine = (starryText, addedPerformanceText) switch
+            {
+                (not null, not null) => $"{starryText} {addedPerformanceText}",
+                (not null, null) => starryText,
+                (null, not null) => addedPerformanceText,
+                _ => null
+            };
+            if (identityLine is not null)
+            {
+                __result = string.IsNullOrWhiteSpace(__result)
+                    ? identityLine
+                    : $"{identityLine}\n{__result}";
+            }
         }
 
-        string? identityLine = (starryText, addedPerformanceText) switch
+        if (mgrCard is not null)
+            CompactTerminalKeywordLines(mgrCard, ref __result);
+
+        if (__instance is Pale)
+            __result = FormatPaleDescription(__result);
+    }
+
+    private static void CompactTerminalKeywordLines(
+        MgrCard card,
+        ref string description)
+    {
+        if (CompactTerminalKeywords.Count(card.Keywords.Contains) < 2)
+            return;
+
+        var keywordTexts = CompactTerminalKeywords
+            .Where(card.Keywords.Contains)
+            .Select(keyword => keyword.GetCardText().Trim())
+            .Where(text => !string.IsNullOrWhiteSpace(text))
+            .ToHashSet(StringComparer.Ordinal);
+        if (keywordTexts.Count < 2)
+            return;
+
+        List<string> lines = description.Split('\n').ToList();
+        var matchedLines = lines
+            .Select((line, index) => (Text: line.Trim(), Index: index))
+            .Where(item => keywordTexts.Contains(item.Text))
+            .ToList();
+        if (matchedLines.Count < 2)
+            return;
+
+        int insertAt = matchedLines.Min(item => item.Index);
+        string compactLine = string.Join(
+            " ",
+            matchedLines.OrderBy(item => item.Index).Select(item => item.Text));
+        foreach (int index in matchedLines.Select(item => item.Index).OrderDescending())
+            lines.RemoveAt(index);
+
+        lines.Insert(Math.Min(insertAt, lines.Count), compactLine);
+        description = string.Join('\n', lines);
+    }
+
+    private static string FormatPaleDescription(string description)
+    {
+        foreach (string tag in NamedColorTags)
         {
-            (not null, not null) => $"{starryText} {addedPerformanceText}",
-            (not null, null) => starryText,
-            (null, not null) => addedPerformanceText,
-            _ => null
-        };
-        if (identityLine is not null)
-        {
-            __result = string.IsNullOrWhiteSpace(__result)
-                ? identityLine
-                : $"{identityLine}\n{__result}";
+            description = description
+                .Replace($"[{tag}]", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace($"[/{tag}]", string.Empty, StringComparison.OrdinalIgnoreCase);
         }
+
+        return $"[sine][color=#8a8a8a]{description}[/color][/sine]";
     }
 }

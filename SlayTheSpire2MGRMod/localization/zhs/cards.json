@@ -247,9 +247,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.title": "三声",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.description": "生成3个随机[gold]基础音符[/gold]。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.smartDescription": "生成3个随机[gold]基础音符[/gold]。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.title": "躺",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.description": "什么都不做。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.smartDescription": "{IfUpgraded:show:抽{Cards:diff()}张牌。|什么都不做。}",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.title": "苍白",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.description": "什么都不做。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.smartDescription": "{IfUpgraded:show:什么都不做。\n但可以抽{Cards:diff()}张牌。|什么都不做。}",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.title": "金枪鱼冲锋",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.description": "对所有敌人造成{Damage:diff()}点伤害。\n立刻结束所有[gold]演奏[/gold]。每结束1张，重复此攻击一次。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.smartDescription": "对所有敌人造成{Damage:diff()}点伤害。\n立刻结束所有[gold]演奏[/gold]。每结束1张，重复此攻击一次。",
@@ -266,6 +266,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BEAT_TIME.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n复制最右侧的音符。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BEAT_TIME.smartDescription": "获得{Block:diff()}点[gold]格挡[/gold]。\n复制最右侧的音符。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.title": "快乐合成器",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.description": "每当你在一回合内打出3种不同音符对应的牌，获得1点[gold]力量[/gold]与1点[gold]敏捷[/gold]。",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.smartDescription": "每当你在一回合内打出3种不同音符对应的牌，获得1点[gold]力量[/gold]与1点[gold]敏捷[/gold]。"
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.description": "当一次[gold]和弦[/gold]包含3种不同音符时，获得1点[gold]力量[/gold]与1点[gold]敏捷[/gold]。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.smartDescription": "当一次[gold]和弦[/gold]包含3种不同音符时，获得1点[gold]力量[/gold]与1点[gold]敏捷[/gold]。"
 }

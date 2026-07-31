@@ -538,12 +538,12 @@
       "summary": "衍生牌。0费保留；额外生成2个随机基础音符；升级后改为选择额外生成0至3个随机基础音符。"
     },
     {
-      "codeName": "LieDown",
-      "name": "躺",
+      "codeName": "Pale",
+      "name": "苍白",
       "status": 1,
       "type": "Status",
       "rarity": "Token",
-      "summary": "0费状态牌；保留。什么都不做；升级后抽1张牌。"
+      "summary": "衍生状态牌。0费；什么都不做；升级后仍什么都不做，但可以抽1张牌。描述使用灰色摆动文字。"
     },
     {
       "codeName": "MaguroDash",
@@ -583,7 +583,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "1费金卡能力；本回合每打出3种不同音符对应的牌，获得1力量和1敏捷；打出6种时可再次触发；升级后获得固有。"
+      "summary": "2费金卡能力；每当一次和弦包含至少3种不同音符，获得1力量和1敏捷；升级后费用降为1。"
     },
     {
       "codeName": "ImagineCreate",

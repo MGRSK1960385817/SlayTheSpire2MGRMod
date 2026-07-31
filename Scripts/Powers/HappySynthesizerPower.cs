@@ -1,5 +1,4 @@
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -12,9 +11,6 @@ namespace SlayTheSpire2MGRMod.Powers;
 [RegisterPower]
 public sealed class HappySynthesizerPower : ModPowerTemplate
 {
-    private readonly HashSet<NoteKind> _playedKindsThisTurn = [];
-    private int _rewardsGrantedThisTurn;
-
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
@@ -22,43 +18,25 @@ public sealed class HappySynthesizerPower : ModPowerTemplate
         IconPath: $"{Entry.ResPath}/images/cards/HappySynthesizer.png",
         BigIconPath: $"{Entry.ResPath}/images/cards/HappySynthesizer.png");
 
-    public async Task ObservePlayedNoteKind(
+    public async Task OnChordTriggered(
         PlayerChoiceContext choiceContext,
-        NoteKind kind)
+        IReadOnlyList<MgrNote> notes)
     {
-        if (!_playedKindsThisTurn.Add(kind))
+        if (notes.Select(note => note.Kind).Distinct().Take(3).Count() < 3)
             return;
 
-        int earnedRewards = _playedKindsThisTurn.Count / 3;
-        while (_rewardsGrantedThisTurn < earnedRewards)
-        {
-            _rewardsGrantedThisTurn++;
-            Flash();
-            await PowerCmd.Apply<StrengthPower>(
-                choiceContext,
-                Owner,
-                Amount,
-                Owner,
-                cardSource: null);
-            await PowerCmd.Apply<DexterityPower>(
-                choiceContext,
-                Owner,
-                Amount,
-                Owner,
-                cardSource: null);
-        }
-    }
-
-    public override Task AfterPlayerTurnStartEarly(
-        PlayerChoiceContext choiceContext,
-        Player player)
-    {
-        if (player.Creature == Owner)
-        {
-            _playedKindsThisTurn.Clear();
-            _rewardsGrantedThisTurn = 0;
-        }
-
-        return Task.CompletedTask;
+        Flash();
+        await PowerCmd.Apply<StrengthPower>(
+            choiceContext,
+            Owner,
+            Amount,
+            Owner,
+            cardSource: null);
+        await PowerCmd.Apply<DexterityPower>(
+            choiceContext,
+            Owner,
+            Amount,
+            Owner,
+            cardSource: null);
     }
 }

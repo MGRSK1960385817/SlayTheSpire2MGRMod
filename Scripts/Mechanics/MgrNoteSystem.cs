@@ -99,12 +99,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             return;
 
         NoteKind playedKind = CardNoteResolver.Resolve(cardPlay.Card);
-        bool generated = await ChannelNote(choiceContext, player, playedKind);
-        if (generated &&
-            player.Creature.GetPower<HappySynthesizerPower>() is { } synthesizer)
-        {
-            await synthesizer.ObservePlayedNoteKind(choiceContext, playedKind);
-        }
+        await ChannelNote(choiceContext, player, playedKind);
 
         MgrPerformanceSystem.ObserveResolvedCardPlay(cardPlay);
     }
@@ -391,7 +386,10 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
 
         if (player.Character is MgrCharacter)
+        {
+            MgrPerformanceStateStore.For(player).ResetTurnCounters();
             await MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
+        }
     }
 
     public override Task BeforeSideTurnEnd(

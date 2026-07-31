@@ -17,12 +17,14 @@ public sealed class FinalShot : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(0m),
+        // Keep both halves explicit: outside combat the CalculationBase still
+        // renders the ordinary value, while Ending adds one matching ExtraDamage
+        // term through Tower 2's native calculation path.
+        new CalculationBaseVar(12m),
         new ExtraDamageVar(12m),
-        new MgrConditionalCalculatedDamageVar(
-                ValueProp.Move,
-                card => card is FinalShot shot && shot.IsPhraseEndBonusActive)
-            .WithMultiplier(static (_, _) => 1m)
+        new CalculatedDamageVar(ValueProp.Move)
+            .WithMultiplier(static (card, _) =>
+                card is FinalShot shot && shot.IsPhraseEndBonusActive ? 1m : 0m)
     ];
 
     public FinalShot() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -40,6 +42,7 @@ public sealed class FinalShot : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.CalculationBase.UpgradeValueBy(5m);
         DynamicVars.ExtraDamage.UpgradeValueBy(5m);
     }
 }

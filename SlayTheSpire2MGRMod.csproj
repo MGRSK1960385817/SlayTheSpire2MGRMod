@@ -18,7 +18,9 @@
     <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
     <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
     <ModPckPath>$(ModOutputDir)$(MSBuildProjectName).pck</ModPckPath>
-    <RitsuLibDeployDir Condition="'$(RitsuLibDeployDir)' == ''">$(Sts2Dir)\mods\STS2-RitsuLib</RitsuLibDeployDir>
+    <!-- RitsuLib is installed through Steam Workshop. Keep the NuGet package
+         as a compile-time dependency without creating a duplicate local mod. -->
+    <RitsuLibAutoCopy>false</RitsuLibAutoCopy>
     <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
     <RunPckExport Condition="'$(RunPckExport)' == '' and '$(DesignTimeBuild)' != 'true'">true</RunPckExport>
     <RunPckExport Condition="'$(RunPckExport)' == ''">false</RunPckExport>
@@ -26,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" />
-    <PackageReference Include="STS2.RitsuLib" Version="0.4.57" />
+    <PackageReference Include="STS2.RitsuLib" Version="0.5.1" />
   </ItemGroup>
 
   <ItemGroup>

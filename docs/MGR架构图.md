@@ -136,7 +136,7 @@ flowchart LR
         ART["Sprite2D + EffectAmount<br/>音符图片与带颜色描边的数值"]
         CHORD["槽位填满<br/>保持一小段时间后恢复空槽"]
         ACCEL_NOTE["生成动画加速<br/>max(0.10, 0.28 - 本回合已生成数 × 0.018)"]
-        ACCEL_CHORD["和弦停留加速<br/>max(0.12, 0.42 - 本回合已触发数 × 0.05)"]
+        ACCEL_CHORD["和弦停留加速<br/>max(0.12, 0.42 - 本回合已触发数 × 0.075)"]
 
         NOTE_EVENT --> NOTE_ADD
         NOTE_ADD --> NOTE_GATE
@@ -156,7 +156,7 @@ flowchart LR
         PLAY["普通打出或效果直接入队"]
         OBSERVE["ObserveResolvedCardPlay / EnqueueCard<br/>建立 MgrPerformanceEntry"]
         PERF_STATE["有序队列<br/>最早进入者在数组首位、画面最右侧"]
-        PERF_RACK["MgrPerformanceRack<br/>牌间距受 MaximumWidth 压缩并重叠"]
+        PERF_RACK["MgrPerformanceRack<br/>未满时从右向左宽松排列<br/>已满后小幅扩宽并逐渐压紧"]
         ENTER["入队动画<br/>搜索原 NCard 最多 30 帧<br/>取消原牌堆 Tween，飞入并淡出原节点"]
         MINI["PerformanceCardView<br/>缩略牌 + 剩余次数 + HoverHitbox"]
         HOVER["CanvasLayer 90<br/>鼠标右侧生成完整 NCard 预览并限制在屏幕内"]
@@ -204,14 +204,14 @@ flowchart LR
 
 | 想调整的东西 | 优先修改 | 当前关键值 |
 | --- | --- | --- |
-| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkScale / DesiredSlotSpacing / MaximumRackWidth` | `(0,-350)`、`0.76`、`96`、`480` |
+| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkFillRatio / DesiredSlotSpacing / MaximumRackWidth` | `(0,-350)`、槽直径的 `92%`、`96`、`480` |
 | 空槽外观 | `SlotRadius / EmptySlotDashCount / EmptySlotDashFill / EmptySlotDashWidth` | `30`、`8`、`0.48`、`2.5` |
 | 单颗音符入场 | `FirstNoteEntranceSeconds / MinimumNoteEntranceSeconds / Entrance*` | 首颗 `0.28s`，最低 `0.10s`，起始缩放 `0.28`，过冲 `1.18` |
 | 多音符生成加速 | `NoteEntranceAccelerationPerNote` | 本回合每已有一颗减 `0.018s` |
-| 和弦满槽停留 | `FirstChordHoldSeconds / MinimumChordHoldSeconds / ChordHoldAccelerationPerChord` | `0.42s` → 最低 `0.12s`，每次减 `0.05s` |
+| 和弦满槽停留 | `FirstChordHoldSeconds / MinimumChordHoldSeconds / ChordHoldAccelerationPerChord` | `0.42s` → 最低 `0.12s`，每次减 `0.075s` |
 | 音符漂浮与呼吸差异 | `Bob* / Breath* / InitialScaleVariance / PhaseVariance` | 上下 `5px`；缩放约 `±5.5%`；速度随机约 `±20%` |
-| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / MiniatureScale / DesiredSpacing / MaximumWidth` | `(0,-500)`、`0.33`、`52`、`520` |
-| 演奏牌入队 | `EnterQueueSeconds` | `0.28s` |
+| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / MiniatureScale / FilledRackCardThreshold / UnfilledCardSpacing / FilledRack*Width` | `(80,-470)`、`0.35`、阈值 `5`、未满间距 `82`、已满宽度 `272→370` |
+| 演奏牌入队 | `EnterQueueSeconds / EntryAnimationAccelerationPerCard / MinimumEntryAnimationDurationScale` | `0.20s → 0.15s → 0.10s`，第三张及以后保持 `0.10s` |
 | 演奏触发跳动 | `TriggerScale / TriggerGrowSeconds / TriggerSettleSeconds` | `1.2`、`0.14s`、`0.18s` |
 | 演奏结束离队 | `ExitSeconds` | `0.38s` |
 | 悬停详情大小与位置 | `PreviewScale / PreviewGrowSeconds / PreviewMouseXOffset` | `0.8`、`0.12s`、鼠标右侧 `34px` |

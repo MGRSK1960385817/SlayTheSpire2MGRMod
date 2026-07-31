@@ -48,6 +48,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_NOTE_GENERATION_LOCK_POWER.description": "You cannot generate Notes this turn.",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_NOTE_GENERATION_LOCK_POWER.smartDescription": "You cannot generate Notes this turn.",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.title": "Happy Synthesizer",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.description": "Tracks the different Note types played this turn.",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.smartDescription": "For every 3 different Note types, gain [blue]{Amount}[/blue] Strength and Dexterity."
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.description": "Triggers when a Chord contains at least 3 different Note types.",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.smartDescription": "When a Chord contains at least 3 different Note types, gain [blue]{Amount}[/blue] Strength and Dexterity."
 }

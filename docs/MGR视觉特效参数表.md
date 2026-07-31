@@ -22,7 +22,8 @@
 | --- | ---: | --- |
 | `Notes.RackOffset` | `(0, -350)` | 整排音符相对战斗人物节点的位置；X 向右，Y 向下 |
 | `Notes.RackZIndex` | `50` | 音符排层级 |
-| `Notes.ArtworkScale` | `(0.76, 0.76)` | 音符图片缩放 |
+| `Notes.ArtworkFillRatio` | `0.92` | 音符图片相对于音符槽直径的显示比例；运行时先按源图尺寸归一化，再按比例显示，替换高清图无需重算倍率 |
+| `Notes.CurseAccentColor` | `#78101C` | 诅咒音符数值描边、生成星屑及和弦爆发共用的黑红色 |
 | `Notes.DesiredSlotSpacing` | `96` | 槽位理想中心间距 |
 | `Notes.MaximumRackWidth` | `480` | 音符排最大宽度；槽位增多后自动压缩间距 |
 
@@ -82,12 +83,12 @@
 | --- | ---: | --- |
 | `Notes.FirstChordHoldSeconds` | `0.42s` | 本回合第一次和弦完成后的满槽停留 |
 | `Notes.MinimumChordHoldSeconds` | `0.12s` | 连续触发时的停留下限 |
-| `Notes.ChordHoldAccelerationPerChord` | `0.05s` | 本回合每已有一次触发，后续停留减少的时间 |
+| `Notes.ChordHoldAccelerationPerChord` | `0.075s` | 本回合每已有一次触发，后续停留减少的时间 |
 | `Notes.FastChordCommandThreshold` | `2` | 已触发两次后，伤害/格挡等原生命令使用快速表现路径 |
 
 停留公式：
 
-`max(0.12, 0.42 - 本回合此前触发和弦数 × 0.05)`
+`max(0.12, 0.42 - 本回合此前触发和弦数 × 0.075)`
 
 和弦开始结算时，每个已填充音符都会略微放大，并喷射较生成动画更多的同色星芒和柔光；`ChordBurstParticleCount`、`ChordBurstSeconds`、`ChordBurstEndRadius` 与 `ChordTriggerScale` 控制该效果。动画与战斗结算重叠播放，不会额外串行拖慢和弦。
 
@@ -107,14 +108,16 @@
 
 这些随机数只控制视觉，不参与战斗 RNG 和机制结算。
 
+万象音符把每张源图片仅作为透明度轮廓使用，不继承原图的 RGB 底色；其柔和的薰衣草、青色、金色与玫红色谱会持续流动。因此即使轮换到黑色的诅咒音符轮廓，也能保持完整彩色表现。
+
 ### 音符数值标签与颜色
 
-这些值目前写在 `MgrNoteVisuals.cs`，尚未集中到 `MgrVisualTuning.cs`：
+这些值已经集中在 `MgrVisualTuning.Notes`：
 
 - 标签位置 `(-36, 21)`，尺寸 `(72, 36)`。
 - 字号 `24`，彩色描边 `8`，黑色阴影描边 `2`。
 - 攻击 `#ff3b30`；技能 `#22d967`；能力 `#1f9eff`；状态 `#60666d`。
-- 诅咒 `#e8bd00`；任务 `#4fc9d1`；星空 `#f020c8`；幽灵 `#a875ff`。
+- 诅咒 `#78101c`；星空 `#f020c8`；幽灵 `#a875ff`。
 
 ## 2. 演奏牌队列
 
@@ -136,24 +139,33 @@
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.RackOffset` | `(0, -470)` | 演奏排与线谱整体相对战斗人物节点的位置 |
+| `Performances.RackOffset` | `(80, -470)` | 演奏框、线谱和演奏牌堆整体相对战斗人物节点的位置；X 增大即整体右移 |
+| `Performances.StaffOffset` | `(0, -16)` | 只移动线谱、不移动演奏牌；X 控制左右，Y 控制上下 |
+| `Performances.StaffWidth` | `560` | 线谱总宽度；只改变线谱，不改变演奏牌间距 |
+| `Performances.StaffLineAlpha` | `0.34` | 线谱待机时的不透明度；数值越大越实，越小越透明 |
 | `Performances.RackZIndex` | `55` | 基础层级 |
 | `Performances.MiniatureScale` | `(0.35, 0.35)` | 队列中卡牌大小 |
 | `Performances.HoveredMiniatureScale` | `(0.5, 0.5)` | 鼠标移入时的缩略牌大小 |
-| `Performances.DesiredSpacing` | `56` | 相邻演奏牌露出的理想宽度 |
-| `Performances.MaximumWidth` | `520` | 整排最大宽度；牌多后自动加重重叠 |
+| `Performances.FilledRackCardThreshold` | `5` | 达到该数量后，由“未满”切换为“已满”压缩布局 |
+| `Performances.UnfilledCardSpacing` | `82` | 未满时相邻演奏牌的固定间距；新牌从右向左加入 |
+| `Performances.FilledRackBaseWidth` | `272` | 刚进入已满状态时的整排占用宽度 |
+| `Performances.FilledRackWidthPerExtraCard` | `20` | 已满后每多一张牌，整排只额外扩宽的距离 |
+| `Performances.FilledRackMaximumWidth` | `370` | 已满布局最终允许占用的最大宽度 |
+| `Performances.RackCardOpacity` | `0.92` | 演奏队列中卡面本体的不透明度 |
 
-实际间距公式：
+未满时，最右侧位置保持固定，队列中最早进入的牌位于最右侧且层级最高，新牌以 `82px` 间距从其左侧依次加入。达到 `5` 张后，整排改为左右居中的已满布局：总宽度从 `272px` 开始，每多一张只增加 `20px`，最高 `370px`；实际牌距为“当前总宽度 / (牌数 - 1)”，因此牌越多，重叠仍会逐渐加深。
 
-`min(DesiredSpacing, MaximumWidth / (演奏牌数 - 1))`
-
-队列中最早进入的牌位于最右侧，层级也最高；新牌从左侧继续加入。
+演奏牌架与音符槽会同时监听原版 `NOverlayStack`、`NCapstoneContainer` 和 `NMapScreen`：地图、卡组详情、牌堆详情或其他顶层覆盖界面打开时，线谱、演奏牌、音符槽、计数和悬停说明会整组隐藏；全部关闭后自动恢复。因此不要通过降低 ZIndex 来解决界面穿透，否则会同时破坏战斗内卡牌与特效的前后关系。
 
 ### 入队动画
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.EnterQueueSeconds` | `0.28s` | 原打出卡牌飞入演奏槽位的时长 |
+| `Performances.EnterQueueSeconds` | `0.20s` | 本回合第一张演奏牌飞入槽位的时长 |
+| `Performances.EntryAnimationAccelerationPerCard` | `0.25` | 本回合每多打出一张演奏牌，后续入队动画减少的时长倍率 |
+| `Performances.MinimumEntryAnimationDurationScale` | `0.50` | 连续打出演奏牌时入队动画的最低时长倍率 |
+
+实际入队时长为：第一张 `0.20s`，第二张 `0.15s`，第三张及以后统一 `0.10s`。
 
 流程中的硬编码细节位于 `MgrPerformanceVisuals.cs`：
 
@@ -199,15 +211,15 @@
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RemainingCounterSize` | `(62, 40)` | 数字控件尺寸 |
-| `RemainingCounterTopGap` | `10px` | 标记与卡牌顶边的距离 |
-| `RemainingCounterFontSize` | `30` | 数字字号 |
-| `RemainingCounterOutlineSize` | `6` | 深色文字描边大小 |
-| `RemainingCounterWingLength` | `29px` | 两侧第一条横线长度；其后两条依次缩短 |
+| `RemainingCounterSize` | `(54, 34)` | 数字控件尺寸 |
+| `RemainingCounterTopGap` | `9px` | 标记与卡牌顶边的距离 |
+| `RemainingCounterFontSize` | `26` | 数字字号 |
+| `RemainingCounterOutlineSize` | `5` | 深色文字描边大小 |
+| `RemainingCounterWingLength` | `24px` | 两侧第一条横线长度；其后两条依次缩短 |
 | `RemainingCounterSingleWingLengthScale` | `0.76` | 只剩一次时，居中单横线相对标准长度的倍率 |
 | `RemainingCounterDoubleWingLengthScale` | `0.88` | 剩余两次时，两条横线相对标准长度的倍率 |
-| `RemainingCounterWingGap` | `16px` | 数字与横线的间隙 |
-| `RemainingCounterWingSpacing` | `6px` | 相邻横线的纵向间距 |
+| `RemainingCounterWingGap` | `14px` | 数字与横线的间隙 |
+| `RemainingCounterWingSpacing` | `5px` | 相邻横线的纵向间距 |
 | `RemainingCounterWingLineCount` | `3` | 数字每侧最多绘制的横线数量 |
 | `RemainingCounterPulseSeconds` | `0.30s` | 触发时标记跳动的总时长 |
 | `RemainingCounterChangeFraction` | `0.36` | 跳动进行到 36% 时更新数字 |

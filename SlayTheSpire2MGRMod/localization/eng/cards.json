@@ -247,9 +247,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.title": "Three Voices",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.description": "Generate 3 additional random Notes.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_THE_CROWD_CHOICE_3.smartDescription": "Generate 3 additional random Notes.",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.title": "Lie Down",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.description": "Do nothing.",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIE_DOWN.smartDescription": "{IfUpgraded:show:Draw {Cards:diff()} card.|Do nothing.}",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.title": "Pale",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.description": "Do nothing.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_PALE.smartDescription": "{IfUpgraded:show:Do nothing.\nBut draw {Cards:diff()} card.|Do nothing.}",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.title": "Maguro Dash",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.description": "Deal {Damage:diff()} damage to ALL enemies. Immediately end all Performances. Repeat this attack once for each card ended.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_DASH.smartDescription": "Deal {Damage:diff()} damage to ALL enemies. Immediately end all Performances. Repeat this attack once for each card ended.",
@@ -266,6 +266,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BEAT_TIME.description": "Gain {Block:diff()} Block. Copy the rightmost Note.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BEAT_TIME.smartDescription": "Gain {Block:diff()} Block. Copy the rightmost Note.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.title": "Happy Synthesizer",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.description": "Whenever you play cards corresponding to 3 different Note types in a turn, gain 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold].",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.smartDescription": "Whenever you play cards corresponding to 3 different Note types in a turn, gain 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold]."
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.description": "When a [gold]Chord[/gold] contains 3 different Note types, gain 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold].",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_HAPPY_SYNTHESIZER.smartDescription": "When a [gold]Chord[/gold] contains 3 different Note types, gain 1 [gold]Strength[/gold] and 1 [gold]Dexterity[/gold]."
 }

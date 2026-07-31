@@ -12,6 +12,7 @@ public sealed class MgrPerformanceState
     private readonly List<MgrPerformanceEntry> _entries = [];
 
     public IReadOnlyList<MgrPerformanceEntry> Entries => _entries;
+    public int PlayedEntriesQueuedThisTurn { get; private set; }
 
     public bool Contains(CardModel card) => _entries.Any(entry => ReferenceEquals(entry.Card, card));
 
@@ -30,6 +31,15 @@ public sealed class MgrPerformanceState
     }
 
     public bool Remove(MgrPerformanceEntry entry) => _entries.Remove(entry);
+
+    public int RecordPlayedEntryQueuedThisTurn()
+    {
+        int previous = PlayedEntriesQueuedThisTurn;
+        PlayedEntriesQueuedThisTurn++;
+        return previous;
+    }
+
+    public void ResetTurnCounters() => PlayedEntriesQueuedThisTurn = 0;
 
     public void Clear() => _entries.Clear();
 }

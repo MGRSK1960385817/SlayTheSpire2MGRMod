@@ -12,7 +12,15 @@ public static class MgrVisualTuning
     public static class Notes
     {
         public static readonly Vector2 RackOffset = new(0f, -350f);
-        public static readonly Vector2 ArtworkScale = new(0.76f, 0.76f);
+        // Filled-note artwork is normalized against its source texture and then
+        // sized as a proportion of the slot diameter. This keeps high-resolution
+        // replacement art consistent without imposing a fixed pixel target.
+        public const float ArtworkFillRatio = 1f;
+        public static readonly Vector2 AmountLabelPosition = new(-36f, 21f);
+        public static readonly Vector2 AmountLabelSize = new(72f, 36f);
+        public const int AmountLabelFontSize = 24;
+        public const int AmountLabelOutlineSize = 8;
+        public static readonly Color CurseAccentColor = new("78101c");
 
         public const int RackZIndex = 50;
         public const float DesiredSlotSpacing = 96f;
@@ -52,7 +60,7 @@ public static class MgrVisualTuning
         public const double NoteEntranceAccelerationPerNote = 0.018;
         public const double FirstChordHoldSeconds = 0.42;
         public const double MinimumChordHoldSeconds = 0.12;
-        public const double ChordHoldAccelerationPerChord = 0.05;
+        public const double ChordHoldAccelerationPerChord = 0.075;
         public const int FastChordCommandThreshold = 2;
 
         // Newly generated notes pop in one after another. ChannelSingleNote awaits
@@ -101,11 +109,11 @@ public static class MgrVisualTuning
 
     public static class Performances
     {
-        public static readonly Vector2 RackOffset = new(0f, -470f);
+        public static readonly Vector2 RackOffset = new(60f, -420f); // 后面的数字绝对值越大 演奏堆越靠上
         // The staff is a presentation-only child of the rack. Its local offset
         // can be tuned without changing card positions, hover hitboxes, or the
         // coordinate chain used by performance animations.
-        public static readonly Vector2 StaffOffset = new(0f, 0f);
+        public static readonly Vector2 StaffOffset = new(0f, -16f);
         public static readonly Vector2 MiniatureScale = new(0.35f, 0.35f);
         public static readonly Vector2 HoveredMiniatureScale = new(0.5f, 0.5f);
         public static readonly Vector2 PreviewScale = new(0.8f, 0.8f);
@@ -118,25 +126,37 @@ public static class MgrVisualTuning
         public const int StaffZIndex = -20;
         // Remaining Performance turns use a small floating beat marker above
         // the card rather than a purple badge on its lower-right corner.
-        public static readonly Vector2 RemainingCounterSize = new(62f, 40f);
+        public static readonly Vector2 RemainingCounterSize = new(54f, 34f);
         public static readonly Color RemainingCounterColor = PerformanceAccentColor;
         public static readonly Color RemainingCounterOutlineColor = new("443552");
         public const int RemainingCounterZIndex = 34;
-        public const int RemainingCounterFontSize = 30;
-        public const int RemainingCounterOutlineSize = 6;
-        public const float RemainingCounterTopGap = 10f;
-        public const float RemainingCounterWingLength = 29f;
+        public const int RemainingCounterFontSize = 26;
+        public const int RemainingCounterOutlineSize = 5;
+        public const float RemainingCounterTopGap = 9f;
+        public const float RemainingCounterWingLength = 24f;
         public const float RemainingCounterSingleWingLengthScale = 0.76f;
         public const float RemainingCounterDoubleWingLengthScale = 0.88f;
-        public const float RemainingCounterWingGap = 16f;
-        public const float RemainingCounterWingSpacing = 6f;
+        public const float RemainingCounterWingGap = 14f;
+        public const float RemainingCounterWingSpacing = 5f;
         public const int RemainingCounterWingLineCount = 3;
-        public const float RemainingCounterLineWidth = 1.9f;
+        public const float RemainingCounterLineWidth = 1.6f;
         public const double RemainingCounterPulseSeconds = 0.30;
         public const float RemainingCounterChangeFraction = 0.36f;
-        public const float DesiredSpacing = 56f;
-        public const float MaximumWidth = 520f;
-        public const double EnterQueueSeconds = 0.28;
+        // With fewer than this many cards, the rack grows from its right edge
+        // toward the left at a fixed, roomy spacing. At this count and above,
+        // the rack switches to a centred, progressively compressed layout.
+        public const int FilledRackCardThreshold = 5;
+        public const float UnfilledCardSpacing = 82f;
+        // The filled rack widens only a little as more cards enter. Because the
+        // added width per card is much smaller than UnfilledCardSpacing, the
+        // visible overlap becomes progressively tighter.
+        public const float FilledRackBaseWidth = 272f;
+        public const float FilledRackWidthPerExtraCard = 20f;
+        public const float FilledRackMaximumWidth = 370f;
+        public const float RackCardOpacity = 0.95f;
+        public const double EnterQueueSeconds = 0.20;
+        public const float EntryAnimationAccelerationPerCard = 0.25f;
+        public const float MinimumEntryAnimationDurationScale = 0.50f;
         public const float TriggerScale = 1.2f;
         public const double TriggerGrowSeconds = 0.14;
         public const double TriggerSettleSeconds = 0.18;
@@ -156,8 +176,8 @@ public static class MgrVisualTuning
 
         // Code-drawn music staff behind the performance cards.
         public const int StaffLineCount = 5;
-        public const float StaffWidth = 620f;
-        public const float StaffLineSpacing = 18f;
+        public const float StaffWidth = 500f;
+        public const float StaffLineSpacing = 22f;
         public const float StaffLineThickness = 2f;
         public const float StaffLineAlpha = 0.25f;
         public const int StaffInitialMarkerCount = 5;

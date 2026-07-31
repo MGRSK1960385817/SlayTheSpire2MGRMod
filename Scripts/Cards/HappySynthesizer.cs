@@ -11,7 +11,7 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class HappySynthesizer : MgrCard
 {
     public HappySynthesizer() : base(
-        1,
+        2,
         CardType.Power,
         CardRarity.Rare,
         TargetType.Self)
@@ -27,5 +27,5 @@ public sealed class HappySynthesizer : MgrCard
             Owner.Creature,
             this);
 
-    protected override void OnUpgrade() => AddKeyword(CardKeyword.Innate);
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

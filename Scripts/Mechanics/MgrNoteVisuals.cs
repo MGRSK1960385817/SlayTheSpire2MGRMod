@@ -4,6 +4,9 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
+using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -111,6 +114,9 @@ public static class MgrNoteVisuals
         private readonly SemaphoreSlim _channelAnimationGate = new(1, 1);
         private Tween? _clearTween;
         private bool _isPerforming;
+        private NOverlayStack? _overlayStack;
+        private NCapstoneContainer? _capstoneContainer;
+        private NMapScreen? _mapScreen;
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
 
@@ -123,6 +129,7 @@ public static class MgrNoteVisuals
                 ZIndex = MgrVisualTuning.Notes.RackZIndex
             };
             parent.AddChild(_root);
+            EnsureScreenVisibilitySubscriptions();
         }
 
         public void Show(
@@ -132,6 +139,7 @@ public static class MgrNoteVisuals
             bool clearAfterDelay,
             int chordAnimationIndex)
         {
+            EnsureScreenVisibilitySubscriptions();
             CancelScheduledClear();
             UpdateSlots(notes, capacity, forte);
             if (clearAfterDelay)
@@ -147,6 +155,7 @@ public static class MgrNoteVisuals
             int chordsResolvedBefore,
             bool clearAfterDelay)
         {
+            EnsureScreenVisibilitySubscriptions();
             await _channelAnimationGate.WaitAsync();
             try
             {
@@ -219,6 +228,92 @@ public static class MgrNoteVisuals
                 slot.SetPerforming(isPerforming);
         }
 
+        private void EnsureScreenVisibilitySubscriptions()
+        {
+            NOverlayStack? currentStack = NOverlayStack.Instance;
+            if (!ReferenceEquals(_overlayStack, currentStack))
+            {
+                if (_overlayStack is not null &&
+                    GodotObject.IsInstanceValid(_overlayStack))
+                {
+                    _overlayStack.Changed -= OnOverlayStackChanged;
+                }
+
+                _overlayStack = currentStack;
+                if (_overlayStack is not null &&
+                    GodotObject.IsInstanceValid(_overlayStack))
+                {
+                    _overlayStack.Changed += OnOverlayStackChanged;
+                }
+            }
+
+            NCapstoneContainer? currentCapstone = NCapstoneContainer.Instance;
+            if (!ReferenceEquals(_capstoneContainer, currentCapstone))
+            {
+                if (_capstoneContainer is not null &&
+                    GodotObject.IsInstanceValid(_capstoneContainer))
+                {
+                    _capstoneContainer.Changed -= OnCapstoneChanged;
+                }
+
+                _capstoneContainer = currentCapstone;
+                if (_capstoneContainer is not null &&
+                    GodotObject.IsInstanceValid(_capstoneContainer))
+                {
+                    _capstoneContainer.Changed += OnCapstoneChanged;
+                }
+            }
+
+            NMapScreen? currentMap = NMapScreen.Instance;
+            if (!ReferenceEquals(_mapScreen, currentMap))
+            {
+                if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+                {
+                    _mapScreen.Opened -= OnMapVisibilityChanged;
+                    _mapScreen.Closed -= OnMapVisibilityChanged;
+                }
+
+                _mapScreen = currentMap;
+                if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+                {
+                    _mapScreen.Opened += OnMapVisibilityChanged;
+                    _mapScreen.Closed += OnMapVisibilityChanged;
+                }
+            }
+
+            RefreshScreenVisibility();
+        }
+
+        private void OnOverlayStackChanged() => RefreshScreenVisibility();
+
+        private void OnCapstoneChanged() => RefreshScreenVisibility();
+
+        private void OnMapVisibilityChanged() => RefreshScreenVisibility();
+
+        private void RefreshScreenVisibility()
+        {
+            bool hasOverlay =
+                _overlayStack is not null &&
+                GodotObject.IsInstanceValid(_overlayStack) &&
+                _overlayStack.ScreenCount > 0;
+            bool hasCapstone =
+                _capstoneContainer is not null &&
+                GodotObject.IsInstanceValid(_capstoneContainer) &&
+                _capstoneContainer.InUse;
+            bool hasOpenMap =
+                _mapScreen is not null &&
+                GodotObject.IsInstanceValid(_mapScreen) &&
+                _mapScreen.IsOpen;
+            bool shouldShow = !hasOverlay && !hasCapstone && !hasOpenMap;
+
+            _root.Visible = shouldShow;
+            if (!shouldShow)
+            {
+                foreach (NoteSlot slot in _slots)
+                    slot.HideHoverTipForScreen();
+            }
+        }
+
         private void CancelScheduledClear()
         {
             _clearTween?.Kill();
@@ -258,6 +353,27 @@ public static class MgrNoteVisuals
         public void Dispose()
         {
             CancelScheduledClear();
+            if (_overlayStack is not null &&
+                GodotObject.IsInstanceValid(_overlayStack))
+            {
+                _overlayStack.Changed -= OnOverlayStackChanged;
+            }
+
+            if (_capstoneContainer is not null &&
+                GodotObject.IsInstanceValid(_capstoneContainer))
+            {
+                _capstoneContainer.Changed -= OnCapstoneChanged;
+            }
+
+            if (_mapScreen is not null && GodotObject.IsInstanceValid(_mapScreen))
+            {
+                _mapScreen.Opened -= OnMapVisibilityChanged;
+                _mapScreen.Closed -= OnMapVisibilityChanged;
+            }
+
+            _overlayStack = null;
+            _capstoneContainer = null;
+            _mapScreen = null;
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
         }
@@ -566,8 +682,7 @@ public static class MgrNoteVisuals
             {
                 var omniaNoteVisual = new MgrOmniaNoteVisual
                 {
-                    Name = $"{note.Name}Note",
-                    Scale = MgrVisualTuning.Notes.ArtworkScale
+                    Name = $"{note.Name}Note"
                 };
                 if (!omniaNoteVisual.Initialize())
                 {
@@ -592,7 +707,7 @@ public static class MgrNoteVisuals
                 {
                     Name = $"{note.Name}Note",
                     Texture = texture,
-                    Scale = MgrVisualTuning.Notes.ArtworkScale
+                    Scale = GetArtworkScale(texture)
                 };
             }
 
@@ -603,22 +718,31 @@ public static class MgrNoteVisuals
             _amountLabel = new Label
             {
                 Name = "EffectAmount",
-                Position = new Vector2(-36f, 21f),
-                Size = new Vector2(72f, 36f),
+                Position = MgrVisualTuning.Notes.AmountLabelPosition,
+                Size = MgrVisualTuning.Notes.AmountLabelSize,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 MouseFilter = Control.MouseFilterEnum.Ignore
             };
             _amountLabel.Visible = note.Kind != NoteKind.OmniaNote;
-            _amountLabel.AddThemeFontSizeOverride("font_size", 24);
+            _amountLabel.AddThemeFontSizeOverride(
+                "font_size",
+                MgrVisualTuning.Notes.AmountLabelFontSize);
             _amountLabel.AddThemeColorOverride("font_color", Colors.White);
-            _amountLabel.AddThemeColorOverride("font_outline_color", noteColor);
+            _amountLabel.AddThemeColorOverride(
+                "font_outline_color",
+                noteColor);
             _amountLabel.AddThemeColorOverride(
                 "font_shadow_color",
                 new Color(0f, 0f, 0f, 0.9f));
-            _amountLabel.AddThemeConstantOverride("outline_size", 8);
+            _amountLabel.AddThemeConstantOverride(
+                "outline_size",
+                MgrVisualTuning.Notes.AmountLabelOutlineSize);
             _amountLabel.AddThemeConstantOverride("shadow_outline_size", 2);
-            sprite.AddChild(_amountLabel);
+            // Keep the amount independent from the source artwork resolution.
+            // It still follows the shared floating/entrance roots, but is no
+            // longer scaled by a 64px/384px Sprite2D.
+            _floatingRoot.AddChild(_amountLabel);
 
             _displayedKind = note.Kind;
         }
@@ -630,6 +754,12 @@ public static class MgrNoteVisuals
         }
 
         private void OnMouseExited()
+        {
+            _isHovered = false;
+            NHoverTipSet.Remove(_hoverBounds);
+        }
+
+        public void HideHoverTipForScreen()
         {
             _isHovered = false;
             NHoverTipSet.Remove(_hoverBounds);
@@ -726,12 +856,23 @@ public static class MgrNoteVisuals
             NoteKind.Skill => new Color("22d967"),
             NoteKind.Power => new Color("1f9eff"),
             NoteKind.Status => new Color("60666d"),
-            NoteKind.Curse => new Color("e8bd00"),
+            NoteKind.Curse => MgrVisualTuning.Notes.CurseAccentColor,
             NoteKind.Starry => new Color("f020c8"),
             NoteKind.Ghost => new Color("a875ff"),
             NoteKind.OmniaNote => Colors.White,
             _ => Colors.Black
         };
+
+        private static Vector2 GetArtworkScale(Texture2D texture)
+        {
+            Vector2 sourceSize = texture.GetSize();
+            float longestSide = MathF.Max(sourceSize.X, sourceSize.Y);
+            return longestSide > 0f
+                ? Vector2.One *
+                    (MgrVisualTuning.Notes.SlotRadius * 2f *
+                        MgrVisualTuning.Notes.ArtworkFillRatio / longestSide)
+                : Vector2.One;
+        }
 
         private void ClearNote()
         {

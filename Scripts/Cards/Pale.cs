@@ -7,12 +7,12 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "lie_down")]
-public sealed class LieDown : MgrCard
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "pale")]
+public sealed class Pale : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(0)];
 
-    public LieDown() : base(0, CardType.Status, CardRarity.Token, TargetType.Self)
+    public Pale() : base(0, CardType.Status, CardRarity.Token, TargetType.Self)
     {
     }
 

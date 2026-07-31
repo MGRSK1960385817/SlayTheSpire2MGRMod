@@ -48,6 +48,6 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_NOTE_GENERATION_LOCK_POWER.description": "本回合无法生成音符。",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_NOTE_GENERATION_LOCK_POWER.smartDescription": "本回合无法生成音符。",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.title": "快乐合成器",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.description": "记录本回合打出的不同音符类型。",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.smartDescription": "每集齐3种不同音符类型，获得 [blue]{Amount}[/blue] 点力量与敏捷。"
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.description": "和弦包含至少3种不同音符时生效。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_HAPPY_SYNTHESIZER_POWER.smartDescription": "和弦包含至少3种不同音符时，获得[blue]{Amount}[/blue]点力量与敏捷。"
 }

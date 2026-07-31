@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Scaffolding.Content;
 using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
@@ -41,11 +42,14 @@ public abstract class MgrCard(
     internal MgrKeywordKind DeclaredKeywordKinds => KeywordKinds;
     internal MgrGoldGlowCondition DeclaredGoldGlowConditions => GoldGlowConditions;
 
-#pragma warning disable CS0672
-    [Obsolete("RitsuLib uses this channel to seed registered mod CardKeyword values independently of vanilla keywords.")]
-    protected override IEnumerable<string> RegisteredKeywordIds =>
-        MgrKeywords.GetIds(this);
-#pragma warning restore CS0672
+    /// <summary>
+    /// RitsuLib 0.5.1 stores mod keywords directly in Tower 2's native keyword
+    /// collection. Preserve any canonical vanilla keywords and append MGR's
+    /// registered values through the new deterministic CardKeyword mapping.
+    /// </summary>
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat(
+            MgrKeywords.GetIds(this).Select(id => id.GetModCardKeyword()));
 
     /// <summary>
     /// Marks an MGR card as a Starry card, overriding its ordinary card-type note.

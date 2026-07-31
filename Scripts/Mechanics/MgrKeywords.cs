@@ -156,6 +156,7 @@ public static class MgrKeywords
         MaguroDash => MgrKeywordKind.Performance,
         UniverseOf88Keys => MgrKeywordKind.Chord,
         CubicPrism => MgrKeywordKind.Performance,
+        HappySynthesizer => MgrKeywordKind.Chord,
         GalaxyLamp => MgrKeywordKind.StarryNote,
         TheCrowd => MgrKeywordKind.BasicNotes,
         TheCrowdChoice => MgrKeywordKind.BasicNotes,

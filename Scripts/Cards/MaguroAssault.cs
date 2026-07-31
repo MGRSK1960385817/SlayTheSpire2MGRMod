@@ -19,14 +19,26 @@ public sealed class MaguroAssault : MgrCard
     [
         new CalculationBaseVar(6m),
         new ExtraDamageVar(1m),
-        new MgrConditionalCalculatedDamageVar(
-                ValueProp.Move,
-                card => card is MaguroAssault assault &&
-                    assault.IsPhraseEndBonusActive)
+        new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>
-                card is MaguroAssault assault
-                    ? assault.NoteState.ChordsResolvedThisCombat
-                    : 0m)
+            {
+                if (card is not MaguroAssault assault)
+                    return 0m;
+
+                decimal chords = assault.NoteState.ChordsResolvedThisCombat;
+                if (!assault.IsPhraseEndBonusActive)
+                    return chords;
+
+                // CalculatedDamage = base + extra * multiplier. Folding the
+                // Ending bonus into that native formula makes both preview and
+                // AttackCommand calculate the same doubled raw value, after
+                // which Strength, enchantments and target hooks run normally.
+                decimal extra = assault.DynamicVars.ExtraDamage.BaseValue;
+                return extra == 0m
+                    ? chords
+                    : chords * 2m +
+                        assault.DynamicVars.CalculationBase.BaseValue / extra;
+            })
     ];
 
     public MaguroAssault() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
