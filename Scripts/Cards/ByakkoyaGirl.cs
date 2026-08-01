@@ -11,8 +11,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hayaku_naru")]
-public sealed class HayakuNaru : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "byakkoya_girl")]
+public sealed class ByakkoyaGirl : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -23,7 +23,7 @@ public sealed class HayakuNaru : MgrCard
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
-    public HayakuNaru() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public ByakkoyaGirl() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -36,7 +36,7 @@ public sealed class HayakuNaru : MgrCard
 
         var prompt = new LocString(
             "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_CLEAR_THROAT_CHOOSE");
+            "SLAY_THE_SPIRE2_MGR_MOD_CARD_BYAKKOYA_GIRL_CHOOSE");
         var prefs = new CardSelectorPrefs(prompt, 1);
         CardModel? chosen = (await CardSelectCmd.FromHand(
             choiceContext,

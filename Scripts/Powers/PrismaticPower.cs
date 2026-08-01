@@ -9,14 +9,14 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class HappySynthesizerPower : ModPowerTemplate
+public sealed class PrismaticPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/HappySynthesizer.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/HappySynthesizer.png");
+        IconPath: $"{Entry.ResPath}/images/cards/Prismatic.png",
+        BigIconPath: $"{Entry.ResPath}/images/cards/Prismatic.png");
 
     public async Task OnChordTriggered(
         PlayerChoiceContext choiceContext,

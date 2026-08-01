@@ -243,7 +243,9 @@ public static class MgrPerformanceVisuals
                     _previewLayer,
                     entries[index]);
                 view.Refresh();
-                view.SetPosition(new Vector2(x, 0f));
+                view.SetPosition(new Vector2(
+                    x,
+                    MgrVisualTuning.Performances.CardOffsetY));
                 // The earliest card is the rightmost and visually sits above
                 // later cards where their bodies overlap.
                 view.SetLayer(entries.Count - index);
@@ -687,9 +689,9 @@ public static class MgrPerformanceVisuals
             _cardNode.ZIndex = 0;
             _cardNode.ZAsRelative = true;
             _cardNode.Modulate = new Color(
-                1f,
-                1f,
-                1f,
+                MgrVisualTuning.Performances.RackCardBrightness,
+                MgrVisualTuning.Performances.RackCardBrightness,
+                MgrVisualTuning.Performances.RackCardBrightness,
                 MgrVisualTuning.Performances.RackCardOpacity);
             _cardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
 

@@ -22,7 +22,8 @@
 | --- | ---: | --- |
 | `Notes.RackOffset` | `(0, -350)` | 整排音符相对战斗人物节点的位置；X 向右，Y 向下 |
 | `Notes.RackZIndex` | `50` | 音符排层级 |
-| `Notes.ArtworkFillRatio` | `0.92` | 音符图片相对于音符槽直径的显示比例；运行时先按源图尺寸归一化，再按比例显示，替换高清图无需重算倍率 |
+| `Notes.ArtworkFillRatio` | `1.0` | 音符图片相对于音符槽直径的显示比例；运行时先按源图尺寸归一化，再按比例显示，替换高清图无需重算倍率 |
+| `Notes.FilledNoteTint` | `(0.94, 0.94, 0.94, 0.94)` | 只作用于已填充音符的亮度与透明度；不会影响空音符槽 |
 | `Notes.CurseAccentColor` | `#78101C` | 诅咒音符数值描边、生成星屑及和弦爆发共用的黑红色 |
 | `Notes.DesiredSlotSpacing` | `96` | 槽位理想中心间距 |
 | `Notes.MaximumRackWidth` | `480` | 音符排最大宽度；槽位增多后自动压缩间距 |
@@ -105,19 +106,24 @@
 | `Notes.InitialScaleVariance` | `0.07` | 每颗音符的基础缩放随机范围约 ±7% |
 | `Notes.PhaseStep` | `0.72` | 相邻槽位的固定相位差 |
 | `Notes.PhaseVariance` | `0.65` | 每颗音符额外随机相位范围 |
+| `Notes.GhostOpacityMinimum / Maximum` | `0.46 / 1.0` | 幽灵音符图片透明度的波动范围；不影响右下角数字 |
+| `Notes.GhostOpacityAngularSpeed` | `1.65` | 幽灵音符透明度波动基础速度 |
+| `Notes.GhostOpacitySpeedVariance` | `0.28` | 每颗幽灵音符的透明度速度随机范围约 ±28% |
 
-这些随机数只控制视觉，不参与战斗 RNG 和机制结算。
+这些随机数只控制视觉，不参与战斗 RNG 和机制结算。幽灵音符的透明度采用平滑正弦波，并为每颗音符随机相位与速度，所以多颗幽灵音符不会同步闪烁。
 
-万象音符把每张源图片仅作为透明度轮廓使用，不继承原图的 RGB 底色；其柔和的薰衣草、青色、金色与玫红色谱会持续流动。因此即使轮换到黑色的诅咒音符轮廓，也能保持完整彩色表现。
+所有已填充音符都带有轻微的比例化外发光：普通音符与幽灵音符沿用各自数值描边颜色，诅咒音符使用暗红色，万象音符的外发光随本体色谱持续流动。`ArtworkGlowRadiusRatio` 控制发光向轮廓外扩张的比例，`ArtworkGlowStrength` 控制强度。万象音符把每张源图片仅作为透明度轮廓使用，不继承原图的 RGB 底色；因此即使轮换到黑色的诅咒音符轮廓，也能保持完整彩色表现。
 
 ### 音符数值标签与颜色
 
 这些值已经集中在 `MgrVisualTuning.Notes`：
 
-- 标签位置 `(-36, 21)`，尺寸 `(72, 36)`。
+- 标签位置 `(3, 5)`，尺寸 `(48, 32)`；数字紧邻音符右下角。
 - 字号 `24`，彩色描边 `8`，黑色阴影描边 `2`。
 - 攻击 `#ff3b30`；技能 `#22d967`；能力 `#1f9eff`；状态 `#60666d`。
 - 诅咒 `#78101c`；星空 `#f020c8`；幽灵 `#a875ff`。
+
+幽灵音符与万象音符固定在右下角显示数字 `1`。这个 `1` 只是视觉标记，与万象音符同时结算六类效果、幽灵音符给予缓冲等实际机制数值相互独立。
 
 ## 2. 演奏牌队列
 
@@ -131,7 +137,7 @@
 
 线谱使用 `MgrMusicGlyphRenderer.cs` 的八种代码绘制字形：四分音符、八分音符、十六分音符、二分音符、连梁双音、宽连梁三音、宽连梁四音，以及纵向跨越两根谱线的双行和声音符。已移除“大椭圆套小椭圆”的全音符。宽符号会自动为线谱留出更大的断口；双行和声音符会在相同 X 坐标同时切开相邻两根谱线。
 
-线谱音符以特殊字形为高权重。待机时最多显示 `7` 个，整段演奏触发期间允许最多显示 `15` 个；两种状态共享 `0.78～1.22s` 的模拟生成间隔、`0.18s` 的失败重试时间、`0.48s` 的同排冷却和 `0.42s` 的相邻排规避窗口。
+线谱音符待机时最多显示 `7` 个，整段演奏触发期间允许最多显示 `15` 个；两种状态共享 `0.78～1.22s` 的模拟生成间隔与 `0.18s` 的失败重试时间。每条谱线生成后会得到 `0.34～0.72s` 的随机冷却；跨线音符会给相邻行追加 `0.10～0.20s` 的短冷却，普通相邻行避让为 `0.14s`。
 
 演奏开始后，整套谱线音符模拟由 `StaffPerformingFlowSpeedMultiplier = 1.75` 统一快进：游动速度、上下浮动速度、生成倒计时及生成避让冷却都同步变为 `1.75` 倍。空音符槽也复用这个全局倍率，槽框旋转、发光条沿框移动及牵引星运动会同步加速，但空槽本身的呼吸速度保持不变。它不会按战斗中生成了多少音符来额外硬塞固定数量的谱面符号。最后一张演奏牌结束后恢复 `1.0` 倍，并重新开始正常待机计时。
 
@@ -139,19 +145,21 @@
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.RackOffset` | `(80, -470)` | 演奏框、线谱和演奏牌堆整体相对战斗人物节点的位置；X 增大即整体右移 |
+| `Performances.RackOffset` | `(-20, -432)` | 演奏框、线谱和演奏牌堆整体相对战斗人物节点的位置；X 增大即整体右移，Y 越小越靠上 |
 | `Performances.StaffOffset` | `(0, -16)` | 只移动线谱、不移动演奏牌；X 控制左右，Y 控制上下 |
-| `Performances.StaffWidth` | `560` | 线谱总宽度；只改变线谱，不改变演奏牌间距 |
-| `Performances.StaffLineAlpha` | `0.34` | 线谱待机时的不透明度；数值越大越实，越小越透明 |
+| `Performances.CardOffsetY` | `-14` | 只移动演奏牌、计数与命中区域相对线谱的高度；负值向上 |
+| `Performances.StaffWidth` | `500` | 线谱总宽度；只改变线谱，不改变演奏牌间距 |
+| `Performances.StaffLineAlpha` | `0.25` | 线谱待机时的不透明度；数值越大越实，越小越透明 |
 | `Performances.RackZIndex` | `55` | 基础层级 |
-| `Performances.MiniatureScale` | `(0.35, 0.35)` | 队列中卡牌大小 |
-| `Performances.HoveredMiniatureScale` | `(0.5, 0.5)` | 鼠标移入时的缩略牌大小 |
+| `Performances.MiniatureScale` | `(0.345, 0.345)` | 队列中卡牌大小 |
+| `Performances.HoveredMiniatureScale` | `(0.49, 0.49)` | 鼠标移入时的缩略牌大小 |
 | `Performances.FilledRackCardThreshold` | `5` | 达到该数量后，由“未满”切换为“已满”压缩布局 |
 | `Performances.UnfilledCardSpacing` | `82` | 未满时相邻演奏牌的固定间距；新牌从右向左加入 |
 | `Performances.FilledRackBaseWidth` | `272` | 刚进入已满状态时的整排占用宽度 |
 | `Performances.FilledRackWidthPerExtraCard` | `20` | 已满后每多一张牌，整排只额外扩宽的距离 |
 | `Performances.FilledRackMaximumWidth` | `370` | 已满布局最终允许占用的最大宽度 |
-| `Performances.RackCardOpacity` | `0.92` | 演奏队列中卡面本体的不透明度 |
+| `Performances.RackCardBrightness` | `0.92` | 演奏队列中卡面本体的亮度倍率 |
+| `Performances.RackCardOpacity` | `0.90` | 演奏队列中卡面本体的不透明度 |
 
 未满时，最右侧位置保持固定，队列中最早进入的牌位于最右侧且层级最高，新牌以 `82px` 间距从其左侧依次加入。达到 `5` 张后，整排改为左右居中的已满布局：总宽度从 `272px` 开始，每多一张只增加 `20px`，最高 `370px`；实际牌距为“当前总宽度 / (牌数 - 1)”，因此牌越多，重叠仍会逐渐加深。
 
@@ -205,21 +213,27 @@
 
 只保留四个角的 L 形框，不再绘制四条边中点装饰，也没有物体绕卡牌运动。角框与次数横杠共用固定颜色 X，不做变色；演奏开始时会淡到约 `18%`，扫线离开后恢复。
 
+线谱左右两端保留标准乐谱式“细线 + 粗线”双终止线，移除外侧波纹、大括弧、游动光点及所有待机星星。只有整段演奏期间，每端才有 `8` 颗彩色星芒循环向外喷射，并在单张演奏牌触发时随脉冲明显增亮；同一喷射轨迹每轮都会轮换颜色，不会固定为单色。`StaffEndBar*` 控制终止线，`StaffEndSpray*` 控制演奏中的喷射距离、速度、范围与大小。
+
+谱面音符由 `MgrPerformanceStaffMarkerClipVisual` 放在一层矩形 Alpha 蒙版中：左侧生成和右侧离场时，只有越过 `±StaffWidth / 2` 的图形部分被裁掉。因此长音符和连梁音符也会连续地逐段出现、逐段消失，不会整颗突然跳变。`StaffMarkerClipVerticalPadding` 只给音符的竖杆和连梁保留上下空间，不会放宽左右边界。
+
 ### 剩余次数
 
 剩余演奏次数显示为卡牌上方的“节拍标记”：数字两侧横线的数量跟随当前显示次数，最多三条，不再绘制数字下方的小点。它与缩略牌共用同一锚点，但不附着到会被塔二复用的 `NCard` 节点。
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `RemainingCounterSize` | `(54, 34)` | 数字控件尺寸 |
-| `RemainingCounterTopGap` | `9px` | 标记与卡牌顶边的距离 |
-| `RemainingCounterFontSize` | `26` | 数字字号 |
-| `RemainingCounterOutlineSize` | `5` | 深色文字描边大小 |
-| `RemainingCounterWingLength` | `24px` | 两侧第一条横线长度；其后两条依次缩短 |
+| `RemainingCounterSize` | `(48, 30)` | 数字控件尺寸 |
+| `RemainingCounterColor` | `(1.0, 0.94, 0.78, 0.94)` | 演奏次数数字及横杠的颜色、亮度与透明度 |
+| `RemainingCounterOutlineColor` | `(0.34, 0.28, 0.40, 0.92)` | 演奏次数数字描边的颜色与透明度 |
+| `RemainingCounterTopGap` | `4px` | 标记与卡牌顶边的距离 |
+| `RemainingCounterFontSize` | `23` | 数字字号 |
+| `RemainingCounterOutlineSize` | `4` | 深色文字描边大小 |
+| `RemainingCounterWingLength` | `21px` | 两侧第一条横线长度；其后两条依次缩短 |
 | `RemainingCounterSingleWingLengthScale` | `0.76` | 只剩一次时，居中单横线相对标准长度的倍率 |
 | `RemainingCounterDoubleWingLengthScale` | `0.88` | 剩余两次时，两条横线相对标准长度的倍率 |
-| `RemainingCounterWingGap` | `14px` | 数字与横线的间隙 |
-| `RemainingCounterWingSpacing` | `5px` | 相邻横线的纵向间距 |
+| `RemainingCounterWingGap` | `12px` | 数字与横线的间隙 |
+| `RemainingCounterWingSpacing` | `4.5px` | 相邻横线的纵向间距 |
 | `RemainingCounterWingLineCount` | `3` | 数字每侧最多绘制的横线数量 |
 | `RemainingCounterPulseSeconds` | `0.30s` | 触发时标记跳动的总时长 |
 | `RemainingCounterChangeFraction` | `0.36` | 跳动进行到 36% 时更新数字 |
@@ -262,7 +276,7 @@
 | 触发和弦 | `audio/Chord.ogg` | `0.2` |
 | 角色选择 | `audio/MGR_charselect.ogg` | `1.0` |
 
-## 4. 角色静态 UI
+## 4. 角色 UI 与战斗环境特效
 
 这些位置优先在 Godot 场景编辑器中调整，不属于音符/演奏的集中动画参数：
 
@@ -271,7 +285,38 @@
 - 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`。
 - 选人和地图资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
 - 卡面与文本能量图标：`Scripts/Characters/MgrCardPool.cs`、`MgrRelicPool.cs`、`MgrPotionPool.cs`，使用 `images/characters/energy_big.png` 与 `energy_text.png`。
-- 战斗能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`，使用从塔一移入的 `images/characters/energy/layer0.png` 至 `layer5.png` 与 `energyRefreshVFX.png`。其中 layer1～5 保留塔一各自的旋转方向和速度。
+- 战斗能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`，使用从塔一移入的 `images/characters/energy/layer0.png` 至 `layer5.png` 与 `energyRefreshVFX.png`。绘制层级固定为 `后方恢复特效 → layer5 → layer4 → layer3 → layer2 → layer1 → layer0 顶部罩层 → 前方恢复特效 → 能量数字`；显式 `ZIndex` 避免节点重排后再次翻转。`MgrEnergyCounter` 不调用原版按子节点序号旋转的循环，仅使用塔一的 `-60 / +60 / -40 / +60 / +360` 度每秒五组速度。能量增加（包括通常的回合开始恢复）时，原版 `NEnergyCounter` 会同时重启前后两个 GPU 粒子容器：前后光环的峰值缩放分别为 `0.165` 与 `0.19`，生命周期分别为 `1.4s` 与 `1.6s`；当前 `energyRefreshVFX.png` 的长宽已经放大四倍，因此缩放曲线同步缩为原来的四分之一，实际屏幕尺寸保持不变。两道光环快速显现、以相反方向持续旋转，随后共同向中心收缩并淡出。
+
+### 战斗人物环境层
+
+`Mgr_character.tscn` 的 `AmbientAura` 节点挂载 `Scripts/Characters/MgrCharacterAuraVisual.cs`。该节点位于人物卡图背后，只负责代码绘制，不依赖额外图片资源，也不读取任何战斗状态。它包含：
+
+- 在人物轮廓两侧和头顶随机亮起、渐隐并缓慢漂移的稀疏星点；
+- 少量从脚边上浮的柔光尘埃；
+- 黄白、薰衣草与浅青色的闭合波纹环，带着多重起伏从人物近处周期性向外舒展；
+- 最多六条极淡的短暂星座连线。
+
+参数直接作为 `MgrCharacterAuraVisual` 的 Godot 导出属性提供：
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `StarCount` | `18` | 同时维护的环境星点数量 |
+| `LightMoteCount` | `11` | 缓慢上浮的光尘数量 |
+| `HorizontalExtent` | `235` | 星点和波纹环相对人物的横向参考范围 |
+| `VerticalExtent` | `178` | 星点和波纹环相对人物的纵向参考范围 |
+| `AuraCenter` | `(0, -184)` | 整套特效相对人物根节点的中心 |
+| `Intensity` | `0.82` | 所有特效透明度的总倍率 |
+| `ResonanceCycleSeconds` | `4.8s` | 每组波纹环完成一次扩散的周期 |
+| `ResonanceInnerScale` | `0.68` | 波纹环开始出现时相对参考范围的尺寸 |
+| `ResonanceExpansion` | `0.20` | 一轮过程中向外扩张的尺寸增量 |
+| `ResonanceWaveAmplitude` | `0.048` | 圆周起伏幅度；越大越不像规则圆形 |
+| `ResonanceWaveCount` | `7` | 每圈主要波峰数量 |
+| `ConstellationLinkCount` | `6` | 同时允许绘制的星座连线数量上限 |
+| `ConstellationLinkDistance` | `132` | 两颗星允许建立连线的最大距离 |
+| `ConstellationLinkAffinity` | `0.34` | 星点成为连线起点的随机亲和阈值 |
+| `ConstellationLinkAlpha` | `0.15` | 星座连线的基础透明度倍率 |
+
+视觉随机数来自该节点自己的 `RandomNumberGenerator`，不会消耗或改变战斗 RNG。降低 `Intensity` 是整体减弱效果的首选；需要改变包围人物的范围时，再调整 `HorizontalExtent / VerticalExtent`。
 
 ## 调参顺序
 

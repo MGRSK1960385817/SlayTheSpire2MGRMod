@@ -100,8 +100,8 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
                 0f,
                 1f) * MathF.PI)
             : 0f;
-        Color color = MgrVisualTuning.Performances.PerformanceAccentColor;
-        color.A = Mathf.Lerp(0.72f, 0.98f, triggerFlash);
+        Color color = MgrVisualTuning.Performances.RemainingCounterColor;
+        color.A = Mathf.Lerp(color.A, 0.94f, triggerFlash);
 
         float gap = MgrVisualTuning.Performances.RemainingCounterWingGap;
         float length = MgrVisualTuning.Performances.RemainingCounterWingLength;

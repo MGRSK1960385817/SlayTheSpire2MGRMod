@@ -80,6 +80,7 @@ flowchart TB
     subgraph PRESENTATION["表现与资源层"]
         NOTE_UI["MgrNoteVisuals + MgrFloatingNoteVisual<br/>空槽、音符、数值、入场、漂浮、呼吸"]
         PERF_UI["MgrPerformanceVisuals<br/>演奏牌堆、入队、触发、悬停预览、离队"]
+        CHARACTER_AURA["MgrCharacterAuraVisual<br/>人物周围星点、光尘、波纹环与星座连线"]
         TUNING["MgrVisualTuning<br/>音符与演奏 UI 的集中可调参数"]
         AUDIO["MgrAudio<br/>选人、生成音符、触发和弦"]
         LOC["localization/eng + zhs<br/>卡牌、遗物、能力、人物文本"]
@@ -90,6 +91,7 @@ flowchart TB
         PERF_STATE --> PERF_UI
         TUNING --> NOTE_UI
         TUNING --> PERF_UI
+        ASSETS --> CHARACTER_AURA
         LISTENER --> AUDIO
         RES --> NOTE_UI
         RES --> PERF_UI
@@ -130,7 +132,7 @@ flowchart LR
         NOTE_GATE["SemaphoreSlim 动画门<br/>同批音符按调用顺序逐个入场"]
         NOTE_RACK["MgrNoteRack<br/>相对角色 RackOffset；动态计算槽位间距"]
         NOTE_SLOT["NoteSlot × 当前 Capacity"]
-        EMPTY["空槽<br/>12 段虚线圆框"]
+        EMPTY["空槽<br/>8 段旋转虚线圆框"]
         ENTRANCE["FilledNoteEntrance<br/>下方淡入 → 放大过冲 → 回落"]
         IDLE["MgrFloatingNoteVisual<br/>随机相位、速度、初始缩放<br/>持续上下浮动与呼吸"]
         ART["Sprite2D + EffectAmount<br/>音符图片与带颜色描边的数值"]
@@ -204,17 +206,19 @@ flowchart LR
 
 | 想调整的东西 | 优先修改 | 当前关键值 |
 | --- | --- | --- |
-| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkFillRatio / DesiredSlotSpacing / MaximumRackWidth` | `(0,-350)`、槽直径的 `92%`、`96`、`480` |
+| 音符整排位置、大小、间距 | `Notes.RackOffset / ArtworkFillRatio / DesiredSlotSpacing / MaximumRackWidth` | `(0,-350)`、槽直径的 `100%`、`96`、`480` |
+| 音符外发光、数值位置 | `ArtworkGlowRadiusRatio / ArtworkGlowStrength / AmountLabelPosition / AmountLabelSize` | `0.035`、`0.38`、`(3,5)`、`(48,32)` |
 | 空槽外观 | `SlotRadius / EmptySlotDashCount / EmptySlotDashFill / EmptySlotDashWidth` | `30`、`8`、`0.48`、`2.5` |
 | 单颗音符入场 | `FirstNoteEntranceSeconds / MinimumNoteEntranceSeconds / Entrance*` | 首颗 `0.28s`，最低 `0.10s`，起始缩放 `0.28`，过冲 `1.18` |
 | 多音符生成加速 | `NoteEntranceAccelerationPerNote` | 本回合每已有一颗减 `0.018s` |
 | 和弦满槽停留 | `FirstChordHoldSeconds / MinimumChordHoldSeconds / ChordHoldAccelerationPerChord` | `0.42s` → 最低 `0.12s`，每次减 `0.075s` |
 | 音符漂浮与呼吸差异 | `Bob* / Breath* / InitialScaleVariance / PhaseVariance` | 上下 `5px`；缩放约 `±5.5%`；速度随机约 `±20%` |
-| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / MiniatureScale / FilledRackCardThreshold / UnfilledCardSpacing / FilledRack*Width` | `(80,-470)`、`0.35`、阈值 `5`、未满间距 `82`、已满宽度 `272→370` |
+| 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / CardOffsetY / MiniatureScale / FilledRackCardThreshold / UnfilledCardSpacing / FilledRack*Width` | `(-20,-432)`、相对谱线上移 `14px`、`0.345`、阈值 `5`、未满间距 `82`、已满宽度 `272→370` |
 | 演奏牌入队 | `EnterQueueSeconds / EntryAnimationAccelerationPerCard / MinimumEntryAnimationDurationScale` | `0.20s → 0.15s → 0.10s`，第三张及以后保持 `0.10s` |
 | 演奏触发跳动 | `TriggerScale / TriggerGrowSeconds / TriggerSettleSeconds` | `1.2`、`0.14s`、`0.18s` |
 | 演奏结束离队 | `ExitSeconds` | `0.38s` |
 | 悬停详情大小与位置 | `PreviewScale / PreviewGrowSeconds / PreviewMouseXOffset` | `0.8`、`0.12s`、鼠标右侧 `34px` |
+| 战斗人物环境特效 | `MgrCharacterAuraVisual` 的导出属性 | 星点 `18`、光尘 `11`、范围 `235×178`、总强度 `0.82`、共鸣周期 `4.8s` |
 
 完整的逐项说明见 `docs/MGR视觉特效参数表.md`。
 
@@ -226,5 +230,7 @@ flowchart LR
 | `MgrNoteVisuals.cs` | 音符槽、入场、数值、清空与布局 |
 | `MgrFloatingNoteVisual.cs` | 单颗音符持续的漂浮、呼吸和随机差异 |
 | `MgrPerformanceVisuals.cs` | 演奏牌入队、重叠、触发、悬停、离队 |
+| `MgrCharacterAuraVisual.cs` | 战斗人物背后的星点、光尘、波纹环与星座连线 |
+| `MgrPerformanceStaffMarkerClipVisual.cs` | 将谱面音符严格裁剪在线谱左右边界内 |
 | `MgrNoteSystem.cs` | 决定何时播放音符/和弦表现，并提供动画加速计数 |
 | `MgrPerformanceSystem.cs` | 决定何时入队、触发和结束；表现层不修改这些规则 |

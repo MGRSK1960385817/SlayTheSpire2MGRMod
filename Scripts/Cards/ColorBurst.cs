@@ -8,12 +8,12 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd")]
-public sealed class TheCrowd : MgrCard
+[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "color_burst")]
+public sealed class ColorBurst : MgrCard
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
 
-    public TheCrowd() : base(0, CardType.Skill, CardRarity.Token, TargetType.Self)
+    public ColorBurst() : base(0, CardType.Skill, CardRarity.Token, TargetType.Self)
     {
     }
 
@@ -30,10 +30,10 @@ public sealed class TheCrowd : MgrCard
 
         IReadOnlyList<CardModel> options =
         [
-            combatState.CreateCard<TheCrowdChoice0>(Owner),
-            combatState.CreateCard<TheCrowdChoice1>(Owner),
-            combatState.CreateCard<TheCrowdChoice2>(Owner),
-            combatState.CreateCard<TheCrowdChoice3>(Owner)
+            combatState.CreateCard<ColorBurstChoice0>(Owner),
+            combatState.CreateCard<ColorBurstChoice1>(Owner),
+            combatState.CreateCard<ColorBurstChoice2>(Owner),
+            combatState.CreateCard<ColorBurstChoice3>(Owner)
         ];
         CardModel? chosen = null;
         try
@@ -43,7 +43,7 @@ public sealed class TheCrowd : MgrCard
                 options,
                 Owner,
                 canSkip: false);
-            if (chosen is TheCrowdChoice choice)
+            if (chosen is ColorBurstChoice choice)
                 await ChannelRandomNotes(choiceContext, choice.NoteCount);
         }
         finally

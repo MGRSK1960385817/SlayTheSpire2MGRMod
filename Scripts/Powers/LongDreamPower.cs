@@ -15,7 +15,7 @@ namespace SlayTheSpire2MGRMod.Powers;
 /// which would incorrectly leave enemies weakened during their next turn.
 /// </summary>
 [RegisterPower]
-public sealed class ShowWeaknessPower : ModPowerTemplate
+public sealed class LongDreamPower : ModPowerTemplate
 {
     private readonly Dictionary<Creature, decimal> _losses = [];
 
@@ -23,8 +23,8 @@ public sealed class ShowWeaknessPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/ShowWeaknessPower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/ShowWeaknessPower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/LongDreamPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/LongDreamPower.png");
 
     public void RecordLoss(IEnumerable<Creature> creatures, decimal amount)
     {

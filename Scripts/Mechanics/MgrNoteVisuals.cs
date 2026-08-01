@@ -381,6 +381,8 @@ public static class MgrNoteVisuals
 
     private sealed class NoteSlot : IDisposable
     {
+        private static Shader? _noteGlowShader;
+
         private readonly Node2D _anchor;
         private readonly Node2D _emptySlotTransitionRoot;
         private readonly MgrRotatingNoteSlotFrame _emptySlotOutline;
@@ -469,7 +471,7 @@ public static class MgrNoteVisuals
                 PlayEmptySlotCollapseAnimation();
 
             if (_amountLabel is not null)
-                _amountLabel.Text = note.GetEffectAmount(forte).ToString();
+                _amountLabel.Text = GetDisplayedAmount(note, forte).ToString();
 
             RefreshHoverTip();
         }
@@ -489,7 +491,12 @@ public static class MgrNoteVisuals
                 MgrVisualTuning.Notes.EntranceStartYOffset);
             _entranceRoot.Scale = Vector2.One *
                 MgrVisualTuning.Notes.EntranceStartScale;
-            _entranceRoot.Modulate = new Color(1f, 1f, 1f, 0f);
+            Color filledTint = MgrVisualTuning.Notes.FilledNoteTint;
+            _entranceRoot.Modulate = new Color(
+                filledTint.R,
+                filledTint.G,
+                filledTint.B,
+                0f);
             _burst.Burst(_noteColor, MgrNoteBurstStyle.Entrance);
 
             double growSeconds =
@@ -516,7 +523,7 @@ public static class MgrNoteVisuals
             tween.TweenProperty(
                 _entranceRoot,
                 "modulate",
-                Colors.White,
+                filledTint,
                 growSeconds);
 
             tween.Chain().TweenProperty(
@@ -703,16 +710,18 @@ public static class MgrNoteVisuals
                     return;
                 }
 
-                sprite = new Sprite2D
-                {
-                    Name = $"{note.Name}Note",
-                    Texture = texture,
-                    Scale = GetArtworkScale(texture)
-                };
+                sprite = note.Kind == NoteKind.Ghost
+                    ? new MgrGhostNoteVisual()
+                    : new Sprite2D();
+                sprite.Name = $"{note.Name}Note";
+                sprite.Texture = texture;
+                sprite.Scale = GetArtworkScale(texture);
             }
 
             Color noteColor = GetOutlineColor(note.Kind);
             _noteColor = noteColor;
+            if (note.Kind != NoteKind.OmniaNote)
+                sprite.Material = CreateNoteGlowMaterial(noteColor);
             _floatingRoot.AddChild(sprite);
 
             _amountLabel = new Label
@@ -724,7 +733,7 @@ public static class MgrNoteVisuals
                 VerticalAlignment = VerticalAlignment.Center,
                 MouseFilter = Control.MouseFilterEnum.Ignore
             };
-            _amountLabel.Visible = note.Kind != NoteKind.OmniaNote;
+            _amountLabel.Visible = true;
             _amountLabel.AddThemeFontSizeOverride(
                 "font_size",
                 MgrVisualTuning.Notes.AmountLabelFontSize);
@@ -745,6 +754,15 @@ public static class MgrNoteVisuals
             _floatingRoot.AddChild(_amountLabel);
 
             _displayedKind = note.Kind;
+        }
+
+        private static int GetDisplayedAmount(MgrNote note, int forte)
+        {
+            // Ghost and Omnia use a fixed visual marker. The displayed "1" is
+            // intentionally independent from their compound/mechanical effects.
+            return note.Kind is NoteKind.Ghost or NoteKind.OmniaNote
+                ? 1
+                : note.GetEffectAmount(forte);
         }
 
         private void OnMouseEntered()
@@ -863,6 +881,93 @@ public static class MgrNoteVisuals
             _ => Colors.Black
         };
 
+        private static ShaderMaterial CreateNoteGlowMaterial(Color glowColor)
+        {
+            Shader shader = _noteGlowShader ??= new Shader
+            {
+                Code = """
+                    shader_type canvas_item;
+
+                    uniform vec4 glow_color : source_color = vec4(1.0);
+                    uniform float glow_radius_ratio = 0.035;
+                    uniform float glow_strength = 0.38;
+                    uniform float canvas_margin_ratio = 0.06;
+
+                    float uv_mask(vec2 uv) {
+                        return step(0.0, uv.x) * step(uv.x, 1.0) *
+                            step(0.0, uv.y) * step(uv.y, 1.0);
+                    }
+
+                    vec4 sample_source(vec2 uv) {
+                        return texture(TEXTURE, clamp(uv, vec2(0.0), vec2(1.0))) *
+                            uv_mask(uv);
+                    }
+
+                    void vertex() {
+                        // Expand the Sprite quad before sampling. Some note art
+                        // touches its PNG edge; without this margin a shader
+                        // glow would be cut off by the original rectangle.
+                        float expansion = 1.0 + canvas_margin_ratio * 2.0;
+                        VERTEX *= expansion;
+                        UV = (UV - vec2(0.5)) * expansion + vec2(0.5);
+                    }
+
+                    float sampled_alpha(vec2 uv, float radius) {
+                        float diagonal = radius * 0.70710678;
+                        float alpha = 0.0;
+                        alpha = max(alpha, sample_source(uv + vec2(radius, 0.0)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(-radius, 0.0)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(0.0, radius)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(0.0, -radius)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(diagonal, diagonal)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(-diagonal, diagonal)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(diagonal, -diagonal)).a);
+                        alpha = max(alpha, sample_source(uv + vec2(-diagonal, -diagonal)).a);
+                        return alpha;
+                    }
+
+                    void fragment() {
+                        vec4 source = sample_source(UV);
+                        vec4 modulation = COLOR;
+                        float outer_alpha = max(
+                            0.0,
+                            sampled_alpha(UV, glow_radius_ratio) - source.a);
+                        // A second, tighter sample fills the space between the
+                        // silhouette and the soft outer edge.
+                        outer_alpha = max(
+                            outer_alpha,
+                            (sampled_alpha(UV, glow_radius_ratio * 0.52) - source.a) * 1.22);
+                        float glow_alpha = clamp(
+                            outer_alpha * glow_strength * glow_color.a,
+                            0.0,
+                            1.0);
+                        float final_alpha = source.a + glow_alpha * (1.0 - source.a);
+                        vec3 premultiplied =
+                            source.rgb * source.a +
+                            glow_color.rgb * glow_alpha * (1.0 - source.a);
+                        vec3 final_color = final_alpha > 0.0001
+                            ? premultiplied / final_alpha
+                            : vec3(0.0);
+                        COLOR = vec4(
+                            final_color * modulation.rgb,
+                            final_alpha * modulation.a);
+                    }
+                    """
+            };
+            var material = new ShaderMaterial { Shader = shader };
+            material.SetShaderParameter("glow_color", glowColor);
+            material.SetShaderParameter(
+                "glow_radius_ratio",
+                MgrVisualTuning.Notes.ArtworkGlowRadiusRatio);
+            material.SetShaderParameter(
+                "glow_strength",
+                MgrVisualTuning.Notes.ArtworkGlowStrength);
+            material.SetShaderParameter(
+                "canvas_margin_ratio",
+                MgrVisualTuning.Notes.ArtworkGlowCanvasMarginRatio);
+            return material;
+        }
+
         private static Vector2 GetArtworkScale(Texture2D texture)
         {
             Vector2 sourceSize = texture.GetSize();
@@ -884,7 +989,7 @@ public static class MgrNoteVisuals
             _amountLabel = null;
             _entranceRoot.Position = Vector2.Zero;
             _entranceRoot.Scale = Vector2.One;
-            _entranceRoot.Modulate = Colors.White;
+            _entranceRoot.Modulate = MgrVisualTuning.Notes.FilledNoteTint;
 
             foreach (Node child in _floatingRoot.GetChildren())
             {

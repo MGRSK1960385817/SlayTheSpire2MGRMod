@@ -1,7 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -21,24 +23,9 @@ public sealed class MaguroAssault : MgrCard
         new ExtraDamageVar(1m),
         new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>
-            {
-                if (card is not MaguroAssault assault)
-                    return 0m;
-
-                decimal chords = assault.NoteState.ChordsResolvedThisCombat;
-                if (!assault.IsPhraseEndBonusActive)
-                    return chords;
-
-                // CalculatedDamage = base + extra * multiplier. Folding the
-                // Ending bonus into that native formula makes both preview and
-                // AttackCommand calculate the same doubled raw value, after
-                // which Strength, enchantments and target hooks run normally.
-                decimal extra = assault.DynamicVars.ExtraDamage.BaseValue;
-                return extra == 0m
-                    ? chords
-                    : chords * 2m +
-                        assault.DynamicVars.CalculationBase.BaseValue / extra;
-            })
+                card is MaguroAssault assault
+                    ? assault.NoteState.ChordsResolvedThisCombat
+                    : 0m)
     ];
 
     public MaguroAssault() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -54,6 +41,22 @@ public sealed class MaguroAssault : MgrCard
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+    }
+
+    public override decimal ModifyDamageMultiplicative(
+        Creature? target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource,
+        CardPlay? cardPlay)
+    {
+        // Chord scaling remains part of the card's ordinary damage formula.
+        // Ending is a late multiplier so Strength, enchantments and other
+        // additive modifiers are included before the result is doubled.
+        return ReferenceEquals(cardSource, this) && IsPhraseEndBonusActive
+            ? 2m
+            : 1m;
     }
 
     protected override void OnUpgrade()

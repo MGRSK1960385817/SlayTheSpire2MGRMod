@@ -10,7 +10,7 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class FrenziedNaturePower : ModPowerTemplate
+public sealed class FrenzyPower : ModPowerTemplate
 {
     private bool _triggeredThisTurn;
 
@@ -18,8 +18,8 @@ public sealed class FrenziedNaturePower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/FrenziedNaturePower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/FrenziedNaturePower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/FrenzyPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/FrenzyPower.png");
 
     public override async Task AfterCardDrawn(
         PlayerChoiceContext choiceContext,

@@ -1,6 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
@@ -12,17 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "east_of_timeline")]
 public sealed class EastOfTimeline : MgrCard
 {
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.FromKeyword(CardKeyword.Exhaust)
-    ];
-
-    private int _playsThisCombat;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 2m),
-        new IntVar("Uses", 2m)
+        new IntVar("Notes", 2m)
     ];
 
     // Explicitly Attack in the Tower-2 adaptation, per the design request.
@@ -35,28 +26,9 @@ public sealed class EastOfTimeline : MgrCard
         int notes = DynamicVars["Notes"].IntValue;
         for (int index = 0; index < notes; index++)
             await ChannelNote(choiceContext, NoteKind.Attack);
-
-        _playsThisCombat++;
-        bool isFirstUse = _playsThisCombat == 1;
-        bool isFinalUse = _playsThisCombat >= DynamicVars["Uses"].IntValue;
-        if (isFirstUse || isFinalUse)
-            IncreaseNotesPermanently(1m);
-        if (isFinalUse)
-            ExhaustOnNextPlay = true;
     }
 
-    public override Task AfterCardEnteredCombat(CardModel card)
-    {
-        if (ReferenceEquals(card, this))
-        {
-            _playsThisCombat = 0;
-            ExhaustOnNextPlay = false;
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private void IncreaseNotesPermanently(decimal amount)
+    internal void IncreaseNotesPermanently(decimal amount)
     {
         HashSet<CardModel> targets = [this];
         CardModel? deckVersion = DeckVersion;
@@ -91,6 +63,6 @@ public sealed class EastOfTimeline : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Uses"].UpgradeValueBy(1m);
+        DynamicVars["Notes"].UpgradeValueBy(2m);
     }
 }

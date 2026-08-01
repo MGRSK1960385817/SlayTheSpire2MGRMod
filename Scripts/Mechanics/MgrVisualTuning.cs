@@ -16,11 +16,22 @@ public static class MgrVisualTuning
         // sized as a proportion of the slot diameter. This keeps high-resolution
         // replacement art consistent without imposing a fixed pixel target.
         public const float ArtworkFillRatio = 1f;
-        public static readonly Vector2 AmountLabelPosition = new(-36f, 21f);
-        public static readonly Vector2 AmountLabelSize = new(72f, 36f);
+        // The effect amount sits immediately outside the artwork's lower-right
+        // corner instead of being centred beneath the whole slot.
+        public static readonly Vector2 AmountLabelPosition = new(3f, 5f);
+        public static readonly Vector2 AmountLabelSize = new(48f, 32f);
         public const int AmountLabelFontSize = 24;
         public const int AmountLabelOutlineSize = 8;
         public static readonly Color CurseAccentColor = new("78101c");
+        // Filled Notes use a proportional, shader-drawn outer glow. A ratio is
+        // used instead of source pixels so 64px and 384px artwork render alike.
+        public const float ArtworkGlowRadiusRatio = 0.035f;
+        public const float ArtworkGlowStrength = 0.38f;
+        public const float ArtworkGlowCanvasMarginRatio = 0.06f;
+        // Softens filled Notes without affecting empty-slot frames. Both the
+        // artwork and its amount label inherit this presentation-only tint.
+        public static readonly Color FilledNoteTint =
+            new(0.95f, 0.95f, 0.95f, 0.95f);
 
         public const int RackZIndex = 50;
         public const float DesiredSlotSpacing = 96f;
@@ -100,6 +111,14 @@ public static class MgrVisualTuning
         public const float InitialScaleVariance = 0.07f;
         public const float PhaseVariance = 0.65f;
 
+        // Ghost Note opacity drifts independently from its amount label. Each
+        // Ghost samples a slightly different speed and phase so multiple Ghost
+        // Notes never fade in lockstep.
+        public const float GhostOpacityMinimum = 0.46f;
+        public const float GhostOpacityMaximum = 1f;
+        public const float GhostOpacityAngularSpeed = 1.65f;
+        public const float GhostOpacitySpeedVariance = 0.28f;
+
         // Omnia Notes cycle through all five basic Note silhouettes and
         // the Starry silhouette while a rainbow flows across the current shape.
         public const double OmniaNoteShapeSeconds = 0.30;
@@ -109,13 +128,16 @@ public static class MgrVisualTuning
 
     public static class Performances
     {
-        public static readonly Vector2 RackOffset = new(60f, -420f); // 后面的数字绝对值越大 演奏堆越靠上
+        public static readonly Vector2 RackOffset = new(-3f, -432f); // 后面的数字绝对值越大 演奏堆越靠上
         // The staff is a presentation-only child of the rack. Its local offset
         // can be tuned without changing card positions, hover hitboxes, or the
         // coordinate chain used by performance animations.
         public static readonly Vector2 StaffOffset = new(0f, -16f);
-        public static readonly Vector2 MiniatureScale = new(0.35f, 0.35f);
-        public static readonly Vector2 HoveredMiniatureScale = new(0.5f, 0.5f);
+        // CardOffsetY moves only cards, counters and their hitboxes relative to
+        // the staff. Negative values move the whole interactive card upward.
+        public const float CardOffsetY = -14f;
+        public static readonly Vector2 MiniatureScale = new(0.345f, 0.345f);
+        public static readonly Vector2 HoveredMiniatureScale = new(0.49f, 0.49f);
         public static readonly Vector2 PreviewScale = new(0.8f, 0.8f);
         public static readonly Color StaffLineColor = new("9b87c7");
         public static readonly Color StaffMarkerColor = new("d8c8ff");
@@ -126,20 +148,22 @@ public static class MgrVisualTuning
         public const int StaffZIndex = -20;
         // Remaining Performance turns use a small floating beat marker above
         // the card rather than a purple badge on its lower-right corner.
-        public static readonly Vector2 RemainingCounterSize = new(54f, 34f);
-        public static readonly Color RemainingCounterColor = PerformanceAccentColor;
-        public static readonly Color RemainingCounterOutlineColor = new("443552");
+        public static readonly Vector2 RemainingCounterSize = new(48f, 30f);
+        public static readonly Color RemainingCounterColor =
+            new(1f, 0.96f, 0.8f, 0.96f);
+        public static readonly Color RemainingCounterOutlineColor =
+            new(0.4f, 0.32f, 0.40f, 0.96f);
         public const int RemainingCounterZIndex = 34;
-        public const int RemainingCounterFontSize = 26;
-        public const int RemainingCounterOutlineSize = 5;
-        public const float RemainingCounterTopGap = 9f;
-        public const float RemainingCounterWingLength = 24f;
+        public const int RemainingCounterFontSize = 23;
+        public const int RemainingCounterOutlineSize = 4;
+        public const float RemainingCounterTopGap = 4f;
+        public const float RemainingCounterWingLength = 21f;
         public const float RemainingCounterSingleWingLengthScale = 0.76f;
         public const float RemainingCounterDoubleWingLengthScale = 0.88f;
-        public const float RemainingCounterWingGap = 14f;
-        public const float RemainingCounterWingSpacing = 5f;
+        public const float RemainingCounterWingGap = 12f;
+        public const float RemainingCounterWingSpacing = 4.5f;
         public const int RemainingCounterWingLineCount = 3;
-        public const float RemainingCounterLineWidth = 1.6f;
+        public const float RemainingCounterLineWidth = 1.4f;
         public const double RemainingCounterPulseSeconds = 0.30;
         public const float RemainingCounterChangeFraction = 0.36f;
         // With fewer than this many cards, the rack grows from its right edge
@@ -153,6 +177,7 @@ public static class MgrVisualTuning
         public const float FilledRackBaseWidth = 272f;
         public const float FilledRackWidthPerExtraCard = 20f;
         public const float FilledRackMaximumWidth = 370f;
+        public const float RackCardBrightness = 0.95f;
         public const float RackCardOpacity = 0.95f;
         public const double EnterQueueSeconds = 0.20;
         public const float EntryAnimationAccelerationPerCard = 0.25f;
@@ -180,6 +205,22 @@ public static class MgrVisualTuning
         public const float StaffLineSpacing = 22f;
         public const float StaffLineThickness = 2f;
         public const float StaffLineAlpha = 0.25f;
+        // A conventional thin/thick score barline remains at each edge. Stars
+        // only spray outward during a Performance; the idle ends stay clean.
+        public const float StaffEndBarThinWidth = 1.4f;
+        public const float StaffEndBarThickWidth = 3.4f;
+        public const float StaffEndBarSeparation = 5.5f;
+        public const float StaffEndBarAlpha = 0.46f;
+        public const int StaffEndSprayStarCount = 8;
+        public const float StaffEndSprayStartDistance = 10f;
+        public const float StaffEndSprayEndDistance = 72f;
+        public const float StaffEndSprayVerticalSpread = 39f;
+        public const float StaffEndSpraySpeed = 1.25f;
+        public const float StaffEndSprayStarRadius = 3.4f;
+        public const float StaffEndSprayStreakScale = 1f;
+        // Markers are drawn below this vertical padding but are clipped exactly
+        // at the staff's left and right edges.
+        public const float StaffMarkerClipVerticalPadding = 54f;
         public const int StaffInitialMarkerCount = 5;
         public const int StaffIdleMaximumMarkers = 7;
         public const int StaffPerformingMaximumMarkers = 15;

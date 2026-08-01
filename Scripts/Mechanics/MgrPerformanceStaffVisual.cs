@@ -41,6 +41,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
     private float _triggerPulse;
     private float _animationTime;
     private bool _isPerforming;
+    private MgrPerformanceStaffMarkerClipVisual? _markerClip;
     private Node2D? _playheadRoot;
     private Tween? _playheadTween;
 
@@ -48,9 +49,11 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
     {
         Position = MgrVisualTuning.Performances.StaffOffset;
         ZIndex = MgrVisualTuning.Performances.StaffZIndex;
+        CreateMarkerClip();
         CreatePlayhead();
         ResetSpawnTimer();
         QueueRedraw();
+        _markerClip?.QueueMarkerRedraw();
     }
 
     public override void _Process(double delta)
@@ -106,6 +109,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
                 (float)MgrVisualTuning.Performances.StaffTriggerPulseSeconds));
 
         QueueRedraw();
+        _markerClip?.QueueMarkerRedraw();
     }
 
     public override void _Draw()
@@ -122,14 +126,6 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
         lineColor.A = Mathf.Lerp(
             MgrVisualTuning.Performances.StaffLineAlpha,
             0.92f,
-            flash);
-
-        Color markerColor = MgrVisualTuning.Performances.StaffMarkerColor.Lerp(
-            MgrVisualTuning.Performances.StaffFlashColor,
-            flash);
-        markerColor.A = Mathf.Lerp(
-            MgrVisualTuning.Performances.StaffMarkerAlpha,
-            1f,
             flash);
 
         for (int lineIndex = 0; lineIndex < lineCount; lineIndex++)
@@ -153,34 +149,17 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             DrawStaffSegment(segmentStart, halfWidth, y, lineColor, flash, impact);
         }
 
+        DrawStaffEndOrnaments(
+            halfWidth,
+            top,
+            lineCount,
+            lineColor,
+            flash,
+            impact);
+
         if (flash > 0.01f || impact > 0.01f)
             DrawPerformanceSparkles(halfWidth, flash, impact);
 
-        foreach (DriftingMarker marker in _markers)
-        {
-            float y = top + marker.LineIndex *
-                MgrVisualTuning.Performances.StaffLineSpacing;
-            if (marker.SpansTwoLines)
-                y += MgrVisualTuning.Performances.StaffLineSpacing * 0.5f;
-            y += MathF.Sin(marker.BobPhase) *
-                MgrVisualTuning.Performances.StaffMarkerBobAmplitude;
-            var center = new Vector2(marker.X, y);
-
-            float symbolPulse = 1f + impact * 0.22f;
-            Color symbolColor = markerColor.Lerp(
-                new Color("8de5ff"),
-                marker.TintMix * 0.42f);
-            symbolColor.A = markerColor.A;
-
-            MgrMusicGlyphRenderer.Draw(
-                this,
-                marker.Symbol,
-                center,
-                marker.Radius * symbolPulse,
-                symbolColor,
-                1.7f + flash + impact,
-                MgrVisualTuning.Performances.StaffLineSpacing);
-        }
     }
 
     public void SetActive(bool active)
@@ -299,6 +278,212 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             color,
             MgrVisualTuning.Performances.StaffLineThickness + flash + impact * 0.7f,
             antialiased: true);
+    }
+
+    private void DrawStaffEndOrnaments(
+        float halfWidth,
+        float top,
+        int lineCount,
+        Color lineColor,
+        float flash,
+        float impact)
+    {
+        float bottom = top +
+            (lineCount - 1) * MgrVisualTuning.Performances.StaffLineSpacing;
+        DrawStaffEndOrnament(
+            -halfWidth,
+            -1f,
+            top,
+            bottom,
+            lineColor,
+            flash,
+            impact);
+        DrawStaffEndOrnament(
+            halfWidth,
+            1f,
+            top,
+            bottom,
+            lineColor,
+            flash,
+            impact);
+    }
+
+    private void DrawStaffEndOrnament(
+        float edgeX,
+        float outwardDirection,
+        float top,
+        float bottom,
+        Color lineColor,
+        float flash,
+        float impact)
+    {
+        Color barColor = lineColor.Lerp(
+            MgrVisualTuning.Performances.StaffFlashColor,
+            flash * 0.48f + impact * 0.30f);
+        barColor.A = Math.Clamp(
+            MgrVisualTuning.Performances.StaffEndBarAlpha +
+                flash * 0.22f + impact * 0.18f,
+            0f,
+            1f);
+
+        // A thin/thick double barline keeps the boundary readable while the
+        // surrounding stars provide the softer animated finish.
+        DrawLine(
+            new Vector2(edgeX, top),
+            new Vector2(edgeX, bottom),
+            barColor,
+            MgrVisualTuning.Performances.StaffEndBarThinWidth,
+            antialiased: true);
+        float thickBarX = edgeX + outwardDirection *
+            MgrVisualTuning.Performances.StaffEndBarSeparation;
+        DrawLine(
+            new Vector2(thickBarX, top),
+            new Vector2(thickBarX, bottom),
+            barColor,
+            MgrVisualTuning.Performances.StaffEndBarThickWidth,
+            antialiased: true);
+
+        if (flash > 0.01f || impact > 0.01f)
+        {
+            DrawStaffEndStarSpray(
+                edgeX,
+                outwardDirection,
+                top,
+                bottom,
+                flash,
+                impact);
+        }
+    }
+
+    private void DrawStaffEndStarSpray(
+        float edgeX,
+        float outwardDirection,
+        float top,
+        float bottom,
+        float flash,
+        float impact)
+    {
+        int count = Math.Max(
+            1,
+            MgrVisualTuning.Performances.StaffEndSprayStarCount);
+        float middle = (top + bottom) * 0.5f;
+        int sideColorOffset = outwardDirection > 0f ? 2 : 5;
+        for (int index = 0; index < count; index++)
+        {
+            float rawPhase = _animationTime *
+                MgrVisualTuning.Performances.StaffEndSpraySpeed +
+                index / (float)count +
+                (outwardDirection > 0f ? 0.41f : 0f);
+            float progress = Mathf.PosMod(rawPhase, 1f);
+            float eased = 1f - MathF.Pow(1f - progress, 2.4f);
+            float verticalSeed = MathF.Sin(
+                index * 12.9898f + sideColorOffset * 2.37f);
+            float distance = Mathf.Lerp(
+                MgrVisualTuning.Performances.StaffEndSprayStartDistance,
+                MgrVisualTuning.Performances.StaffEndSprayEndDistance,
+                eased);
+            var center = new Vector2(
+                edgeX + outwardDirection * distance,
+                middle + verticalSeed *
+                    MgrVisualTuning.Performances.StaffEndSprayVerticalSpread +
+                MathF.Sin(progress * MathF.PI) * verticalSeed * 9f);
+            float fade = MathF.Pow(1f - progress, 1.15f);
+            // Every stream advances through the palette on each emission
+            // cycle, so a fixed position no longer repeats one fixed color.
+            int colorCycle = Mathf.FloorToInt(rawPhase);
+            Color color = GetSparkleColor(
+                index * 3 + colorCycle * 5 + sideColorOffset);
+            color.A = Math.Clamp(
+                fade * (0.44f * flash + 0.42f * impact),
+                0f,
+                1f);
+
+            float streakLength = (5f + 8f * fade) *
+                MgrVisualTuning.Performances.StaffEndSprayStreakScale;
+            DrawLine(
+                center - new Vector2(outwardDirection * streakLength, 0f),
+                center + new Vector2(outwardDirection * 1.5f, 0f),
+                color,
+                1.1f + fade * 1.2f,
+                antialiased: true);
+            DrawGlowingStar(
+                center,
+                MgrVisualTuning.Performances.StaffEndSprayStarRadius *
+                    (0.72f + fade * 0.58f),
+                color);
+        }
+    }
+
+    private void DrawGlowingStar(Vector2 center, float radius, Color color)
+    {
+        Color halo = color;
+        halo.A *= 0.24f;
+        DrawCircle(center, radius * 2.5f, halo);
+        DrawLine(
+            center + new Vector2(-radius, 0f),
+            center + new Vector2(radius, 0f),
+            color,
+            1.25f,
+            antialiased: true);
+        DrawLine(
+            center + new Vector2(0f, -radius * 1.35f),
+            center + new Vector2(0f, radius * 1.35f),
+            color,
+            1.25f,
+            antialiased: true);
+    }
+
+    private void CreateMarkerClip()
+    {
+        _markerClip = new MgrPerformanceStaffMarkerClipVisual
+        {
+            Name = "StaffMarkerClip",
+            ZIndex = 1
+        };
+        _markerClip.Initialize(DrawMarkers);
+        AddChild(_markerClip);
+    }
+
+    private void DrawMarkers(Node2D canvas)
+    {
+        int lineCount = Math.Max(1, MgrVisualTuning.Performances.StaffLineCount);
+        float top = -(lineCount - 1) *
+            MgrVisualTuning.Performances.StaffLineSpacing * 0.5f;
+        float flash = Mathf.SmoothStep(0f, 1f, _glowAmount);
+        float impact = Mathf.SmoothStep(0f, 1f, _triggerPulse);
+        Color markerColor = MgrVisualTuning.Performances.StaffMarkerColor.Lerp(
+            MgrVisualTuning.Performances.StaffFlashColor,
+            flash);
+        markerColor.A = Mathf.Lerp(
+            MgrVisualTuning.Performances.StaffMarkerAlpha,
+            1f,
+            flash);
+
+        foreach (DriftingMarker marker in _markers)
+        {
+            float y = top + marker.LineIndex *
+                MgrVisualTuning.Performances.StaffLineSpacing;
+            if (marker.SpansTwoLines)
+                y += MgrVisualTuning.Performances.StaffLineSpacing * 0.5f;
+            y += MathF.Sin(marker.BobPhase) *
+                MgrVisualTuning.Performances.StaffMarkerBobAmplitude;
+            var center = new Vector2(marker.X, y);
+
+            float symbolPulse = 1f + impact * 0.22f;
+            Color symbolColor = markerColor.Lerp(
+                new Color("8de5ff"),
+                marker.TintMix * 0.42f);
+            symbolColor.A = markerColor.A;
+
+            MgrMusicGlyphRenderer.Draw(
+                canvas,
+                marker.Symbol,
+                center,
+                marker.Radius * symbolPulse,
+                symbolColor,
+                1.7f + flash + impact,
+                MgrVisualTuning.Performances.StaffLineSpacing);
+        }
     }
 
     private void DrawStaffSweeps(

@@ -33,7 +33,7 @@ public static class MgrNoteEffects
             await PlayerCmd.GainGold(1m, player);
         }
 
-        if (player.Creature.GetPower<HappySynthesizerPower>() is { } synthesizer)
+        if (player.Creature.GetPower<PrismaticPower>() is { } synthesizer)
             await synthesizer.OnChordTriggered(choiceContext, notes);
 
         for (int noteIndex = 0; noteIndex < notes.Count; noteIndex++)

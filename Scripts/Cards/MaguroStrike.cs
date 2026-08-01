@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "broom_strike")]
-public sealed class BroomStrike : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "maguro_strike")]
+public sealed class MaguroStrike : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>
         MgrGoldGlowCondition.ChordResolvedThisTurn;
@@ -22,7 +22,7 @@ public sealed class BroomStrike : MgrCard
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
 
-    public BroomStrike() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+    public MaguroStrike() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
     {
     }
 

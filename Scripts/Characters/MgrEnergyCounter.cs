@@ -32,7 +32,10 @@ public partial class MgrEnergyCounter : NEnergyCounter
 
     public override void _Process(double delta)
     {
-        base._Process(delta);
+        // NEnergyCounter's default loop rotates children according to their
+        // sibling index. MGR instead preserves Tower 1's explicit per-layer
+        // speeds, so calling the base loop here would rotate every layer twice
+        // and distort the intended relative motion.
         float elapsed = (float)delta;
         foreach ((Control layer, float degreesPerSecond) in _rotatingLayers)
         {

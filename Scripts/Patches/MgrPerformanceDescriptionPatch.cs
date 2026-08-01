@@ -21,7 +21,8 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
     [
         CardKeyword.Retain,
         CardKeyword.Ethereal,
-        CardKeyword.Exhaust
+        CardKeyword.Exhaust,
+        CardKeyword.Innate
     ];
 
     private static readonly string[] NamedColorTags =
@@ -56,11 +57,29 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         string? addedPerformanceText = null;
         if (amount > 0)
         {
-            var line = new LocString(
-                "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
-            line.Add("Times", amount);
-            addedPerformanceText = line.GetFormattedText();
+            if (__instance is CubicPrism)
+            {
+                // X-cost Performance owns the first identity line already.
+                // Replace that line with one combined expression instead of
+                // prepending a contradictory fixed "Performance 1" line.
+                var combinedLine = new LocString(
+                    "cards",
+                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
+                combinedLine.Add("Times", amount);
+                string combinedText = combinedLine.GetFormattedText();
+                int firstLineBreak = __result.IndexOf('\n');
+                __result = firstLineBreak >= 0
+                    ? combinedText + __result[firstLineBreak..]
+                    : combinedText;
+            }
+            else
+            {
+                var line = new LocString(
+                    "cards",
+                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
+                line.Add("Times", amount);
+                addedPerformanceText = line.GetFormattedText();
+            }
         }
 
         // Identity mechanics share the first line. Native MGR Performance cards
@@ -68,9 +87,10 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         // combat-added Performance value is prepended here instead.
         if (starryText is not null && mgrCard!.InitialPerformanceTurns > 0)
         {
+            string separator = mgrCard is LonelyUniverse ? "\n" : " ";
             __result = string.IsNullOrWhiteSpace(__result)
                 ? starryText
-                : $"{starryText} {__result}";
+                : $"{starryText}{separator}{__result}";
         }
         else
         {
@@ -90,10 +110,36 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         }
 
         if (mgrCard is not null)
+        {
+            CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
+        }
 
         if (__instance is Pale)
             __result = FormatPaleDescription(__result);
+    }
+
+    private static void CompactStarryRetainLine(
+        MgrCard card,
+        string? starryText,
+        ref string description)
+    {
+        if (starryText is null || !card.Keywords.Contains(CardKeyword.Retain))
+            return;
+
+        string retainText = CardKeyword.Retain.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(retainText))
+            return;
+
+        List<string> lines = description.Split('\n').ToList();
+        int starryIndex = lines.FindIndex(line => line.Trim() == starryText);
+        int retainIndex = lines.FindIndex(line => line.Trim() == retainText);
+        if (starryIndex < 0 || retainIndex < 0 || starryIndex == retainIndex)
+            return;
+
+        lines[starryIndex] = $"{lines[starryIndex].Trim()} {retainText}";
+        lines.RemoveAt(retainIndex);
+        description = string.Join('\n', lines);
     }
 
     private static void CompactTerminalKeywordLines(

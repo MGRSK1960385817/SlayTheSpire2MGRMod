@@ -9,15 +9,15 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "strafe")]
-public sealed class Strafe : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "flower_funeral")]
+public sealed class FlowerFuneral : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(5m, ValueProp.Move)
+        new DamageVar(6m, ValueProp.Move)
     ];
 
-    public Strafe() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+    public FlowerFuneral() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
     {
     }
 

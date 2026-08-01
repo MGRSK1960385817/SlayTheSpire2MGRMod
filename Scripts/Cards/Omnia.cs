@@ -15,7 +15,7 @@ public sealed class Omnia : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 1m)
+        new IntVar("Performance", 2m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;

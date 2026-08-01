@@ -9,18 +9,18 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "frenzied_nature")]
-public sealed class FrenziedNature : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "frenzy")]
+public sealed class Frenzy : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
-    public FrenziedNature() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public Frenzy() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<FrenziedNaturePower>(
+        await PowerCmd.Apply<FrenzyPower>(
             choiceContext,
             Owner.Creature,
             DynamicVars.Cards.BaseValue,

@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "beat_time")]
-public sealed class BeatTime : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "note_magic")]
+public sealed class NoteMagic : MgrCard
 {
     public override bool GainsBlock => true;
 
@@ -19,7 +19,7 @@ public sealed class BeatTime : MgrCard
         new BlockVar(5m, ValueProp.Move)
     ];
 
-    public BeatTime() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+    public NoteMagic() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }
 

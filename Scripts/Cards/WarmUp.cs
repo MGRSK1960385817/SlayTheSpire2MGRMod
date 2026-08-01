@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "stage_warm_up")]
-public sealed class StageWarmUp : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "warm_up")]
+public sealed class WarmUp : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -20,7 +20,7 @@ public sealed class StageWarmUp : MgrCard
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public StageWarmUp() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public WarmUp() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

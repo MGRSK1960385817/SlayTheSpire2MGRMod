@@ -8,8 +8,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "stardust_laser")]
-public sealed class StardustLaser : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "stardust_impact")]
+public sealed class StardustImpact : MgrCard
 {
     public override bool IsStarryCard => true;
 
@@ -18,7 +18,7 @@ public sealed class StardustLaser : MgrCard
         new DamageVar(5m, ValueProp.Move)
     ];
 
-    public StardustLaser() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+    public StardustImpact() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
     {
     }
 

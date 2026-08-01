@@ -7,10 +7,10 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "happy_synthesizer")]
-public sealed class HappySynthesizer : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "prismatic")]
+public sealed class Prismatic : MgrCard
 {
-    public HappySynthesizer() : base(
+    public Prismatic() : base(
         2,
         CardType.Power,
         CardRarity.Rare,
@@ -20,7 +20,7 @@ public sealed class HappySynthesizer : MgrCard
 
     protected override Task OnPlay(
         PlayerChoiceContext choiceContext,
-        CardPlay cardPlay) => PowerCmd.Apply<HappySynthesizerPower>(
+        CardPlay cardPlay) => PowerCmd.Apply<PrismaticPower>(
             choiceContext,
             Owner.Creature,
             1m,

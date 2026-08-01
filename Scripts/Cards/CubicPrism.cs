@@ -18,7 +18,9 @@ public sealed class CubicPrism : MgrCard
     public override int InitialPerformanceTurns => _performanceX;
 
     internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
-        Math.Max(_performanceX, resources.EnergySpent);
+        checked(
+            Math.Max(_performanceX, resources.EnergySpent) +
+            MgrPerformanceModifierState.GetAdditionalPerformances(this));
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

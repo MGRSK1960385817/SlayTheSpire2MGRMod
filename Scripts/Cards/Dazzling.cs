@@ -10,8 +10,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "set_the_tone")]
-public sealed class SetTheTone : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "dazzling")]
+public sealed class Dazzling : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>
         MgrGoldGlowCondition.PhraseStart;
@@ -21,7 +21,7 @@ public sealed class SetTheTone : MgrCard
         new DamageVar(5m, ValueProp.Move)
     ];
 
-    public SetTheTone() : base(
+    public Dazzling() : base(
         1,
         CardType.Attack,
         CardRarity.Common,

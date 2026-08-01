@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-07-28",
+  "lastUpdated": "2026-08-01",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -55,7 +55,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费。选择减少1个音符槽或增加2个音符槽。升级后0费。"
+      "summary": "1费。选择减少1个音符槽或增加2个音符槽，消耗。升级后0费。"
     },
     {
       "codeName": "BUG0",
@@ -106,16 +106,16 @@
       "summary": "1费，造成6点伤害，使最右侧1张演奏牌演奏+1；升级后改为最右侧2张。"
     },
     {
-      "codeName": "BeatTime",
-      "name": "打拍子",
+      "codeName": "NoteMagic",
+      "name": "音符魔法",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
       "summary": "1费，获得5点格挡并复制最右侧音符；升级后格挡增加至8。"
     },
     {
-      "codeName": "BroomStrike",
-      "name": "扫把打击",
+      "codeName": "MaguroStrike",
+      "name": "金枪鱼打击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -130,8 +130,8 @@
       "summary": "对所有敌人造成 5 点伤害，本回合每触发一次和弦增加 3 点；升级后：基础伤害增加至 6，每次和弦加成增加至 4。"
     },
     {
-      "codeName": "StardustLaser",
-      "name": "星屑镭射",
+      "codeName": "StardustImpact",
+      "name": "星尘冲击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -151,15 +151,15 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "造成 10 点伤害，本回合每触发一次和弦增加 6 点；升级后：基础伤害增加至 12，每次和弦加成增加至 8。"
+      "summary": "4费。造成20（27）点伤害。本回合每触发一次和弦，费用减少1."
     },
     {
-      "codeName": "Strafe",
-      "name": "扫射",
+      "codeName": "FlowerFuneral",
+      "name": "花葬",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "造成 5（7）点伤害，生成相当于未被阻挡伤害的攻击音符。"
+      "summary": "造成 6（8）点伤害，生成相当于未被阻挡伤害的攻击音符。"
     },
     {
       "codeName": "SatelliteGirl",
@@ -178,7 +178,7 @@
       "summary": "造成 6 点伤害，本场战斗每触发一次和弦增加 1 点；作为尾音时伤害翻倍；升级后：基础伤害增加至 8，每次和弦加成增加至 2。"
     },
     {
-      "codeName": "StageWarmUp",
+      "codeName": "WarmUp",
       "name": "舞台预热",
       "status": 1,
       "type": "Power",
@@ -210,7 +210,7 @@
       "summary": "将1张随机诅咒加入弃牌堆；对局中每有1张诅咒便对随机敌人造成7点伤害；升级后伤害增加至10。"
     },
     {
-      "codeName": "FrenziedNature",
+      "codeName": "Frenzy",
       "name": "狂性",
       "status": 1,
       "type": "Power",
@@ -252,30 +252,30 @@
     {
       "codeName": "RapidClaw",
       "name": "急速爪击",
-      "status": 1,
+      "status": 0,
       "type": "Attack",
       "rarity": "Common",
       "summary": "0费，造成4点伤害 起音：抽1张牌"
     },
     {
-      "codeName": "Crescendo",
-      "name": "渐强音",
+      "codeName": "LightUp",
+      "name": "点亮舞台",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "2费，演奏2；造成4点伤害，在本场战斗伤害增加4点；升级后：演奏+1。"
+      "summary": "2费，演奏2；造成4点伤害1次，并将伤害次数+1。升级后：演奏+1。"
     },
     {
-      "codeName": "ShowWeakness",
-      "name": "示弱",
+      "codeName": "LongDream",
+      "name": "长梦",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费，本回合所有生物失去3点力量，生成3个技能音符；升级后：力量与音符数均增加至4。"
+      "summary": "1费，演奏1.本回合内所有生物失去4(6)点力量。"
     },
     {
-      "codeName": "HayakuNaru",
-      "name": "逐渐变快",
+      "codeName": "ByakkoyaGirl",
+      "name": "白虎野之女",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -303,7 +303,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "1费攻击，额外生成2个攻击音符；首次和最终使用永久+1音符；使用2次后消耗；升级后：可使用次数增加至3。"
+      "summary": "1费攻击，生成2（升级后3）个攻击音符；如果是战斗中打出的第一张或最后一张牌，生成量永久增加1。"
     },
     {
       "codeName": "Higan",
@@ -530,8 +530,8 @@
       "summary": "1费；造成6点伤害，给予2层易伤，将1张原版诅咒“疑虑”置入手牌；升级后伤害增加至8、易伤增加至3。"
     },
     {
-      "codeName": "TheCrowd",
-      "name": "随声附和",
+      "codeName": "ColorBurst",
+      "name": "色彩爆发",
       "status": 1,
       "type": "Skill",
       "rarity": "Token",
@@ -562,8 +562,8 @@
       "summary": "0费消耗，演奏3；演奏结束时获得1瓶随机药水；升级后改为演奏2。"
     },
     {
-      "codeName": "SetTheTone",
-      "name": "定调",
+      "codeName": "Dazzling",
+      "name": "炫目",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -575,11 +575,11 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Ancient",
-      "summary": "1费先古技能；演奏1（升级后2）。万象；由古旧之牙将小小游行转化获得。"
+      "summary": "1费先古技能；演奏2（升级后3）。万象；由古旧之牙将小小游行转化获得。"
     },
     {
-      "codeName": "HappySynthesizer",
-      "name": "快乐合成器",
+      "codeName": "Prismatic",
+      "name": "极彩色",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
