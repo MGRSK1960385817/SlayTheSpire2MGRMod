@@ -250,14 +250,6 @@
       "summary": "1费，抽1张牌；尾音时，本次和弦额外触发一次；升级后：抽牌增加至2。"
     },
     {
-      "codeName": "RapidClaw",
-      "name": "急速爪击",
-      "status": 0,
-      "type": "Attack",
-      "rarity": "Common",
-      "summary": "0费，造成4点伤害 起音：抽1张牌"
-    },
-    {
       "codeName": "LightUp",
       "name": "点亮舞台",
       "status": 1,
@@ -335,7 +327,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费；造成7伤害，抽3，丢弃本次抽到且当前费用不为1的牌；升级后：7伤害、抽4。"
+      "summary": "1费；造成7伤害，抽3，丢弃本次抽到且当前费用不为1的牌；升级后抽5，名称变为“呀啊啊啊啊啊”。"
     },
     {
       "codeName": "MeteorAftermath",

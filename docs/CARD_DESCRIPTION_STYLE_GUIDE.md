@@ -57,7 +57,7 @@
 ### 其他关键词
 
 - `固有`、`保留`、`虚无`、`消耗`等由 `CanonicalKeywords`、`AddKeyword` 和 `RemoveKeyword` 声明，交给原版渲染器自动放在最后一行。
-- 本地化的 `description` 与 `smartDescription` 不再手写这些自动关键词，否则游戏会显示两次。
+- 卡牌本地化的 `description` 不再手写这些自动关键词，否则游戏会显示两次。
 - `保留`、`虚无`、`消耗`同时存在两个或更多时，由 MGR 公共显示层尽量合并到同一末行，以减少纵向占用；升级前后遵循同一规则。
 - 其他多个关键词的最终渲染顺序服从原版关键词系统；不要在单卡文本中另造一套顺序。
 - 升级会获得或移除关键词时，只修改代码中的关键词，不使用 `IfUpgraded` 再显示一遍。
@@ -107,7 +107,9 @@
 - 数字变量名必须与 C# 中的 `DynamicVar` 键完全一致。例如代码是 `PowerVar<VulnerablePower>`，文本必须使用 `{VulnerablePower:diff()}`，不能简写为 `{Vulnerable:diff()}`。
 - 可以由变量表达的升级数值统一使用 `{变量:diff()}`，不要在正文里另写一遍升级说明。
 - 只有升级会改写句式或增删实际动作时，才使用 `{IfUpgraded:show:升级文本|基础文本}`；原生关键词的增删由代码负责。
-- `description` 表示基础预览，`smartDescription` 负责升级或战斗内条件文本；两者的信息顺序必须一致。
+- 当前《杀戮尖塔 2》的 `CardModel` 在普通查看、战斗牌堆查看和升级预览中都读取 `description`。升级分支与战斗内动态数字也必须写在 `description` 中，并由 `IfUpgraded`、动态变量和战斗上下文完成格式化。
+- `CardModel` 不读取卡牌条目的 `smartDescription`。MGR 卡牌本地化已移除该旧模板字段，新增或修改卡牌时不得再次添加。
+- `smartDescription` 只在明确支持它的模型中使用。典型例子是运行中的能力（Power）悬浮说明：可变实例使用 `smartDescription` 注入层数、持有者、目标和战斗变量；静态、不可变或显式使用普通说明的场景读取 `description`。
 - 选择提示只说明玩家正在选择什么，不重复整张卡的效果。
 
 ## 6. 去重检查
@@ -125,6 +127,6 @@
 
 ## 7. 实施约定
 
-- 每次新增或修改卡牌时，代码、中文 `description`、中文 `smartDescription` 和 `docs/MGR_content_registry.json` 必须一起检查。
+- 每次新增或修改卡牌时，代码、中文 `description` 和 `docs/MGR_content_registry.json` 必须一起检查；卡牌的 `smartDescription` 不再作为维护项。
 - 暂时停用的卡牌设为 `status: 0` 并取消游戏注册；不再为其维护活动图片。
 - 本规范只约束卡牌文字与显示顺序，不得借格式调整改动演奏队列的战斗内位置、动画、悬停或结算链路。

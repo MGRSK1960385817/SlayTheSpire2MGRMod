@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -12,6 +13,13 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "yaaaaaa")]
 public sealed class Yaaaaaa : MgrCard
 {
+    public override string Title => IsUpgraded
+        ? new LocString(
+            "cards",
+            "SLAY_THE_SPIRE2_MGR_MOD_CARD_YAAAAAA.upgradedTitle")
+            .GetFormattedText()
+        : base.Title;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(7m, ValueProp.Move),
@@ -47,6 +55,6 @@ public sealed class Yaaaaaa : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars.Cards.UpgradeValueBy(2m);
     }
 }
