@@ -50,7 +50,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             if (player.Character is not MgrCharacter)
                 continue;
 
-            if (player.GetRelic<Fumo>() is { IsUsedUp: false } fumo)
+            if (player.GetRelic<MgrFumo>() is { IsUsedUp: false } fumo)
             {
                 fumo.Flash();
                 await PowerCmd.Apply<FortePower>(

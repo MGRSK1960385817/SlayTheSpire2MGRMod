@@ -1,13 +1,13 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Characters;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards.Choices;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "flawed_girl_1")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "flawed_girl_1")]
 public sealed class FlawedGirl1 : MgrCard, INoteSlotChoice
 {
     public FlawedGirl1() : base(

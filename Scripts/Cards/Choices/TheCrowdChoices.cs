@@ -1,6 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using SlayTheSpire2MGRMod.Characters;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -26,14 +26,14 @@ public abstract class TheCrowdChoice(int noteCount) : MgrCard(
     }
 }
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd_choice_0")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "the_crowd_choice_0")]
 public sealed class TheCrowdChoice0() : TheCrowdChoice(0);
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd_choice_1")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "the_crowd_choice_1")]
 public sealed class TheCrowdChoice1() : TheCrowdChoice(1);
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd_choice_2")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "the_crowd_choice_2")]
 public sealed class TheCrowdChoice2() : TheCrowdChoice(2);
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "the_crowd_choice_3")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "the_crowd_choice_3")]
 public sealed class TheCrowdChoice3() : TheCrowdChoice(3);

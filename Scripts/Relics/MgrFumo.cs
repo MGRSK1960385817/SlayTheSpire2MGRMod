@@ -5,13 +5,13 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "fumo")]
-public sealed class Fumo : ModRelicTemplate
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "mgr_fumo")]
+public sealed class MgrFumo : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/Fumo.png",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/Fumo_outline.png",
-        BigIconPath: $"{Entry.ResPath}/images/relics/Fumo.png");
+        IconPath: $"{Entry.ResPath}/images/relics/MgrFumo.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/MgrFumo_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/MgrFumo.png");
 }

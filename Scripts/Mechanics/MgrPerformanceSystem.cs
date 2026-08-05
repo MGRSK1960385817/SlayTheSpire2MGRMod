@@ -333,6 +333,9 @@ public static class MgrPerformanceSystem
                         willExhaust));
             }
 
+            if (player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
+                await blackGoldRecord.OnPerformanceEnded(player);
+
             await MgrPerformanceVisuals.PlayExitAnimation(
                 player,
                 entry,
@@ -361,8 +364,8 @@ public static class MgrPerformanceSystem
 
         int bonusPerformances = 0;
         if (!cardPlay.IsAutoPlay &&
-            card.Owner.GetRelic<EncoreStage>() is { } encoreStage &&
-            encoreStage.TryGrantPerformanceBonus())
+            card.Owner.GetRelic<MiniStage>() is { } miniStage &&
+            miniStage.TryGrantPerformanceBonus())
         {
             bonusPerformances = 1;
         }
@@ -491,6 +494,9 @@ public static class MgrPerformanceSystem
                             entry.InitialPerformanceTurns,
                             willExhaust));
                 }
+
+                if (!combatEnded && player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
+                    await blackGoldRecord.OnPerformanceEnded(player);
 
                 // The final autoplay has already used the engine's normal result
                 // routing. Because its native pile VFX was skipped, the rack supplies

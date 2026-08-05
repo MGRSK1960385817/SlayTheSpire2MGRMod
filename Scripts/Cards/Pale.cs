@@ -2,17 +2,22 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using SlayTheSpire2MGRMod.Characters;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrTokenCardPool), StableEntryStem = "pale")]
+[RegisterCard(typeof(TokenCardPool), StableEntryStem = "pale")]
 public sealed class Pale : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(0)];
 
-    public Pale() : base(0, CardType.Status, CardRarity.Token, TargetType.Self)
+    public Pale() : base(
+        0,
+        CardType.Status,
+        CardRarity.Token,
+        TargetType.Self,
+        showInCardLibrary: false)
     {
     }
 

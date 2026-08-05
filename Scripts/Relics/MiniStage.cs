@@ -7,17 +7,17 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "encore_stage")]
-public sealed class EncoreStage : ModRelicTemplate
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "mini_stage")]
+public sealed class MiniStage : ModRelicTemplate
 {
     private bool _grantedBonusThisTurn;
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/EncoreStage.png",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/EncoreStage_outline.png",
-        BigIconPath: $"{Entry.ResPath}/images/relics/EncoreStage.png");
+        IconPath: $"{Entry.ResPath}/images/relics/MiniStage.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/MiniStage_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/MiniStage.png");
 
     public override Task BeforeCombatStart()
     {
@@ -35,10 +35,6 @@ public sealed class EncoreStage : ModRelicTemplate
         return Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Called only by the centralized queue entry point after it has confirmed
-    /// that the resolved play is a manual Performance card play.
-    /// </summary>
     public bool TryGrantPerformanceBonus()
     {
         if (_grantedBonusThisTurn)

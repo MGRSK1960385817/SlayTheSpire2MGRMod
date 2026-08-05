@@ -27,12 +27,6 @@ public static class MgrNoteEffects
             chordTriggersBefore >=
             MgrVisualTuning.Notes.FastChordCommandThreshold;
 
-        if (player.GetRelic<GoldenRecord>() is { } goldenRecord)
-        {
-            goldenRecord.Flash();
-            await PlayerCmd.GainGold(1m, player);
-        }
-
         if (player.GetRelic<GuitarPick>() is { } guitarPick)
         {
             guitarPick.Flash();

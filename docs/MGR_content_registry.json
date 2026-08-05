@@ -666,8 +666,8 @@
       "summary": "由欧洛巴斯之触将迷你麦克风精炼获得；每回合开始时，依次生成攻击、技能和能力音符各1个。"
     },
     {
-      "codeName": "Fumo",
-      "name": "Fumo",
+      "codeName": "MgrFumo",
+      "name": "MGR抚摸",
       "status": 1,
       "rarity": "Rare",
       "summary": "战斗开始时，获得 1 层强音。"
@@ -680,8 +680,8 @@
       "summary": "回合结束时获得2点格挡；生命不高于50%时改为 4 点。"
     },
     {
-      "codeName": "EncoreStage",
-      "name": "安可舞台",
+      "codeName": "MiniStage",
+      "name": "迷你舞台",
       "status": 1,
       "rarity": "Rare",
       "summary": "每回合手动打出的第一张演奏牌，演奏次数增加1。"
@@ -701,11 +701,11 @@
       "summary": "每第7次和弦将触发两次（参考双截棍的实现）"
     },
     {
-      "codeName": "GoldenRecord",
-      "name": "镀金唱片",
+      "codeName": "BlackGoldRecord",
+      "name": "黑金唱片",
       "status": 1,
-      "rarity": "Rare",
-      "summary": "每当和弦触发，获得1金币。"
+      "rarity": "Shop",
+      "summary": "每当一张演奏牌结束时，获得1金币。"
     },
     {
       "codeName": "GuitarPick",
@@ -713,6 +713,27 @@
       "status": 1,
       "rarity": "Common",
       "summary": "每当触发和弦，获得1点格挡。"
+    },
+    {
+      "codeName": "PaleFlower",
+      "name": "苍白花",
+      "status": 1,
+      "rarity": "Uncommon",
+      "summary": "战斗开始时，将1张苍白置入手牌。"
+    },
+    {
+      "codeName": "Maguroyaki",
+      "name": "鮪鱼烧",
+      "status": 1,
+      "rarity": "Shop",
+      "summary": "每当你在休息处锻造时，回复最大生命的15%。"
+    },
+    {
+      "codeName": "LittleAngel",
+      "name": "小天使",
+      "status": 1,
+      "rarity": "Rare",
+      "summary": "回合开始时，若初始抽牌中抽到的技能牌少于2张，抽3张牌。"
     }
   ]
 }

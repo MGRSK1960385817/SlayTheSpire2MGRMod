@@ -110,5 +110,5 @@ MGR 独有的星空卡通过 `MgrCard.IsStarryCard` 覆盖为 Starry 音符。�
 - 蓝卡：`CardRarity.Uncommon`，中等稀有度。
 - 金卡：`CardRarity.Rare`，最高稀有度。
 
-二选一效果使用塔二 `CardSelectCmd.FromSimpleGrid`。选项本身注册为隐藏的 `Token` 卡并放入
-`MgrTokenCardPool`，只在选择界面临时创建，结算后从战斗状态清理，不进入正式卡牌奖励。
+二选一效果使用塔二 `CardSelectCmd.FromSimpleGrid`。选项牌及其他衍生牌统一注册为隐藏的
+`CardRarity.Token`，并放入塔二原生 `TokenCardPool`；它们不进入 MGR 正式卡池或普通卡牌奖励。
