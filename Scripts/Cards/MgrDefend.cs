@@ -17,7 +17,7 @@ public sealed class MgrDefend : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move)
+        new BlockVar(4m, ValueProp.Move)
     ];
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };

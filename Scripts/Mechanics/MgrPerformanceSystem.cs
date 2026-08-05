@@ -18,12 +18,16 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public static class MgrPerformanceSystem
 {
     private static readonly HashSet<CardModel> CompletingCards = [];
+    private static readonly HashSet<MgrPerformanceEntry> ResolvingEntries = [];
     private static readonly Dictionary<CardModel, int> PendingEnqueueBonuses = [];
+    private static readonly Dictionary<Player, int> ActivePassDepths = [];
 
     public static void ClearAll()
     {
         CompletingCards.Clear();
+        ResolvingEntries.Clear();
         PendingEnqueueBonuses.Clear();
+        ActivePassDepths.Clear();
         MgrPerformanceVisuals.ClearAll();
         MgrPerformanceStateStore.Clear();
         MgrPerformanceModifierState.Clear();
@@ -211,7 +215,7 @@ public static class MgrPerformanceSystem
             return;
         }
 
-        MgrPerformanceVisuals.SetPerforming(player, true);
+        BeginPerformancePass(player);
         try
         {
             int animationIndex = 0;
@@ -220,7 +224,7 @@ public static class MgrPerformanceSystem
                 if (ShouldStopPerformanceSequence(player))
                     break;
 
-                if (!state.Entries.Contains(entry))
+                if (!state.Entries.Contains(entry) || ResolvingEntries.Contains(entry))
                     continue;
 
                 float durationScale = GetSequentialAnimationDurationScale(animationIndex);
@@ -229,6 +233,7 @@ public static class MgrPerformanceSystem
                     entry,
                     consumesRemaining: false,
                     durationScale: durationScale);
+                ResolvingEntries.Add(entry);
                 try
                 {
                     await CardCmd.AutoPlay(
@@ -239,6 +244,7 @@ public static class MgrPerformanceSystem
                 }
                 finally
                 {
+                    ResolvingEntries.Remove(entry);
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
                         entry,
@@ -257,7 +263,7 @@ public static class MgrPerformanceSystem
         }
         finally
         {
-            MgrPerformanceVisuals.SetPerforming(player, false);
+            EndPerformancePass(player);
         }
 
         MgrPerformanceVisuals.Show(player, state.Entries);
@@ -372,6 +378,7 @@ public static class MgrPerformanceSystem
         if (entry is null)
             return;
 
+        state.RecordPerformanceCardPlayed();
         int queuedBeforeThisTurn = state.RecordPlayedEntryQueuedThisTurn();
 
         // The normal play that entered the sequence does not consume a turn.
@@ -401,7 +408,7 @@ public static class MgrPerformanceSystem
         }
 
         MgrPerformanceEntry[] turnOrder = state.Entries.ToArray();
-        MgrPerformanceVisuals.SetPerforming(player, true);
+        BeginPerformancePass(player);
         try
         {
             int animationIndex = 0;
@@ -410,7 +417,10 @@ public static class MgrPerformanceSystem
                 if (ShouldStopPerformanceSequence(player))
                     break;
 
-                if (!state.Entries.Contains(entry))
+                // A queued card may itself request an immediate Performance pass.
+                // Keep that nested pass useful for every other queued card, but do
+                // not let it re-enter this card before its current play has returned.
+                if (!state.Entries.Contains(entry) || ResolvingEntries.Contains(entry))
                     continue;
 
                 float durationScale = GetSequentialAnimationDurationScale(animationIndex);
@@ -433,6 +443,7 @@ public static class MgrPerformanceSystem
                 if (isFinalPerformance)
                     CompletingCards.Add(entry.Card);
 
+                ResolvingEntries.Add(entry);
                 try
                 {
                     await CardCmd.AutoPlay(
@@ -443,6 +454,7 @@ public static class MgrPerformanceSystem
                 }
                 finally
                 {
+                    ResolvingEntries.Remove(entry);
                     CompletingCards.Remove(entry.Card);
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
@@ -507,8 +519,33 @@ public static class MgrPerformanceSystem
         }
         finally
         {
-            MgrPerformanceVisuals.SetPerforming(player, false);
+            EndPerformancePass(player);
         }
+    }
+
+    /// <summary>
+    /// Nested Performance passes share one visual active period. Without the
+    /// depth counter, an inner Adios pass would switch the staff back to idle
+    /// while its outer pass was still resolving.
+    /// </summary>
+    private static void BeginPerformancePass(Player player)
+    {
+        int depth = ActivePassDepths.GetValueOrDefault(player);
+        ActivePassDepths[player] = checked(depth + 1);
+        if (depth == 0)
+            MgrPerformanceVisuals.SetPerforming(player, true);
+    }
+
+    private static void EndPerformancePass(Player player)
+    {
+        if (!ActivePassDepths.TryGetValue(player, out int depth) || depth <= 1)
+        {
+            ActivePassDepths.Remove(player);
+            MgrPerformanceVisuals.SetPerforming(player, false);
+            return;
+        }
+
+        ActivePassDepths[player] = depth - 1;
     }
 
     private static float GetSequentialAnimationDurationScale(int animationIndex) =>

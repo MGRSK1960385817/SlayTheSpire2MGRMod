@@ -8,6 +8,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "unison")]
 public sealed class Unison : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -15,7 +16,7 @@ public sealed class Unison : MgrCard
         new IntVar("Notes", 1m)
     ];
 
-    public Unison() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
+    public Unison() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -27,8 +28,5 @@ public sealed class Unison : MgrCard
             Owner.Creature,
             this);
 
-    protected override void OnUpgrade()
-    {
-        AddKeyword(CardKeyword.Innate);
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

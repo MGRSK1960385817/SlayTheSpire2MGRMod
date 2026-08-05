@@ -1,11 +1,13 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/Mgr_character.png" id="1_character"]
+[ext_resource type="Texture2D" path="res://SlayTheSpire2MGRMod/images/characters/MGR_lying.png" id="1_character"]
 
 [node name="MgrCharacterRestSite" type="Node2D"]
 
 [node name="Visuals" type="Sprite2D" parent="."]
-position = Vector2(0, -250)
+position = Vector2(60, -175)
+scale = Vector2(0.60, 0.60)
+modulate = Color(0.9, 0.9, 0.9, 0.95)
 texture = ExtResource("1_character")
 
 [node name="ControlRoot" type="Control" parent="."]

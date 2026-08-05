@@ -26,6 +26,7 @@ public static class MgrNoteCardFactory
 
         CardModel[] candidates = GetCandidates(player, kind)
             .Where(card => card.CanBeGeneratedInCombat)
+            .Where(card => !MgrCurseUtils.IsExcludedRandomCurse(card))
             .Where(card => ResolvesTo(card, kind))
             .ToArray();
         if (candidates.Length == 0)
@@ -33,7 +34,8 @@ public static class MgrNoteCardFactory
 
         CardModel? canonical = MgrWeightedCardRandom.PickOne(
             candidates,
-            player.RunState.Rng.CombatCardGeneration);
+            player.RunState.Rng.CombatCardGeneration,
+            MgrCardWeightProfile.GentleCompensation);
         if (canonical is null)
             return null;
 

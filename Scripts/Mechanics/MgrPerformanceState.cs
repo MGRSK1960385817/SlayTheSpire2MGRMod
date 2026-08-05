@@ -13,6 +13,7 @@ public sealed class MgrPerformanceState
 
     public IReadOnlyList<MgrPerformanceEntry> Entries => _entries;
     public int PlayedEntriesQueuedThisTurn { get; private set; }
+    public int PerformanceCardsPlayedThisCombat { get; private set; }
 
     public bool Contains(CardModel card) => _entries.Any(entry => ReferenceEquals(entry.Card, card));
 
@@ -39,9 +40,17 @@ public sealed class MgrPerformanceState
         return previous;
     }
 
+    public void RecordPerformanceCardPlayed() =>
+        PerformanceCardsPlayedThisCombat = checked(PerformanceCardsPlayedThisCombat + 1);
+
     public void ResetTurnCounters() => PlayedEntriesQueuedThisTurn = 0;
 
-    public void Clear() => _entries.Clear();
+    public void Clear()
+    {
+        _entries.Clear();
+        PlayedEntriesQueuedThisTurn = 0;
+        PerformanceCardsPlayedThisCombat = 0;
+    }
 }
 
 public static class MgrPerformanceStateStore

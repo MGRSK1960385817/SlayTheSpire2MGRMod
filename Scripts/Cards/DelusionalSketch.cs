@@ -35,7 +35,8 @@ public sealed class DelusionalSketch : MgrCard
                 Owner,
                 pool,
                 count: 3,
-                Owner.RunState.Rng.CombatCardGeneration);
+                Owner.RunState.Rng.CombatCardGeneration,
+                MgrCardWeightProfile.GentleCompensation);
 
         if (IsUpgraded)
         {

@@ -11,7 +11,7 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class Prismatic : MgrCard
 {
     public Prismatic() : base(
-        2,
+        3,
         CardType.Power,
         CardRarity.Rare,
         TargetType.Self)

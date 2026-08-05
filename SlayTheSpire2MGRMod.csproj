@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;SlayTheSpire2MGRMod/**" />
+    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;docs/**;SlayTheSpire2MGRMod/**" />
     <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;SlayTheSpire2MGRMod/**" />
     <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**" />
     <AdditionalFiles Include="SlayTheSpire2MGRMod/localization/**/*.json" />

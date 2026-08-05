@@ -41,6 +41,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
     private float _triggerPulse;
     private float _animationTime;
     private bool _isPerforming;
+    private int _performanceCardsPlayedThisCombat;
     private MgrPerformanceStaffMarkerClipVisual? _markerClip;
     private Node2D? _playheadRoot;
     private Tween? _playheadTween;
@@ -235,6 +236,19 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             ResetSpawnTimer();
         }
         QueueRedraw();
+    }
+
+    public void SetPerformanceCardsPlayedThisCombat(int cardsPlayed)
+    {
+        int normalized = Math.Max(0, cardsPlayed);
+        if (_performanceCardsPlayedThisCombat == normalized)
+            return;
+
+        float oldMultiplier = GetCombatSpawnFrequencyMultiplier();
+        _performanceCardsPlayedThisCombat = normalized;
+        float newMultiplier = GetCombatSpawnFrequencyMultiplier();
+        if (_spawnSeconds > 0.0 && newMultiplier > oldMultiplier)
+            _spawnSeconds *= oldMultiplier / newMultiplier;
     }
 
     public void Pulse()
@@ -816,12 +830,29 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             (float)MgrVisualTuning.Performances.StaffMarkerSpawnMinSeconds;
         float maximum =
             (float)MgrVisualTuning.Performances.StaffMarkerSpawnMaxSeconds;
-        _spawnSeconds = RandomRange(minimum, maximum);
+        _spawnSeconds = RandomRange(minimum, maximum) /
+            GetCombatSpawnFrequencyMultiplier();
     }
 
-    private int GetMaximumMarkerCount() => _isPerforming
-        ? MgrVisualTuning.Performances.StaffPerformingMaximumMarkers
-        : MgrVisualTuning.Performances.StaffIdleMaximumMarkers;
+    private int GetMaximumMarkerCount()
+    {
+        int baseMaximum = _isPerforming
+            ? MgrVisualTuning.Performances.StaffPerformingMaximumMarkers
+            : MgrVisualTuning.Performances.StaffIdleMaximumMarkers;
+        int additional = Math.Min(
+            MgrVisualTuning.Performances.StaffMaximumAdditionalMarkersFromCombat,
+            _performanceCardsPlayedThisCombat /
+                Math.Max(
+                    1,
+                    MgrVisualTuning.Performances.StaffPerformanceCardsPerAdditionalMarker));
+        return baseMaximum + additional;
+    }
+
+    private float GetCombatSpawnFrequencyMultiplier() =>
+        MathF.Min(
+            MgrVisualTuning.Performances.StaffMaximumCombatSpawnFrequencyMultiplier,
+            1f + _performanceCardsPlayedThisCombat *
+                MgrVisualTuning.Performances.StaffSpawnFrequencyIncreasePerPerformanceCard);
 
     private static double GetSpawnRetrySeconds() =>
         MgrVisualTuning.Performances.StaffMarkerSpawnRetrySeconds;

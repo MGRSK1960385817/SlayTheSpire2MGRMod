@@ -19,7 +19,11 @@ public sealed class NoteMagic : MgrCard
         new BlockVar(5m, ValueProp.Move)
     ];
 
-    public NoteMagic() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+    public NoteMagic() : base(
+        1,
+        CardType.Skill,
+        CardRarity.Common,
+        TargetType.Self)
     {
     }
 

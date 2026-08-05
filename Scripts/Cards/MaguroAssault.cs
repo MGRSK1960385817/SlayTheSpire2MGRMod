@@ -61,7 +61,6 @@ public sealed class MaguroAssault : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.CalculationBase.UpgradeValueBy(2m);
         DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 }

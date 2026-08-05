@@ -7,6 +7,7 @@ namespace SlayTheSpire2MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "mini_microphone")]
 [RegisterCharacterStarterRelic(typeof(MgrCharacter), Order = 0)]
+[RegisterTouchOfOrobasRefinement(typeof(PerpetualMicrophone))]
 public sealed class MiniMicrophone : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Starter;

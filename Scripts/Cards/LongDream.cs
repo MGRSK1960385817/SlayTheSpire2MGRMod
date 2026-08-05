@@ -41,26 +41,16 @@ public sealed class LongDream : MgrCard
             .Where(creature => creature.IsAlive)
             .ToArray();
         decimal amount = DynamicVars["StrengthLoss"].BaseValue;
-        await PowerCmd.Apply<StrengthPower>(
-            choiceContext,
-            targets,
-            -amount,
-            Owner.Creature,
-            this);
         await PowerCmd.Apply<LongDreamPower>(
             choiceContext,
-            Owner.Creature,
+            targets,
             amount,
             Owner.Creature,
             this);
-        Owner.Creature.Powers.OfType<LongDreamPower>()
-            .FirstOrDefault()
-            ?.RecordLoss(targets, amount);
-
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["StrengthLoss"].UpgradeValueBy(2m);
+        DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 }

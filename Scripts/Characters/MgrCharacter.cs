@@ -27,6 +27,17 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
 
     public override CharacterAssetProfile AssetProfile => MgrCharacterAssets.Profile;
 
+    // Multiplayer/remote-targeting hand poses. These use Tower 2's native
+    // character-arm UI and therefore need no custom scene nodes.
+    public override string CustomArmPointingTexturePath =>
+        $"{ImageRoot}/hand/MGR_hand_point.png";
+    public override string CustomArmRockTexturePath =>
+        $"{ImageRoot}/hand/MGR_hand_rock.png";
+    public override string CustomArmPaperTexturePath =>
+        $"{ImageRoot}/hand/MGR_hand_paper.png";
+    public override string CustomArmScissorsTexturePath =>
+        $"{ImageRoot}/hand/MGR_hand_scissors.png";
+
     // Development fallback only. It prevents missing non-MGR assets from blocking the first load.
     public override string? PlaceholderCharacterId => "ironclad";
     public override bool RequiresEpochAndTimeline => false;

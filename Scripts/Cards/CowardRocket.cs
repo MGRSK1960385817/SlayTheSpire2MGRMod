@@ -25,5 +25,5 @@ public sealed class CowardRocket : MgrCard
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(2m);
 }

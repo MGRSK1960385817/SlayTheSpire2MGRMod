@@ -1,7 +1,6 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -11,12 +10,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "satellite_girl")]
 public sealed class SatelliteGirl : MgrCard
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new IntVar("BlockPerChord", 1m)
-    ];
+    public override bool IsStarryCard => IsUpgraded;
 
-    public SatelliteGirl() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public SatelliteGirl() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -24,12 +20,11 @@ public sealed class SatelliteGirl : MgrCard
         PowerCmd.Apply<SatelliteGirlPower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars["BlockPerChord"].BaseValue,
+            1m,
             Owner.Creature,
             this);
 
     protected override void OnUpgrade()
     {
-        DynamicVars["BlockPerChord"].UpgradeValueBy(1m);
     }
 }

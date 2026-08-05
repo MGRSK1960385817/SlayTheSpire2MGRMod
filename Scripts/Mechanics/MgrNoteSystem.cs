@@ -169,9 +169,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, 100);
         NoteKind kind = roll switch
         {
-            < 35 => NoteKind.Attack,
-            < 70 => NoteKind.Skill,
-            < 78 => NoteKind.Status,
+            < 37 => NoteKind.Attack,
+            < 74 => NoteKind.Skill,
+            < 81 => NoteKind.Status,
             < 95 => NoteKind.Power,
             _ => NoteKind.Curse
         };
@@ -274,6 +274,41 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     }
 
     /// <summary>
+    /// Copies a snapshot of every currently slotted note through the ordinary
+    /// channeling path. Taking the snapshot first is important: copied notes may
+    /// complete a chord, but notes created during that resolution must not be
+    /// appended to this same copy operation.
+    /// </summary>
+    public static async Task<int> CopyAllNotes(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        int copySets = 1)
+    {
+        if (copySets <= 0)
+            return 0;
+
+        NoteKind[] snapshot = MgrCombatStateStore.For(player)
+            .Phrase
+            .Notes
+            .Select(note => note.Kind)
+            .ToArray();
+        if (snapshot.Length == 0)
+            return 0;
+
+        int copied = 0;
+        for (int set = 0; set < copySets; set++)
+        {
+            foreach (NoteKind kind in snapshot)
+            {
+                if (await ChannelNote(choiceContext, player, kind))
+                    copied++;
+            }
+        }
+
+        return copied;
+    }
+
+    /// <summary>
     /// Replaces every currently slotted note without treating the replacement as
     /// newly generated notes and without resolving a chord. This is deliberately
     /// separate from <see cref="ChannelNote"/> so replacement effects are not
@@ -305,7 +340,6 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// STS1 Starting: the phrase has no notes before the current card generates one.
     /// </summary>
     public static bool IsStarting(Player player) =>
-        player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ||
         MgrCombatStateStore.For(player).Phrase.IsStarting;
 
     /// <summary>
@@ -313,7 +347,6 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// This stays correct when cards later increase or decrease slot capacity.
     /// </summary>
     public static bool IsEnding(Player player) =>
-        player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ||
         MgrCombatStateStore.For(player).Phrase.IsEnding;
 
     /// <summary>

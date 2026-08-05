@@ -33,6 +33,17 @@ public static class MgrNoteEffects
             await PlayerCmd.GainGold(1m, player);
         }
 
+        if (player.GetRelic<GuitarPick>() is { } guitarPick)
+        {
+            guitarPick.Flash();
+            await CreatureCmd.GainBlock(
+                player.Creature,
+                GuitarPick.BlockPerChord,
+                ValueProp.Unpowered,
+                cardPlay: null,
+                fast: fastPresentation);
+        }
+
         if (player.Creature.GetPower<PrismaticPower>() is { } synthesizer)
             await synthesizer.OnChordTriggered(choiceContext, notes);
 
@@ -47,16 +58,6 @@ public static class MgrNoteEffects
                 fastPresentation);
         }
 
-        decimal folkRhymesBlock = player.Creature.GetPowerAmount<SatelliteGirlPower>();
-        if (folkRhymesBlock > 0m)
-        {
-            await CreatureCmd.GainBlock(
-                player.Creature,
-                folkRhymesBlock,
-                ValueProp.Unpowered,
-                cardPlay: null,
-                fast: fastPresentation);
-        }
     }
 
     public static async Task Trigger(

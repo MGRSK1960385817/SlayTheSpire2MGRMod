@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -15,8 +16,25 @@ public sealed class RainbowScale : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(3m, ValueProp.Move),
-        new CardsVar(1)
+        new CalculationBaseVar(0m),
+        new CalculationExtraVar(1m),
+        new BlockVar(2m, ValueProp.Move),
+        new CardsVar(1),
+        new CalculatedVar("TotalRepetitions").WithMultiplier(
+            static (card, _) =>
+            {
+                if (card.CombatState is null ||
+                    !MgrCombatStateStore.TryGet(card.Owner, out MgrCombatState state))
+                {
+                    return 0m;
+                }
+
+                int kinds = state.Phrase.Notes
+                    .Select(note => note.Kind)
+                    .Distinct()
+                    .Count();
+                return 1m + kinds;
+            })
     ];
 
     public RainbowScale() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)

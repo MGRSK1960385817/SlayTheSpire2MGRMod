@@ -72,6 +72,19 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                     ? combinedText + __result[firstLineBreak..]
                     : combinedText;
             }
+            else if (__instance is LightSong lightSong)
+            {
+                int totalBonus = checked(amount + (lightSong.IsUpgraded ? 1 : 0));
+                var combinedLine = new LocString(
+                    "cards",
+                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIGHT_SONG_PERFORMANCE_BONUS");
+                combinedLine.Add("Times", totalBonus);
+                string combinedText = combinedLine.GetFormattedText();
+                int firstLineBreak = __result.IndexOf('\n');
+                __result = firstLineBreak >= 0
+                    ? combinedText + __result[firstLineBreak..]
+                    : combinedText;
+            }
             else
             {
                 var line = new LocString(
@@ -113,6 +126,8 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
+            if (mgrCard is LightSong)
+                CompactLightSongIdentityLine(ref __result);
         }
 
         if (__instance is Pale)
@@ -146,7 +161,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         MgrCard card,
         ref string description)
     {
-        if (CompactTerminalKeywords.Count(card.Keywords.Contains) < 2)
+        if (!CompactTerminalKeywords.Any(card.Keywords.Contains))
             return;
 
         var keywordTexts = CompactTerminalKeywords
@@ -154,7 +169,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             .Select(keyword => keyword.GetCardText().Trim())
             .Where(text => !string.IsNullOrWhiteSpace(text))
             .ToHashSet(StringComparer.Ordinal);
-        if (keywordTexts.Count < 2)
+        if (keywordTexts.Count == 0)
             return;
 
         List<string> lines = description.Split('\n').ToList();
@@ -162,17 +177,37 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             .Select((line, index) => (Text: line.Trim(), Index: index))
             .Where(item => keywordTexts.Contains(item.Text))
             .ToList();
-        if (matchedLines.Count < 2)
+        if (matchedLines.Count == 0)
             return;
 
-        int insertAt = matchedLines.Min(item => item.Index);
         string compactLine = string.Join(
             " ",
             matchedLines.OrderBy(item => item.Index).Select(item => item.Text));
         foreach (int index in matchedLines.Select(item => item.Index).OrderDescending())
             lines.RemoveAt(index);
 
-        lines.Insert(Math.Min(insertAt, lines.Count), compactLine);
+        // Retain/Ethereal/Exhaust/Innate are terminal presentation keywords.
+        // Tower 2 may place a lone keyword before the rules text while an
+        // upgraded card with two keywords is compacted elsewhere. Always move
+        // both the one-keyword and multi-keyword forms to the final line so an
+        // upgrade cannot unexpectedly invert the card-description layout.
+        lines.Add(compactLine);
+        description = string.Join('\n', lines);
+    }
+
+    private static void CompactLightSongIdentityLine(ref string description)
+    {
+        string exhaustText = CardKeyword.Exhaust.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(exhaustText))
+            return;
+
+        List<string> lines = description.Split('\n').ToList();
+        int exhaustIndex = lines.FindIndex(line => line.Trim() == exhaustText);
+        if (lines.Count == 0 || exhaustIndex < 0)
+            return;
+
+        lines.RemoveAt(exhaustIndex);
+        lines[0] = $"{lines[0].Trim()} {exhaustText}";
         description = string.Join('\n', lines);
     }
 

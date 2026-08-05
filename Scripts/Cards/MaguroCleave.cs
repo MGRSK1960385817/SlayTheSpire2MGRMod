@@ -16,7 +16,7 @@ public sealed class MaguroCleave : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(5m, ValueProp.Move),
+        new DamageVar(6m, ValueProp.Move),
         new IntVar("BonusPerChord", 3m)
     ];
 

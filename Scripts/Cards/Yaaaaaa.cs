@@ -13,16 +13,28 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "yaaaaaa")]
 public sealed class Yaaaaaa : MgrCard
 {
-    public override string Title => IsUpgraded
-        ? new LocString(
-            "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_YAAAAAA.upgradedTitle")
-            .GetFormattedText()
-        : base.Title;
+    public override int MaxUpgradeLevel => int.MaxValue;
+
+    public override string Title
+    {
+        get
+        {
+            string title = TitleLocString.GetFormattedText();
+            if (CurrentUpgradeLevel <= 0)
+                return title;
+
+            string suffix = new LocString(
+                "cards",
+                "SLAY_THE_SPIRE2_MGR_MOD_CARD_YAAAAAA.upgradeTitleSuffix")
+                .GetFormattedText();
+            return title + string.Concat(
+                Enumerable.Repeat(suffix, CurrentUpgradeLevel));
+        }
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(6m, ValueProp.Move),
         new CardsVar(3),
         new IntVar("RequiredCost", 1m)
     ];
@@ -55,6 +67,6 @@ public sealed class Yaaaaaa : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(2m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

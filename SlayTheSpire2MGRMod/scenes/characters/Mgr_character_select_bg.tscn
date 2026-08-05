@@ -30,6 +30,7 @@ stretch_mode = 6
 
 [node name="StarField" type="Control" parent="."]
 z_index = 1
+clip_contents = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -38,3 +39,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_stars")
+star_count = 34
+constellation_scale = 1.22
+constellation_link_alpha = 0.44
+meteor_count = 4
+ribbon_alpha = 0.08

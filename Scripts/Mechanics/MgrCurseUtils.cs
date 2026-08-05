@@ -12,6 +12,17 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 public static class MgrCurseUtils
 {
+    // These three vanilla curses are deliberately excluded from every random
+    // curse effect in MGR: Enthralled (执迷), Debt (债务), Bad Luck (霉运).
+    // Type names are used here so the rule remains centralized without tying
+    // this utility to the concrete vanilla card namespaces.
+    private static readonly HashSet<string> ExcludedRandomCurseTypeNames =
+    [
+        "Enthralled",
+        "Debt",
+        "BadLuck"
+    ];
+
     private static readonly PileType[] CountedCombatPiles =
     [
         PileType.Hand,
@@ -21,6 +32,13 @@ public static class MgrCurseUtils
         PileType.Play
     ];
 
+    public static bool IsExcludedRandomCurse(CardModel card)
+    {
+        ArgumentNullException.ThrowIfNull(card);
+        return card.Type == CardType.Curse &&
+            ExcludedRandomCurseTypeNames.Contains(card.GetType().Name);
+    }
+
     public static CardModel CreateRandomCurse(Player player)
     {
         ArgumentNullException.ThrowIfNull(player);
@@ -29,7 +47,10 @@ public static class MgrCurseUtils
 
         CardModel[] candidates = ModelDb.CardPool<CurseCardPool>()
             .AllCards
-            .Where(card => card.Type == CardType.Curse && card.CanBeGeneratedInCombat)
+            .Where(card =>
+                card.Type == CardType.Curse &&
+                card.CanBeGeneratedInCombat &&
+                !IsExcludedRandomCurse(card))
             .ToArray();
         if (candidates.Length == 0)
             throw new InvalidOperationException("The Tower-2 curse pool contains no generatable curses.");

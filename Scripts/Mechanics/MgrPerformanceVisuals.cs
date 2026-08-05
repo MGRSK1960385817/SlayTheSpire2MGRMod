@@ -25,7 +25,12 @@ public static class MgrPerformanceVisuals
     public static void Show(Player player, IReadOnlyList<MgrPerformanceEntry> entries)
     {
         PerformanceRack? rack = GetOrCreateRack(player);
-        rack?.Show(entries);
+        int cardsPlayed = MgrPerformanceStateStore.TryGet(
+            player,
+            out MgrPerformanceState state)
+                ? state.PerformanceCardsPlayedThisCombat
+                : 0;
+        rack?.Show(entries, cardsPlayed);
     }
 
     /// <summary>
@@ -209,12 +214,16 @@ public static class MgrPerformanceVisuals
             EnsureScreenVisibilitySubscriptions();
         }
 
-        public void Show(IReadOnlyList<MgrPerformanceEntry> entries)
+        public void Show(
+            IReadOnlyList<MgrPerformanceEntry> entries,
+            int performanceCardsPlayedThisCombat)
         {
             EnsureScreenVisibilitySubscriptions();
             // The staff is the permanent visual home of the queue and remains
             // visible even while no Performance cards are currently queued.
             _staff.SetActive(true);
+            _staff.SetPerformanceCardsPlayedThisCombat(
+                performanceCardsPlayedThisCombat);
 
             foreach (PerformanceCardView stale in _views
                          .Where(view => !entries.Any(

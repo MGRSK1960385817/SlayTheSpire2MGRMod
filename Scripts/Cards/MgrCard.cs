@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Scaffolding.Content;
 using SlayTheSpire2MGRMod.Mechanics;
-using SlayTheSpire2MGRMod.Powers;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
@@ -59,7 +58,7 @@ public abstract class MgrCard(
     /// <summary>
     /// Initial number of future turn starts on which this card will be performed.
     /// Remaining turns live in the combat-only performance entry so the printed
-    /// value and the mutable queue state cannot be confused.
+    /// value and the mutable queue state cannot be mixed up.
     /// </summary>
     public virtual int InitialPerformanceTurns => 0;
 
@@ -96,14 +95,11 @@ public abstract class MgrCard(
                 return false;
             }
 
-            bool alwaysPhrase =
-                Owner.Creature.GetPowerAmount<DoubleNotesPower>() > 0m;
-
             return
                 conditions.HasFlag(MgrGoldGlowCondition.PhraseStart) &&
-                (state.Phrase.IsStarting || alwaysPhrase) ||
+                state.Phrase.IsStarting ||
                 conditions.HasFlag(MgrGoldGlowCondition.PhraseEnd) &&
-                (state.Phrase.IsEnding || alwaysPhrase) ||
+                state.Phrase.IsEnding ||
                 conditions.HasFlag(MgrGoldGlowCondition.ChordResolvedThisTurn) &&
                 state.ChordsResolvedThisTurn > 0 ||
                 conditions.HasFlag(MgrGoldGlowCondition.NoChordResolvedThisTurn) &&
@@ -139,12 +135,11 @@ public abstract class MgrCard(
 
     /// <summary>
     /// Shared condition for effects whose final value is doubled by Ending.
-    /// Forte makes both phrase-edge conditions active, matching the hand glow
-    /// and the rest of MGR's Phrase Start / Phrase End handling.
+    /// Phrase-edge bonuses use the actual note-slot state.
     /// </summary>
     internal bool IsPhraseEndBonusActive =>
         CombatState is not null &&
-        (IsPhraseEnd || Owner.Creature.GetPowerAmount<DoubleNotesPower>() > 0m);
+        IsPhraseEnd;
 
     protected MgrCombatState NoteState => MgrCombatStateStore.For(Owner);
 

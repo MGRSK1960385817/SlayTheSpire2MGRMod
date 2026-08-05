@@ -3,8 +3,15 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
+using SlayTheSpire2MGRMod.Cards;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
+
+public enum MgrCardWeightProfile
+{
+    Standard,
+    GentleCompensation
+}
 
 /// <summary>
 /// Shared rarity-compensated random selection for MGR effects.
@@ -15,18 +22,19 @@ public static class MgrWeightedCardRandom
 {
     public static CardModel? PickOne(
         IReadOnlyList<CardModel> candidates,
-        Rng rng)
+        Rng rng,
+        MgrCardWeightProfile profile = MgrCardWeightProfile.Standard)
     {
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentNullException.ThrowIfNull(rng);
         if (candidates.Count == 0)
             return null;
 
-        int totalWeight = candidates.Sum(GetRarityWeight);
+        int totalWeight = candidates.Sum(card => GetWeight(card, profile));
         int roll = rng.NextInt(0, totalWeight);
         foreach (CardModel candidate in candidates)
         {
-            roll -= GetRarityWeight(candidate);
+            roll -= GetWeight(candidate, profile);
             if (roll < 0)
                 return candidate;
         }
@@ -39,7 +47,8 @@ public static class MgrWeightedCardRandom
         Player player,
         IEnumerable<CardModel> canonicalCandidates,
         int count,
-        Rng rng)
+        Rng rng,
+        MgrCardWeightProfile profile = MgrCardWeightProfile.Standard)
     {
         ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(canonicalCandidates);
@@ -54,7 +63,7 @@ public static class MgrWeightedCardRandom
 
         while (result.Count < count && available.Count > 0)
         {
-            CardModel? canonical = PickOne(available, rng);
+            CardModel? canonical = PickOne(available, rng, profile);
             if (canonical is null)
                 break;
 
@@ -65,10 +74,28 @@ public static class MgrWeightedCardRandom
         return result;
     }
 
-    private static int GetRarityWeight(CardModel card) => card.Rarity switch
+    private static int GetWeight(
+        CardModel card,
+        MgrCardWeightProfile profile)
     {
-        CardRarity.Uncommon => 3,
-        CardRarity.Rare => 4,
-        _ => 2
-    };
+        if (profile == MgrCardWeightProfile.GentleCompensation)
+        {
+            if (card is Regulus)
+                return 2;
+
+            return card.Rarity switch
+            {
+                CardRarity.Uncommon => 5,
+                CardRarity.Rare => 6,
+                _ => 4
+            };
+        }
+
+        return card.Rarity switch
+        {
+            CardRarity.Uncommon => 3,
+            CardRarity.Rare => 4,
+            _ => 2
+        };
+    }
 }

@@ -2,6 +2,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.title": "迷你麦克风",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.description": "战斗开始时，依次生成 1 个攻击、技能和能力音符。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.flavor": "准备好向高塔展示你的歌喉了么？",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.title": "永续麦克风",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.description": "每回合开始时，依次生成1个攻击、技能和能力音符。",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.flavor": "歌声不会结束，只会进入下一小节。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.title": "Fumo",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.description": "战斗开始时，获得 1 层强音。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.flavor": "好想要啊。",
@@ -20,7 +23,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.title": "镀金唱片",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.description": "每当触发和弦，获得2金币。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.flavor": "旋律会消散，版税不会。",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.title": "疑惑吊坠",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.description": "战斗开始时，将1张疑惑+置入手牌。",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.flavor": "打开它时，你总会忘记自己想看什么。"
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.title": "吉他拨片",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.description": "每当触发和弦，获得1点格挡。",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.flavor": "轻轻一拨，余音便替你挡下一击。"
 }

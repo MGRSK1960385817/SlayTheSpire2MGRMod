@@ -2,6 +2,9 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.title": "Mini Microphone",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.description": "At the start of combat, channel an Attack, Skill, and Power note in that order.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MINI_MICROPHONE.flavor": "Ready to show the Spire your voice?",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.title": "Perpetual Microphone",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.description": "At the start of each turn, generate an Attack, Skill, and Power Note in that order.",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PERPETUAL_MICROPHONE.flavor": "The song never ends. It only enters the next measure.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.title": "Fumo",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.description": "At the start of combat, gain 1 Forte.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_FUMO.flavor": "I really want one.",
@@ -20,7 +23,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.title": "Golden Record",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.description": "Whenever a Chord triggers, gain 2 Gold.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GOLDEN_RECORD.flavor": "Melodies fade. Royalties do not.",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.title": "Doubtful Locket",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.description": "At the start of combat, add 1 Doubtful+ to your hand.",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_CONFUSED_LOCKET.flavor": "Opening it makes you forget what you meant to see."
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.title": "Guitar Pick",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.description": "Whenever a Chord triggers, gain 1 Block.",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.flavor": "One gentle stroke, and the lingering note turns aside a blow."
 }

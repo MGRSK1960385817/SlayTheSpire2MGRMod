@@ -23,7 +23,8 @@ public sealed class PleasingGhosts : MgrCard
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [CardKeyword.Ethereal, CardKeyword.Exhaust];
+        base.CanonicalKeywords.Concat(
+            [CardKeyword.Ethereal, CardKeyword.Exhaust]);
 
     public override NoteKind? NoteOverride => NoteKind.Ghost;
 
@@ -39,6 +40,6 @@ public sealed class PleasingGhosts : MgrCard
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Exhaust);
+        RemoveKeyword(CardKeyword.Ethereal);
     }
 }

@@ -16,21 +16,19 @@ public sealed class ByakkoyaGirl : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(1),
         new IntVar("Performance", 2m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
-    public ByakkoyaGirl() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public ByakkoyaGirl() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
-
         if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
             return;
 

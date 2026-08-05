@@ -17,7 +17,8 @@ public sealed class DaybreakFrontline : MgrCard
         new IntVar("Performance", 3m)
     ];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 

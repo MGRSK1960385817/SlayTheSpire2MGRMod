@@ -38,16 +38,16 @@ public sealed class ParanoiaGirl : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
-            .Execute(choiceContext);
         await PowerCmd.Apply<VulnerablePower>(
             choiceContext,
             cardPlay.Target,
             DynamicVars["VulnerablePower"].BaseValue,
             Owner.Creature,
             this);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .FromCard(this, cardPlay)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
 
         if (Owner.Creature.CombatState is not { } combatState)
             return;
@@ -61,7 +61,7 @@ public sealed class ParanoiaGirl : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(1m);
         DynamicVars["VulnerablePower"].UpgradeValueBy(1m);
     }
 }

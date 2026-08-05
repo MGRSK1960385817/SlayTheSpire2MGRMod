@@ -1,5 +1,149 @@
 {
-  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.char": "I am ready.",
-  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Continue",
-  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.ancient": "[sine]Then... let me hear your new song...[/sine]"
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "[sine]Another familiar soul... Oh? You have brought many sounds with you...[/sine]",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient.sfx": "event:/sfx/npcs/neow/neow_welcome",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "They are Notes. They will not be noisy once they are in order.",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.next": "Continue",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient": "[sine]Then... let me hear how high you can carry them...[/sine]",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient.sfx": "event:/sfx/npcs/neow/neow_curious",
+
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "[sine]You have returned... but the song is different...[/sine]",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient.sfx": "event:/sfx/npcs/neow/neow_curious",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "Even a repeated melody can find a new direction.",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.next": "Continue",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-2.ancient": "[sine]Good... the Spire favors such persistence...[/sine]",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-2.ancient.sfx": "event:/sfx/npcs/neow/neow_sleepy",
+
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "[sine]The beat continues...[/sine]",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient.sfx": "event:/sfx/npcs/neow/neow_sleepy",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "NEOW.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "I can hear it.",
+
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Ha! Little singer, an entire trail of invisible notes follows you!",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient.sfx": "event:/sfx/npcs/darv/darv_introduction",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "Do not step on them. I am saving them for later turns.",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.next": "Continue",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient": "Saving things for later? Great idea! I always save my best things for later!",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient.sfx": "event:/sfx/npcs/darv/darv_excited",
+
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "Your score is thicker now! Let me see, let me see!",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient.sfx": "event:/sfx/npcs/darv/darv_endeared",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "You may look, but do not scribble on it.",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.next": "Continue",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-2.ancient": "Of course! I only sign the blank spaces!",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-2.ancient.sfx": "event:/sfx/npcs/darv/darv_excited",
+
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Going to fill the Spire with noise again today?",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient.sfx": "event:/sfx/npcs/darv/darv_excited",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "DARV.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "At least I will not let it stay too quiet.",
+
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Your melody is still unrefined. Come closer, so I may hear it clearly.",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient.sfx": "event:/sfx/npcs/nonupeipe/nonupeipe_welcome",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "A rough sound still has a shape of its own.",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.next": "Continue",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient": "Then carry it higher up the Spire.",
+
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "This time, your sound seems more complete.",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient.sfx": "event:/sfx/npcs/nonupeipe/nonupeipe_giggle",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "There are still a few blanks, just enough for the next passage.",
+
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Let me see what shape today's melody will take.",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient.sfx": "event:/sfx/npcs/nonupeipe/nonupeipe_eeked",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "NONUPEIPE.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "You will hear it when it ends.",
+
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "You preserve sound for the future, yet must still choose in the present.",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "Not knowing the next beat is what makes a saved melody meaningful.",
+
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "Once again, you stand before a fork in the rhythm.",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "Then I will choose again. Perhaps this one leads to a different ending.",
+
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Choose. The melody will not decide your direction for you.",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "OROBAS.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "But it will accompany me down the road I choose.",
+
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Your Notes are light, yet you seek to carry away a heavy gift.",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "Light things can still weigh down an entire silence when gathered together.",
+
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "Have you come to trade for strength again?",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "I will take only what this song needs now.",
+
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "The price and reward are both before you.",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "PAEL.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "Then let me hear whether it is worth the cost.",
+
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Such a tiny sound dares echo before me?",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient.sfx": "event:/sfx/npcs/tanx/tanx_roar",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "A sound need not be loud. It only needs to endure.",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.next": "Continue",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient": "Good! Then show me how long it can last!",
+
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "Your echo is louder than last time!",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient.sfx": "event:/sfx/npcs/tanx/tanx_laugh",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "Because the last sound has not faded yet.",
+
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Come, play another melody loud enough to be heard!",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient.sfx": "event:/sfx/npcs/tanx/tanx_curiosity",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "TANX.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "This one will last longer than a single turn, too.",
+
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Strange singer, where does your voice come from?",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "From somewhere far away. Now it is going somewhere higher.",
+
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "I still cannot see through those floating Notes of yours.",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "They are not a riddle. It simply is not time to resolve them yet.",
+
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Go on. I will listen for your echo.",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "TEZCATARA.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "Then do not miss the final beat.",
+
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Does it not frighten you to entrust a future melody to chance?",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "Chance only provides the Notes. I decide their order.",
+
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "You have brought another chain of unfinished possibilities.",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "Being unfinished leaves room to keep playing.",
+
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-visit": "2",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Go. Let those possibilities find their own voices.",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "VAKUU.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "I will preserve the parts I hear.",
+
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.ancient": "Your melody is not part of my design.",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-0.next": "Respond",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.char": "Then write it onto a new page.",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-1.next": "Continue",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.0-2.ancient": "There is no place for improvisation here.",
+
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.ancient": "The same song reaches the same ending a second time.",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-0.next": "Respond",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.char": "This time, I changed the ending.",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-1.next": "Continue",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.1-2.ancient": "A meaningless deviation. I will correct it.",
+
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.ancient": "Your voice remains unrecorded by the Spire.",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-0r.next": "Respond",
+  "THE_ARCHITECT.talk.SLAY_THE_SPIRE2_MGR_MOD_CHARACTER_MGR_CHARACTER.2-1r.char": "Then I will perform it again."
 }

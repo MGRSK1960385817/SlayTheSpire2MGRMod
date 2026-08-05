@@ -13,7 +13,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "resonate")]
 public sealed class Resonate : MgrCard
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
     public Resonate() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {

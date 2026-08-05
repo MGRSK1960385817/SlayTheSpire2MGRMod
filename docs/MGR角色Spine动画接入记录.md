@@ -65,7 +65,7 @@ Spine Trial 不能保存工程或导出动画数据，因此这一步需要正�
 
 - `Mgr_character.skel`
 - `Mgr_character.atlas`
-- `Mgr_character.png`、`Mgr_character_2.png` 等图集页
+- `Mgr_character_atlas.png`、`Mgr_character_atlas_2.png` 等图集页
 
 要求：
 

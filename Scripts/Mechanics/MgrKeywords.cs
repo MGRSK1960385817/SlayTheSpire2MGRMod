@@ -123,12 +123,13 @@ public static class MgrKeywords
     private static MgrKeywordKind InferKinds(MgrCard card) => card switch
     {
         LittleParade => MgrKeywordKind.AttackNote | MgrKeywordKind.SkillNote,
-        LightSong => MgrKeywordKind.BasicNotes |
+        LightSong => MgrKeywordKind.Performance |
+                     MgrKeywordKind.BasicNotes |
                      MgrKeywordKind.StarryNote |
                      MgrKeywordKind.GhostNote,
         MaguroStrike => MgrKeywordKind.AttackNote,
         FlowerFuneral => MgrKeywordKind.AttackNote,
-        SatelliteGirl => MgrKeywordKind.Chord,
+        SatelliteGirl => MgrKeywordKind.StarryNote,
         MaguroAssault => MgrKeywordKind.Chord,
         WarmUp => MgrKeywordKind.Forte,
         OtomeDissection => MgrKeywordKind.Forte,
@@ -139,9 +140,7 @@ public static class MgrKeywords
         LittleMiracles => MgrKeywordKind.BasicNotes,
         Resonate => MgrKeywordKind.Performance,
         EastOfTimeline => MgrKeywordKind.AttackNote,
-        Higan => MgrKeywordKind.Forte |
-                 MgrKeywordKind.PhraseStart |
-                 MgrKeywordKind.PhraseEnd,
+        Higan => MgrKeywordKind.Forte,
         SpringStorm => MgrKeywordKind.Forte,
         LastSinger => MgrKeywordKind.AttackNote,
         Adios => MgrKeywordKind.Performance,
@@ -150,6 +149,7 @@ public static class MgrKeywords
         Chorus => MgrKeywordKind.BasicNotes,
         Futariboshi => MgrKeywordKind.StarryNote,
         Unison => MgrKeywordKind.BasicNotes,
+        HelloWorld => MgrKeywordKind.None,
         DelusionalSketch => MgrKeywordKind.Performance,
         DualLovers => MgrKeywordKind.Performance | MgrKeywordKind.AttackNote,
         CowardRocket => MgrKeywordKind.Performance,
@@ -157,9 +157,10 @@ public static class MgrKeywords
         UniverseOf88Keys => MgrKeywordKind.Chord,
         CubicPrism => MgrKeywordKind.Performance,
         Prismatic => MgrKeywordKind.Chord,
+        CrimeAndPunishment => MgrKeywordKind.Forte,
         GalaxyLamp => MgrKeywordKind.StarryNote,
-        ColorBurst => MgrKeywordKind.BasicNotes,
-        ColorBurstChoice => MgrKeywordKind.BasicNotes,
+        TheCrowd => MgrKeywordKind.BasicNotes,
+        TheCrowdChoice => MgrKeywordKind.BasicNotes,
         Omnia => MgrKeywordKind.OmniaNote,
         _ => MgrKeywordKind.None
     };

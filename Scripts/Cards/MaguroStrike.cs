@@ -17,7 +17,8 @@ public sealed class MaguroStrike : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(3m, ValueProp.Move)
+        new DamageVar(4m, ValueProp.Move),
+        new IntVar("Notes", 1m)
     ];
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
@@ -38,11 +39,14 @@ public sealed class MaguroStrike : MgrCard
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
                 .Execute(choiceContext);
-            await ChannelNote(choiceContext, NoteKind.Attack);
+            for (int noteIndex = 0; noteIndex < DynamicVars["Notes"].IntValue; noteIndex++)
+                await ChannelNote(choiceContext, NoteKind.Attack);
         }
     }
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(1m);
+        DynamicVars["Notes"].UpgradeValueBy(1m);
     }
 }

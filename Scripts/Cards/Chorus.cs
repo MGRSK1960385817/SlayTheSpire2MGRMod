@@ -12,8 +12,21 @@ public sealed class Chorus : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
+        new CalculationBaseVar(0m),
+        new CalculationExtraVar(1m),
         new IntVar("CardsPerBatch", 5m),
-        new IntVar("Notes", 2m)
+        new IntVar("Notes", 3m),
+        new CalculatedVar("CalculatedNotes").WithMultiplier(
+            (card, _) =>
+            {
+                if (card.CombatState is null)
+                    return 0m;
+
+                int cardsPerBatch = card.DynamicVars["CardsPerBatch"].IntValue;
+                int notesPerBatch = card.DynamicVars["Notes"].IntValue;
+                int drawPileCards = PileType.Draw.GetPile(card.Owner).Cards.Count;
+                return drawPileCards / cardsPerBatch * notesPerBatch;
+            })
     ];
 
     public Chorus() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -22,8 +35,8 @@ public sealed class Chorus : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int deckBatches = Owner.Deck.Cards.Count / DynamicVars["CardsPerBatch"].IntValue;
-        int notesToGenerate = deckBatches * DynamicVars["Notes"].IntValue;
+        int notesToGenerate = (int)((CalculatedVar)DynamicVars["CalculatedNotes"])
+            .Calculate(cardPlay.Target);
         for (int index = 0; index < notesToGenerate; index++)
             await MgrNoteSystem.ChannelRandomBasicNote(choiceContext, Owner);
     }

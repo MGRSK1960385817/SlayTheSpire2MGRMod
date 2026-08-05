@@ -19,7 +19,7 @@ public sealed class OnewayTrain : MgrCard
         HoverTipFactory.FromPower<DexterityPower>()
     ];
 
-    public OnewayTrain() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public OnewayTrain() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -56,6 +56,6 @@ public sealed class OnewayTrain : MgrCard
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Retain);
+        EnergyCost.UpgradeBy(-1);
     }
 }

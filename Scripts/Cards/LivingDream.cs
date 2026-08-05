@@ -11,6 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "living_dream")]
 public sealed class LivingDream : MgrCard
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
+
     public LivingDream() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }

@@ -5,6 +5,7 @@ using STS2RitsuLib;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Patching.Core;
 using SlayTheSpire2MGRMod.Patches;
+using SlayTheSpire2MGRMod.Telemetry;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
 namespace SlayTheSpire2MGRMod;
@@ -40,6 +41,7 @@ public partial class Entry
             return;
 
         ModTypeDiscoveryHub.RegisterModAssembly(ModId, assembly);
+        MgrTelemetry.Register();
 
         IsModActive = true;
         Logger.Info("SlayTheSpire2MGRMod initialized.");

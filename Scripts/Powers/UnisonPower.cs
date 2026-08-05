@@ -17,7 +17,9 @@ public sealed class UnisonPower : ModPowerTemplate
         IconPath: $"{Entry.ResPath}/images/powers/UnisonPower.png",
         BigIconPath: $"{Entry.ResPath}/images/powers/UnisonPower.png");
 
-    public override async Task BeforeCardPlayed(CardPlay cardPlay)
+    public override async Task AfterCardPlayed(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
     {
         if (Owner.Player is not { } player || cardPlay.Card.Owner != player)
             return;
@@ -27,7 +29,6 @@ public sealed class UnisonPower : ModPowerTemplate
             return;
 
         Flash();
-        var choiceContext = new ThrowingPlayerChoiceContext();
         for (int index = 0; index < notes; index++)
             await MgrNoteSystem.ChannelRandomBasicNote(choiceContext, player);
     }

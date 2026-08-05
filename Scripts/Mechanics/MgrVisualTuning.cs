@@ -229,8 +229,16 @@ public static class MgrVisualTuning
         // It accelerates marker travel, spawn timers and line-spacing cooldowns
         // together instead of injecting a fixed number of extra markers.
         public const float StaffPerformingFlowSpeedMultiplier = 1.75f;
-        public const double StaffMarkerSpawnMinSeconds = 0.78;
-        public const double StaffMarkerSpawnMaxSeconds = 1.22;
+        // Ambient notes begin calmer than before. Every Performance card that is
+        // actually played this combat raises spawn frequency by 8%, up to 1.8x.
+        // Two played cards also unlock one extra simultaneous marker, capped at 5,
+        // so the timer acceleration remains visible instead of hitting the old cap.
+        public const double StaffMarkerSpawnMinSeconds = 1.02;
+        public const double StaffMarkerSpawnMaxSeconds = 1.48;
+        public const float StaffSpawnFrequencyIncreasePerPerformanceCard = 0.08f;
+        public const float StaffMaximumCombatSpawnFrequencyMultiplier = 1.8f;
+        public const int StaffPerformanceCardsPerAdditionalMarker = 2;
+        public const int StaffMaximumAdditionalMarkersFromCombat = 5;
         public const double StaffMarkerSpawnRetrySeconds = 0.18;
         // Each staff line rolls its own cooldown after receiving a marker.
         // Cross-line glyphs briefly reserve their second line as well, while

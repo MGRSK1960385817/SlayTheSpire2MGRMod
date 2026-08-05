@@ -14,7 +14,7 @@ public sealed class FlowerFuneral : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move)
+        new DamageVar(5m, ValueProp.Move)
     ];
 
     public FlowerFuneral() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)

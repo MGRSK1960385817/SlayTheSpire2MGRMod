@@ -17,7 +17,7 @@ public sealed class SpringStorm : MgrCard
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [CardKeyword.Retain, CardKeyword.Exhaust];
+        [CardKeyword.Exhaust];
 
     public SpringStorm() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
@@ -42,6 +42,6 @@ public sealed class SpringStorm : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["FortePower"].UpgradeValueBy(1m);
+        AddKeyword(CardKeyword.Retain);
     }
 }

@@ -13,8 +13,7 @@ public sealed class MeteorAftermath : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(3),
-        new CardsVar(3),
+        new EnergyVar(2),
         new EnergyVar("Debt", 2)
     ];
 
@@ -27,7 +26,9 @@ public sealed class MeteorAftermath : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner);
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
+        int cardsToDraw = CardPile.MaxCardsInHand - Owner.PlayerCombatState!.Hand.Cards.Count;
+        if (cardsToDraw > 0)
+            await CardPileCmd.Draw(choiceContext, cardsToDraw, Owner);
         await PowerCmd.Apply<HyperSpeedDebtPower>(
             choiceContext,
             Owner.Creature,
@@ -38,6 +39,6 @@ public sealed class MeteorAftermath : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(2m);
+        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 }
