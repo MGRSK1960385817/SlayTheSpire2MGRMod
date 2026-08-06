@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Powers;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -18,9 +17,7 @@ public sealed class OtomeDissection : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4m, ValueProp.Move),
-        new IntVar("Threshold", 4m),
-        new PowerVar<FortePower>(1m)
+        new BlockVar(4m, ValueProp.Move)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
@@ -38,16 +35,6 @@ public sealed class OtomeDissection : MgrCard
             NoteKind kind = CardNoteResolver.Resolve(card);
             await CardCmd.Exhaust(choiceContext, card);
             await MgrNoteSystem.ChannelNote(choiceContext, Owner, kind);
-        }
-
-        if (cardsToExhaust.Count >= DynamicVars["Threshold"].IntValue)
-        {
-            await PowerCmd.Apply<FortePower>(
-                choiceContext,
-                Owner.Creature,
-                DynamicVars["FortePower"].BaseValue,
-                Owner.Creature,
-                this);
         }
     }
 

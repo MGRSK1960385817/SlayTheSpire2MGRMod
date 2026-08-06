@@ -43,6 +43,6 @@ public sealed class Chorus : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Notes"].UpgradeValueBy(1m);
+        AddKeyword(CardKeyword.Retain);
     }
 }

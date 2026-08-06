@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using SlayTheSpire2MGRMod.Cards;
+using SlayTheSpire2MGRMod.Powers;
 using SlayTheSpire2MGRMod.Relics;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
@@ -17,6 +18,7 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 public static class MgrPerformanceSystem
 {
+    private const int DefaultExternalPerformanceTurns = 1;
     private static readonly HashSet<CardModel> CompletingCards = [];
     private static readonly HashSet<MgrPerformanceEntry> ResolvingEntries = [];
     private static readonly Dictionary<CardModel, int> PendingEnqueueBonuses = [];
@@ -150,7 +152,9 @@ public static class MgrPerformanceSystem
             PileType.Play,
             player);
 
-        int initialTurns = Math.Max(1, GetInitialPerformanceTurns(card));
+        int initialTurns = Math.Max(
+            DefaultExternalPerformanceTurns,
+            GetInitialPerformanceTurns(card));
         MgrPerformanceState state = MgrPerformanceStateStore.For(player);
         MgrPerformanceEntry? entry = state.Enqueue(card, initialTurns);
         if (entry is null)
@@ -170,11 +174,12 @@ public static class MgrPerformanceSystem
     /// </summary>
     public static Task<MgrPerformanceEntry?> EnqueueCardFromHand(
         Player player,
-        CardModel card,
-        int initialTurns) => EnqueueCardFromPile(
+        CardModel card) => EnqueueCardFromPile(
             player,
             card,
-            initialTurns,
+            Math.Max(
+                DefaultExternalPerformanceTurns,
+                GetInitialPerformanceTurns(card)),
             PileType.Hand);
 
     private static async Task<MgrPerformanceEntry?> EnqueueCardFromPile(
@@ -332,6 +337,9 @@ public static class MgrPerformanceSystem
                         entry.InitialPerformanceTurns,
                         willExhaust));
             }
+
+            if (player.Creature.GetPower<ChaosMagicPower>() is { } chaosMagic)
+                await chaosMagic.OnPerformanceEnded(player);
 
             if (player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
                 await blackGoldRecord.OnPerformanceEnded(player);
@@ -493,6 +501,12 @@ public static class MgrPerformanceSystem
                             player,
                             entry.InitialPerformanceTurns,
                             willExhaust));
+                }
+
+                if (!combatEnded &&
+                    player.Creature.GetPower<ChaosMagicPower>() is { } chaosMagic)
+                {
+                    await chaosMagic.OnPerformanceEnded(player);
                 }
 
                 if (!combatEnded && player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)

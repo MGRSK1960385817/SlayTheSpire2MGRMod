@@ -486,8 +486,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             {
                 await MgrPerformanceSystem.EnqueueCardFromHand(
                     player,
-                    rocket,
-                    initialTurns: 1);
+                    rocket);
             }
         }
     }

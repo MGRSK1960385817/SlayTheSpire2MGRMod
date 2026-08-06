@@ -191,7 +191,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "2费；消耗所有手牌并生成对应音符，每张获得4格挡；至少消耗4张时获得1层强音；消耗；升级后获得保留。"
+      "summary": "2费；将所有手牌转化为音符，每张获得4格挡；消耗；升级后获得保留。"
     },
     {
       "codeName": "Resonate",
@@ -263,7 +263,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费技能，演奏2（升级后3）；消耗1张手牌并生成对应音符；消耗。"
+      "summary": "0费技能，演奏2（升级后3）；将1张手牌转化为音符；消耗。"
     },
     {
       "codeName": "LittleMiracles",
@@ -311,7 +311,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；获得6格挡，随机消耗1张手牌并生成对应音符；升级后改为自行选择要消耗的牌。"
+      "summary": "1费；获得6格挡，将1张随机手牌转化为音符；升级后改为自行选择。"
     },
     {
       "codeName": "Yaaaaaa",
@@ -407,7 +407,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；抽牌堆中每有5张牌，随机生成3个基础音符，升级后生成4个；战斗中动态显示实际生成总数。"
+      "summary": "1费；抽牌堆中每有5张牌，随机生成3个基础音符；升级后获得保留；战斗中动态显示实际生成总数。"
     },
     {
       "codeName": "Futariboshi",
@@ -439,7 +439,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡，按白/其他1、蓝1.25、金1.5加权（轩辕十四为0.5）生成3张不同的随机牌，选择1张直接置入演奏堆，消耗；升级后3张候选均为升级版。"
+      "summary": "1费蓝卡，从MGR卡池等概率生成3张不同的随机牌，选择1张直接置入演奏堆，消耗；升级后3张候选均为升级版。"
     },
     {
       "codeName": "DualLovers",
@@ -487,7 +487,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费消耗；按白/其他1、蓝1.25、金1.5加权（轩辕十四为0.5），将所有音符还原为对应类型的随机卡牌并置入手牌；升级后生成的卡牌均已升级。"
+      "summary": "0费消耗；将所有音符等概率还原为对应类型的随机卡牌并置入手牌；升级后生成的卡牌均已升级。"
     },
     {
       "codeName": "GalaxyLamp",
@@ -589,9 +589,17 @@
       "codeName": "GuidingStars",
       "name": "星辰导引",
       "status": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "summary": "2费蓝卡星空攻击；造成10点伤害，将1张随机星空牌加入手牌；升级后获得保留。"
+    },
+    {
+      "codeName": "Relaaax",
+      "name": "放~松~",
+      "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "3费蓝卡星空技能；获得16点格挡；下个回合开始时生成1个星空音符；升级后获得保留。"
+      "summary": "3费蓝卡星空技能；获得16点格挡，下个回合开始时生成1个星空音符；升级后获得保留。"
     },
     {
       "codeName": "SubduingTheGhosts",
@@ -623,23 +631,23 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "2费金卡能力；每回合开始时复制所有当前音符；升级后打出时立即复制一次。"
+      "summary": "2费金卡能力；每当一张牌结束演奏，将1张随机演奏牌加入手牌；升级后获得固有。"
     },
     {
-      "codeName": "Unison",
-      "name": "齐谐",
+      "codeName": "SixthSense",
+      "name": "第六感",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "2费金卡能力；每当打出1张牌，随机生成1个基础音符；升级后费用降为1。"
+      "summary": "1费金卡能力；回合开始时抽2张牌，丢弃其中耗能不为1的牌；升级后获得固有。"
     },
     {
-      "codeName": "CreationResonance",
-      "name": "造物共鸣",
+      "codeName": "RefrainForm",
+      "name": "复唱形态",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "1费金卡能力；每当生成1张牌，也生成其对应音符；升级后费用降为0。"
+      "summary": "3费金卡能力；记录打出时的所有音符，此后每回合开始时生成这些音符；升级后费用降为2。"
     },
     {
       "codeName": "HelloWorld",
@@ -647,7 +655,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡能力；每回合开始时按白/其他1、蓝1.25、金1.5加权，将1张随机1费牌加入手牌；升级后获得固有。"
+      "summary": "1费蓝卡能力；每回合开始时，从MGR卡池的1费牌中等概率选择1张加入手牌；升级后获得固有。"
     }
   ],
   "relics": [

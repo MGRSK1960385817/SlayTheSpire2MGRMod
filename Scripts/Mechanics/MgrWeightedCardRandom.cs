@@ -9,14 +9,16 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 
 public enum MgrCardWeightProfile
 {
+    Uniform,
     Standard,
     GentleCompensation
 }
 
 /// <summary>
-/// Shared rarity-compensated random selection for MGR effects.
-/// Common and all other rarities have weight 1, Uncommon has weight 1.5,
-/// and Rare has weight 2. Integer weights are doubled to preserve the ratio.
+/// Shared random selection for MGR effects. Uniform gives every candidate the
+/// same chance. Standard preserves Light Song's Common 1, Uncommon 1.5 and
+/// Rare 2 weighting; GentleCompensation is retained for explicitly weighted
+/// effects only.
 /// </summary>
 public static class MgrWeightedCardRandom
 {
@@ -78,6 +80,9 @@ public static class MgrWeightedCardRandom
         CardModel card,
         MgrCardWeightProfile profile)
     {
+        if (profile == MgrCardWeightProfile.Uniform)
+            return 1;
+
         if (profile == MgrCardWeightProfile.GentleCompensation)
         {
             if (card is Regulus)

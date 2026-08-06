@@ -8,25 +8,30 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "unison")]
-public sealed class Unison : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "sixth_sense")]
+public sealed class SixthSense : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 1m)
+        new CardsVar(2),
+        new IntVar("RequiredCost", 1m)
     ];
 
-    public Unison() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
+    public SixthSense() : base(
+        1,
+        CardType.Power,
+        CardRarity.Rare,
+        TargetType.Self)
     {
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<UnisonPower>(
+        PowerCmd.Apply<SixthSensePower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars["Notes"].BaseValue,
+            1m,
             Owner.Creature,
             this);
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Innate);
 }

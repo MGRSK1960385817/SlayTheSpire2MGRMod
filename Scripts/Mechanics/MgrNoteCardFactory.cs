@@ -35,7 +35,7 @@ public static class MgrNoteCardFactory
         CardModel? canonical = MgrWeightedCardRandom.PickOne(
             candidates,
             player.RunState.Rng.CombatCardGeneration,
-            MgrCardWeightProfile.GentleCompensation);
+            MgrCardWeightProfile.Uniform);
         if (canonical is null)
             return null;
 

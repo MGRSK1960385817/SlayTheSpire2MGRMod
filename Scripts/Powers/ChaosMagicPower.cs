@@ -1,6 +1,11 @@
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
+using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
@@ -17,18 +22,42 @@ public sealed class ChaosMagicPower : ModPowerTemplate
         IconPath: $"{Entry.ResPath}/images/cards/ChaosMagic.png",
         BigIconPath: $"{Entry.ResPath}/images/cards/ChaosMagic.png");
 
-    public override async Task AfterPlayerTurnStart(
-        PlayerChoiceContext choiceContext,
-        Player player)
+    public async Task OnPerformanceEnded(Player player)
     {
-        if (player.Creature != Owner)
+        if (player.Creature != Owner || player.Creature.CombatState is not { } combatState)
             return;
 
-        int copySets = Math.Max(0, (int)Amount);
-        if (copySets == 0)
+        CardModel[] candidates = CardFactory
+            .FilterForCombat(player.Character.CardPool.GetUnlockedCards(
+                player.UnlockState,
+                player.RunState.CardMultiplayerConstraint))
+            .OfType<MgrCard>()
+            .Where(IsPrintedPerformanceCard)
+            .Where(card => card.CanBeGeneratedInCombat)
+            .Cast<CardModel>()
+            .ToArray();
+        if (candidates.Length == 0)
+            return;
+
+        int cards = Math.Max(0, (int)Amount);
+        if (cards == 0)
             return;
 
         Flash();
-        await MgrNoteSystem.CopyAllNotes(choiceContext, player, copySets);
+        for (int index = 0; index < cards; index++)
+        {
+            CardModel? canonical = player.RunState.Rng.CombatCardGeneration.NextItem(candidates);
+            if (canonical is null)
+                break;
+
+            CardModel generated = combatState.CreateCard(canonical, player);
+            await CardPileCmd.AddGeneratedCardToCombat(
+                generated,
+                PileType.Hand,
+                player);
+        }
     }
+
+    private static bool IsPrintedPerformanceCard(MgrCard card) =>
+        card.InitialPerformanceTurns > 0 || card is CubicPrism or LightSong;
 }

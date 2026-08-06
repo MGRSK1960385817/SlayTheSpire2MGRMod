@@ -48,7 +48,7 @@ public sealed class HelloWorldPower : ModPowerTemplate
             CardModel? canonical = MgrWeightedCardRandom.PickOne(
                 candidates,
                 player.RunState.Rng.CombatCardGeneration,
-                MgrCardWeightProfile.GentleCompensation);
+                MgrCardWeightProfile.Uniform);
             if (canonical is null)
                 break;
 

@@ -21,8 +21,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
     [
         CardKeyword.Retain,
         CardKeyword.Ethereal,
-        CardKeyword.Exhaust,
-        CardKeyword.Innate
+        CardKeyword.Exhaust
     ];
 
     private static readonly string[] NamedColorTags =
@@ -126,6 +125,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
+            MoveInnateToFirstLine(mgrCard, ref __result);
             if (mgrCard is LightSong)
                 CompactLightSongIdentityLine(ref __result);
         }
@@ -186,12 +186,33 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         foreach (int index in matchedLines.Select(item => item.Index).OrderDescending())
             lines.RemoveAt(index);
 
-        // Retain/Ethereal/Exhaust/Innate are terminal presentation keywords.
+        // Retain/Ethereal/Exhaust are terminal presentation keywords.
         // Tower 2 may place a lone keyword before the rules text while an
         // upgraded card with two keywords is compacted elsewhere. Always move
         // both the one-keyword and multi-keyword forms to the final line so an
         // upgrade cannot unexpectedly invert the card-description layout.
         lines.Add(compactLine);
+        description = string.Join('\n', lines);
+    }
+
+    private static void MoveInnateToFirstLine(
+        MgrCard card,
+        ref string description)
+    {
+        if (!card.Keywords.Contains(CardKeyword.Innate))
+            return;
+
+        string innateText = CardKeyword.Innate.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(innateText))
+            return;
+
+        List<string> lines = description.Split('\n').ToList();
+        int innateIndex = lines.FindIndex(line => line.Trim() == innateText);
+        if (innateIndex < 0)
+            return;
+
+        lines.RemoveAt(innateIndex);
+        lines.Insert(0, innateText);
         description = string.Join('\n', lines);
     }
 
