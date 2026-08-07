@@ -143,8 +143,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Player player,
         NoteKind kind)
     {
-        if (player.Creature.GetPowerAmount<NoteGenerationLockPower>() > 0m ||
-            kind == NoteKind.Attack &&
+        if (kind == NoteKind.Attack &&
             player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
         {
             return false;

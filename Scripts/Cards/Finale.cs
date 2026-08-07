@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "last_singer")]
-public sealed class LastSinger : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "finale")]
+public sealed class Finale : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -19,7 +19,7 @@ public sealed class LastSinger : MgrCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Ethereal];
 
-    public LastSinger() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.Self)
+    public Finale() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

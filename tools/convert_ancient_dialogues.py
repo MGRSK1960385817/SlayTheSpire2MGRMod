@@ -15,6 +15,13 @@ TARGET = (
     / "zhs"
     / "ancients.json"
 )
+ENGLISH_TARGET = (
+    REPO_ROOT
+    / "SlayTheSpire2MGRMod"
+    / "localization"
+    / "eng"
+    / "ancients.json"
+)
 EXPECTED_ANCIENTS = {
     "NEOW",
     "DARV",
@@ -114,9 +121,34 @@ def convert(source: dict) -> dict[str, str]:
     return output
 
 
+def validate_english_structure(converted: dict[str, str]) -> None:
+    """Prevent stale English lines from leaking into another locale as fallbacks."""
+    english = json.loads(ENGLISH_TARGET.read_text(encoding="utf-8-sig"))
+    missing = sorted(set(converted) - set(english))
+    extra = sorted(set(english) - set(converted))
+    require(
+        not missing and not extra,
+        "英文先古对话结构与模板不一致。"
+        f" 缺少{len(missing)}项，多出{len(extra)}项。"
+        "请同步翻译后再运行转换器。",
+    )
+
+    metadata_keys = [
+        key for key in converted if key.endswith("-visit") or key.endswith(".sfx")
+    ]
+    mismatched = [
+        key for key in metadata_keys if english[key] != converted[key]
+    ]
+    require(
+        not mismatched,
+        f"英文先古对话有{len(mismatched)}项访问次数或音效与模板不一致。",
+    )
+
+
 def main() -> None:
     source = json.loads(SOURCE.read_text(encoding="utf-8-sig"))
     converted = convert(source)
+    validate_english_structure(converted)
     TARGET.write_text(
         json.dumps(converted, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

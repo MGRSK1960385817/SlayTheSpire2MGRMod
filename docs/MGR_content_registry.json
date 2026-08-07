@@ -335,7 +335,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "2费能力；移除所有音符，每种获得1力量和1敏捷，本回合无法再生成音符；升级后费用降为1。"
+      "summary": "2费能力；移除所有音符，每种获得1力量和1敏捷；升级后费用降为1。"
     },
     {
       "codeName": "SpringStorm",
@@ -383,7 +383,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费；获得6格挡；起音获得1力量，尾音获得1敏捷；升级后：力量和敏捷的获得变为2。"
+      "summary": "1费；获得5格挡；起音获得1力量，尾音获得1敏捷；升级后：力量和敏捷的获得变为2。"
     },
     {
       "codeName": "Adios",
@@ -418,8 +418,8 @@
       "summary": "1费白卡星空技能；随机丢弃2张手牌并生成1个星空音符；升级后改为自行选择丢弃的牌。"
     },
     {
-      "codeName": "LastSinger",
-      "name": "世末歌者",
+      "codeName": "Finale",
+      "name": "终曲",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
@@ -471,7 +471,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少2点；升级后基础伤害增加至10。"
+      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少3点；升级后基础伤害增加至11。"
     },
     {
       "codeName": "CubicPrism",

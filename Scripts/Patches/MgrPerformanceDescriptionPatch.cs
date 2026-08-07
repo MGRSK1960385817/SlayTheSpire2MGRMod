@@ -128,6 +128,8 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             MoveInnateToFirstLine(mgrCard, ref __result);
             if (mgrCard is LightSong)
                 CompactLightSongIdentityLine(ref __result);
+
+            FormatStarryNoteText(ref __result);
         }
 
         if (__instance is Pale)
@@ -242,5 +244,26 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         }
 
         return $"[sine][color=#8a8a8a]{description}[/color][/sine]";
+    }
+
+    private static void FormatStarryNoteText(ref string description)
+    {
+        var title = new LocString(
+            "card_keywords",
+            "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY_NOTE.title");
+        string starryNote = title.GetFormattedText();
+        if (string.IsNullOrWhiteSpace(starryNote) ||
+            !description.Contains(starryNote, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        // Starry's identity line already uses the native sine text effect.
+        // Apply the same motion to every localized Starry Note mention in MGR
+        // card rules text while retaining its surrounding color markup.
+        description = description.Replace(
+            starryNote,
+            $"[sine]{starryNote}[/sine]",
+            StringComparison.Ordinal);
     }
 }

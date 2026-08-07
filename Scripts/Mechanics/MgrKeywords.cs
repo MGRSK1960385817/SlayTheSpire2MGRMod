@@ -141,7 +141,7 @@ public static class MgrKeywords
         EastOfTimeline => MgrKeywordKind.AttackNote,
         Higan => MgrKeywordKind.Forte,
         SpringStorm => MgrKeywordKind.Forte,
-        LastSinger => MgrKeywordKind.AttackNote,
+        Finale => MgrKeywordKind.AttackNote,
         Adios => MgrKeywordKind.Performance,
         Encore => MgrKeywordKind.Performance,
         MindMirage => MgrKeywordKind.PowerNote,

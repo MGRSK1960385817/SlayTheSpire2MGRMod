@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
-using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -45,13 +44,6 @@ public sealed class OnewayTrain : MgrCard
                 Owner.Creature,
                 this);
         }
-
-        await PowerCmd.Apply<NoteGenerationLockPower>(
-            choiceContext,
-            Owner.Creature,
-            1m,
-            Owner.Creature,
-            this);
     }
 
     protected override void OnUpgrade()
