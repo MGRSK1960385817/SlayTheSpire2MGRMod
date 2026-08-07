@@ -4,6 +4,12 @@
 
 面向人类填写的先古对话位于 [MGR_先古对话人类填写模板.json](MGR_先古对话人类填写模板.json)。其中使用“第几次相遇”“是否允许重复”“说话者”等直观字段；填写完成后由 Codex 转换为游戏实际读取的 `SlayTheSpire2MGRMod/localization/zhs/ancients.json`。内容索引与其他候选对话位于 [MGR_dialogue_draft.json](MGR_dialogue_draft.json)。
 
+转换器位于 `tools/convert_ancient_dialogues.py`。它会校验先古ID、相遇次数、说话者、连续行号、按钮链和空台词，再覆盖生成简中运行文件；不会改动英文及其他语言：
+
+```powershell
+python tools/convert_ancient_dialogues.py
+```
+
 ## 1. 角色内置文本
 
 文本文件：`SlayTheSpire2MGRMod/localization/zhs/characters.json`。

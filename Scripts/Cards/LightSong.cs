@@ -1,8 +1,9 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -25,9 +26,6 @@ public sealed class LightSong : MgrCard
             (IsUpgraded ? 1 : 0) +
             MgrPerformanceModifierState.GetAdditionalPerformances(this));
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
-
     public LightSong() : base(0, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {
     }
@@ -37,26 +35,56 @@ public sealed class LightSong : MgrCard
         if (!cardPlay.IsAutoPlay)
             _performanceX = ResolveEnergyXValue();
 
-        List<CardModel> drawPileSnapshot = PileType.Draw.GetPile(Owner).Cards.ToList();
-
-        foreach (NoteKind kind in Enum.GetValues<NoteKind>())
-        {
-            List<CardModel> candidates = drawPileSnapshot
-                .Where(card => CardNoteResolver.Resolve(card) == kind)
-                .ToList();
-            CardModel? matchingCard = MgrWeightedCardRandom.PickOne(
-                candidates,
-                Owner.RunState.Rng.CombatCardGeneration);
-            if (matchingCard is null)
-                continue;
-
-            // Remove it from the snapshot so later categories can never select
-            // the same model if mapping rules gain aliases in the future.
-            drawPileSnapshot.Remove(matchingCard);
-            await CardPileCmd.Add(matchingCard, PileType.Hand);
-            await Cmd.Wait(0.1f);
-        }
+        await MoveFromHandToDraw(choiceContext);
+        await MoveFromDrawToDiscard(choiceContext);
+        await MoveFromDiscardToHand(choiceContext);
     }
+
+    private async Task MoveFromHandToDraw(PlayerChoiceContext choiceContext)
+    {
+        if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
+            return;
+
+        CardModel? selected = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            CreateSelectionPrefs("LIGHT_SONG_CHOOSE_HAND"),
+            null,
+            this)).FirstOrDefault();
+        if (selected is not null)
+            await CardPileCmd.Add(selected, PileType.Draw);
+    }
+
+    private async Task MoveFromDrawToDiscard(PlayerChoiceContext choiceContext)
+    {
+        if (PileType.Draw.GetPile(Owner).Cards.Count == 0)
+            return;
+
+        CardModel? selected = (await CardSelectCmd.FromCombatPile(
+            choiceContext,
+            PileType.Draw.GetPile(Owner),
+            Owner,
+            CreateSelectionPrefs("LIGHT_SONG_CHOOSE_DRAW"))).FirstOrDefault();
+        if (selected is not null)
+            await CardPileCmd.Add(selected, PileType.Discard);
+    }
+
+    private async Task MoveFromDiscardToHand(PlayerChoiceContext choiceContext)
+    {
+        if (PileType.Discard.GetPile(Owner).Cards.Count == 0)
+            return;
+
+        CardModel? selected = (await CardSelectCmd.FromCombatPile(
+            choiceContext,
+            PileType.Discard.GetPile(Owner),
+            Owner,
+            CreateSelectionPrefs("LIGHT_SONG_CHOOSE_DISCARD"))).FirstOrDefault();
+        if (selected is not null)
+            await CardPileCmd.Add(selected, PileType.Hand);
+    }
+
+    private static CardSelectorPrefs CreateSelectionPrefs(string key) =>
+        new(new LocString("cards", $"SLAY_THE_SPIRE2_MGR_MOD_CARD_{key}"), 1);
 
     public override Task OnPerformanceFinished(
         PlayerChoiceContext choiceContext,

@@ -11,9 +11,6 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "living_dream")]
 public sealed class LivingDream : MgrCard
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
-
     public LivingDream() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
@@ -26,6 +23,15 @@ public sealed class LivingDream : MgrCard
             CardModel? card = MgrNoteCardFactory.CreateRandomCard(Owner, note.Kind, IsUpgraded);
             if (card is null)
                 continue;
+
+            // Follow Sculpting Strike's native keyword mutation path. Applying
+            // the keywords to the mutable combat instance before it enters the
+            // hand also makes the standard card renderer append and refresh the
+            // Exhaust/Ethereal rules text and hover tips automatically.
+            CardCmd.ApplyKeyword(
+                card,
+                CardKeyword.Exhaust,
+                CardKeyword.Ethereal);
 
             // Match Blade Dance's fast hand-generation presentation: let the
             // native hand add animate the card and avoid the separate 1.2s

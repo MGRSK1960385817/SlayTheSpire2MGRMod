@@ -18,7 +18,7 @@ public sealed class Dazzling : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(5m, ValueProp.Move)
+        new DamageVar(4m, ValueProp.Move)
     ];
 
     public Dazzling() : base(

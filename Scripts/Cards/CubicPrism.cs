@@ -27,19 +27,21 @@ public sealed class CubicPrism : MgrCard
         new DamageVar(3m, ValueProp.Move)
     ];
 
-    public CubicPrism() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+    public CubicPrism() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        if (CombatState is not { } combatState)
+            return;
+
         if (!cardPlay.IsAutoPlay)
             _performanceX = ResolveEnergyXValue();
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue * _performanceX)
             .FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
+            .TargetingAllOpponents(combatState)
             .Execute(choiceContext);
     }
 

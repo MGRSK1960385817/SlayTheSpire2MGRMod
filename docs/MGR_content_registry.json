@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-03",
+  "lastUpdated": "2026-08-07",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -79,7 +79,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "X费，演奏X并消耗；从抽牌堆中将每种音符对应的1张随机牌加入手牌；升级后演奏X+1。"
+      "summary": "X费，演奏X；依次将1张手牌放入抽牌堆、1张抽牌堆牌放入弃牌堆、1张弃牌堆牌放入手牌；升级后演奏X+1。"
     },
     {
       "codeName": "Lullaby",
@@ -479,7 +479,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "X费攻击；造成3X点伤害并演奏X；升级后伤害增加至4X。"
+      "summary": "X费攻击；对所有敌人造成3X点伤害并演奏X；升级后伤害增加至4X。"
     },
     {
       "codeName": "LivingDream",
@@ -487,7 +487,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费消耗；将所有音符等概率还原为对应类型的随机卡牌并置入手牌；升级后生成的卡牌均已升级。"
+      "summary": "0费技能；将所有音符等概率还原为对应类型的随机卡牌并置入手牌，赋予这些牌消耗与虚无；升级后生成的卡牌均已升级。"
     },
     {
       "codeName": "GalaxyLamp",
@@ -543,7 +543,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费，造成5点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至8。"
+      "summary": "1费，造成4点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至7。"
     },
     {
       "codeName": "Omnia",
@@ -648,6 +648,22 @@
       "type": "Power",
       "rarity": "Rare",
       "summary": "3费金卡能力；记录打出时的所有音符，此后每回合开始时生成这些音符；升级后费用降为2。"
+    },
+    {
+      "codeName": "Bird",
+      "name": "鳥",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "summary": "3费金卡攻击；造成24点伤害，再随机生成伤害一半数量的基础音符；战斗中实时显示生成数；升级后伤害增加至28。"
+    },
+    {
+      "codeName": "HyakkiYagyo",
+      "name": "百鬼夜行",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "summary": "2费金卡攻击；对所有敌人造成等同于消耗堆牌数的伤害，对局中每有1张诅咒便重复一次；升级后在伤害前将2张随机诅咒加入弃牌堆。"
     },
     {
       "codeName": "HelloWorld",
