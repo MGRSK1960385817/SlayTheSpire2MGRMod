@@ -119,7 +119,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_COWARD_ROCKET.title": "胆小鬼火箭",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_COWARD_ROCKET.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n若回合结束时仍在[gold]手牌[/gold]中，进入[gold]演奏[/gold]队列。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "八十八键的宇宙",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "回合结束时，对所有敌人造成{UniverseOf88KeysPower:diff()}点伤害。\n本回合每触发1次[gold]和弦[/gold]，伤害减少3点。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "回合结束时，对所有敌人造成{UniverseOf88KeysPower:diff()}点伤害。\n本回合每触发1次[gold]和弦[/gold]，伤害减少2点。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM.title": "立方棱镜",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]演奏[/gold]X。\n对所有敌人造成{Damage:diff()}X点伤害。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]演奏[/gold]X+[blue]{Times}[/blue]。",

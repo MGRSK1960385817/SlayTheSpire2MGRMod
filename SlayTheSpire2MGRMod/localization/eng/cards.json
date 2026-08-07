@@ -119,7 +119,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_COWARD_ROCKET.title": "Coward Rocket",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_COWARD_ROCKET.description": "Gain {Block:diff()} Block.\nIf this is in your Hand at end of turn, it enters the Performance queue.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "Universe of 88 Keys",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "At end of turn, deal {UniverseOf88KeysPower:diff()} damage to ALL enemies.\nDeal 3 less for each Chord triggered this turn.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "At end of turn, deal {UniverseOf88KeysPower:diff()} damage to ALL enemies.\nDeal 2 less for each Chord triggered this turn.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM.title": "Cubic Prism",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM.description": "Perform X.\nDeal {Damage:diff()}X damage to ALL enemies.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "Perform X+[blue]{Times}[/blue].",

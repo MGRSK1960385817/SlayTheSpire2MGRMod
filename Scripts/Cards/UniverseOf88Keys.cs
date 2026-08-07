@@ -29,5 +29,5 @@ public sealed class UniverseOf88Keys : MgrCard
             this);
 
     protected override void OnUpgrade() =>
-        DynamicVars["UniverseOf88KeysPower"].UpgradeValueBy(3m);
+        DynamicVars["UniverseOf88KeysPower"].UpgradeValueBy(2m);
 }

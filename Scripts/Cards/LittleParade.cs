@@ -14,7 +14,7 @@ public sealed class LittleParade : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 4m)
+        new IntVar("Performance", 3m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
