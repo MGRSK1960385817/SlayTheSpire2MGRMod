@@ -32,35 +32,16 @@ public sealed class Futariboshi : MgrCard
 
         if (discardCount > 0)
         {
-            CardModel[] discarded;
-            if (IsUpgraded)
-            {
-                var prompt = new LocString(
-                    "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI_CHOOSE");
-                var prefs = new CardSelectorPrefs(prompt, discardCount);
-                discarded = (await CardSelectCmd.FromHand(
-                    choiceContext,
-                    Owner,
-                    prefs,
-                    null,
-                    this)).ToArray();
-            }
-            else
-            {
-                var selected = new List<CardModel>(discardCount);
-                for (int index = 0; index < discardCount; index++)
-                {
-                    CardModel chosen =
-                        Owner.RunState.Rng.CombatCardSelection.NextItem(hand) ??
-                        throw new InvalidOperationException(
-                            "A non-empty hand candidate list produced no random card.");
-                    selected.Add(chosen);
-                    hand.Remove(chosen);
-                }
-
-                discarded = selected.ToArray();
-            }
+            var prompt = new LocString(
+                "cards",
+                "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI_CHOOSE");
+            var prefs = new CardSelectorPrefs(prompt, discardCount);
+            CardModel[] discarded = (await CardSelectCmd.FromHand(
+                choiceContext,
+                Owner,
+                prefs,
+                null,
+                this)).ToArray();
 
             await CardCmd.Discard(choiceContext, discarded);
         }
@@ -70,5 +51,6 @@ public sealed class Futariboshi : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Cards.UpgradeValueBy(-1m);
     }
 }

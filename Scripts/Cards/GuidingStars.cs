@@ -17,7 +17,7 @@ public sealed class GuidingStars : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move)
+        new DamageVar(12m, ValueProp.Move)
     ];
 
     public GuidingStars() : base(
@@ -57,6 +57,6 @@ public sealed class GuidingStars : MgrCard
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Retain);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

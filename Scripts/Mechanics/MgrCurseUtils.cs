@@ -28,8 +28,7 @@ public static class MgrCurseUtils
         PileType.Hand,
         PileType.Draw,
         PileType.Discard,
-        PileType.Exhaust,
-        PileType.Play
+        PileType.Exhaust
     ];
 
     public static bool IsExcludedRandomCurse(CardModel card)
@@ -80,10 +79,11 @@ public static class MgrCurseUtils
         }
         else
         {
-            // Gunk Up-style generated pile card: preview the destination and
-            // leave the same short beat used by the original card.
-            CardCmd.PreviewCardPileAdd(result);
-            await Cmd.Wait(0.5f);
+            // Gunk Up-style generated pile card. MGR curse effects can create
+            // several cards in sequence, so keep each preview on screen longer
+            // than the vanilla default cadence to make its identity readable.
+            CardCmd.PreviewCardPileAdd(result, 2f);
+            await Cmd.Wait(0.8f);
         }
 
         return curse;

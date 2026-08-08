@@ -16,38 +16,41 @@ public sealed class ByakkoyaGirl : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 2m)
+        new IntVar("Performance", 2m),
+        new CardsVar(1)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
-    public ByakkoyaGirl() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public ByakkoyaGirl() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
-            return;
+        if (PileType.Hand.GetPile(Owner).Cards.Count > 0)
+        {
+            var prompt = new LocString(
+                "cards",
+                "SLAY_THE_SPIRE2_MGR_MOD_CARD_BYAKKOYA_GIRL_CHOOSE");
+            var prefs = new CardSelectorPrefs(prompt, 1);
+            CardModel? chosen = (await CardSelectCmd.FromHand(
+                choiceContext,
+                Owner,
+                prefs,
+                null,
+                this)).FirstOrDefault();
+            if (chosen is not null)
+            {
+                NoteKind kind = CardNoteResolver.Resolve(chosen);
+                await CardCmd.Exhaust(choiceContext, chosen);
+                await ChannelNote(choiceContext, kind);
+            }
+        }
 
-        var prompt = new LocString(
-            "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_BYAKKOYA_GIRL_CHOOSE");
-        var prefs = new CardSelectorPrefs(prompt, 1);
-        CardModel? chosen = (await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            null,
-            this)).FirstOrDefault();
-        if (chosen is null)
-            return;
-
-        NoteKind kind = CardNoteResolver.Resolve(chosen);
-        await CardCmd.Exhaust(choiceContext, chosen);
-        await ChannelNote(choiceContext, kind);
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
     }
 
     protected override void OnUpgrade()

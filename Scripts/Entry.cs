@@ -34,6 +34,7 @@ public partial class Entry
         _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
         _runtimePatcher.RegisterPatch<MgrCharacterSelectSfxPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
+        _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
         if (!RitsuLibFramework.ApplyRequiredPatcher(
                 _runtimePatcher,
                 () => IsModActive = false,

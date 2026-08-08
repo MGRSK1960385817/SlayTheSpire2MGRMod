@@ -64,7 +64,9 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                 var combinedLine = new LocString(
                     "cards",
                     "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
-                combinedLine.Add("Times", amount);
+                combinedLine.Add(
+                    "Times",
+                    checked(amount + (__instance.IsUpgraded ? 1 : 0)));
                 string combinedText = combinedLine.GetFormattedText();
                 int firstLineBreak = __result.IndexOf('\n');
                 __result = firstLineBreak >= 0
@@ -258,12 +260,26 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             return;
         }
 
-        // Starry's identity line already uses the native sine text effect.
-        // Apply the same motion to every localized Starry Note mention in MGR
-        // card rules text while retaining its surrounding color markup.
-        description = description.Replace(
-            starryNote,
-            $"[sine]{starryNote}[/sine]",
-            StringComparison.Ordinal);
+        // Normalize every localized Starry Note mention to the same purple,
+        // floating presentation as Starry. A placeholder prevents the bare-title
+        // replacement from nesting a second effect inside existing color tags.
+        const string placeholder = "\uE000MGR_STARRY_NOTE\uE001";
+        string styled = $"[sine][color=#b96cff]{starryNote}[/color][/sine]";
+        description = description
+            .Replace(styled, placeholder, StringComparison.Ordinal)
+            .Replace(
+                $"[color=#b96cff]{starryNote}[/color]",
+                placeholder,
+                StringComparison.Ordinal)
+            .Replace(
+                $"[gold]{starryNote}[/gold]",
+                placeholder,
+                StringComparison.Ordinal)
+            .Replace(
+                $"[sine]{starryNote}[/sine]",
+                placeholder,
+                StringComparison.Ordinal)
+            .Replace(starryNote, placeholder, StringComparison.Ordinal)
+            .Replace(placeholder, styled, StringComparison.Ordinal);
     }
 }

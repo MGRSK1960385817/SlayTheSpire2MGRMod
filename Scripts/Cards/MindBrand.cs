@@ -8,10 +8,12 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "chaos_magic")]
-public sealed class ChaosMagic : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "mind_brand")]
+public sealed class MindBrand : MgrCard
 {
-    public ChaosMagic() : base(
+    protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.StatusNote;
+
+    public MindBrand() : base(
         2,
         CardType.Power,
         CardRarity.Rare,
@@ -19,15 +21,22 @@ public sealed class ChaosMagic : MgrCard
     {
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ChaosMagicPower>(
+        await PowerCmd.Apply<MindBrandPower>(
             choiceContext,
             Owner.Creature,
             1m,
             Owner.Creature,
             this);
+
+        if (IsUpgraded)
+            await ChannelNote(choiceContext, NoteKind.Status);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+    }
 }

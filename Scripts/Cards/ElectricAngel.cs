@@ -7,10 +7,10 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hello_world")]
-public sealed class HelloWorld : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "electric_angel")]
+public sealed class ElectricAngel : MgrCard
 {
-    public HelloWorld() : base(
+    public ElectricAngel() : base(
         1,
         CardType.Power,
         CardRarity.Uncommon,
@@ -19,7 +19,7 @@ public sealed class HelloWorld : MgrCard
     }
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<HelloWorldPower>(
+        PowerCmd.Apply<ElectricAngelPower>(
             choiceContext,
             Owner.Creature,
             1m,

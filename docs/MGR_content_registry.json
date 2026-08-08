@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-07",
+  "lastUpdated": "2026-08-09",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -87,7 +87,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Basic",
-      "summary": "获得 9 （12）点格挡，尾音：给予所有敌人2（3）层虚弱"
+      "summary": "获得9（12）点格挡；尾音时给予所有敌人2（3）层虚弱。"
     },
     {
       "codeName": "FinalShot",
@@ -103,7 +103,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费，造成5点伤害，使最右侧1张演奏牌演奏+1；升级后改为最右侧2张。"
+      "summary": "1费，造成6点伤害，使最右侧1张演奏牌演奏+1；升级后改为最右侧2张。"
     },
     {
       "codeName": "NoteMagic",
@@ -111,7 +111,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费，获得5点格挡并复制最右侧音符；升级后格挡增加至8。"
+      "summary": "1费，获得6点格挡并复制最右侧1个音符；升级后改为复制最右侧2个音符。"
     },
     {
       "codeName": "MaguroStrike",
@@ -159,7 +159,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "造成5（7）点伤害，生成相当于未被阻挡伤害的攻击音符。"
+      "summary": "造成6（8）点伤害，生成相当于未被阻挡伤害的攻击音符。"
     },
     {
       "codeName": "SatelliteGirl",
@@ -191,7 +191,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "2费；将所有手牌转化为音符，每张获得4格挡；消耗；升级后获得保留。"
+      "summary": "2费；将所有手牌转化为音符，每张获得5点格挡；消耗；升级后获得保留。"
     },
     {
       "codeName": "Resonate",
@@ -202,8 +202,8 @@
       "summary": "1费。选择一张手牌，使其在本场战斗中额外获得演奏1；消耗；升级后：费用降为0。"
     },
     {
-      "codeName": "NightMonster",
-      "name": "夜行怪物",
+      "codeName": "NightWalker",
+      "name": "夜行少女",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
@@ -215,7 +215,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "加入随机诅咒；每回合第一次抽到诅咒时抽1（2）张牌"
+      "summary": "1费蓝卡能力；可以花费2点生命打出原本不可被打出的状态与诅咒牌；原本可打出的状态或诅咒不会扣血；升级后费用降为0。"
     },
     {
       "codeName": "StainedNocturne",
@@ -247,7 +247,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "2费，演奏2；造成4点伤害1次，并将伤害次数+1；升级后演奏增加至3。"
+      "summary": "2费白卡攻击，演奏2（升级后3）；造成4点伤害1次；起音时，本场战斗中的伤害次数增加1。"
     },
     {
       "codeName": "LongDream",
@@ -263,7 +263,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费技能，演奏2（升级后3）；将1张手牌转化为音符；消耗。"
+      "summary": "1费技能，演奏2（升级后3）；先将1张手牌转化为音符，再抽1张牌；消耗。"
     },
     {
       "codeName": "LittleMiracles",
@@ -279,7 +279,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "14费，星空、保留；每当被丢弃或消耗，移回手牌并使耗能减少3（升级后4）；对所有敌人造成4点伤害14次。"
+      "summary": "14费星空攻击；本场战斗每生成1个星空音符，本牌耗能减少1；对一名敌人造成4点伤害14次；升级后获得保留。"
     },
     {
       "codeName": "EastOfTimeline",
@@ -311,7 +311,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；获得6格挡，将1张随机手牌转化为音符；升级后改为自行选择。"
+      "summary": "1费；获得5点格挡，自行选择1张手牌并将其转化为音符；升级后格挡增加至8。"
     },
     {
       "codeName": "Yaaaaaa",
@@ -319,7 +319,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费；造成6伤害，抽3，丢弃本次抽到且当前费用不为1的牌；可以无限升级，每次升级使抽牌数增加1，并在名称末尾追加1个“啊”。"
+      "summary": "1费；造成9伤害，抽3，丢弃本次抽到且当前费用不为1的牌；可以无限升级，每次升级使抽牌数增加1，并在名称末尾追加1个“啊”。"
     },
     {
       "codeName": "MeteorAftermath",
@@ -330,8 +330,8 @@
       "summary": "0费消耗；获得2能量并抽牌直到手牌已满；下回合少获得2能量；升级后获得3能量。"
     },
     {
-      "codeName": "OnewayTrain",
-      "name": "单向列车",
+      "codeName": "CosmoSpice",
+      "name": "宇宙香料",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
@@ -343,7 +343,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费；本回合获得1层强音，消耗；升级后获得保留。"
+      "summary": "0费；本回合获得1层强音；升级后获得保留。"
     },
     {
       "codeName": "MeteorShower",
@@ -359,7 +359,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费，虚无、消耗。幽灵。（触发时获得1层缓冲）；将2张随机诅咒加入弃牌堆；升级后移除虚无。"
+      "summary": "1费，虚无、消耗。幽灵。（触发时获得1层无实体）；将2张随机诅咒加入弃牌堆；升级后移除虚无。"
     },
     {
       "codeName": "OdeToUltramarine",
@@ -415,7 +415,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费白卡星空技能；随机丢弃2张手牌并生成1个星空音符；升级后改为自行选择丢弃的牌。"
+      "summary": "1费白卡星空技能；自行选择并丢弃2张手牌，生成1个星空音符；升级后只需丢弃1张。"
     },
     {
       "codeName": "Finale",
@@ -431,7 +431,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "1费金卡群攻，造成2（升级后3）点伤害后将本牌伤害数字翻倍，演奏2。"
+      "summary": "1费金卡攻击，演奏1（升级后2）；对所有敌人造成3点伤害；起音时将本场战斗中的基础伤害翻倍。"
     },
     {
       "codeName": "DelusionalSketch",
@@ -455,7 +455,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费；保留。丢弃所有手牌，每张获得2点格挡；升级后每张获得3点格挡。"
+      "summary": "1费；保留。丢弃所有手牌，每张获得3点格挡；升级后每张获得4点格挡。"
     },
     {
       "codeName": "CowardRocket",
@@ -463,7 +463,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；获得4点格挡；若回合结束时仍在手牌中，进入演奏队列并演奏1；升级后格挡增加至6。"
+      "summary": "1费；获得6点格挡；若回合结束时仍在手牌中，进入演奏队列并演奏1；升级后格挡增加至8。"
     },
     {
       "codeName": "UniverseOf88Keys",
@@ -471,7 +471,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少2点；升级后基础伤害增加至10。"
+      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少3点；升级后基础伤害增加至10。"
     },
     {
       "codeName": "CubicPrism",
@@ -479,7 +479,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "X费攻击；对所有敌人造成3X点伤害并演奏X；升级后伤害增加至4X。"
+      "summary": "X费蓝卡攻击；演奏X，对所有敌人造成X点伤害X次；升级后演奏X+1。"
     },
     {
       "codeName": "LivingDream",
@@ -504,14 +504,6 @@
       "type": "Attack",
       "rarity": "Uncommon",
       "summary": "1费；先给予2层易伤，再造成6点伤害，将1张原版诅咒“疑虑”置入手牌；升级后易伤增加至3、伤害增加至8。"
-    },
-    {
-      "codeName": "TheCrowd",
-      "name": "随声附和",
-      "status": 1,
-      "type": "Skill",
-      "rarity": "Common",
-      "summary": "0费白卡，保留；生成2个随机基础音符；升级后改为选择生成0至3个随机基础音符。"
     },
     {
       "codeName": "Pale",
@@ -543,7 +535,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费，造成4点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至7。"
+      "summary": "1费，造成5点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至8。"
     },
     {
       "codeName": "Omnia",
@@ -583,7 +575,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费；抽2张牌，将1张苍白加入抽牌堆；升级后费用降为0。"
+      "summary": "0费；获得4点格挡，抽1张牌，将1张苍白加入抽牌堆；升级后格挡增加至6。"
     },
     {
       "codeName": "GuidingStars",
@@ -591,15 +583,15 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡星空攻击；造成10点伤害，将1张随机星空牌加入手牌；升级后获得保留。"
+      "summary": "2费蓝卡星空攻击；造成12点伤害，将1张随机星空牌加入手牌；升级后伤害增加至15。"
     },
     {
-      "codeName": "Relaaax",
-      "name": "放~松~",
+      "codeName": "StarryDrift",
+      "name": "星空漂流",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "3费蓝卡星空技能；获得16点格挡，下个回合开始时生成1个星空音符；升级后获得保留。"
+      "summary": "3费蓝卡星空技能；获得16点格挡，下个回合开始时生成1个星空音符；升级后改为生成2个。"
     },
     {
       "codeName": "SubduingTheGhosts",
@@ -615,7 +607,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡；演奏1，获得6点格挡并使所有敌人失去1点力量，消耗；升级后演奏增加至2。"
+      "summary": "2费蓝卡；演奏1，获得7点格挡并使所有敌人失去1点力量，消耗；升级后演奏增加至2。"
     },
     {
       "codeName": "PaleDread",
@@ -631,7 +623,15 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "2费金卡能力；每当一张牌结束演奏，将1张随机演奏牌加入手牌；升级后获得固有。"
+      "summary": "2费金卡能力；每当一张牌结束演奏，将1张随机演奏牌加入手牌；升级后变为1费。"
+    },
+    {
+      "codeName": "MindBrand",
+      "name": "心灵烙印",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Rare",
+      "summary": "2费金卡能力；状态音符会为所有敌人叠加受到伤害增加1点的标记；升级后立即生成1个状态音符。"
     },
     {
       "codeName": "SixthSense",
@@ -655,7 +655,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "3费金卡攻击；造成24点伤害，再随机生成伤害一半数量的基础音符；战斗中实时显示生成数；升级后伤害增加至28。"
+      "summary": "3费金卡攻击；造成24点伤害，再随机生成伤害一半数量的基础音符；战斗中实时显示生成数；升级后伤害增加至30。"
     },
     {
       "codeName": "HyakkiYagyo",
@@ -663,15 +663,31 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成等同于消耗堆牌数的伤害，对局中每有1张诅咒便重复一次；升级后在伤害前将2张随机诅咒加入弃牌堆。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中1名敌人生成1个诅咒音符，再将1张随机诅咒加入弃牌堆；升级后伤害增加至15。"
     },
     {
-      "codeName": "HelloWorld",
-      "name": "你好，世界！",
+      "codeName": "ElectricAngel",
+      "name": "电子天使",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
       "summary": "1费蓝卡能力；每回合开始时，从MGR卡池的1费牌中等概率选择1张加入手牌；升级后获得固有。"
+    },
+    {
+      "codeName": "CueStrike",
+      "name": "催奏",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "summary": "1费白卡攻击；造成6（9）点伤害，然后立即结算最右侧演奏牌的一次演奏。名称为临时名称，等待作者确认。"
+    },
+    {
+      "codeName": "MaliceEcho",
+      "name": "恶意回响",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。名称与升级效果为临时方案，等待作者确认。"
     }
   ],
   "relics": [

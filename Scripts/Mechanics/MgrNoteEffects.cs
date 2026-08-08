@@ -153,6 +153,18 @@ public static class MgrNoteEffects
 
                 await PowerCmd.Apply<WeakPower>(choiceContext, targets, amount, owner, cardSource: null);
                 await PowerCmd.Apply<VulnerablePower>(choiceContext, targets, amount, owner, cardSource: null);
+
+                if (owner.GetPower<MindBrandPower>() is { } mindBrand &&
+                    mindBrand.Amount > 0m)
+                {
+                    mindBrand.Flash();
+                    await PowerCmd.Apply<MindBrandMarkPower>(
+                        choiceContext,
+                        targets,
+                        mindBrand.Amount,
+                        owner,
+                        cardSource: null);
+                }
                 return;
             }
             case NoteKind.Curse:
@@ -170,7 +182,7 @@ public static class MgrNoteEffects
                 await PlayerCmd.GainEnergy(amount, player);
                 return;
             case NoteKind.Ghost:
-                await PowerCmd.Apply<BufferPower>(
+                await PowerCmd.Apply<IntangiblePower>(
                     choiceContext,
                     owner,
                     amount,

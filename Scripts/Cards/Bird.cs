@@ -68,5 +68,5 @@ public sealed class Bird : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(6m);
 }

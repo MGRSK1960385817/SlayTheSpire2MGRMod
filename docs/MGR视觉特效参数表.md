@@ -285,7 +285,7 @@
 - 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`。
 - 选人和地图资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
 - 卡面与文本能量图标：`Scripts/Characters/MgrCardPool.cs`、`MgrRelicPool.cs`、`MgrPotionPool.cs`，使用 `images/characters/energy_big.png` 与 `energy_text.png`。
-- 战斗能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`，使用从塔一移入的 `images/characters/energy/layer0.png` 至 `layer5.png` 与 `energyRefreshVFX.png`。绘制层级固定为 `后方恢复特效 → layer5 → layer4 → layer3 → layer2 → layer1 → layer0 顶部罩层 → 前方恢复特效 → 能量数字`；显式 `ZIndex` 避免节点重排后再次翻转。`MgrEnergyCounter` 不调用原版按子节点序号旋转的循环，仅使用塔一的 `-60 / +60 / -40 / +60 / +360` 度每秒五组速度。能量增加（包括通常的回合开始恢复）时，原版 `NEnergyCounter` 会同时重启前后两个 GPU 粒子容器：前后光环的峰值缩放分别为 `0.165` 与 `0.19`，生命周期分别为 `1.4s` 与 `1.6s`；当前 `energyRefreshVFX.png` 的长宽已经放大四倍，因此缩放曲线同步缩为原来的四分之一，实际屏幕尺寸保持不变。两道光环快速显现、以相反方向持续旋转，随后共同向中心收缩并淡出。
+- 战斗能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`，使用从塔一移入的 `images/characters/energy/layer0.png` 至 `layer5.png` 与 `energyRefreshVFX.png`。根节点 `MgrEnergyCounter.scale = (1.15, 1.15)` 是能量框与特效的统一尺寸倍率；数字节点 `Label.scale = (0.869565, 0.869565)` 使用其倒数抵消父级缩放，因此数字最终仍保持原尺寸。调整能量框整体大小时，应同步把 `Label.scale` 改为新倍率的倒数。绘制层级固定为 `后方恢复特效 → layer5 → layer4 → layer3 → layer2 → layer1 → layer0 顶部罩层 → 前方恢复特效 → 能量数字`；显式 `ZIndex` 避免节点重排后再次翻转。`MgrEnergyCounter` 不调用原版按子节点序号旋转的循环，仅使用塔一的 `-60 / +60 / -40 / +60 / +360` 度每秒五组速度。能量增加（包括通常的回合开始恢复）时，原版 `NEnergyCounter` 会同时重启前后两个 GPU 粒子容器：前后光环的峰值缩放分别为 `0.165` 与 `0.19`，生命周期分别为 `1.4s` 与 `1.6s`；当前 `energyRefreshVFX.png` 的长宽已经放大四倍，因此缩放曲线同步缩为原来的四分之一，再统一乘以上述 `1.15` 根节点倍率。两道光环快速显现、以相反方向持续旋转，随后共同向中心收缩并淡出。
 
 ### 战斗人物环境层
 

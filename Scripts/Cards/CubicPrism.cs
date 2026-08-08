@@ -1,8 +1,6 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -15,17 +13,14 @@ public sealed class CubicPrism : MgrCard
     private int _performanceX;
 
     protected override bool HasEnergyCostX => true;
-    public override int InitialPerformanceTurns => _performanceX;
+    public override int InitialPerformanceTurns =>
+        checked(_performanceX + (IsUpgraded ? 1 : 0));
 
     internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
         checked(
             Math.Max(_performanceX, resources.EnergySpent) +
+            (IsUpgraded ? 1 : 0) +
             MgrPerformanceModifierState.GetAdditionalPerformances(this));
-
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new DamageVar(3m, ValueProp.Move)
-    ];
 
     public CubicPrism() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
     {
@@ -39,7 +34,11 @@ public sealed class CubicPrism : MgrCard
         if (!cardPlay.IsAutoPlay)
             _performanceX = ResolveEnergyXValue();
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * _performanceX)
+        if (_performanceX <= 0 || combatState.HittableEnemies.Count == 0)
+            return;
+
+        await DamageCmd.Attack(_performanceX)
+            .WithHitCount(_performanceX)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .Execute(choiceContext);
@@ -53,5 +52,7 @@ public sealed class CubicPrism : MgrCard
         return Task.CompletedTask;
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1m);
+    protected override void OnUpgrade()
+    {
+    }
 }

@@ -9,14 +9,14 @@ using STS2RitsuLib.Scaffolding.Content;
 namespace SlayTheSpire2MGRMod.Powers;
 
 [RegisterPower]
-public sealed class RelaaaxPower : ModPowerTemplate
+public sealed class StarryDriftPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/powers/RelaaaxPower.png",
-        BigIconPath: $"{Entry.ResPath}/images/powers/RelaaaxPower.png");
+        IconPath: $"{Entry.ResPath}/images/powers/StarryDriftPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/StarryDriftPower.png");
 
     public override async Task AfterPlayerTurnStart(
         PlayerChoiceContext choiceContext,

@@ -168,10 +168,10 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, 100);
         NoteKind kind = roll switch
         {
-            < 37 => NoteKind.Attack,
-            < 74 => NoteKind.Skill,
-            < 81 => NoteKind.Status,
-            < 95 => NoteKind.Power,
+            < 36 => NoteKind.Attack,
+            < 72 => NoteKind.Skill,
+            < 80 => NoteKind.Status,
+            < 96 => NoteKind.Power,
             _ => NoteKind.Curse
         };
 
@@ -261,15 +261,34 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// </summary>
     public static async Task<bool> CopyRightmostNote(
         PlayerChoiceContext choiceContext,
-        Player player)
-    {
-        MgrCombatState state = MgrCombatStateStore.For(player);
-        MgrNote? rightmost = state.Phrase.Notes.LastOrDefault();
-        if (rightmost is null)
-            return false;
+        Player player) =>
+        await CopyRightmostNotes(choiceContext, player, 1) > 0;
 
-        await ChannelNote(choiceContext, player, rightmost.Kind);
-        return true;
+    /// <summary>
+    /// Copies a snapshot of the requested rightmost notes in their original
+    /// left-to-right order. Snapshotting prevents a completed chord from changing
+    /// which notes belong to this copy operation.
+    /// </summary>
+    public static async Task<int> CopyRightmostNotes(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        int count)
+    {
+        if (count <= 0)
+            return 0;
+
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        NoteKind[] snapshot = state.Phrase.Notes
+            .TakeLast(count)
+            .Select(note => note.Kind)
+            .ToArray();
+        if (snapshot.Length == 0)
+            return 0;
+
+        foreach (NoteKind kind in snapshot)
+            await ChannelNote(choiceContext, player, kind);
+
+        return snapshot.Length;
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ public sealed class CowardRocket : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4m, ValueProp.Move)
+        new BlockVar(6m, ValueProp.Move)
     ];
 
     public CowardRocket() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)

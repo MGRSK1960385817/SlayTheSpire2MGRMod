@@ -71,6 +71,7 @@ anchors_preset = 0
 offset_right = 128.0
 offset_bottom = 128.0
 pivot_offset = Vector2(64, 64)
+scale = Vector2(1.08, 1.08)
 script = ExtResource("1_counter_script")
 
 [node name="EnergyVfxBack" type="Node2D" parent="."]
@@ -224,6 +225,8 @@ offset_right = -16.0
 offset_bottom = 29.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(48, 93)
+scale = Vector2(0.93 , 0.93)
 theme_override_colors/font_color = Color(1, 0.964706, 0.886275, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.188235)
 theme_override_colors/font_outline_color = Color(0.3529412, 0.254902, 0.129412, 1)

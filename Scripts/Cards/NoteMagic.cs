@@ -16,7 +16,8 @@ public sealed class NoteMagic : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move)
+        new BlockVar(6m, ValueProp.Move),
+        new IntVar("Copies", 1m)
     ];
 
     public NoteMagic() : base(
@@ -30,8 +31,12 @@ public sealed class NoteMagic : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await MgrNoteSystem.CopyRightmostNote(choiceContext, Owner);
+        await MgrNoteSystem.CopyRightmostNotes(
+            choiceContext,
+            Owner,
+            DynamicVars["Copies"].IntValue);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
+    protected override void OnUpgrade() =>
+        DynamicVars["Copies"].UpgradeValueBy(1m);
 }

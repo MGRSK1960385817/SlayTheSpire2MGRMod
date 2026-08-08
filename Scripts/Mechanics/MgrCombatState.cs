@@ -10,6 +10,7 @@ public sealed class MgrCombatState
 {
     public PhraseState Phrase { get; } = new();
     public int TotalNotesGenerated { get; private set; }
+    public int StarryNotesGeneratedThisCombat { get; private set; }
     public int NotesGeneratedThisTurn { get; private set; }
     public int ChordsResolvedThisCombat { get; private set; }
     public int ChordsResolvedThisTurn { get; private set; }
@@ -32,6 +33,8 @@ public sealed class MgrCombatState
         ArgumentNullException.ThrowIfNull(note);
         Phrase.Add(note);
         TotalNotesGenerated++;
+        if (note.Kind == NoteKind.Starry)
+            StarryNotesGeneratedThisCombat++;
         NotesGeneratedThisTurn++;
 
         LastResolution = Phrase.IsComplete ? ResolveCompletedPhrase() : null;

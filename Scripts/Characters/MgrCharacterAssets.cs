@@ -24,7 +24,10 @@ internal static class MgrCharacterAssets
             RestSiteAnimPath: $"{MgrCharacter.SceneRoot}/Mgr_rest_site.tscn"))
         .WithUi(new CharacterUiAssetSet(
             IconTexturePath: $"{MgrCharacter.ImageRoot}/Mgr_character_icon.png",
-            IconOutlineTexturePath: $"{MgrCharacter.ImageRoot}/Mgr_character_icon_outline.png",
+            // Reuse the regular icon instead of maintaining a separate outline asset.
+            // The game still requests this texture in Ancient dialogue, the bestiary,
+            // and multiplayer vote UI, so leaving it null would fall back to Ironclad.
+            IconOutlineTexturePath: $"{MgrCharacter.ImageRoot}/Mgr_character_icon.png",
             IconPath: $"{MgrCharacter.SceneRoot}/Mgr_character_icon.tscn",
             CharacterSelectBgPath: $"{MgrCharacter.SceneRoot}/Mgr_character_select_bg.tscn",
             CharacterSelectIconPath: $"{MgrCharacter.ImageRoot}/Mgr_character_select.png",

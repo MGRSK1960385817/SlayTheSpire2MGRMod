@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
@@ -12,11 +13,19 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "heat_abnormal")]
 public sealed class HeatAbnormal : MgrCard
 {
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        MgrHoverTips.BaseDamage()
+    ];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(2m, ValueProp.Move),
-        new IntVar("Performance", 2m)
+        new DamageVar(3m, ValueProp.Move),
+        new IntVar("Performance", 1m)
     ];
+
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseStart;
 
     public override int InitialPerformanceTurns =>
         DynamicVars["Performance"].IntValue;
@@ -36,23 +45,24 @@ public sealed class HeatAbnormal : MgrCard
         if (CombatState is not { } combatState)
             return;
 
+        bool isStarting = IsPhraseStart;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .WithHitFx("vfx/vfx_starry_impact")
             .Execute(choiceContext);
 
-        // Increase the card's actual DamageVar by its current amount. The next
-        // play therefore displays twice the card number, while FromCard still
-        // lets Strength, enchantments and other powered modifiers apply normally.
-        MgrCombatCardMutationState.Increase(
-            this,
-            "Damage",
-            DynamicVars.Damage.BaseValue);
+        if (isStarting)
+        {
+            MgrCombatCardMutationState.Increase(
+                this,
+                "Damage",
+                DynamicVars.Damage.BaseValue);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
+        DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 }

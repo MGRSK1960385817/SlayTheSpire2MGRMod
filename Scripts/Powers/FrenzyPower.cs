@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Mechanics;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -12,38 +12,43 @@ namespace SlayTheSpire2MGRMod.Powers;
 [RegisterPower]
 public sealed class FrenzyPower : ModPowerTemplate
 {
-    private bool _triggeredThisTurn;
-
     public override PowerType Type => PowerType.Buff;
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public override PowerStackType StackType => PowerStackType.Single;
 
     public override PowerAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/powers/FrenzyPower.png",
         BigIconPath: $"{Entry.ResPath}/images/powers/FrenzyPower.png");
 
-    public override async Task AfterCardDrawn(
-        PlayerChoiceContext choiceContext,
+    public override bool TryModifyKeywordsInCombat(
         CardModel card,
-        bool fromHandDraw)
+        ISet<CardKeyword> keywords)
     {
-        if (_triggeredThisTurn || card.Owner.Creature != Owner || card.Type != CardType.Curse || Owner.Player is not { } player)
-            return;
-
-        int triggers = Math.Max(0, (int)Amount);
-        if (triggers == 0)
-            return;
-
-        _triggeredThisTurn = true;
-        Flash();
-        await CardPileCmd.Draw(choiceContext, triggers, player);
+        return card.Owner == Owner.Player &&
+            card.Type is CardType.Status or CardType.Curse &&
+            keywords.Remove(CardKeyword.Unplayable);
     }
 
-    public override Task AfterPlayerTurnStart(
+    public override async Task AfterCardPlayed(
         PlayerChoiceContext choiceContext,
-        MegaCrit.Sts2.Core.Entities.Players.Player player)
+        CardPlay cardPlay)
     {
-        if (player.Creature == Owner)
-            _triggeredThisTurn = false;
-        return Task.CompletedTask;
+        CardModel card = cardPlay.Card;
+        if (card.Owner != Owner.Player ||
+            card.Type is not (CardType.Status or CardType.Curse) ||
+            !card.GetKeywordsWithSources(KeywordSources.Local)
+                .Contains(CardKeyword.Unplayable))
+        {
+            return;
+        }
+
+        Flash();
+        await CreatureCmd.Damage(
+            choiceContext,
+            Owner,
+            2m,
+            ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move,
+            Owner,
+            cardSource: card,
+            cardPlay: cardPlay);
     }
 }

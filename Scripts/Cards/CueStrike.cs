@@ -9,19 +9,19 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hyakki_yagyo")]
-public sealed class HyakkiYagyo : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cue_strike")]
+public sealed class CueStrike : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move)
+        new DamageVar(6m, ValueProp.Move)
     ];
 
-    public HyakkiYagyo() : base(
-        2,
+    public CueStrike() : base(
+        1,
         CardType.Attack,
-        CardRarity.Rare,
-        TargetType.AllEnemies)
+        CardRarity.Common,
+        TargetType.AnyEnemy)
     {
     }
 
@@ -29,23 +29,17 @@ public sealed class HyakkiYagyo : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
-        if (CombatState is not { } combatState)
-            return;
-
-        int enemiesHit = combatState.HittableEnemies.Count;
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
-            .TargetingAllOpponents(combatState)
+            .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
-        for (int index = 0; index < enemiesHit; index++)
-            await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
-
-        await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Discard);
+        await MgrPerformanceSystem.TriggerRightmostQueuedCardOnceAndConsume(
+            choiceContext,
+            Owner);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4m);
-    }
+    protected override void OnUpgrade() =>
+        DynamicVars.Damage.UpgradeValueBy(3m);
 }

@@ -169,6 +169,28 @@ public static class MgrPerformanceVisuals
         return rack;
     }
 
+    /// <summary>
+    /// Returns an MGR-owned temporary card to Tower 2's global NCard pool.
+    /// The native pool reset restores position, scale and modulation, but does
+    /// not restore CanvasItem ordering. Without this normalization, a later hand,
+    /// grid or reward card can inherit the performance preview's elevated layer
+    /// and render above an unrelated selection screen.
+    /// </summary>
+    private static void ReleaseTemporaryCard(NCard card)
+    {
+        if (!GodotObject.IsInstanceValid(card))
+            return;
+
+        card.PlayPileTween?.Kill();
+        card.PlayPileTween = null;
+        card.ZIndex = 0;
+        card.ZAsRelative = true;
+        card.ShowBehindParent = false;
+        card.PivotOffset = Vector2.Zero;
+        card.MouseFilter = Control.MouseFilterEnum.Ignore;
+        card.QueueFreeSafely();
+    }
+
     private sealed class PerformanceRack : IDisposable
     {
         // Cards are intentionally larger than the old rack and overlap heavily,
@@ -548,7 +570,7 @@ public static class MgrPerformanceVisuals
             tween.Chain().TweenCallback(Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(playedCard))
-                    playedCard.QueueFreeSafely();
+                    ReleaseTemporaryCard(playedCard);
             }));
         }
 
@@ -655,6 +677,7 @@ public static class MgrPerformanceVisuals
         private readonly MgrPerformanceCounterVisual _remainingCounter;
         private Tween? _pulseTween;
         private NCard? _hoverPreview;
+        private Tween? _hoverPreviewTween;
         private int _baseLayer;
         private bool _isTriggering;
 
@@ -980,8 +1003,8 @@ public static class MgrPerformanceVisuals
                 CardPreviewMode.Normal);
             PositionHoverPreview();
 
-            var tween = _hoverPreview.CreateTween();
-            tween.TweenProperty(
+            _hoverPreviewTween = _hoverPreview.CreateTween();
+            _hoverPreviewTween.TweenProperty(
                     _hoverPreview,
                     "scale",
                     MgrVisualTuning.Performances.PreviewScale,
@@ -1028,8 +1051,11 @@ public static class MgrPerformanceVisuals
             if (_hoverPreview is null)
                 return;
 
+            _hoverPreviewTween?.Kill();
+            _hoverPreviewTween = null;
+
             if (GodotObject.IsInstanceValid(_hoverPreview))
-                _hoverPreview.QueueFreeSafely();
+                ReleaseTemporaryCard(_hoverPreview);
 
             _hoverPreview = null;
         }
@@ -1056,7 +1082,7 @@ public static class MgrPerformanceVisuals
             DetachAndFreeDecoration(_idleEdge);
 
             if (GodotObject.IsInstanceValid(_cardNode))
-                _cardNode.QueueFreeSafely();
+                ReleaseTemporaryCard(_cardNode);
 
             if (GodotObject.IsInstanceValid(_anchor))
                 _anchor.QueueFree();

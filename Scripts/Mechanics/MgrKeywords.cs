@@ -78,7 +78,7 @@ public static class MgrKeywords
             kinds |= MgrKeywordKind.Performance;
 
         if (card.IsStarryCard)
-            kinds |= MgrKeywordKind.Starry | MgrKeywordKind.StarryNote;
+            kinds |= MgrKeywordKind.Starry;
 
         kinds |= card.NoteOverride switch
         {
@@ -87,7 +87,10 @@ public static class MgrKeywords
             NoteKind.Power => MgrKeywordKind.PowerNote,
             NoteKind.Status => MgrKeywordKind.StatusNote,
             NoteKind.Curse => MgrKeywordKind.CurseNote,
-            NoteKind.Starry => MgrKeywordKind.StarryNote,
+            // Starry card identity already has its own explanatory keyword.
+            // Starry Note is added separately only when the card's rules text
+            // explicitly refers to that Note type.
+            NoteKind.Starry => MgrKeywordKind.None,
             NoteKind.Ghost => MgrKeywordKind.GhostNote,
             NoteKind.OmniaNote => MgrKeywordKind.OmniaNote,
             _ => MgrKeywordKind.None
@@ -123,10 +126,7 @@ public static class MgrKeywords
     private static MgrKeywordKind InferKinds(MgrCard card) => card switch
     {
         LittleParade => MgrKeywordKind.AttackNote | MgrKeywordKind.SkillNote,
-        LightSong => MgrKeywordKind.Performance |
-                     MgrKeywordKind.BasicNotes |
-                     MgrKeywordKind.StarryNote |
-                     MgrKeywordKind.GhostNote,
+        LightSong => MgrKeywordKind.Performance,
         MaguroStrike => MgrKeywordKind.AttackNote,
         FlowerFuneral => MgrKeywordKind.AttackNote,
         SatelliteGirl => MgrKeywordKind.StarryNote,
@@ -141,13 +141,14 @@ public static class MgrKeywords
         EastOfTimeline => MgrKeywordKind.AttackNote,
         Higan => MgrKeywordKind.Forte,
         SpringStorm => MgrKeywordKind.Forte,
+        MeteorShower => MgrKeywordKind.StarryNote,
         Finale => MgrKeywordKind.AttackNote,
         Adios => MgrKeywordKind.Performance,
         Encore => MgrKeywordKind.Performance,
         MindMirage => MgrKeywordKind.PowerNote,
         Chorus => MgrKeywordKind.BasicNotes,
         Futariboshi => MgrKeywordKind.StarryNote,
-        HelloWorld => MgrKeywordKind.None,
+        ElectricAngel => MgrKeywordKind.None,
         DelusionalSketch => MgrKeywordKind.Performance,
         DualLovers => MgrKeywordKind.Performance | MgrKeywordKind.AttackNote,
         CowardRocket => MgrKeywordKind.Performance,
@@ -158,8 +159,9 @@ public static class MgrKeywords
         ChaosMagic => MgrKeywordKind.Performance,
         CrimeAndPunishment => MgrKeywordKind.Forte,
         GalaxyLamp => MgrKeywordKind.StarryNote,
-        TheCrowd => MgrKeywordKind.BasicNotes,
-        TheCrowdChoice => MgrKeywordKind.BasicNotes,
+        Regulus => MgrKeywordKind.StarryNote,
+        StarryDrift => MgrKeywordKind.StarryNote,
+        HyakkiYagyo => MgrKeywordKind.CurseNote,
         Omnia => MgrKeywordKind.OmniaNote,
         _ => MgrKeywordKind.None
     };

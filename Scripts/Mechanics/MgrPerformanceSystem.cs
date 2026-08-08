@@ -284,6 +284,18 @@ public static class MgrPerformanceSystem
         Player player) => ConsumeOnePass(choiceContext, player);
 
     /// <summary>
+    /// Immediately resolves one ordinary Performance step for only the
+    /// rightmost queued card. Entries are stored rightmost-first, matching the
+    /// rack layout and the existing rightmost-card modifier helpers.
+    /// </summary>
+    public static Task TriggerRightmostQueuedCardOnceAndConsume(
+        PlayerChoiceContext choiceContext,
+        Player player) => ConsumeOnePass(
+            choiceContext,
+            player,
+            rightmostOnly: true);
+
+    /// <summary>
     /// Immediately finishes every currently queued Performance card without
     /// playing its remaining steps. Cards use their normal completion
     /// destination and still receive their Performance-finished hook.
@@ -409,7 +421,8 @@ public static class MgrPerformanceSystem
 
     private static async Task ConsumeOnePass(
         PlayerChoiceContext choiceContext,
-        Player player)
+        Player player,
+        bool rightmostOnly = false)
     {
         if (ShouldStopPerformanceSequence(player) ||
             !MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
@@ -418,7 +431,9 @@ public static class MgrPerformanceSystem
             return;
         }
 
-        MgrPerformanceEntry[] turnOrder = state.Entries.ToArray();
+        MgrPerformanceEntry[] turnOrder = rightmostOnly
+            ? state.Entries.Take(1).ToArray()
+            : state.Entries.ToArray();
         BeginPerformancePass(player);
         try
         {

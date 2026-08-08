@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -15,55 +16,45 @@ public sealed class Regulus : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4m, ValueProp.Move),
-        new IntVar("Hits", 14m),
-        new IntVar("CostReduction", 3m)
+        new IntVar("Hits", 14m)
     ];
 
     public override bool IsStarryCard => true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [CardKeyword.Retain];
-
-    public Regulus() : base(14, CardType.Attack, CardRarity.Rare, TargetType.AllEnemies)
+    public Regulus() : base(14, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (CombatState is not { } combatState)
-            return;
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)
-            .TargetingAllOpponents(combatState)
+            .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_starry_impact")
             .Execute(choiceContext);
     }
 
-    public override Task AfterCardDiscarded(
-        PlayerChoiceContext choiceContext,
-        CardModel card) => ReturnAfterLeavingPile(card);
-
-    public override Task AfterCardExhausted(
-        PlayerChoiceContext choiceContext,
+    public override bool TryModifyEnergyCostInCombat(
         CardModel card,
-        bool causedByEthereal) => ReturnAfterLeavingPile(card);
-
-    private async Task ReturnAfterLeavingPile(CardModel card)
+        decimal originalCost,
+        out decimal modifiedCost)
     {
-        if (!ReferenceEquals(card, this))
-            return;
+        modifiedCost = originalCost;
+        if (!ReferenceEquals(card, this) ||
+            !MgrCombatStateStore.TryGet(Owner, out MgrCombatState state) ||
+            state.StarryNotesGeneratedThisCombat <= 0)
+        {
+            return false;
+        }
 
-        EnergyCost.AddThisCombat(-DynamicVars["CostReduction"].IntValue);
-        // This is an existing combat card, not a generated card. Keep the
-        // native pile-to-hand move, but do not add the slow centre-screen pile
-        // preview that generated hand cards such as Shivs never use.
-        await CardPileCmd.Add(this, PileType.Hand);
+        modifiedCost = Math.Max(
+            0m,
+            originalCost - state.StarryNotesGeneratedThisCombat);
+        return true;
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["CostReduction"].UpgradeValueBy(1m);
-    }
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }

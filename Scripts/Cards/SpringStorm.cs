@@ -16,9 +16,6 @@ public sealed class SpringStorm : MgrCard
         new PowerVar<FortePower>(1m)
     ];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [CardKeyword.Exhaust];
-
     public SpringStorm() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }

@@ -19,7 +19,7 @@ public sealed class Sacrifice : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move)
+        new BlockVar(5m, ValueProp.Move)
     ];
 
     public Sacrifice() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -32,25 +32,16 @@ public sealed class Sacrifice : MgrCard
         if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
             return;
 
-        CardModel? chosen;
-        if (IsUpgraded)
-        {
-            var prompt = new LocString(
-                "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION_CHOOSE");
-            var prefs = new CardSelectorPrefs(prompt, 1);
-            chosen = (await CardSelectCmd.FromHand(
-                choiceContext,
-                Owner,
-                prefs,
-                null,
-                this)).FirstOrDefault();
-        }
-        else
-        {
-            CardModel[] candidates = PileType.Hand.GetPile(Owner).Cards.ToArray();
-            chosen = Owner.RunState.Rng.CombatCardSelection.NextItem(candidates);
-        }
+        var prompt = new LocString(
+            "cards",
+            "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION_CHOOSE");
+        var prefs = new CardSelectorPrefs(prompt, 1);
+        CardModel? chosen = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            prefs,
+            null,
+            this)).FirstOrDefault();
 
         if (chosen is null)
             return;
@@ -62,5 +53,6 @@ public sealed class Sacrifice : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

@@ -14,7 +14,7 @@ public sealed class PleasingGhosts : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        HoverTipFactory.FromPower<BufferPower>()
+        HoverTipFactory.FromPower<IntangiblePower>()
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

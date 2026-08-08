@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "oneway_train")]
-public sealed class OnewayTrain : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cosmo_spice")]
+public sealed class CosmoSpice : MgrCard
 {
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -18,7 +18,7 @@ public sealed class OnewayTrain : MgrCard
         HoverTipFactory.FromPower<DexterityPower>()
     ];
 
-    public OnewayTrain() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public CosmoSpice() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

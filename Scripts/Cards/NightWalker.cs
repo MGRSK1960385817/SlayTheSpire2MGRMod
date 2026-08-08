@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
@@ -9,15 +10,20 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "night_monster")]
-public sealed class NightMonster : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "night_walker")]
+public sealed class NightWalker : MgrCard
 {
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        MgrHoverTips.CardsInCombat()
+    ];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(7m, ValueProp.Move)
     ];
 
-    public NightMonster() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+    public NightWalker() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
     {
     }
 

@@ -12,6 +12,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "light_up")]
 public sealed class LightUp : MgrCard
 {
+    protected override MgrGoldGlowCondition GoldGlowConditions =>
+        MgrGoldGlowCondition.PhraseStart;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4m, ValueProp.Move),
@@ -28,6 +31,7 @@ public sealed class LightUp : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        bool isStarting = IsPhraseStart;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)
@@ -35,7 +39,8 @@ public sealed class LightUp : MgrCard
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        MgrCombatCardMutationState.Increase(this, "Hits", 1m);
+        if (isStarting)
+            MgrCombatCardMutationState.Increase(this, "Hits", 1m);
     }
 
     protected override void OnUpgrade()
