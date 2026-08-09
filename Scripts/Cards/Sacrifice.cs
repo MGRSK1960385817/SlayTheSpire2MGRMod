@@ -15,6 +15,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "sacrifice")]
 public sealed class Sacrifice : MgrCard
 {
+    protected override bool TransformsCardsIntoNotes => true;
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

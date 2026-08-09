@@ -29,5 +29,7 @@ public sealed class PerpetualMicrophone : ModRelicTemplate
         await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Attack);
         await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Skill);
         await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Power);
+        if (player.PlayerCombatState is { TurnNumber: 1 })
+            await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Starry);
     }
 }

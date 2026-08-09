@@ -13,6 +13,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "otome_dissection")]
 public sealed class OtomeDissection : MgrCard
 {
+    protected override bool TransformsCardsIntoNotes => true;
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

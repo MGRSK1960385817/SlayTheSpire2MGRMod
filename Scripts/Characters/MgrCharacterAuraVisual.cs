@@ -1,4 +1,7 @@
 using Godot;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using SlayTheSpire2MGRMod.Mechanics;
 
 namespace SlayTheSpire2MGRMod.Characters;
 
@@ -6,25 +9,32 @@ namespace SlayTheSpire2MGRMod.Characters;
 /// Texture-free ambient presentation around MGR's combat character. Sparse
 /// stars, rising light motes and expanding wavy resonance rings share the soft
 /// gold/lavender/cyan language used by the Note rack and Performance staff.
-/// This node is visual-only and owns an independent RNG, so it cannot affect
-/// combat randomness or character animation state.
+/// This node is visual-only: it reads the existing combat Starry-Note counter
+/// to determine density and owns an independent RNG, so it cannot affect combat
+/// randomness or character animation state.
 /// </summary>
 public sealed partial class MgrCharacterAuraVisual : Node2D
 {
     [Export(PropertyHint.Range, "4,40,1")]
-    public int StarCount { get; set; } = 18;
+    public int StarCount { get; set; } = 10;
+
+    [Export(PropertyHint.Range, "0,8,1")]
+    public int StarsPerStarryNote { get; set; } = 2;
+
+    [Export(PropertyHint.Range, "10,160,1")]
+    public int MaximumStarCount { get; set; } = 80;
 
     [Export(PropertyHint.Range, "0,32,1")]
     public int LightMoteCount { get; set; } = 11;
 
     [Export(PropertyHint.Range, "80,360,1")]
-    public float HorizontalExtent { get; set; } = 235f;
+    public float HorizontalExtent { get; set; } = 216f;
 
     [Export(PropertyHint.Range, "80,320,1")]
-    public float VerticalExtent { get; set; } = 178f;
+    public float VerticalExtent { get; set; } = 164f;
 
     [Export]
-    public Vector2 AuraCenter { get; set; } = new(0f, -184f);
+    public Vector2 AuraCenter { get; set; } = new(0f, -170f);
 
     [Export(PropertyHint.Range, "0.1,2,0.05")]
     public float Intensity { get; set; } = 0.82f;
@@ -39,10 +49,16 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     public float ResonanceExpansion { get; set; } = 0.20f;
 
     [Export(PropertyHint.Range, "0,12,1")]
-    public int ConstellationLinkCount { get; set; } = 6;
+    public int ConstellationLinkCount { get; set; } = 2;
+
+    [Export(PropertyHint.Range, "0,4,1")]
+    public int LinksPerStarryNote { get; set; } = 1;
+
+    [Export(PropertyHint.Range, "2,96,1")]
+    public int MaximumConstellationLinkCount { get; set; } = 48;
 
     [Export(PropertyHint.Range, "60,220,1")]
-    public float ConstellationLinkDistance { get; set; } = 132f;
+    public float ConstellationLinkDistance { get; set; } = 122f;
 
     [Export(PropertyHint.Range, "0,1,0.01")]
     public float ConstellationLinkAffinity { get; set; } = 0.34f;
@@ -76,12 +92,17 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private readonly List<AmbientStar> _stars = [];
     private readonly List<LightMote> _motes = [];
     private readonly RandomNumberGenerator _random = new();
+    private Player? _player;
     private double _elapsed;
+    private int _activeConstellationLinkCount;
+    private int _lastStarryNoteCount = -1;
 
     public override void _Ready()
     {
         _random.Randomize();
+        TryResolvePlayer();
         RebuildParticles();
+        RefreshDynamicDensity(force: true);
         SetProcess(true);
         QueueRedraw();
     }
@@ -93,6 +114,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
 
         _elapsed += delta;
         float elapsed = (float)delta;
+        RefreshDynamicDensity(force: false);
 
         foreach (AmbientStar star in _stars)
         {
@@ -128,7 +150,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private void RebuildParticles()
     {
         _stars.Clear();
-        for (int index = 0; index < Math.Max(0, StarCount); index++)
+        for (int index = 0; index < GetTargetStarCount(); index++)
         {
             var star = new AmbientStar();
             RandomizeStar(star, startAtRandomAge: true);
@@ -141,6 +163,64 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             var mote = new LightMote();
             RandomizeMote(mote, startAtRandomAge: true);
             _motes.Add(mote);
+        }
+    }
+
+    private void RefreshDynamicDensity(bool force)
+    {
+        TryResolvePlayer();
+        int starryNoteCount = GetStarryNoteCount();
+        if (!force && starryNoteCount == _lastStarryNoteCount)
+            return;
+
+        _lastStarryNoteCount = starryNoteCount;
+        int targetStarCount = GetTargetStarCount();
+        while (_stars.Count < targetStarCount)
+        {
+            var star = new AmbientStar();
+            // Newly earned stars fade into the field from age zero instead of
+            // appearing at full brightness on the same frame as the Note.
+            RandomizeStar(star, startAtRandomAge: false);
+            _stars.Add(star);
+        }
+
+        if (_stars.Count > targetStarCount)
+            _stars.RemoveRange(targetStarCount, _stars.Count - targetStarCount);
+
+        _activeConstellationLinkCount = Math.Clamp(
+            ConstellationLinkCount + starryNoteCount * LinksPerStarryNote,
+            0,
+            Math.Max(0, MaximumConstellationLinkCount));
+    }
+
+    private int GetTargetStarCount() => Math.Clamp(
+        StarCount + GetStarryNoteCount() * StarsPerStarryNote,
+        0,
+        Math.Max(0, MaximumStarCount));
+
+    private int GetStarryNoteCount()
+    {
+        return _player is not null &&
+            MgrCombatStateStore.TryGet(_player, out MgrCombatState state)
+                ? Math.Max(0, state.StarryNotesGeneratedThisCombat)
+                : 0;
+    }
+
+    private void TryResolvePlayer()
+    {
+        if (_player is not null)
+            return;
+
+        Node? ancestor = GetParent();
+        while (ancestor is not null)
+        {
+            if (ancestor is NCreature creature && creature.Entity?.Player is Player player)
+            {
+                _player = player;
+                return;
+            }
+
+            ancestor = ancestor.GetParent();
         }
     }
 
@@ -197,8 +277,8 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         mote.Age = startAtRandomAge
             ? _random.RandfRange(0f, mote.Lifetime)
             : 0f;
-        mote.RiseDistance = _random.RandfRange(145f, 320f);
-        mote.SwayAmplitude = _random.RandfRange(8f, 28f);
+        mote.RiseDistance = _random.RandfRange(134f, 295f);
+        mote.SwayAmplitude = _random.RandfRange(7.5f, 26f);
         mote.SwayCycles = _random.RandfRange(0.55f, 1.25f);
         mote.Phase = _random.RandfRange(0f, Mathf.Tau);
         mote.Size = _random.RandfRange(0.9f, 2.2f);
@@ -250,7 +330,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     {
         int linksDrawn = 0;
         for (int firstIndex = 0;
-             firstIndex < _stars.Count && linksDrawn < ConstellationLinkCount;
+             firstIndex < _stars.Count && linksDrawn < _activeConstellationLinkCount;
              firstIndex++)
         {
             AmbientStar first = _stars[firstIndex];

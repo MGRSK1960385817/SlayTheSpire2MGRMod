@@ -20,7 +20,7 @@ public sealed class LittleAngel : ModRelicTemplate
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("SkillThreshold", 2m),
-        new CardsVar(3)
+        new CardsVar(4)
     ];
 
     public override RelicRarity Rarity => RelicRarity.Rare;

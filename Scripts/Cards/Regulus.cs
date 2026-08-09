@@ -16,10 +16,13 @@ public sealed class Regulus : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4m, ValueProp.Move),
-        new IntVar("Hits", 14m)
+        new IntVar("Hits", 14m),
+        new IntVar("CostReduction", 3m)
     ];
 
     public override bool IsStarryCard => true;
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Retain]);
 
     public Regulus() : base(14, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
@@ -37,24 +40,26 @@ public sealed class Regulus : MgrCard
             .Execute(choiceContext);
     }
 
-    public override bool TryModifyEnergyCostInCombat(
-        CardModel card,
-        decimal originalCost,
-        out decimal modifiedCost)
-    {
-        modifiedCost = originalCost;
-        if (!ReferenceEquals(card, this) ||
-            !MgrCombatStateStore.TryGet(Owner, out MgrCombatState state) ||
-            state.StarryNotesGeneratedThisCombat <= 0)
-        {
-            return false;
-        }
+    public override Task AfterCardDiscarded(
+        PlayerChoiceContext choiceContext,
+        CardModel card) => ReturnAfterLeavingPile(card);
 
-        modifiedCost = Math.Max(
-            0m,
-            originalCost - state.StarryNotesGeneratedThisCombat);
-        return true;
+    public override Task AfterCardExhausted(
+        PlayerChoiceContext choiceContext,
+        CardModel card,
+        bool causedByEthereal) => ReturnAfterLeavingPile(card);
+
+    private async Task ReturnAfterLeavingPile(CardModel card)
+    {
+        if (!ReferenceEquals(card, this))
+            return;
+
+        EnergyCost.AddThisCombat(-DynamicVars["CostReduction"].IntValue);
+        await CardPileCmd.Add(this, PileType.Hand);
     }
 
-    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
+    protected override void OnUpgrade()
+    {
+        DynamicVars["CostReduction"].UpgradeValueBy(1m);
+    }
 }

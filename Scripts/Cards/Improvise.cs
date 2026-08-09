@@ -9,15 +9,15 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "cue_strike")]
-public sealed class CueStrike : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "improvise")]
+public sealed class Improvise : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6m, ValueProp.Move)
     ];
 
-    public CueStrike() : base(
+    public Improvise() : base(
         1,
         CardType.Attack,
         CardRarity.Common,

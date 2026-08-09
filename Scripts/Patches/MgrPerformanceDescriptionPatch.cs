@@ -127,6 +127,10 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
+            if (mgrCard is ByakkoyaGirl)
+                CompactPerformanceExhaustLine(ref __result);
+            if (mgrCard is GalaxyLamp)
+                CompactPerformanceExhaustLine(ref __result);
             MoveInnateToFirstLine(mgrCard, ref __result);
             if (mgrCard is LightSong)
                 CompactLightSongIdentityLine(ref __result);
@@ -217,6 +221,22 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
 
         lines.RemoveAt(innateIndex);
         lines.Insert(0, innateText);
+        description = string.Join('\n', lines);
+    }
+
+    private static void CompactPerformanceExhaustLine(ref string description)
+    {
+        string exhaustText = CardKeyword.Exhaust.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(exhaustText))
+            return;
+
+        List<string> lines = description.Split('\n').ToList();
+        int exhaustIndex = lines.FindIndex(line => line.Trim() == exhaustText);
+        if (lines.Count == 0 || exhaustIndex < 0)
+            return;
+
+        lines.RemoveAt(exhaustIndex);
+        lines[0] = $"{lines[0].Trim()} {exhaustText}";
         description = string.Join('\n', lines);
     }
 

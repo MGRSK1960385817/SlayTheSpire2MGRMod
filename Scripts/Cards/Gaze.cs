@@ -11,8 +11,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "malice_echo")]
-public sealed class MaliceEcho : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "gaze")]
+public sealed class Gaze : MgrCard
 {
     public override bool GainsBlock => true;
 
@@ -25,7 +25,7 @@ public sealed class MaliceEcho : MgrCard
             static (_, target) => CountDistinctDebuffs(target))
     ];
 
-    public MaliceEcho() : base(
+    public Gaze() : base(
         1,
         CardType.Attack,
         CardRarity.Common,

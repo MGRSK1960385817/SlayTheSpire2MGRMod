@@ -15,6 +15,8 @@ internal static class MgrHoverTips
         "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT";
     private const string BaseDamageKey =
         "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE";
+    private const string TransformIntoNoteKey =
+        "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE";
 
     public static IHoverTip CardsInCombat() => new HoverTip(
         new LocString("static_hover_tips", $"{CardsInCombatKey}.title"),
@@ -28,6 +30,13 @@ internal static class MgrHoverTips
         new LocString("static_hover_tips", $"{BaseDamageKey}.description"))
     {
         Id = $"{SupplementalIdPrefix}{BaseDamageKey}"
+    };
+
+    public static IHoverTip TransformIntoNote() => new HoverTip(
+        new LocString("static_hover_tips", $"{TransformIntoNoteKey}.title"),
+        new LocString("static_hover_tips", $"{TransformIntoNoteKey}.description"))
+    {
+        Id = $"{SupplementalIdPrefix}{TransformIntoNoteKey}"
     };
 
     internal static bool IsSupplemental(IHoverTip hoverTip) =>

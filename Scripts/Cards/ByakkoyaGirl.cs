@@ -1,8 +1,6 @@
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
@@ -14,6 +12,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "byakkoya_girl")]
 public sealed class ByakkoyaGirl : MgrCard
 {
+    protected override bool TransformsCardsIntoNotes => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("Performance", 2m),
@@ -30,28 +30,35 @@ public sealed class ByakkoyaGirl : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (PileType.Hand.GetPile(Owner).Cards.Count > 0)
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
+
+        List<CardModel> hand = PileType.Hand.GetPile(Owner).Cards.ToList();
+        if (hand.Count == 0)
+            return;
+
+        int lowestCost = hand.Min(GetCurrentEnergyCost);
+        List<CardModel> candidates = hand
+            .Where(card => GetCurrentEnergyCost(card) == lowestCost)
+            .ToList();
+
+        // Unplayable Curses and Statuses both resolve to a practical cost of 0.
+        // When both categories tie, remove Status candidates so Curse cards get
+        // the requested priority. Other genuinely 0-cost cards remain eligible.
+        if (candidates.Any(card => card.Type == CardType.Curse) &&
+            candidates.Any(card => card.Type == CardType.Status))
         {
-            var prompt = new LocString(
-                "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_BYAKKOYA_GIRL_CHOOSE");
-            var prefs = new CardSelectorPrefs(prompt, 1);
-            CardModel? chosen = (await CardSelectCmd.FromHand(
-                choiceContext,
-                Owner,
-                prefs,
-                null,
-                this)).FirstOrDefault();
-            if (chosen is not null)
-            {
-                NoteKind kind = CardNoteResolver.Resolve(chosen);
-                await CardCmd.Exhaust(choiceContext, chosen);
-                await ChannelNote(choiceContext, kind);
-            }
+            candidates.RemoveAll(card => card.Type == CardType.Status);
         }
 
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
+        CardModel chosen = Owner.RunState.Rng.CombatCardSelection.NextItem(candidates)
+            ?? candidates[0];
+        NoteKind kind = CardNoteResolver.Resolve(chosen);
+        await CardCmd.Exhaust(choiceContext, chosen);
+        await ChannelNote(choiceContext, kind);
     }
+
+    private static int GetCurrentEnergyCost(CardModel card) =>
+        card.EnergyCost.GetAmountToSpend();
 
     protected override void OnUpgrade()
     {

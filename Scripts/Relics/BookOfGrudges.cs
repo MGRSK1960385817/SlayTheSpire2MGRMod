@@ -14,7 +14,7 @@ namespace SlayTheSpire2MGRMod.Relics;
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "book_of_grudges")]
 public sealed class BookOfGrudges : ModRelicTemplate
 {
-    private const int DamagePerExtraNote = 7;
+    private const int DamagePerExtraNote = 5;
     private int _totalDamageTaken;
 
     public override RelicRarity Rarity => RelicRarity.Common;

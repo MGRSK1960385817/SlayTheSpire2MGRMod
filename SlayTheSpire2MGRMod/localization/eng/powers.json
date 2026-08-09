@@ -61,5 +61,8 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_POWER.smartDescription": "Status Notes apply [blue]{Amount}[/blue] Mind Brand to ALL enemies.",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.title": "Mind Brand",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.description": "Take additional damage.",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.smartDescription": "Take [red]{Amount}[/red] additional damage."
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.smartDescription": "Take [red]{Amount}[/red] additional damage.",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.title": "Performance Tempo",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.description": "Your next manually played Performance card costs less.",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.smartDescription": "Your next manually played Performance card costs [blue]{Amount:energyIcons()}[/blue] less."
 }

@@ -12,6 +12,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "daybreak_frontline")]
 public sealed class DaybreakFrontline : MgrCard
 {
+    protected override bool TransformsCardsIntoNotes => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("Performance", 3m)

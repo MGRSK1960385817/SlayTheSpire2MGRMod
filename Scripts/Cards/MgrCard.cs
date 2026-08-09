@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Scaffolding.Content;
@@ -37,6 +38,18 @@ public abstract class MgrCard(
     /// shared base automatically.
     /// </summary>
     protected virtual MgrKeywordKind KeywordKinds => MgrKeywordKind.None;
+
+    /// <summary>
+    /// Adds the shared rules reminder to cards which turn existing cards into
+    /// Notes. The reminder is supplemental rather than a gameplay keyword, so
+    /// it is displayed after the card's ordinary keyword explanations.
+    /// </summary>
+    protected virtual bool TransformsCardsIntoNotes => false;
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        TransformsCardsIntoNotes
+            ? [MgrHoverTips.TransformIntoNote()]
+            : [];
 
     internal MgrKeywordKind DeclaredKeywordKinds => KeywordKinds;
     internal MgrGoldGlowCondition DeclaredGoldGlowConditions => GoldGlowConditions;

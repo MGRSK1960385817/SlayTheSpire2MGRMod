@@ -274,13 +274,14 @@
 | --- | --- | ---: |
 | 生成音符 | `audio/NoteChannel.ogg` | `0.2` |
 | 触发和弦 | `audio/Chord.ogg` | `0.2` |
-| 角色选择 | `audio/MGR_charselect.ogg` | `1.0` |
+| 角色选择 | `audio/MGR_charselect.ogg` | `1.0`；文件开头带 `0.18s` 快速柔和淡入 |
 
 ## 4. 角色 UI 与战斗环境特效
 
 这些位置优先在 Godot 场景编辑器中调整，不属于音符/演奏的集中动画参数：
 
 - 战斗人物：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character.tscn`。
+- 商店人物：`SlayTheSpire2MGRMod/scenes/characters/Mgr_merchant.tscn`。
 - 能量框：`SlayTheSpire2MGRMod/scenes/characters/Mgr_energy_counter.tscn`。
 - 选人背景：`SlayTheSpire2MGRMod/scenes/characters/Mgr_character_select_bg.tscn`。
 - 选人和地图资源映射：`Scripts/Characters/MgrCharacterAssets.cs`。
@@ -289,34 +290,42 @@
 
 ### 战斗人物环境层
 
-`Mgr_character.tscn` 的 `AmbientAura` 节点挂载 `Scripts/Characters/MgrCharacterAuraVisual.cs`。该节点位于人物卡图背后，只负责代码绘制，不依赖额外图片资源，也不读取任何战斗状态。它包含：
+`Mgr_character.tscn` 的 `AmbientAura` 节点挂载 `Scripts/Characters/MgrCharacterAuraVisual.cs`。该节点位于人物卡图背后，只负责代码绘制，不依赖额外图片资源；它只读取现有的“本场战斗已生成星空音符数”来调整密度，不修改战斗状态。它包含：
 
 - 在人物轮廓两侧和头顶随机亮起、渐隐并缓慢漂移的稀疏星点；
 - 少量从脚边上浮的柔光尘埃；
 - 黄白、薰衣草与浅青色的闭合波纹环，带着多重起伏从人物近处周期性向外舒展；
-- 最多六条极淡的短暂星座连线。
+- 初始少量极淡的短暂星座连线；本场战斗生成星空音符后，星点与连线会逐渐增多。
 
 参数直接作为 `MgrCharacterAuraVisual` 的 Godot 导出属性提供：
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `StarCount` | `18` | 同时维护的环境星点数量 |
+| `StarCount` | `10` | 战斗开始时维护的基础星点数量 |
+| `StarsPerStarryNote` | `2` | 本场战斗每生成1个星空音符，新增的目标星点数 |
+| `MaximumStarCount` | `80` | 动态星点数量上限 |
 | `LightMoteCount` | `11` | 缓慢上浮的光尘数量 |
-| `HorizontalExtent` | `235` | 星点和波纹环相对人物的横向参考范围 |
-| `VerticalExtent` | `178` | 星点和波纹环相对人物的纵向参考范围 |
-| `AuraCenter` | `(0, -184)` | 整套特效相对人物根节点的中心 |
+| `HorizontalExtent` | `216` | 星点和波纹环相对人物的横向参考范围 |
+| `VerticalExtent` | `164` | 星点和波纹环相对人物的纵向参考范围 |
+| `AuraCenter` | `(0, -170)` | 整套特效相对人物根节点的中心 |
 | `Intensity` | `0.82` | 所有特效透明度的总倍率 |
 | `ResonanceCycleSeconds` | `4.8s` | 每组波纹环完成一次扩散的周期 |
 | `ResonanceInnerScale` | `0.68` | 波纹环开始出现时相对参考范围的尺寸 |
 | `ResonanceExpansion` | `0.20` | 一轮过程中向外扩张的尺寸增量 |
 | `ResonanceWaveAmplitude` | `0.048` | 圆周起伏幅度；越大越不像规则圆形 |
 | `ResonanceWaveCount` | `7` | 每圈主要波峰数量 |
-| `ConstellationLinkCount` | `6` | 同时允许绘制的星座连线数量上限 |
-| `ConstellationLinkDistance` | `132` | 两颗星允许建立连线的最大距离 |
+| `ConstellationLinkCount` | `2` | 战斗开始时允许绘制的基础连线数量上限 |
+| `LinksPerStarryNote` | `1` | 本场战斗每生成1个星空音符，新增的连线数量上限 |
+| `MaximumConstellationLinkCount` | `48` | 动态连线数量上限 |
+| `ConstellationLinkDistance` | `122` | 两颗星允许建立连线的最大距离 |
 | `ConstellationLinkAffinity` | `0.34` | 星点成为连线起点的随机亲和阈值 |
 | `ConstellationLinkAlpha` | `0.15` | 星座连线的基础透明度倍率 |
 
 视觉随机数来自该节点自己的 `RandomNumberGenerator`，不会消耗或改变战斗 RNG。降低 `Intensity` 是整体减弱效果的首选；需要改变包围人物的范围时，再调整 `HorizontalExtent / VerticalExtent`。
+
+当前战斗人物的 `Visuals.scale` 为 `(0.35, 0.35)`，商店人物为
+`(0.34, 0.34)`。缩放时同时调整了人物中心、交互边界、地面阴影以及
+`AmbientAura` 的中心和范围，因此人物脚底位置与周围特效不会因缩小而脱节。
 
 ## 调参顺序
 

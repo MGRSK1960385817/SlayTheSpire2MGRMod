@@ -159,7 +159,6 @@ public static class MgrKeywords
         ChaosMagic => MgrKeywordKind.Performance,
         CrimeAndPunishment => MgrKeywordKind.Forte,
         GalaxyLamp => MgrKeywordKind.StarryNote,
-        Regulus => MgrKeywordKind.StarryNote,
         StarryDrift => MgrKeywordKind.StarryNote,
         HyakkiYagyo => MgrKeywordKind.CurseNote,
         Omnia => MgrKeywordKind.OmniaNote,

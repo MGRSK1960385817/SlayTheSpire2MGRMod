@@ -61,5 +61,8 @@
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_POWER.smartDescription": "状态音符会给予所有敌人 [blue]{Amount}[/blue] 层心灵烙印。",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.title": "心灵烙印",
   "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.description": "受到的伤害提高。",
-  "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.smartDescription": "受到的伤害提高 [red]{Amount}[/red] 点。"
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_MIND_BRAND_MARK_POWER.smartDescription": "受到的伤害提高 [red]{Amount}[/red] 点。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.title": "演奏节拍",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.description": "下一张手动打出的演奏牌耗能降低。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POWER_NEXT_PERFORMANCE_DISCOUNT_POWER.smartDescription": "下一张手动打出的演奏牌耗能减少[blue]{Amount:energyIcons()}[/blue]。"
 }

@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -26,6 +27,7 @@ public sealed class PaleFlower : ModRelicTemplate
 
         Flash();
         CardModel pale = combatState.CreateCard(ModelDb.Card<Pale>(), Owner);
+        CardCmd.Upgrade(pale, CardPreviewStyle.None);
         await CardPileCmd.AddGeneratedCardToCombat(pale, PileType.Hand, Owner);
     }
 }

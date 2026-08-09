@@ -263,7 +263,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费技能，演奏2（升级后3）；先将1张手牌转化为音符，再抽1张牌；消耗。"
+      "summary": "1费技能，演奏2（升级后3）；先抽1张牌，再随机将1张费用最低的手牌转化为音符；诅咒与状态同费时优先诅咒；消耗。"
     },
     {
       "codeName": "LittleMiracles",
@@ -279,7 +279,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "14费星空攻击；本场战斗每生成1个星空音符，本牌耗能减少1；对一名敌人造成4点伤害14次；升级后获得保留。"
+      "summary": "14费星空、保留攻击；被丢弃或消耗时移回手牌并使本场战斗耗能减少3（升级后4）；对一名敌人造成4点伤害14次。"
     },
     {
       "codeName": "EastOfTimeline",
@@ -674,20 +674,36 @@
       "summary": "1费蓝卡能力；每回合开始时，从MGR卡池的1费牌中等概率选择1张加入手牌；升级后获得固有。"
     },
     {
-      "codeName": "CueStrike",
-      "name": "催奏",
+      "codeName": "Improvise",
+      "name": "即兴",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费白卡攻击；造成6（9）点伤害，然后立即结算最右侧演奏牌的一次演奏。名称为临时名称，等待作者确认。"
+      "summary": "1费白卡攻击；造成6（9）点伤害，然后立即结算最右侧演奏牌的一次演奏。"
     },
     {
-      "codeName": "MaliceEcho",
-      "name": "恶意回响",
+      "codeName": "Gaze",
+      "name": "注视",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。名称与升级效果为临时方案，等待作者确认。"
+      "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。"
+    },
+    {
+      "codeName": "PowerPrelude",
+      "name": "能力前奏",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "1费蓝卡技能；生成2个能力音符；起音时在本回合获得1层强音；消耗，升级后移除消耗。名称与图片暂定。"
+    },
+    {
+      "codeName": "PerformanceTempo",
+      "name": "演奏节拍",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "2费蓝卡技能；获得10（14）点格挡；下一张手动打出的演奏牌耗能减少1。名称与图片暂定。"
     }
   ],
   "relics": [
@@ -703,7 +719,7 @@
       "name": "永续麦克风",
       "status": 1,
       "rarity": "Ancient",
-      "summary": "由欧洛巴斯之触将迷你麦克风精炼获得；每回合开始时，依次生成攻击、技能和能力音符各1个。"
+      "summary": "由欧洛巴斯之触将迷你麦克风精炼获得；每回合开始时依次生成攻击、技能和能力音符各1个，第一回合额外生成1个星空音符。"
     },
     {
       "codeName": "MgrFumo",
@@ -711,13 +727,6 @@
       "status": 1,
       "rarity": "Rare",
       "summary": "战斗开始时，获得 1 层强音。"
-    },
-    {
-      "codeName": "WitchHat",
-      "name": "魔女帽",
-      "status": 1,
-      "rarity": "Common",
-      "summary": "回合结束时获得2点格挡；生命不高于50%时改为 4 点。"
     },
     {
       "codeName": "MiniStage",
@@ -731,21 +740,21 @@
       "name": "记仇小本本",
       "status": 1,
       "rarity": "Common",
-      "summary": "战斗开始生成1个攻击音符；获得后累计每受到7点实际伤害，额外生成1个。"
+      "summary": "战斗开始生成1个攻击音符；获得后累计每受到5点实际伤害，额外生成1个。"
     },
     {
       "codeName": "Metronome",
       "name": "节拍器",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "每第7次和弦将触发两次（参考双截棍的实现）"
+      "summary": "每第7次和弦触发两次；计数像双截棍、钢笔尖一样跨越战斗保留。"
     },
     {
       "codeName": "BlackGoldRecord",
       "name": "黑金唱片",
       "status": 1,
       "rarity": "Shop",
-      "summary": "每当一张演奏牌结束时，获得1金币。"
+      "summary": "每当一张演奏牌结束时，获得3金币。"
     },
     {
       "codeName": "GuitarPick",
@@ -759,7 +768,7 @@
       "name": "苍白花",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "战斗开始时，将1张苍白置入手牌。"
+      "summary": "战斗开始时，将1张升级后的苍白置入手牌。"
     },
     {
       "codeName": "Maguroyaki",
@@ -773,7 +782,7 @@
       "name": "小天使",
       "status": 1,
       "rarity": "Rare",
-      "summary": "回合开始时，若初始抽牌中抽到的技能牌少于2张，抽3张牌。"
+      "summary": "回合开始时，若初始抽牌中抽到的技能牌少于2张，抽4张牌。"
     }
   ]
 }
