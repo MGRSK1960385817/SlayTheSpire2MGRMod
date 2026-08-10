@@ -215,8 +215,9 @@ flowchart LR
 | 音符漂浮与呼吸差异 | `Bob* / Breath* / InitialScaleVariance / PhaseVariance` | 上下 `5px`；缩放约 `±5.5%`；速度随机约 `±20%` |
 | 演奏牌整排位置、大小、重叠 | `Performances.RackOffset / CardOffsetY / MiniatureScale / FilledRackCardThreshold / UnfilledCardSpacing / FilledRack*Width` | `(-20,-432)`、相对谱线上移 `14px`、`0.345`、阈值 `5`、未满间距 `82`、已满宽度 `272→370` |
 | 演奏牌入队 | `EnterQueueSeconds / EntryAnimationAccelerationPerCard / MinimumEntryAnimationDurationScale` | `0.20s → 0.15s → 0.10s`，第三张及以后保持 `0.10s` |
-| 演奏触发跳动 | `TriggerScale / TriggerGrowSeconds / TriggerSettleSeconds` | `1.2`、`0.14s`、`0.18s` |
-| 演奏结束离队 | `ExitSeconds` | `0.38s` |
+| 演奏触发跳动 | `TriggerScale / TriggerGrowSeconds / TriggerSettleSeconds` | `1.2`、`0.12s`、`0.15s` |
+| 演奏扫线前后摇 | `StaffPlayheadApproachSeconds / StaffPlayheadDepartureSeconds` | `0.17s`、`0.18s` |
+| 演奏结束离队 | `ExitSeconds` | `0.34s` |
 | 悬停详情大小与位置 | `PreviewScale / PreviewGrowSeconds / PreviewMouseXOffset` | `0.8`、`0.12s`、鼠标右侧 `34px` |
 | 战斗人物环境特效 | `MgrCharacterAuraVisual` 的导出属性 | 星点 `18`、光尘 `11`、范围 `235×178`、总强度 `0.82`、共鸣周期 `4.8s` |
 

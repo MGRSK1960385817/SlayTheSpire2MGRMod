@@ -37,6 +37,7 @@ public sealed class Regulus : MgrCard
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_starry_impact")
+            .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }
 

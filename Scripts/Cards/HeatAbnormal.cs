@@ -46,10 +46,20 @@ public sealed class HeatAbnormal : MgrCard
             return;
 
         bool isStarting = IsPhraseStart;
+        float vfxScale = MgrAttackVfx.ScaleByDamage(
+            DynamicVars.Damage.BaseValue,
+            referenceDamage: 3m,
+            baseScale: 0.6f,
+            growthPerDoubling: 0.18f,
+            maxScale: 1.35f);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
-            .WithHitFx("vfx/vfx_starry_impact")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateFireBurst(
+                target,
+                MgrAttackVfx.DefaultFireTint,
+                vfxScale))
+            .WithHitFx(null, null, "heavy_attack.mp3")
             .Execute(choiceContext);
 
         if (isStarting)

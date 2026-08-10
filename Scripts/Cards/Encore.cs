@@ -28,6 +28,7 @@ public sealed class Encore : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.slashPath)
             .Execute(choiceContext);
         MgrPerformanceSystem.AddPerformancesToRightmostQueuedCards(
             Owner,

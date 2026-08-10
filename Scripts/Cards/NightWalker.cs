@@ -41,7 +41,12 @@ public sealed class NightWalker : MgrCard
             .FromCard(this, cardPlay)
             .TargetingRandomOpponents(combatState)
             .WithHitCount(curseCount)
-            .WithHitFx("vfx/vfx_starry_impact")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateGaseousImpact(
+                target,
+                MgrAttackVfx.CursePurple,
+                0.9f))
+            .WithHitFx(null, null, "blunt_attack.mp3")
+            .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }
 

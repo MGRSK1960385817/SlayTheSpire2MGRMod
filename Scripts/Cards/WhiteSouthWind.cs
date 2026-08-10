@@ -13,7 +13,6 @@ namespace SlayTheSpire2MGRMod.Cards;
 public sealed class WhiteSouthWind : MgrCard
 {
     public override bool GainsBlock => true;
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -33,5 +32,5 @@ public sealed class WhiteSouthWind : MgrCard
         await CardCmd.Discard(choiceContext, cards);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(1m);
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }

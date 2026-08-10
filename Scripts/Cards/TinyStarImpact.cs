@@ -31,6 +31,7 @@ public sealed class TinyStarImpact : MgrCard
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .WithHitFx("vfx/vfx_starry_impact")
+            .SpawningHitVfxOnEachCreature()
             .Execute(choiceContext);
     }
 

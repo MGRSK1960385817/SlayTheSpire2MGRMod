@@ -37,10 +37,16 @@ public sealed class CubicPrism : MgrCard
         if (_performanceX <= 0 || combatState.HittableEnemies.Count == 0)
             return;
 
+        await MgrAttackVfx.PlaySweepingBeam(
+            this,
+            Owner.Creature,
+            combatState.HittableEnemies.ToList(),
+            MgrAttackVfx.StarPurple);
         await DamageCmd.Attack(_performanceX)
             .WithHitCount(_performanceX)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
+            .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }
 

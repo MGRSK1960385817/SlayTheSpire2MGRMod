@@ -9,6 +9,8 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 internal sealed partial class MgrPerformanceCardBurstVisual : Node2D
 {
+    public bool FreeWhenFinished { get; init; }
+
     private readonly float[] _angleOffsets = new float[
         MgrVisualTuning.Performances.CardBurstParticleCount];
     private readonly float[] _distanceScales = new float[
@@ -43,6 +45,11 @@ internal sealed partial class MgrPerformanceCardBurstVisual : Node2D
             _active = false;
             Visible = false;
             SetProcess(false);
+            if (FreeWhenFinished)
+            {
+                QueueFree();
+                return;
+            }
         }
 
         QueueRedraw();

@@ -16,7 +16,7 @@ public sealed class DaybreakFrontline : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 3m)
+        new IntVar("Performance", 4m)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -33,6 +34,11 @@ public sealed class Improvise : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitVfxNode(target => NStabVfx.Create(
+                target,
+                true,
+                VfxColor.Purple))
+            .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
 
         await MgrPerformanceSystem.TriggerRightmostQueuedCardOnceAndConsume(

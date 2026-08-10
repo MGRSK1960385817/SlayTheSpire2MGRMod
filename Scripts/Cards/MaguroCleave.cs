@@ -3,7 +3,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using Godot;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -31,11 +33,21 @@ public sealed class MaguroCleave : MgrCard
 
         decimal damage = DynamicVars.Damage.BaseValue +
             DynamicVars["BonusPerChord"].BaseValue * NoteState.ChordsResolvedThisTurn;
+        float vfxScale = MgrAttackVfx.ScaleByDamage(
+            damage,
+            DynamicVars.Damage.BaseValue,
+            baseScale: 0.9f,
+            growthPerDoubling: 0.35f,
+            maxScale: 1.75f);
 
         await DamageCmd.Attack(damage)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
-            .WithHitFx("vfx/vfx_attack_slash")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateHorizontalSlash(
+                target,
+                Colors.White,
+                vfxScale))
+            .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
     }
 

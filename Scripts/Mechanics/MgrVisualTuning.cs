@@ -183,13 +183,35 @@ public static class MgrVisualTuning
         public const float EntryAnimationAccelerationPerCard = 0.25f;
         public const float MinimumEntryAnimationDurationScale = 0.50f;
         public const float TriggerScale = 1.2f;
-        public const double TriggerGrowSeconds = 0.14;
-        public const double TriggerSettleSeconds = 0.18;
-        public const float SequentialTriggerAccelerationPerCard = 0.10f;
+        // Keep the in-place pulse readable, but let the playhead hand off to the
+        // next queued card sooner. These durations are presentation-only.
+        public const double TriggerGrowSeconds = 0.12;
+        public const double TriggerSettleSeconds = 0.15;
+        public const float SequentialTriggerDurationMultiplierPerCard = 0.90f;
         public const float MinimumSequentialTriggerDurationScale = 0.60f;
-        public const double ExitSeconds = 0.38;
+        // Only explicit cinematic anticipation waits are shortened while a card
+        // is being auto-played from the Performance rack. Gameplay commands are
+        // still awaited in full and therefore remain strictly ordered.
+        public const float PerformanceVfxWaitMultiplier = 0.70f;
+        public const double MinimumPerformanceVfxWaitSeconds = 0.05;
+        public const double ExitSeconds = 0.34;
         public const double PreviewGrowSeconds = 0.12;
         public const float PreviewMouseXOffset = 34f;
+
+        // Maguro Dash uses a presentation-only card silhouette to cut through
+        // the rack. It never enters the gameplay queue and therefore cannot
+        // affect Performance counters or result-pile routing.
+        public const int FinisherZIndex = 420;
+        public static readonly Vector2 FinisherCardSize = new(78f, 108f);
+        public const float FinisherEntryDistance = 128f;
+        public const double FinisherEntranceSeconds = 0.11;
+        public const double FinisherFirstStepSeconds = 0.14;
+        public const double FinisherStepAccelerationSeconds = 0.014;
+        public const double FinisherMinimumStepSeconds = 0.075;
+        public const float FinisherTrailLength = 112f;
+        public const float FinisherExitDistance = 150f;
+        public const double FinisherExitSeconds = 0.13;
+        public const float FinisherEndedCardExitDurationScale = 0.58f;
 
         // Four stationary corner brackets use the same fixed accent color as
         // the remaining-turn counter; no particles orbit the card.
@@ -266,8 +288,8 @@ public static class MgrVisualTuning
         public const int StaffSparkleCount = 20;
         public const float StaffSparkleRadius = 2.6f;
         public const float StaffSparkleVerticalHalfExtent = 112f;
-        public const double StaffPlayheadApproachSeconds = 0.20;
-        public const double StaffPlayheadDepartureSeconds = 0.22;
+        public const double StaffPlayheadApproachSeconds = 0.17;
+        public const double StaffPlayheadDepartureSeconds = 0.18;
         public const float StaffPlayheadEdgePadding = 38f;
         public const float StaffPlayheadHeight = 188f;
         public const float StaffPlayheadCoreWidth = 2.4f;

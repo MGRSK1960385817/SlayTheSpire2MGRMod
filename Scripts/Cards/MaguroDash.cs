@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -28,15 +29,22 @@ public sealed class MaguroDash : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await AttackAll(choiceContext, cardPlay);
-        int ended = await MgrPerformanceSystem.EndAllPerformances(choiceContext, Owner);
-        for (int index = 0; index < ended; index++)
-            await AttackAll(choiceContext, cardPlay);
+        await MgrPerformanceSystem.EndAllPerformancesWithFinisher(
+            choiceContext,
+            Owner,
+            this,
+            _ => AttackAll(choiceContext, cardPlay));
     }
 
     private Task AttackAll(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(Owner.Creature.CombatState!)
+            .WithHitVfxNode(target => MgrAttackVfx.CreateHorizontalSlash(
+                target,
+                Colors.White,
+                1.05f))
+            .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);

@@ -40,10 +40,18 @@ public sealed class Bird : MgrCard
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
         int notesToGenerate = GetNotesToGenerate(cardPlay.Target, cardPlay);
+        await MgrAttackVfx.PlayLargeMagicMissile(
+            this,
+            cardPlay.Target,
+            MgrAttackVfx.StarGold);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_starry_impact")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
+                target,
+                MgrAttackVfx.StarGold,
+                1.25f))
+            .WithHitFx(null, null, "heavy_attack.mp3")
             .Execute(choiceContext);
 
         for (int index = 0; index < notesToGenerate; index++)

@@ -35,6 +35,7 @@ public partial class Entry
         _runtimePatcher.RegisterPatch<MgrCharacterSelectSfxPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
+        _runtimePatcher.RegisterPatch<MgrManimaniTargetPreviewPatch>();
         if (!RitsuLibFramework.ApplyRequiredPatcher(
                 _runtimePatcher,
                 () => IsModActive = false,

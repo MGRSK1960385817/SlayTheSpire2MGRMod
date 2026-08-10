@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -34,7 +35,7 @@ public sealed class Yaaaaaa : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(9m, ValueProp.Move),
+        new DamageVar(7m, ValueProp.Move),
         new CardsVar(3),
         new IntVar("RequiredCost", 1m)
     ];
@@ -49,20 +50,21 @@ public sealed class Yaaaaaa : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.flyingSlashPath)
             .Execute(choiceContext);
 
         IEnumerable<CardModel> drawn = await CardPileCmd.Draw(
             choiceContext,
             DynamicVars.Cards.BaseValue,
             Owner);
-        foreach (CardModel card in drawn.ToArray())
-        {
-            if (card.Pile?.Type == PileType.Hand &&
+        CardModel[] cardsToDiscard = drawn
+            .Where(card =>
+                card.Pile?.Type == PileType.Hand &&
                 card.EnergyCost.GetResolved() != DynamicVars["RequiredCost"].IntValue)
-            {
-                await CardCmd.Discard(choiceContext, card);
-            }
-        }
+            .ToArray();
+        await MgrDiscardPresentation.DiscardWithPreview(
+            choiceContext,
+            cardsToDiscard);
     }
 
     protected override void OnUpgrade()

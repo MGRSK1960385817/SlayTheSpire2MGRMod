@@ -41,6 +41,7 @@ public sealed class Gaze : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.gazePath)
             .Execute(choiceContext);
 
         await CreatureCmd.GainBlock(

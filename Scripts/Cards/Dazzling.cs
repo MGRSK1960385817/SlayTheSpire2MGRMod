@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -36,6 +37,11 @@ public sealed class Dazzling : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitVfxNode(target => NStabVfx.Create(
+                target,
+                true,
+                VfxColor.Gold))
+            .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
 
         if (isStarting)

@@ -127,6 +127,8 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
+            if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown)
+                MoveKeywordToFirstLine(mgrCard, CardKeyword.Retain, ref __result);
             if (mgrCard is ByakkoyaGirl)
                 CompactPerformanceExhaustLine(ref __result);
             if (mgrCard is GalaxyLamp)
@@ -135,11 +137,40 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             if (mgrCard is LightSong)
                 CompactLightSongIdentityLine(ref __result);
 
+            // Manimani's lethal-target presentation deliberately replaces its
+            // complete rules face with “Thunder!”. Exhaust remains on the model
+            // and therefore still controls gameplay; only its automatically
+            // appended card-text line is hidden during this transient preview.
+            if (mgrCard is Manimani { IsFatalPreviewActive: true })
+                RemoveRenderedKeyword(CardKeyword.Exhaust, ref __result);
+
             FormatStarryNoteText(ref __result);
         }
 
         if (__instance is Pale)
             __result = FormatPaleDescription(__result);
+    }
+
+    private static void RemoveRenderedKeyword(
+        CardKeyword keyword,
+        ref string description)
+    {
+        string keywordText = keyword.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(keywordText) ||
+            !description.Contains(keywordText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        description = string.Join(
+            '\n',
+            description
+                .Split('\n')
+                .Select(line => line.Replace(
+                    keywordText,
+                    string.Empty,
+                    StringComparison.Ordinal).Trim())
+                .Where(line => !string.IsNullOrWhiteSpace(line)));
     }
 
     private static void CompactStarryRetainLine(
@@ -207,20 +238,28 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         MgrCard card,
         ref string description)
     {
-        if (!card.Keywords.Contains(CardKeyword.Innate))
+        MoveKeywordToFirstLine(card, CardKeyword.Innate, ref description);
+    }
+
+    private static void MoveKeywordToFirstLine(
+        MgrCard card,
+        CardKeyword keyword,
+        ref string description)
+    {
+        if (!card.Keywords.Contains(keyword))
             return;
 
-        string innateText = CardKeyword.Innate.GetCardText().Trim();
-        if (string.IsNullOrWhiteSpace(innateText))
+        string keywordText = keyword.GetCardText().Trim();
+        if (string.IsNullOrWhiteSpace(keywordText))
             return;
 
         List<string> lines = description.Split('\n').ToList();
-        int innateIndex = lines.FindIndex(line => line.Trim() == innateText);
-        if (innateIndex < 0)
+        int keywordIndex = lines.FindIndex(line => line.Trim() == keywordText);
+        if (keywordIndex < 0)
             return;
 
-        lines.RemoveAt(innateIndex);
-        lines.Insert(0, innateText);
+        lines.RemoveAt(keywordIndex);
+        lines.Insert(0, keywordText);
         description = string.Join('\n', lines);
     }
 

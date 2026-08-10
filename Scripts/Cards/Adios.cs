@@ -27,6 +27,7 @@ public sealed class Adios : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.dramaticStabPath)
             .Execute(choiceContext);
         await MgrPerformanceSystem.TriggerQueuedCardsOnceAndConsume(choiceContext, Owner);
     }

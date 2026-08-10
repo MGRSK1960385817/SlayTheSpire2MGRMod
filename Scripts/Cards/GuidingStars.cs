@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -31,9 +32,18 @@ public sealed class GuidingStars : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        await MgrAttackVfx.PlaySmallMagicMissile(
+            this,
+            cardPlay.Target,
+            MgrAttackVfx.StarPurple);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
+                target,
+                MgrAttackVfx.StarPurple,
+                0.9f))
+            .WithHitFx(null, null, "blunt_attack.mp3")
             .Execute(choiceContext);
 
         if (Owner.Creature.CombatState is not { } combatState)

@@ -28,10 +28,38 @@ public sealed class MgrPerformanceState
         int initialTurns = Math.Max(1, initialPerformanceTurns + bonusPerformances);
         var entry = new MgrPerformanceEntry(card, initialTurns);
         _entries.Add(entry);
+        MgrPerformanceSystem.RefreshQueueDependentCardCosts(card.Owner);
         return entry;
     }
 
-    public bool Remove(MgrPerformanceEntry entry) => _entries.Remove(entry);
+    public bool Remove(MgrPerformanceEntry entry)
+    {
+        bool removed = _entries.Remove(entry);
+        if (removed)
+            MgrPerformanceSystem.RefreshQueueDependentCardCosts(entry.Card.Owner);
+        return removed;
+    }
+
+    public MgrPerformanceEntry? Replace(
+        MgrPerformanceEntry entry,
+        CardModel replacementCard,
+        int replacementPerformanceTurns)
+    {
+        int index = _entries.IndexOf(entry);
+        if (index < 0 ||
+            Contains(replacementCard) ||
+            !ReferenceEquals(entry.Card.Owner, replacementCard.Owner))
+        {
+            return null;
+        }
+
+        MgrPerformanceEntry replacement = entry.CreateReplacement(
+            replacementCard,
+            replacementPerformanceTurns);
+        _entries[index] = replacement;
+        MgrPerformanceSystem.RefreshQueueDependentCardCosts(replacementCard.Owner);
+        return replacement;
+    }
 
     public int RecordPlayedEntryQueuedThisTurn()
     {

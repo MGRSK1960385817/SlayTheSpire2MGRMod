@@ -186,12 +186,15 @@
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
 | `Performances.TriggerScale` | `1.2` | 原地跳动的峰值缩放 |
-| `Performances.TriggerGrowSeconds` | `0.14s` | 放大与亮起阶段 |
-| `Performances.TriggerSettleSeconds` | `0.18s` | 回落与熄灭阶段 |
-| `Performances.SequentialTriggerAccelerationPerCard` | `0.10` | 同一轮中每完成一张演奏牌，后续动画时长减少的比例 |
+| `Performances.TriggerGrowSeconds` | `0.12s` | 放大与亮起阶段 |
+| `Performances.TriggerSettleSeconds` | `0.15s` | 回落与熄灭阶段 |
+| `Performances.StaffPlayheadApproachSeconds` | `0.17s` | 扫线从左端移动到当前演奏牌的前摇 |
+| `Performances.StaffPlayheadDepartureSeconds` | `0.18s` | 当前牌结算后，扫线移出右端的后摇 |
+| `Performances.PerformanceVfxWaitMultiplier` | `0.70` | 演奏牌自身显式特效等待的基础倍率；再乘以队列序号倍率 |
+| `Performances.SequentialTriggerDurationMultiplierPerCard` | `0.90` | 同一轮中每往后一张演奏牌，动画时长乘以该倍率 |
 | `Performances.MinimumSequentialTriggerDurationScale` | `0.60` | 连续演奏动画的最低时长倍率 |
 
-同一轮演奏从第一张的 `1.00×` 时长开始，之后依次为 `0.90×`、`0.80×`、`0.70×`，第五张及以后固定为 `0.60×`。这个倍率同时作用于扫线靠近、卡牌跳动、次数变化、扫线离开以及完成演奏后的离队动画；卡牌本身的战斗效果仍完整结算，不做跳帧。
+同一轮演奏从第一张的 `1.00×` 时长开始，之后每张乘以 `0.90`，依次约为 `0.90×`、`0.81×`、`0.729×`、`0.656×`，第六张及以后固定为下限 `0.60×`。这个倍率同时作用于扫线靠近、卡牌跳动、次数变化、扫线离开、完成演奏后的离队动画，以及演奏牌自身的显式特效等待；卡牌本身的战斗效果仍完整结算，不做跳帧。
 
 触发 Glow 仍写在 `MgrPerformanceVisuals.cs`：
 
@@ -200,6 +203,23 @@
 - 只在原位置跳动，不把牌移到屏幕中央。
 
 触发时还会由 `MgrPerformanceCardBurstVisual.cs` 绘制黄白、粉、青、绿等星芒。`CardBurstSeconds`、`CardBurstParticleCount`、`CardBurstStartRadius` 与 `CardBurstEndRadius` 分别控制持续时间、数量和扩散范围。
+
+### 金枪鱼冲锋专属终曲演出
+
+`MaguroDash` 完成首次全体攻击后，会由 `MgrPerformanceFinisherVisual.cs` 在演奏谱右端生成一张仅用于显示的卡影。卡影依次切入每个演奏槽；命中槽位时喷出多色星芒、加速该牌的离队动画，并结算对应的一次追加攻击。它不是 `NCard`，不会进入实体牌堆、改变演奏次数或干扰原版的出牌节点查找。
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `FinisherCardSize` | `78 × 108` | 终曲卡影尺寸 |
+| `FinisherEntryDistance` | `128px` | 卡影在最右侧演奏牌外的初始距离 |
+| `FinisherEntranceSeconds` | `0.11s` | 卡影显现时间 |
+| `FinisherFirstStepSeconds` | `0.14s` | 第一次切入槽位的移动时间 |
+| `FinisherStepAccelerationSeconds` | `0.014s` | 每多结束一张牌所减少的移动时间 |
+| `FinisherMinimumStepSeconds` | `0.075s` | 连续切入的速度下限 |
+| `FinisherTrailLength` | `112px` | 黄白、粉紫与青色拖尾长度 |
+| `FinisherEndedCardExitDurationScale` | `0.58` | 被替换演奏牌的离队动画时长倍率 |
+| `FinisherExitDistance` | `150px` | 清空队列后卡影继续飞出的距离 |
+| `FinisherExitSeconds` | `0.13s` | 卡影离场时间 |
 
 ### 待机边缘装饰
 
@@ -258,7 +278,7 @@
 
 | 参数 | 当前值 | 作用 |
 | --- | ---: | --- |
-| `Performances.ExitSeconds` | `0.38s` | 飞向真实弃牌/消耗/抽牌堆的时长 |
+| `Performances.ExitSeconds` | `0.34s` | 飞向真实弃牌/消耗/抽牌堆的时长 |
 
 仍写在 `MgrPerformanceVisuals.cs`：
 

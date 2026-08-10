@@ -149,7 +149,7 @@ public static class MgrKeywords
         Chorus => MgrKeywordKind.BasicNotes,
         Futariboshi => MgrKeywordKind.StarryNote,
         ElectricAngel => MgrKeywordKind.None,
-        DelusionalSketch => MgrKeywordKind.Performance,
+        DelusionSketch => MgrKeywordKind.Performance,
         DualLovers => MgrKeywordKind.Performance | MgrKeywordKind.AttackNote,
         CowardRocket => MgrKeywordKind.Performance,
         MaguroDash => MgrKeywordKind.Performance,
@@ -159,8 +159,9 @@ public static class MgrKeywords
         ChaosMagic => MgrKeywordKind.Performance,
         CrimeAndPunishment => MgrKeywordKind.Forte,
         GalaxyLamp => MgrKeywordKind.StarryNote,
-        StarryDrift => MgrKeywordKind.StarryNote,
-        HyakkiYagyo => MgrKeywordKind.CurseNote,
+        StarfallSea => MgrKeywordKind.StarryNote,
+        GhostRule => MgrKeywordKind.CurseNote,
+        SandPlanet => MgrKeywordKind.AttackNote,
         Omnia => MgrKeywordKind.OmniaNote,
         _ => MgrKeywordKind.None
     };

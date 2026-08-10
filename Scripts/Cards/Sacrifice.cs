@@ -2,7 +2,6 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -34,10 +33,7 @@ public sealed class Sacrifice : MgrCard
         if (PileType.Hand.GetPile(Owner).Cards.Count == 0)
             return;
 
-        var prompt = new LocString(
-            "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_NOTE_TRANSMUTATION_CHOOSE");
-        var prefs = new CardSelectorPrefs(prompt, 1);
+        var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
         CardModel? chosen = (await CardSelectCmd.FromHand(
             choiceContext,
             Owner,

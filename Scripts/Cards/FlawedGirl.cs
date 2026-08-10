@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Cards.Choices;
 using SlayTheSpire2MGRMod.Characters;
@@ -38,10 +37,7 @@ public sealed class FlawedGirl : MgrCard
             combatState.CreateCard<FlawedGirl1>(Owner)
         ];
 
-        var prompt = new LocString(
-            "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_FLEXIBLE_RANGE_CHOOSE");
-        var prefs = new CardSelectorPrefs(prompt, 1);
+        var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
         CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
             choiceContext,
             options,

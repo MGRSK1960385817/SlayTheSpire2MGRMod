@@ -30,6 +30,7 @@ public sealed class MgrStrike : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.slashPath)
             .Execute(choiceContext);
     }
 

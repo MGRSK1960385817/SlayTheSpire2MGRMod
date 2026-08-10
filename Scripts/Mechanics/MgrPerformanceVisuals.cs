@@ -42,27 +42,32 @@ public static class MgrPerformanceVisuals
         Player player,
         IReadOnlyList<MgrPerformanceEntry> entries,
         MgrPerformanceEntry entry,
-        int queuedBeforeThisTurn)
+        int queuedBeforeThisTurn,
+        CardModel? playedCard = null,
+        bool animateEntry = true)
     {
-        CardModel card = entry.Card;
-        if (PendingPlayedCallbacks.Remove(card, out Action? oldCallback))
-            card.Played -= oldCallback;
+        CardModel callbackCard = playedCard ?? entry.Card;
+        if (PendingPlayedCallbacks.Remove(callbackCard, out Action? oldCallback))
+            callbackCard.Played -= oldCallback;
 
         Action? callback = null;
         callback = () =>
         {
-            card.Played -= callback;
-            PendingPlayedCallbacks.Remove(card);
+            callbackCard.Played -= callback;
+            PendingPlayedCallbacks.Remove(callbackCard);
             // Do not create an NCard replica before Tower 2 finishes routing
             // the real played card. Native NCard.FindOnTable(model) must see a
             // single candidate throughout the original play pipeline.
             try
             {
                 Show(player, entries);
-                QueueEntryAnimation(
-                    player,
-                    entry,
-                    GetEntryAnimationDurationScale(queuedBeforeThisTurn));
+                if (animateEntry)
+                {
+                    QueueEntryAnimation(
+                        player,
+                        entry,
+                        GetEntryAnimationDurationScale(queuedBeforeThisTurn));
+                }
             }
             catch (Exception exception)
             {
@@ -70,12 +75,12 @@ public static class MgrPerformanceVisuals
                 // play. Log the UI failure while leaving the combat model valid.
                 GD.PushError(
                     $"MGR Performance entry presentation failed for " +
-                    $"{card.GetType().Name}: {exception}");
+                    $"{entry.Card.GetType().Name}: {exception}");
             }
         };
 
-        PendingPlayedCallbacks[card] = callback;
-        card.Played += callback;
+        PendingPlayedCallbacks[callbackCard] = callback;
+        callbackCard.Played += callback;
     }
 
     /// <summary>
@@ -140,6 +145,38 @@ public static class MgrPerformanceVisuals
         return rack.PlayExitAnimation(entry, destinationPile, durationScale);
     }
 
+    public static async Task BeginFinisher(
+        Player player,
+        CardModel sourceCard,
+        IReadOnlyList<MgrPerformanceEntry> entries)
+    {
+        PerformanceRack? rack = GetOrCreateRack(player);
+        if (rack is null || !rack.IsValid)
+            return;
+
+        Show(player, entries);
+        await rack.BeginFinisher(sourceCard);
+    }
+
+    public static Task PlayFinisherStrike(
+        Player player,
+        MgrPerformanceEntry entry,
+        int strikeIndex)
+    {
+        if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
+            return Task.CompletedTask;
+
+        return rack.PlayFinisherStrike(entry, strikeIndex);
+    }
+
+    public static Task CompleteFinisher(Player player, bool animate)
+    {
+        if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
+            return Task.CompletedTask;
+
+        return rack.CompleteFinisher(animate);
+    }
+
     public static void ClearAll()
     {
         foreach ((CardModel card, Action callback) in PendingPlayedCallbacks)
@@ -200,6 +237,7 @@ public static class MgrPerformanceVisuals
         private readonly MgrPerformanceStaffVisual _staff;
         private readonly CanvasLayer _previewLayer;
         private readonly List<PerformanceCardView> _views = [];
+        private MgrPerformanceFinisherVisual? _finisherVisual;
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
@@ -434,6 +472,84 @@ public static class MgrPerformanceVisuals
 
         public void PulseStaff() => _staff.Pulse();
 
+        public async Task BeginFinisher(CardModel sourceCard)
+        {
+            DisposeFinisherVisual();
+            if (_views.Count == 0)
+                return;
+
+            float rightmostX = _views.Max(view => view.LocalCenterX);
+            var visual = new MgrPerformanceFinisherVisual
+            {
+                Name = "MaguroDashFinisher"
+            };
+            _root.AddChild(visual);
+            visual.Initialize(
+                sourceCard.Portrait,
+                new Vector2(
+                    rightmostX + MgrVisualTuning.Performances.FinisherEntryDistance,
+                    MgrVisualTuning.Performances.CardOffsetY));
+            _finisherVisual = visual;
+            await visual.PlayEntrance();
+        }
+
+        public async Task PlayFinisherStrike(
+            MgrPerformanceEntry entry,
+            int strikeIndex)
+        {
+            PerformanceCardView? target = FindView(entry);
+            if (target is null ||
+                _finisherVisual is null ||
+                !GodotObject.IsInstanceValid(_finisherVisual))
+            {
+                return;
+            }
+
+            Vector2 targetPosition = new(
+                target.LocalCenterX,
+                MgrVisualTuning.Performances.CardOffsetY);
+            await _finisherVisual.Strike(targetPosition, strikeIndex);
+            _staff.Pulse();
+
+            var burst = new MgrPerformanceCardBurstVisual
+            {
+                Name = $"MaguroDashImpact_{strikeIndex}",
+                Position = targetPosition,
+                ZIndex = MgrVisualTuning.Performances.FinisherZIndex - 1,
+                FreeWhenFinished = true
+            };
+            _root.AddChild(burst);
+            burst.Burst();
+        }
+
+        public async Task CompleteFinisher(bool animate)
+        {
+            if (_finisherVisual is null ||
+                !GodotObject.IsInstanceValid(_finisherVisual))
+            {
+                _finisherVisual = null;
+                return;
+            }
+
+            MgrPerformanceFinisherVisual visual = _finisherVisual;
+            _finisherVisual = null;
+            if (animate)
+                await visual.PlayExit();
+            if (GodotObject.IsInstanceValid(visual))
+                visual.QueueFree();
+        }
+
+        private void DisposeFinisherVisual()
+        {
+            if (_finisherVisual is not null &&
+                GodotObject.IsInstanceValid(_finisherVisual))
+            {
+                _finisherVisual.QueueFree();
+            }
+
+            _finisherVisual = null;
+        }
+
         public Task PlayExitAnimation(
             MgrPerformanceEntry entry,
             PileType? destinationPile,
@@ -625,6 +741,7 @@ public static class MgrPerformanceVisuals
 
         public void Dispose()
         {
+            DisposeFinisherVisual();
             if (_overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack))
             {

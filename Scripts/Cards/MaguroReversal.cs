@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -34,6 +35,16 @@ public sealed class MaguroReversal : MgrCard
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
+                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlash(
+                    target,
+                    MgrAttackVfx.StarPurple,
+                    0.8f))
+                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlashImpact(
+                    target,
+                    MgrAttackVfx.StarGold,
+                    0.72f,
+                    index % 2 == 0 ? 48f : -48f))
+                .WithHitFx(null, null, "slash_attack.mp3")
                 .Execute(choiceContext);
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         }

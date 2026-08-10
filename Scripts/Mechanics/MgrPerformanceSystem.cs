@@ -21,6 +21,15 @@ public static class MgrPerformanceSystem
     private const int DefaultExternalPerformanceTurns = 1;
     private static readonly HashSet<CardModel> CompletingCards = [];
     private static readonly HashSet<MgrPerformanceEntry> ResolvingEntries = [];
+    private static readonly Dictionary<MgrPerformanceEntry, float> ActiveVfxWaitScales = [];
+    private readonly record struct PendingEntryReplacement(
+        CardModel Card,
+        int PerformanceTurns);
+
+    private static readonly Dictionary<MgrPerformanceEntry, PendingEntryReplacement>
+        PendingEntryReplacements = [];
+    private static readonly Dictionary<CardModel, PendingEntryReplacement>
+        PendingPlayedCardReplacements = [];
     private static readonly Dictionary<CardModel, int> PendingEnqueueBonuses = [];
     private static readonly Dictionary<Player, int> ActivePassDepths = [];
 
@@ -28,6 +37,9 @@ public static class MgrPerformanceSystem
     {
         CompletingCards.Clear();
         ResolvingEntries.Clear();
+        ActiveVfxWaitScales.Clear();
+        PendingEntryReplacements.Clear();
+        PendingPlayedCardReplacements.Clear();
         PendingEnqueueBonuses.Clear();
         ActivePassDepths.Clear();
         MgrPerformanceVisuals.ClearAll();
@@ -41,6 +53,19 @@ public static class MgrPerformanceSystem
         return Math.Max(0, printed + MgrPerformanceModifierState.GetAdditionalPerformances(card));
     }
 
+    internal static void RefreshQueueDependentCardCosts(Player player)
+    {
+        if (NPlayerHand.Instance is not { } hand)
+            return;
+
+        foreach (CardModel card in PileType.Hand.GetPile(player).Cards)
+        {
+            hand.GetCard(card)?.UpdateVisuals(
+                PileType.Hand,
+                CardPreviewMode.Normal);
+        }
+    }
+
     public static bool IsPerformanceCard(CardModel card) =>
         GetInitialPerformanceTurns(card) > 0;
 
@@ -50,6 +75,15 @@ public static class MgrPerformanceSystem
     {
         if (IsCompletingPerformance(card))
             return false;
+
+        // Externally inserted cards (and cards exchanged into the rack) may not
+        // print Performance at all. Their live queue entry is authoritative:
+        // keep them in Play until the scheduler marks their final trigger.
+        if (MgrPerformanceStateStore.TryGet(card.Owner, out MgrPerformanceState state) &&
+            state.Contains(card))
+        {
+            return true;
+        }
 
         int turns = card is MgrCard mgrCard
             ? mgrCard.GetPerformanceTurnsForResultRouting(resources)
@@ -64,6 +98,87 @@ public static class MgrPerformanceSystem
     /// </summary>
     public static bool IsCompletingPerformance(CardModel card) =>
         CompletingCards.Contains(card);
+
+    /// <summary>
+    /// Shortens only an explicitly requested cinematic wait while this exact
+    /// card is resolving from the Performance rack. CardCmd.AutoPlay and every
+    /// gameplay command remain awaited, so damage, notes, powers and victory
+    /// checks cannot overtake one another.
+    /// </summary>
+    public static float GetVisualWaitDuration(CardModel card, float normalSeconds)
+    {
+        foreach (MgrPerformanceEntry entry in ResolvingEntries)
+        {
+            if (!ReferenceEquals(entry.Card, card) ||
+                !ActiveVfxWaitScales.TryGetValue(entry, out float sequenceScale))
+            {
+                continue;
+            }
+
+            return MathF.Max(
+                (float)MgrVisualTuning.Performances.MinimumPerformanceVfxWaitSeconds,
+                normalSeconds *
+                MgrVisualTuning.Performances.PerformanceVfxWaitMultiplier *
+                sequenceScale);
+        }
+
+        return normalSeconds;
+    }
+
+    public static bool IsResolvingPerformance(CardModel card) =>
+        ResolvingEntries.Any(entry => ReferenceEquals(entry.Card, card));
+
+    /// <summary>
+    /// Requests an in-place queue replacement after the currently resolving
+    /// card has finished its play hooks. Externally exchanged cards use their
+    /// own printed Performance value, or one turn if they print none.
+    /// </summary>
+    public static bool QueueResolvingCardReplacement(
+        CardModel outgoingCard,
+        CardModel incomingCard)
+    {
+        if (ReferenceEquals(outgoingCard, incomingCard) ||
+            !ReferenceEquals(outgoingCard.Owner, incomingCard.Owner))
+        {
+            return false;
+        }
+
+        MgrPerformanceEntry? entry = ResolvingEntries.FirstOrDefault(
+            candidate => ReferenceEquals(candidate.Card, outgoingCard));
+        if (entry is null || PendingEntryReplacements.ContainsKey(entry))
+            return false;
+
+        PendingEntryReplacements[entry] = new PendingEntryReplacement(
+            incomingCard,
+            GetExternalPerformanceTurns(incomingCard));
+        return true;
+    }
+
+    /// <summary>
+    /// Replaces a newly played Performance card with another physical card once
+    /// AfterCardPlayed creates the queue entry. Used by Puppet Clown because its
+    /// pile exchange occurs inside OnPlay, before the normal entry is registered.
+    /// </summary>
+    public static bool QueuePlayedCardReplacement(
+        CardModel outgoingCard,
+        CardModel incomingCard)
+    {
+        if (ReferenceEquals(outgoingCard, incomingCard) ||
+            !ReferenceEquals(outgoingCard.Owner, incomingCard.Owner) ||
+            PendingPlayedCardReplacements.ContainsKey(outgoingCard))
+        {
+            return false;
+        }
+
+        PendingPlayedCardReplacements[outgoingCard] =
+            new PendingEntryReplacement(
+                incomingCard,
+                GetExternalPerformanceTurns(incomingCard));
+        return true;
+    }
+
+    private static int GetExternalPerformanceTurns(CardModel card) =>
+        Math.Max(DefaultExternalPerformanceTurns, GetInitialPerformanceTurns(card));
 
     public static int GrantAdditionalPerformances(CardModel card, int amount)
     {
@@ -239,21 +354,28 @@ public static class MgrPerformanceSystem
                     consumesRemaining: false,
                     durationScale: durationScale);
                 ResolvingEntries.Add(entry);
+                ActiveVfxWaitScales[entry] = durationScale;
                 try
                 {
-                    await CardCmd.AutoPlay(
-                        choiceContext,
-                        entry.Card,
-                        target: null,
-                        skipCardPileVisuals: true);
+                    await AutoPlayPerformanceCard(choiceContext, entry.Card);
                 }
                 finally
                 {
+                    ActiveVfxWaitScales.Remove(entry);
                     ResolvingEntries.Remove(entry);
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
                         entry,
                         durationScale);
+                }
+
+                if (TryApplyPendingReplacement(player, state, entry))
+                {
+                    if (ShouldStopPerformanceSequence(player))
+                        break;
+
+                    animationIndex++;
+                    continue;
                 }
 
                 // AutoPlay returns only after the card and its queued effects have
@@ -300,72 +422,159 @@ public static class MgrPerformanceSystem
     /// playing its remaining steps. Cards use their normal completion
     /// destination and still receive their Performance-finished hook.
     /// </summary>
-    public static async Task<int> EndAllPerformances(
+    public static Task<int> EndAllPerformances(
         PlayerChoiceContext choiceContext,
-        Player player)
+        Player player) => EndAllPerformancesCore(
+            choiceContext,
+            player,
+            finisherSource: null,
+            onEachEnded: null);
+
+    /// <summary>
+    /// Maguro Dash variant of EndAllPerformances. The source card is represented
+    /// by a presentation-only silhouette that crosses the rack; it never becomes
+    /// a queue entry. The callback preserves the card's one-extra-hit-per-ended-
+    /// entry rule while visually pairing each hit with the entry it consumed.
+    /// </summary>
+    public static Task<int> EndAllPerformancesWithFinisher(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel finisherSource,
+        Func<int, Task> onEachEnded) => EndAllPerformancesCore(
+            choiceContext,
+            player,
+            finisherSource,
+            onEachEnded);
+
+    private static async Task<int> EndAllPerformancesCore(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel? finisherSource,
+        Func<int, Task>? onEachEnded)
     {
-        if (!MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
+        if (ShouldStopPerformanceSequence(player) ||
+            !MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state) ||
             state.Entries.Count == 0)
         {
             return 0;
         }
 
         int ended = 0;
-        foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
+        bool hasFinisher = finisherSource is not null;
+        if (hasFinisher)
+            BeginPerformancePass(player);
+
+        try
         {
-            if (!state.Entries.Contains(entry))
-                continue;
-
-            bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
-            bool willExhaust = !isOrdinaryPower &&
-                (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
-                 entry.Card.ExhaustOnNextPlay);
-
-            if (isOrdinaryPower)
+            if (hasFinisher)
             {
-                entry.Card.RemoveFromState();
-            }
-            else if (willExhaust)
-            {
-                await CardCmd.Exhaust(
-                    choiceContext,
-                    entry.Card,
-                    skipVisuals: true);
-            }
-            else
-            {
-                await CardPileCmd.Add(
-                    entry.Card,
-                    PileType.Discard,
-                    skipVisuals: true);
+                await MgrPerformanceVisuals.BeginFinisher(
+                    player,
+                    finisherSource!,
+                    state.Entries);
             }
 
-            if (entry.Card is MgrCard mgrCard)
+            foreach (MgrPerformanceEntry entry in state.Entries.ToArray())
             {
-                await mgrCard.OnPerformanceFinished(
-                    choiceContext,
-                    new PerformanceCompletionContext(
+                // A finisher can itself be auto-played from the rack. Moving
+                // that physical card while its OnPlay is still running would
+                // leave the outer scheduler holding a stale resolving entry.
+                // Its current trigger is consumed normally by the outer pass;
+                // every other entry is still ended immediately.
+                if (!state.Entries.Contains(entry) || ResolvingEntries.Contains(entry))
+                    continue;
+
+                if (hasFinisher)
+                {
+                    await MgrPerformanceVisuals.PlayFinisherStrike(
                         player,
-                        entry.InitialPerformanceTurns,
-                        willExhaust));
+                        entry,
+                        ended);
+                }
+
+                bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
+                bool willExhaust = !isOrdinaryPower &&
+                    (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
+                     entry.Card.ExhaustOnNextPlay);
+
+                if (isOrdinaryPower)
+                {
+                    entry.Card.RemoveFromState();
+                }
+                else if (willExhaust)
+                {
+                    await CardCmd.Exhaust(
+                        choiceContext,
+                        entry.Card,
+                        skipVisuals: true);
+                }
+                else
+                {
+                    await CardPileCmd.Add(
+                        entry.Card,
+                        PileType.Discard,
+                        skipVisuals: true);
+                }
+
+                if (entry.Card is MgrCard mgrCard)
+                {
+                    await mgrCard.OnPerformanceFinished(
+                        choiceContext,
+                        new PerformanceCompletionContext(
+                            player,
+                            entry.InitialPerformanceTurns,
+                            willExhaust));
+                }
+
+                if (player.Creature.GetPower<ChaosMagicPower>() is { } chaosMagic)
+                    await chaosMagic.OnPerformanceEnded(player);
+
+                if (player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
+                    await blackGoldRecord.OnPerformanceEnded(player);
+
+                await MgrPerformanceVisuals.PlayExitAnimation(
+                    player,
+                    entry,
+                    entry.Card.Pile?.Type,
+                    hasFinisher
+                        ? MgrVisualTuning.Performances.FinisherEndedCardExitDurationScale
+                        : 1f);
+                NotifySkippedPileAnimationFinished(entry.Card);
+
+                state.Remove(entry);
+                entry.ResetRemainingTurns();
+                ended++;
+                // Keep the original rack geometry during the finisher so the
+                // silhouette visibly travels from slot to slot. Each ended
+                // view has already flown away; the surviving views are only
+                // reflowed after the whole sequence finishes.
+                if (!hasFinisher)
+                    MgrPerformanceVisuals.Show(player, state.Entries);
+
+                if (onEachEnded is not null && !ShouldStopPerformanceSequence(player))
+                    await onEachEnded(ended);
+
+                if (ShouldStopPerformanceSequence(player))
+                    break;
             }
-
-            if (player.Creature.GetPower<ChaosMagicPower>() is { } chaosMagic)
-                await chaosMagic.OnPerformanceEnded(player);
-
-            if (player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
-                await blackGoldRecord.OnPerformanceEnded(player);
-
-            await MgrPerformanceVisuals.PlayExitAnimation(
-                player,
-                entry,
-                entry.Card.Pile?.Type);
-            NotifySkippedPileAnimationFinished(entry.Card);
-
-            state.Remove(entry);
-            entry.ResetRemainingTurns();
-            ended++;
-            MgrPerformanceVisuals.Show(player, state.Entries);
+        }
+        finally
+        {
+            if (hasFinisher)
+            {
+                try
+                {
+                    await MgrPerformanceVisuals.CompleteFinisher(
+                        player,
+                        animate: !ShouldStopPerformanceSequence(player));
+                }
+                finally
+                {
+                    if (!ShouldStopPerformanceSequence(player))
+                        MgrPerformanceVisuals.Show(player, state.Entries);
+                    EndPerformancePass(player);
+                }
+            }
         }
 
         return ended;
@@ -378,12 +587,24 @@ public static class MgrPerformanceSystem
 
         CardModel card = cardPlay.Card;
         MgrPerformanceState state = MgrPerformanceStateStore.For(card.Owner);
-        int initialPerformanceTurns = GetInitialPerformanceTurns(card);
-        if (state.Contains(card) || initialPerformanceTurns <= 0)
+        bool replacedAfterPlay = PendingPlayedCardReplacements.Remove(
+            card,
+            out PendingEntryReplacement pendingReplacement);
+        CardModel queuedCard = replacedAfterPlay
+            ? pendingReplacement.Card
+            : card;
+        int initialPerformanceTurns = replacedAfterPlay
+            ? pendingReplacement.PerformanceTurns
+            : GetInitialPerformanceTurns(card);
+        if (replacedAfterPlay)
+            PendingEnqueueBonuses.Remove(card);
+
+        if (state.Contains(queuedCard) || initialPerformanceTurns <= 0)
             return;
 
         int bonusPerformances = 0;
-        if (!cardPlay.IsAutoPlay &&
+        if (!replacedAfterPlay &&
+            !cardPlay.IsAutoPlay &&
             card.Owner.GetRelic<MiniStage>() is { } miniStage &&
             miniStage.TryGrantPerformanceBonus())
         {
@@ -391,11 +612,12 @@ public static class MgrPerformanceSystem
         }
 
 
-        if (PendingEnqueueBonuses.Remove(card, out int pendingBonus))
+        if (!replacedAfterPlay &&
+            PendingEnqueueBonuses.Remove(card, out int pendingBonus))
             bonusPerformances = checked(bonusPerformances + pendingBonus);
 
         MgrPerformanceEntry? entry = state.Enqueue(
-            card,
+            queuedCard,
             initialPerformanceTurns,
             bonusPerformances);
         if (entry is null)
@@ -412,7 +634,9 @@ public static class MgrPerformanceSystem
             card.Owner,
             state.Entries,
             entry,
-            queuedBeforeThisTurn);
+            queuedBeforeThisTurn,
+            playedCard: replacedAfterPlay ? card : null,
+            animateEntry: !replacedAfterPlay);
     }
 
     public static async Task PerformAtTurnStart(
@@ -470,22 +694,35 @@ public static class MgrPerformanceSystem
                     CompletingCards.Add(entry.Card);
 
                 ResolvingEntries.Add(entry);
+                ActiveVfxWaitScales[entry] = durationScale;
                 try
                 {
-                    await CardCmd.AutoPlay(
-                        choiceContext,
-                        entry.Card,
-                        target: null,
-                        skipCardPileVisuals: true);
+                    await AutoPlayPerformanceCard(choiceContext, entry.Card);
                 }
                 finally
                 {
+                    ActiveVfxWaitScales.Remove(entry);
                     ResolvingEntries.Remove(entry);
                     CompletingCards.Remove(entry.Card);
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
                         entry,
                         durationScale);
+                }
+
+
+                // A card such as Puppet Clown can exchange its physical place
+                // with another card while resolving. The outgoing card has
+                // already paid for this trigger, so preserve the incoming card's
+                // newly initialized counter for the next pass instead of
+                // decrementing it.
+                if (TryApplyPendingReplacement(player, state, entry))
+                {
+                    if (ShouldStopPerformanceSequence(player))
+                        break;
+
+                    animationIndex++;
+                    continue;
                 }
 
                 entry.ConsumeOnePerformance();
@@ -586,8 +823,64 @@ public static class MgrPerformanceSystem
     private static float GetSequentialAnimationDurationScale(int animationIndex) =>
         MathF.Max(
             MgrVisualTuning.Performances.MinimumSequentialTriggerDurationScale,
-            1f - Math.Max(0, animationIndex) *
-            MgrVisualTuning.Performances.SequentialTriggerAccelerationPerCard);
+            MathF.Pow(
+                MgrVisualTuning.Performances
+                    .SequentialTriggerDurationMultiplierPerCard,
+                Math.Max(0, animationIndex)));
+
+    private static async Task AutoPlayPerformanceCard(
+        PlayerChoiceContext choiceContext,
+        CardModel card)
+    {
+        bool bypassLocalUnplayable =
+            card.Type is CardType.Curse or CardType.Status &&
+            card.GetKeywordsWithSources(KeywordSources.Local)
+                .Contains(CardKeyword.Unplayable);
+
+        if (bypassLocalUnplayable)
+            card.RemoveKeyword(CardKeyword.Unplayable);
+
+        try
+        {
+            await CardCmd.AutoPlay(
+                choiceContext,
+                card,
+                target: null,
+                skipCardPileVisuals: true);
+        }
+        finally
+        {
+            if (bypassLocalUnplayable &&
+                !card.GetKeywordsWithSources(KeywordSources.Local)
+                    .Contains(CardKeyword.Unplayable))
+            {
+                card.AddKeyword(CardKeyword.Unplayable);
+            }
+        }
+    }
+
+    private static bool TryApplyPendingReplacement(
+        Player player,
+        MgrPerformanceState state,
+        MgrPerformanceEntry outgoingEntry)
+    {
+        if (!PendingEntryReplacements.Remove(
+                outgoingEntry,
+                out PendingEntryReplacement pendingReplacement))
+        {
+            return false;
+        }
+
+        MgrPerformanceEntry? replacement = state.Replace(
+            outgoingEntry,
+            pendingReplacement.Card,
+            pendingReplacement.PerformanceTurns);
+        if (replacement is null)
+            return false;
+
+        MgrPerformanceVisuals.Show(player, state.Entries);
+        return true;
+    }
 
     private static bool ShouldStopPerformanceSequence(Player player) =>
         CombatManager.Instance.IsOverOrEnding || player.Creature.IsDead;

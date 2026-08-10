@@ -52,6 +52,12 @@ public sealed class MeteorShower : MgrCard
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitCount(DynamicVars["Hits"].IntValue)
+            .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
+                target,
+                MgrAttackVfx.StarPurple,
+                0.9f))
+            .WithHitFx(null, null, "blunt_attack.mp3")
+            .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }
 

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Powers;
@@ -168,10 +169,10 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, 100);
         NoteKind kind = roll switch
         {
-            < 36 => NoteKind.Attack,
+            < 38 => NoteKind.Attack,
             < 72 => NoteKind.Skill,
-            < 80 => NoteKind.Status,
-            < 96 => NoteKind.Power,
+            < 79 => NoteKind.Status,
+            < 95 => NoteKind.Power,
             _ => NoteKind.Curse
         };
 
@@ -523,6 +524,36 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrNoteVisuals.ClearAll();
         MgrCombatStateStore.Clear();
         return Task.CompletedTask;
+    }
+
+    public override Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        // Manimani's lethal glow depends on live enemy HP. Damage does not
+        // otherwise raise a card-model change event, so explicitly ask the
+        // native hand holder to re-read ShouldGlowGold after an enemy is hurt.
+        if (target.IsEnemy && result.UnblockedDamage > 0)
+            RefreshManimaniHandGlows();
+
+        return Task.CompletedTask;
+    }
+
+    private static void RefreshManimaniHandGlows()
+    {
+        NPlayerHand? hand = NPlayerHand.Instance;
+        if (hand is null)
+            return;
+
+        foreach (NHandCardHolder holder in hand.ActiveHolders)
+        {
+            if (holder.CardModel is Manimani)
+                holder.UpdateCard();
+        }
     }
 
     private static async Task TriggerResolvedChord(

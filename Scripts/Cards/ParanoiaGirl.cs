@@ -47,6 +47,7 @@ public sealed class ParanoiaGirl : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
+            .WithHitFx(VfxCmd.gazePath)
             .Execute(choiceContext);
 
         if (Owner.Creature.CombatState is not { } combatState)

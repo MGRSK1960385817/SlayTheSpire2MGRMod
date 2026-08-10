@@ -18,7 +18,7 @@ public sealed class RainbowScale : MgrCard
     [
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
-        new BlockVar(2m, ValueProp.Move),
+        new BlockVar(3m, ValueProp.Move),
         new CardsVar(1),
         new CalculatedVar("TotalRepetitions").WithMultiplier(
             static (card, _) =>

@@ -60,7 +60,7 @@ public sealed class ImagineCreatePower : ModPowerTemplate
 
         var chooseCardPrompt = new LocString(
             "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNNAMED_ANCIENT_CHOOSE_CARD");
+            "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_CARD");
         var chooseCardPrefs = new CardSelectorPrefs(chooseCardPrompt, 0, 1)
         {
             Cancelable = true,
@@ -83,7 +83,7 @@ public sealed class ImagineCreatePower : ModPowerTemplate
         {
             var chooseTypePrompt = new LocString(
                 "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_UNNAMED_ANCIENT_CHOOSE_TYPE");
+                "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
             var chooseTypePrefs = new CardSelectorPrefs(chooseTypePrompt, 1);
             chosen = (await CardSelectCmd.FromSimpleGrid(
                 choiceContext,

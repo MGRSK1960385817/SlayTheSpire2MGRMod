@@ -23,7 +23,7 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
     public override Color MapDrawingColor => ThemeColor;
     public override CharacterGender Gender => CharacterGender.Feminine;
     public override int StartingHp => 66;
-    public override int StartingGold => 99;
+    public override int StartingGold => 114;
 
     public override CharacterAssetProfile AssetProfile => MgrCharacterAssets.Profile;
 
@@ -40,6 +40,8 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
 
     // Development fallback only. It prevents missing non-MGR assets from blocking the first load.
     public override string? PlaceholderCharacterId => "ironclad";
+    // MGR is available from a fresh profile and has no prerequisite character run.
+    protected override Type UnlocksAfterRunAsType => null!;
     public override bool RequiresEpochAndTimeline => false;
     public override float AttackAnimDelay => 0f;
     public override float CastAnimDelay => 0f;

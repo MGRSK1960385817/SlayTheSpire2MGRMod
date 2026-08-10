@@ -98,6 +98,22 @@ public static class MgrNoteEffects
                 if (combatState is null || combatState.HittableEnemies.Count == 0)
                     return;
 
+                ValueProp props = fastPresentation
+                    ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
+                    : ValueProp.Unpowered;
+
+                if (owner.GetPower<SandPlanetPower>() is { } sandPlanet)
+                {
+                    sandPlanet.Flash();
+                    await CreatureCmd.Damage(
+                        choiceContext,
+                        combatState.HittableEnemies,
+                        amount,
+                        props,
+                        owner);
+                    return;
+                }
+
                 var target = player.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies);
                 if (target is null)
                     return;
@@ -108,9 +124,7 @@ public static class MgrNoteEffects
                     choiceContext,
                     target,
                     amount,
-                    fastPresentation
-                        ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
-                        : ValueProp.Unpowered,
+                    props,
                     owner,
                     cardSource: null,
                     cardPlay: null);
@@ -176,6 +190,7 @@ public static class MgrNoteEffects
                     owner,
                     amount + wardrobeBonus,
                     playAnim: !fastPresentation);
+
                 return;
             }
             case NoteKind.Starry:

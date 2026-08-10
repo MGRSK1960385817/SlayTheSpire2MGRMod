@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -38,13 +39,13 @@ public sealed class SixthSensePower : ModPowerTemplate
             choiceContext,
             cardCount,
             player);
-        foreach (CardModel card in drawn.ToArray())
-        {
-            if (card.Pile?.Type == PileType.Hand &&
+        CardModel[] cardsToDiscard = drawn
+            .Where(card =>
+                card.Pile?.Type == PileType.Hand &&
                 card.EnergyCost.GetResolved() != RequiredCost)
-            {
-                await CardCmd.Discard(choiceContext, card);
-            }
-        }
+            .ToArray();
+        await MgrDiscardPresentation.DiscardWithPreview(
+            choiceContext,
+            cardsToDiscard);
     }
 }

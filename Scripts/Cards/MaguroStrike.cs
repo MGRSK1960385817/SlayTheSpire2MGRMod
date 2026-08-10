@@ -38,6 +38,7 @@ public sealed class MaguroStrike : MgrCard
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
+                .WithHitFx(VfxCmd.slashPath)
                 .Execute(choiceContext);
             for (int noteIndex = 0; noteIndex < DynamicVars["Notes"].IntValue; noteIndex++)
                 await ChannelNote(choiceContext, NoteKind.Attack);

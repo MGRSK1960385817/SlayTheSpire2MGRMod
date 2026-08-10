@@ -231,7 +231,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费，演奏3（升级后2）；演奏结束时，消耗抽牌堆与弃牌堆中的所有状态和诅咒，并生成对应音符；消耗。"
+      "summary": "1费，演奏4（升级后3）；演奏结束时，消耗抽牌堆与弃牌堆中的所有状态和诅咒，并生成对应音符；消耗。"
     },
     {
       "codeName": "CumulonimbusGraffiti",
@@ -434,7 +434,7 @@
       "summary": "1费金卡攻击，演奏1（升级后2）；对所有敌人造成3点伤害；起音时将本场战斗中的基础伤害翻倍。"
     },
     {
-      "codeName": "DelusionalSketch",
+      "codeName": "DelusionSketch",
       "name": "妄想素描",
       "status": 1,
       "type": "Skill",
@@ -455,7 +455,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费；保留。丢弃所有手牌，每张获得3点格挡；升级后每张获得4点格挡。"
+      "summary": "1费蓝卡技能；丢弃所有手牌，每张获得3点格挡；升级后获得保留。"
     },
     {
       "codeName": "CowardRocket",
@@ -567,15 +567,15 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "1费；每回合开始时失去3点生命并获得1层强音；升级后获得固有。"
+      "summary": "1费；每回合开始时失去4点生命并获得1层强音；升级后生命损失降为3点。"
     },
     {
-      "codeName": "ShadowTouch",
-      "name": "触摸阴影",
+      "codeName": "Fade",
+      "name": "褪色",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费；获得4点格挡，抽1张牌，将1张苍白加入抽牌堆；升级后格挡增加至6。"
+      "summary": "0费；获得6点格挡，将1张苍白加入抽牌堆；升级后格挡增加至8。"
     },
     {
       "codeName": "GuidingStars",
@@ -586,8 +586,8 @@
       "summary": "2费蓝卡星空攻击；造成12点伤害，将1张随机星空牌加入手牌；升级后伤害增加至15。"
     },
     {
-      "codeName": "StarryDrift",
-      "name": "星空漂流",
+      "codeName": "StarfallSea",
+      "name": "星降之海",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -642,12 +642,12 @@
       "summary": "1费金卡能力；回合开始时抽2张牌，丢弃其中耗能不为1的牌；升级后获得固有。"
     },
     {
-      "codeName": "RefrainForm",
-      "name": "复唱形态",
+      "codeName": "CanonForm",
+      "name": "卡农形态",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "3费金卡能力；记录打出时的所有音符，此后每回合开始时生成这些音符；升级后费用降为2。"
+      "summary": "3费金卡能力；从下一回合开始，在回合结束时按顺序打出上回合最后若干张牌的复制，数量等于层数；升级后费用降为2。"
     },
     {
       "codeName": "Bird",
@@ -658,12 +658,12 @@
       "summary": "3费金卡攻击；造成24点伤害，再随机生成伤害一半数量的基础音符；战斗中实时显示生成数；升级后伤害增加至30。"
     },
     {
-      "codeName": "HyakkiYagyo",
-      "name": "百鬼夜行",
+      "codeName": "GhostRule",
+      "name": "幽灵法则",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中1名敌人生成1个诅咒音符，再将1张随机诅咒加入弃牌堆；升级后伤害增加至15。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符，并将1张随机诅咒加入弃牌堆；升级后每名敌人生成2个诅咒音符。"
     },
     {
       "codeName": "ElectricAngel",
@@ -690,20 +690,44 @@
       "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。"
     },
     {
-      "codeName": "PowerPrelude",
-      "name": "能力前奏",
+      "codeName": "NeoNeon",
+      "name": "霓虹霓虹",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡技能；生成2个能力音符；起音时在本回合获得1层强音；消耗，升级后移除消耗。名称与图片暂定。"
+      "summary": "1费蓝卡技能；生成2个能力音符；起音时在本回合获得1层强音；消耗，升级后移除消耗。"
     },
     {
-      "codeName": "PerformanceTempo",
-      "name": "演奏节拍",
+      "codeName": "DonutHole",
+      "name": "甜甜圈洞",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡技能；获得10（14）点格挡；下一张手动打出的演奏牌耗能减少1。名称与图片暂定。"
+      "summary": "0费蓝卡技能；获得14（18）点格挡；每有1张进行中的演奏牌，本牌耗能增加1。名称与图片暂定。"
+    },
+    {
+      "codeName": "PuppetClown",
+      "name": "活动小丑",
+      "status": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "0费蓝卡技能；获得4点格挡，与抽牌堆中最先会被抽到的诅咒牌交换位置；升级后获得保留。"
+    },
+    {
+      "codeName": "SandPlanet",
+      "name": "砂之惑星",
+      "status": 1,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "summary": "2费蓝卡能力；攻击音符改为对所有敌人造成伤害，并生成2个攻击音符；升级后生成数量增加至4个。"
+    },
+    {
+      "codeName": "Manimani",
+      "name": "随之任之",
+      "status": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "summary": "2费金卡攻击，消耗；造成10（13）点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；瞄准可斩杀目标时切换插图与文本。"
     }
   ],
   "relics": [
@@ -768,7 +792,7 @@
       "name": "苍白花",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "战斗开始时，将1张升级后的苍白置入手牌。"
+      "summary": "战斗开始时，将1张未升级的苍白置入手牌。"
     },
     {
       "codeName": "Maguroyaki",

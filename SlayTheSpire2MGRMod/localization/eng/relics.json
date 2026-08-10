@@ -24,7 +24,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.description": "Whenever a Chord triggers, gain 1 Block.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.flavor": "One gentle stroke, and the lingering note turns aside a blow.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.title": "Pale Flower",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.description": "At the start of combat, add 1 upgraded [color=#c8c8c8]Pale[/color] to your [gold]Hand[/gold].",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.description": "At the start of combat, add 1 [color=#c8c8c8]Pale[/color] to your [gold]Hand[/gold].",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.flavor": "Even withered, it bends toward a song it cannot hear.",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MAGUROYAKI.title": "Maguroyaki",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MAGUROYAKI.description": "Whenever you Smith at a Rest Site, heal {Heal:diff()}% of your Max HP.",

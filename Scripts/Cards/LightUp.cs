@@ -37,6 +37,7 @@ public sealed class LightUp : MgrCard
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
+            .OnlyPlayAnimOnce()
             .Execute(choiceContext);
 
         if (isStarting)
