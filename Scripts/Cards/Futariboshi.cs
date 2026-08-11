@@ -51,6 +51,6 @@ public sealed class Futariboshi : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(-1m);
+        AddKeyword(CardKeyword.Retain);
     }
 }

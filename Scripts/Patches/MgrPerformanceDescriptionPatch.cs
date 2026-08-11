@@ -256,9 +256,24 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         List<string> lines = description.Split('\n').ToList();
         int keywordIndex = lines.FindIndex(line => line.Trim() == keywordText);
         if (keywordIndex < 0)
+        {
+            keywordIndex = lines.FindIndex(line =>
+                line.Split(
+                        ' ',
+                        StringSplitOptions.RemoveEmptyEntries |
+                        StringSplitOptions.TrimEntries)
+                    .Contains(keywordText, StringComparer.Ordinal));
+        }
+        if (keywordIndex < 0)
             return;
 
-        lines.RemoveAt(keywordIndex);
+        string remaining = lines[keywordIndex]
+            .Replace(keywordText, string.Empty, StringComparison.Ordinal)
+            .Trim();
+        if (string.IsNullOrWhiteSpace(remaining))
+            lines.RemoveAt(keywordIndex);
+        else
+            lines[keywordIndex] = remaining;
         lines.Insert(0, keywordText);
         description = string.Join('\n', lines);
     }

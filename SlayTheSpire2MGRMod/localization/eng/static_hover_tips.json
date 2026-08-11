@@ -2,9 +2,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "In Combat",
   "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Cards in your Draw Pile, Hand, Discard Pile, and Exhaust Pile are considered to be in combat.",
   "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Base Damage",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "Damage before bonuses from Strength, Enchantments, and similar effects.",
+  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "The card's own damage, including Sharp, but excluding Strength, Vigor, and similar effects.",
   "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "Transform into a Note",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Exhaust that card and generate its corresponding Note.",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_NEXT_TURN_ACTIVATION.title": "Takes Effect Next Turn",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_NEXT_TURN_ACTIVATION.description": "Why does it have to take effect starting next turn?\nI think you're about to find out."
+  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Exhaust that card and generate its corresponding Note."
 }

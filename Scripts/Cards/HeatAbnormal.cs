@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -46,8 +47,9 @@ public sealed class HeatAbnormal : MgrCard
             return;
 
         bool isStarting = IsPhraseStart;
+        decimal intrinsicDamage = GetIntrinsicDamage();
         float vfxScale = MgrAttackVfx.ScaleByDamage(
-            DynamicVars.Damage.BaseValue,
+            intrinsicDamage,
             referenceDamage: 3m,
             baseScale: 0.6f,
             growthPerDoubling: 0.18f,
@@ -67,8 +69,26 @@ public sealed class HeatAbnormal : MgrCard
             MgrCombatCardMutationState.Increase(
                 this,
                 "Damage",
-                DynamicVars.Damage.BaseValue);
+                intrinsicDamage);
         }
+    }
+
+    /// <summary>
+    /// Heat Abnormal treats Sharp as part of the damage printed on the card.
+    /// Strength, Vigor, Vigorous and other combat-time modifiers remain outside
+    /// this value and are therefore applied only after its base damage doubles.
+    /// </summary>
+    private decimal GetIntrinsicDamage()
+    {
+        decimal damage = DynamicVars.Damage.BaseValue;
+        if (Enchantment is Sharp sharp)
+        {
+            damage += sharp.EnchantDamageAdditive(
+                damage,
+                DynamicVars.Damage.Props);
+        }
+
+        return damage;
     }
 
     protected override void OnUpgrade()

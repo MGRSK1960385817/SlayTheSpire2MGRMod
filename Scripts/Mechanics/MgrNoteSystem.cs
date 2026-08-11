@@ -114,7 +114,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         {
             bool isFirstCardPlayed = !_lastPlayedCards.ContainsKey(player);
             if (isFirstCardPlayed && cardPlay.Card is EastOfTimeline firstTimeline)
-                firstTimeline.IncreaseNotesPermanently(1m);
+                firstTimeline.IncreaseNotesPermanently();
 
             _lastPlayedCards[player] = cardPlay.Card;
         }
@@ -442,7 +442,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
-    public override async Task AfterPlayerTurnStart(
+    public override Task AfterPlayerTurnStartEarly(
         PlayerChoiceContext choiceContext,
         Player player)
     {
@@ -453,10 +453,17 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
 
         if (player.Character is MgrCharacter)
-        {
             MgrPerformanceStateStore.For(player).ResetTurnCounters();
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterPlayerTurnStart(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        if (player.Character is MgrCharacter)
             await MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
-        }
     }
 
     public override Task BeforeSideTurnEnd(
@@ -515,7 +522,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         foreach (CardModel lastCard in _lastPlayedCards.Values)
         {
             if (lastCard is EastOfTimeline finalTimeline)
-                finalTimeline.IncreaseNotesPermanently(1m);
+                finalTimeline.IncreaseNotesPermanently();
         }
 
         _lastPlayedCards.Clear();
@@ -567,9 +574,22 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (player.GetRelic<Metronome>()?.TryDoubleCurrentChord() == true)
             triggerCount++;
 
+        int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
         {
             int chordTriggersBefore = state.RecordChordTrigger();
+            lastTriggerBefore = chordTriggersBefore;
+            if (index > 0)
+            {
+                MgrAudio.PlayChord();
+                await MgrNoteVisuals.PlayRepeatedChordTrigger(
+                    player,
+                    notes,
+                    state.Phrase.Capacity,
+                    forte,
+                    chordTriggersBefore);
+            }
+
             await MgrNoteEffects.TriggerChord(
                 choiceContext,
                 player,
@@ -577,6 +597,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 forte,
                 chordTriggersBefore);
         }
+
+        if (triggerCount > 1)
+            MgrNoteVisuals.FinishRepeatedChordTrigger(player, lastTriggerBefore);
     }
 
     /// <summary>

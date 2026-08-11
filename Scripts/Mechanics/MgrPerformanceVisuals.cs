@@ -61,6 +61,9 @@ public static class MgrPerformanceVisuals
             try
             {
                 Show(player, entries);
+                // Performance Power cards suppress Tower 2's ordinary
+                // fly-into-owner VFX, so the rack entrance is the sole owner of
+                // their real card node just like it is for Skills and Attacks.
                 if (animateEntry)
                 {
                     QueueEntryAnimation(

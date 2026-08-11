@@ -11,6 +11,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "spring_storm")]
 public sealed class SpringStorm : MgrCard
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<FortePower>(1m)

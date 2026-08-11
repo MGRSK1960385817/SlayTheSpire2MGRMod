@@ -21,7 +21,7 @@ public sealed class Procrastination : MgrCard
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public Procrastination() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public Procrastination() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -43,6 +43,5 @@ public sealed class Procrastination : MgrCard
         await PotionCmd.TryToProcure(potion, context.Player);
     }
 
-    protected override void OnUpgrade() =>
-        DynamicVars["Performance"].UpgradeValueBy(-1m);
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

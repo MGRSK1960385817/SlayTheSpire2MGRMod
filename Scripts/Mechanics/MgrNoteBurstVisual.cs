@@ -6,6 +6,7 @@ internal enum MgrNoteBurstStyle
 {
     Entrance,
     Chord,
+    RepeatedChord,
     SlotTransition
 }
 
@@ -18,19 +19,25 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
 {
     private readonly float[] _angleOffsets = new float[
         Math.Max(
-            MgrVisualTuning.Notes.ChordBurstParticleCount,
+            Math.Max(
+                MgrVisualTuning.Notes.ChordBurstParticleCount,
+                MgrVisualTuning.Notes.RepeatedChordBurstParticleCount),
             Math.Max(
                 MgrVisualTuning.Notes.EntranceBurstParticleCount,
                 MgrVisualTuning.Notes.SlotTransitionBurstParticleCount))];
     private readonly float[] _distanceScales = new float[
         Math.Max(
-            MgrVisualTuning.Notes.ChordBurstParticleCount,
+            Math.Max(
+                MgrVisualTuning.Notes.ChordBurstParticleCount,
+                MgrVisualTuning.Notes.RepeatedChordBurstParticleCount),
             Math.Max(
                 MgrVisualTuning.Notes.EntranceBurstParticleCount,
                 MgrVisualTuning.Notes.SlotTransitionBurstParticleCount))];
     private readonly float[] _sizeScales = new float[
         Math.Max(
-            MgrVisualTuning.Notes.ChordBurstParticleCount,
+            Math.Max(
+                MgrVisualTuning.Notes.ChordBurstParticleCount,
+                MgrVisualTuning.Notes.RepeatedChordBurstParticleCount),
             Math.Max(
                 MgrVisualTuning.Notes.EntranceBurstParticleCount,
                 MgrVisualTuning.Notes.SlotTransitionBurstParticleCount))];
@@ -78,7 +85,12 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
         float progress = Math.Clamp(_elapsed / duration, 0f, 1f);
         float eased = 1f - MathF.Pow(1f - progress, 3f);
         float fade = 1f - progress;
-        float styleStrength = _style == MgrNoteBurstStyle.Chord ? 1f : 0.68f;
+        float styleStrength = _style switch
+        {
+            MgrNoteBurstStyle.RepeatedChord => 1.18f,
+            MgrNoteBurstStyle.Chord => 1f,
+            _ => 0.68f
+        };
 
         // Concentric translucent disks provide a soft same-color glow behind
         // the artwork. The star spray remains crisp in front of that glow.
@@ -137,6 +149,8 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
     {
         MgrNoteBurstStyle.Entrance => MgrVisualTuning.Notes.EntranceBurstParticleCount,
         MgrNoteBurstStyle.Chord => MgrVisualTuning.Notes.ChordBurstParticleCount,
+        MgrNoteBurstStyle.RepeatedChord =>
+            MgrVisualTuning.Notes.RepeatedChordBurstParticleCount,
         _ => MgrVisualTuning.Notes.SlotTransitionBurstParticleCount
     };
 
@@ -144,6 +158,8 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
     {
         MgrNoteBurstStyle.Entrance => MgrVisualTuning.Notes.EntranceBurstSeconds,
         MgrNoteBurstStyle.Chord => MgrVisualTuning.Notes.ChordBurstSeconds,
+        MgrNoteBurstStyle.RepeatedChord =>
+            MgrVisualTuning.Notes.RepeatedChordBurstSeconds,
         _ => MgrVisualTuning.Notes.SlotTransitionBurstSeconds
     });
 
@@ -151,6 +167,8 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
     {
         MgrNoteBurstStyle.Entrance => MgrVisualTuning.Notes.EntranceBurstEndRadius,
         MgrNoteBurstStyle.Chord => MgrVisualTuning.Notes.ChordBurstEndRadius,
+        MgrNoteBurstStyle.RepeatedChord =>
+            MgrVisualTuning.Notes.RepeatedChordBurstEndRadius,
         _ => MgrVisualTuning.Notes.SlotTransitionBurstEndRadius
     };
 }

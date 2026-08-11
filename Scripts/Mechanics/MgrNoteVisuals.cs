@@ -82,6 +82,34 @@ public static class MgrNoteVisuals
             rack.SetPerforming(isPerforming);
     }
 
+    /// <summary>
+    /// Replays the filled-slot chord beat for each additional resolution of the
+    /// same chord. The original fill animation already presents trigger one;
+    /// this method makes trigger two and beyond visually explicit.
+    /// </summary>
+    public static Task PlayRepeatedChordTrigger(
+        Player player,
+        IReadOnlyList<MgrNote> notes,
+        int capacity,
+        int forte,
+        int chordTriggersBefore)
+    {
+        NoteRack? rack = GetOrCreateRack(player, notes, capacity);
+        return rack?.PlayRepeatedChordTrigger(
+            notes,
+            capacity,
+            forte,
+            chordTriggersBefore) ?? Task.CompletedTask;
+    }
+
+    public static void FinishRepeatedChordTrigger(
+        Player player,
+        int chordTriggersBefore)
+    {
+        if (Racks.TryGetValue(player, out NoteRack? rack) && rack.IsValid)
+            rack.FinishRepeatedChordTrigger(chordTriggersBefore);
+    }
+
     private static NoteRack? GetOrCreateRack(
         Player player,
         IReadOnlyList<MgrNote> notes,
@@ -228,6 +256,37 @@ public static class MgrNoteVisuals
                 slot.SetPerforming(isPerforming);
         }
 
+        public async Task PlayRepeatedChordTrigger(
+            IReadOnlyList<MgrNote> notes,
+            int capacity,
+            int forte,
+            int chordTriggersBefore)
+        {
+            if (!IsValid)
+                return;
+
+            // The first chord scheduled its ordinary clear as soon as the slots
+            // filled. Hold (or restore) that same snapshot so a slower gameplay
+            // effect cannot erase the second visible beat before it starts.
+            CancelScheduledClear();
+            UpdateSlots(notes, capacity, forte);
+            foreach (NoteSlot slot in _slots)
+                slot.PlayChordTriggerAnimation(emphasized: true);
+
+            Tween beat = _root.CreateTween();
+            beat.TweenInterval(GetRepeatedChordBeatSeconds(chordTriggersBefore));
+            await TweenHelper.AwaitFinished(beat, _root);
+        }
+
+        public void FinishRepeatedChordTrigger(int chordTriggersBefore)
+        {
+            if (!IsValid)
+                return;
+
+            CancelScheduledClear();
+            ScheduleClear(chordTriggersBefore);
+        }
+
         private void EnsureScreenVisibilitySubscriptions()
         {
             NOverlayStack? currentStack = NOverlayStack.Instance;
@@ -340,6 +399,13 @@ public static class MgrNoteVisuals
                 MgrVisualTuning.Notes.FirstChordHoldSeconds -
                 Math.Max(0, chordsResolvedBefore) *
                 MgrVisualTuning.Notes.ChordHoldAccelerationPerChord);
+
+        private static double GetRepeatedChordBeatSeconds(int chordTriggersBefore) =>
+            Math.Max(
+                MgrVisualTuning.Notes.MinimumRepeatedChordBeatSeconds,
+                MgrVisualTuning.Notes.RepeatedChordBeatSeconds -
+                Math.Max(0, chordTriggersBefore) *
+                MgrVisualTuning.Notes.RepeatedChordBeatAccelerationPerTrigger);
 
         private void ShowEmptySlots()
         {
@@ -545,7 +611,7 @@ public static class MgrNoteVisuals
                 _floatingRoot.RandomizeMotion();
         }
 
-        public void PlayChordTriggerAnimation()
+        public void PlayChordTriggerAnimation(bool emphasized = false)
         {
             if (_displayedKind is null ||
                 !GodotObject.IsInstanceValid(_entranceRoot) ||
@@ -554,18 +620,35 @@ public static class MgrNoteVisuals
                 return;
             }
 
-            _burst.Burst(_noteColor, MgrNoteBurstStyle.Chord);
+            _burst.Burst(
+                _noteColor,
+                emphasized
+                    ? MgrNoteBurstStyle.RepeatedChord
+                    : MgrNoteBurstStyle.Chord);
             _chordTween?.Kill();
             _entranceRoot.Scale = Vector2.One;
-            Tween tween = _anchor.CreateTween();
+            Color filledTint = MgrVisualTuning.Notes.FilledNoteTint;
+            Color peakTint = emphasized
+                ? new Color(1f, 1f, 1f, 1f)
+                : filledTint;
+            float peakScale = emphasized
+                ? MgrVisualTuning.Notes.RepeatedChordTriggerScale
+                : MgrVisualTuning.Notes.ChordTriggerScale;
+            Tween tween = _anchor.CreateTween().SetParallel();
             _chordTween = tween;
             tween.TweenProperty(
                     _entranceRoot,
                     "scale",
-                    Vector2.One * MgrVisualTuning.Notes.ChordTriggerScale,
+                    Vector2.One * peakScale,
                     MgrVisualTuning.Notes.ChordTriggerGrowSeconds)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
+            tween.TweenProperty(
+                _entranceRoot,
+                "modulate",
+                peakTint,
+                MgrVisualTuning.Notes.ChordTriggerGrowSeconds);
+            tween.Chain();
             tween.TweenProperty(
                     _entranceRoot,
                     "scale",
@@ -573,6 +656,11 @@ public static class MgrNoteVisuals
                     MgrVisualTuning.Notes.ChordTriggerSettleSeconds)
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
+            tween.TweenProperty(
+                _entranceRoot,
+                "modulate",
+                filledTint,
+                MgrVisualTuning.Notes.ChordTriggerSettleSeconds);
             tween.TweenCallback(Callable.From(() =>
             {
                 if (ReferenceEquals(_chordTween, tween))

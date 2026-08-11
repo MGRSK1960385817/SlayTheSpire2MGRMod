@@ -105,6 +105,13 @@ public static class MgrNoteEffects
                 if (owner.GetPower<SandPlanetPower>() is { } sandPlanet)
                 {
                     sandPlanet.Flash();
+                    foreach (var enemy in combatState.HittableEnemies)
+                    {
+                        MgrAttackVfx.SpawnFireBurst(
+                            enemy,
+                            MgrAttackVfx.DefaultFireTint,
+                            scale: 0.26f);
+                    }
                     await CreatureCmd.Damage(
                         choiceContext,
                         combatState.HittableEnemies,

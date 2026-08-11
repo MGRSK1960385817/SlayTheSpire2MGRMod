@@ -53,7 +53,6 @@ public sealed class MaguroCleave : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
-        DynamicVars["BonusPerChord"].UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

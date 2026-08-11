@@ -1,7 +1,9 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
@@ -12,15 +14,14 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "neo_neon")]
 public sealed class NeoNeon : MgrCard
 {
-    protected override MgrKeywordKind KeywordKinds =>
-        MgrKeywordKind.PowerNote | MgrKeywordKind.Forte;
+    protected override bool TransformsCardsIntoNotes => true;
 
-    protected override MgrGoldGlowCondition GoldGlowConditions =>
-        MgrGoldGlowCondition.PhraseStart;
+    protected override MgrKeywordKind KeywordKinds =>
+        MgrKeywordKind.Forte;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 2m),
+        new CardsVar(3),
         new PowerVar<FortePower>(1m)
     ];
 
@@ -39,11 +40,31 @@ public sealed class NeoNeon : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
-        bool phraseStartedEmpty = IsPhraseStart;
-        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
-            await ChannelNote(choiceContext, NoteKind.Power);
+        int transformCount = Math.Min(
+            DynamicVars.Cards.IntValue,
+            PileType.Hand.GetPile(Owner).Cards.Count);
+        if (transformCount <= 0)
+            return;
 
-        if (!phraseStartedEmpty)
+        CardModel[] selected = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(
+                CardSelectorPrefs.TransformSelectionPrompt,
+                transformCount),
+            filter: null,
+            source: this)).ToArray();
+
+        NoteKind[] kinds = selected
+            .Select(static card => CardNoteResolver.Resolve(card))
+            .ToArray();
+        foreach (CardModel card in selected)
+            await CardCmd.Exhaust(choiceContext, card);
+        foreach (NoteKind kind in kinds)
+            await ChannelNote(choiceContext, kind);
+
+        if (kinds.Length != DynamicVars.Cards.IntValue ||
+            kinds.Distinct().Count() != kinds.Length)
             return;
 
         decimal amount = DynamicVars["FortePower"].BaseValue;
@@ -53,13 +74,7 @@ public sealed class NeoNeon : MgrCard
             amount,
             Owner.Creature,
             this);
-        await PowerCmd.Apply<TemporaryFortePower>(
-            choiceContext,
-            Owner.Creature,
-            amount,
-            Owner.Creature,
-            this);
     }
 
-    protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Exhaust);
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

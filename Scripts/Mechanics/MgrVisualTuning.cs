@@ -85,18 +85,28 @@ public static class MgrVisualTuning
         // the transition between a filled note and its empty slot.
         public const int EntranceBurstParticleCount = 7;
         public const int ChordBurstParticleCount = 20;
+        public const int RepeatedChordBurstParticleCount = 28;
         public const int SlotTransitionBurstParticleCount = 11;
         public const double EntranceBurstSeconds = 0.30;
         public const double ChordBurstSeconds = 0.46;
+        public const double RepeatedChordBurstSeconds = 0.42;
         public const double SlotTransitionBurstSeconds = 0.36;
         public const float EntranceBurstEndRadius = 44f;
         public const float ChordBurstEndRadius = 82f;
+        public const float RepeatedChordBurstEndRadius = 98f;
         public const float SlotTransitionBurstEndRadius = 58f;
         public const float NoteBurstStartRadius = 10f;
         public const float NoteBurstStarSize = 3.2f;
         public const float ChordTriggerScale = 1.16f;
+        public const float RepeatedChordTriggerScale = 1.25f;
         public const double ChordTriggerGrowSeconds = 0.10;
         public const double ChordTriggerSettleSeconds = 0.16;
+        // Extra chord passes get a distinct visual beat before their gameplay
+        // effects resolve. Later triggers accelerate slightly without becoming
+        // instantaneous, matching the rest of the note presentation cadence.
+        public const double RepeatedChordBeatSeconds = 0.18;
+        public const double MinimumRepeatedChordBeatSeconds = 0.10;
+        public const double RepeatedChordBeatAccelerationPerTrigger = 0.012;
 
         // Each generated note samples a small visual-only variance around these
         // values. This deliberately uses chaotic randomness: it never affects

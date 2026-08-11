@@ -13,7 +13,10 @@ public sealed class CumulonimbusGraffiti : MgrCard
     protected override MgrGoldGlowCondition GoldGlowConditions =>
         MgrGoldGlowCondition.PhraseEnd;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
     public CumulonimbusGraffiti() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
@@ -32,6 +35,6 @@ public sealed class CumulonimbusGraffiti : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

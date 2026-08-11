@@ -37,11 +37,11 @@ public sealed class MeteorShower : MgrCard
             return false;
         }
 
-        int starryNotes = state.Phrase.Notes.Count(note => note.Kind == NoteKind.Starry);
-        if (starryNotes == 0)
+        int starryNotesGenerated = state.StarryNotesGeneratedThisTurn;
+        if (starryNotesGenerated == 0)
             return false;
 
-        modifiedCost = Math.Max(0m, originalCost - starryNotes);
+        modifiedCost = Math.Max(0m, originalCost - starryNotesGenerated);
         return true;
     }
 

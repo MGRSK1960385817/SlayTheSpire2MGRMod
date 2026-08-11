@@ -20,7 +20,7 @@ public sealed class DonutHole : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(14m, ValueProp.Move)
+        new BlockVar(12m, ValueProp.Move)
     ];
 
     public DonutHole() : base(
@@ -54,5 +54,5 @@ public sealed class DonutHole : MgrCard
         => await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
     protected override void OnUpgrade() =>
-        DynamicVars.Block.UpgradeValueBy(4m);
+        DynamicVars.Block.UpgradeValueBy(3m);
 }

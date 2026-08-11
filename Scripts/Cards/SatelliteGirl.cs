@@ -10,9 +10,9 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "satellite_girl")]
 public sealed class SatelliteGirl : MgrCard
 {
-    public override bool IsStarryCard => IsUpgraded;
+    public override bool IsStarryCard => true;
 
-    public SatelliteGirl() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
+    public SatelliteGirl() : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -26,5 +26,6 @@ public sealed class SatelliteGirl : MgrCard
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

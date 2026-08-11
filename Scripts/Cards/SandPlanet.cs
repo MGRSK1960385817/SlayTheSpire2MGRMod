@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
@@ -14,13 +14,8 @@ public sealed class SandPlanet : MgrCard
 {
     protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.AttackNote;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new IntVar("Notes", 2m)
-    ];
-
     public SandPlanet() : base(
-        2,
+        1,
         CardType.Power,
         CardRarity.Uncommon,
         TargetType.Self)
@@ -37,11 +32,7 @@ public sealed class SandPlanet : MgrCard
             1m,
             Owner.Creature,
             this);
-
-        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
-            await ChannelNote(choiceContext, NoteKind.Attack);
     }
 
-    protected override void OnUpgrade() =>
-        DynamicVars["Notes"].UpgradeValueBy(2m);
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Ethereal);
 }

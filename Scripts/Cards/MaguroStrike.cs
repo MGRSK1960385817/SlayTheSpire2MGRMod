@@ -47,7 +47,6 @@ public sealed class MaguroStrike : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
         DynamicVars["Notes"].UpgradeValueBy(1m);
     }
 }

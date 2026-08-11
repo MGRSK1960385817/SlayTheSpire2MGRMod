@@ -19,7 +19,7 @@ public sealed class MaguroAssault : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(6m),
+        new CalculationBaseVar(5m),
         new ExtraDamageVar(1m),
         new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>

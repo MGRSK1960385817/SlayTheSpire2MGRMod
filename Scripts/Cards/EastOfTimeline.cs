@@ -13,7 +13,8 @@ public sealed class EastOfTimeline : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 2m)
+        new IntVar("Notes", 2m),
+        new IntVar("PermanentIncrease", 1m)
     ];
 
     // Explicitly Attack in the Tower-2 adaptation, per the design request.
@@ -28,8 +29,9 @@ public sealed class EastOfTimeline : MgrCard
             await ChannelNote(choiceContext, NoteKind.Attack);
     }
 
-    internal void IncreaseNotesPermanently(decimal amount)
+    internal void IncreaseNotesPermanently()
     {
+        decimal amount = DynamicVars["PermanentIncrease"].BaseValue;
         HashSet<CardModel> targets = [this];
         CardModel? deckVersion = DeckVersion;
         if (deckVersion is not null)
@@ -63,6 +65,6 @@ public sealed class EastOfTimeline : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Notes"].UpgradeValueBy(2m);
+        DynamicVars["PermanentIncrease"].UpgradeValueBy(1m);
     }
 }

@@ -87,6 +87,18 @@ public static class MgrAttackVfx
                 tint);
     }
 
+    public static void SpawnFireBurst(
+        Creature target,
+        Color tint,
+        float scale)
+    {
+        NFireBurstVfx? vfx = CreateFireBurst(target, tint, scale);
+        if (vfx is null || NCombatRoom.Instance is null)
+            return;
+
+        NCombatRoom.Instance.CombatVfxContainer.AddChildSafely(vfx);
+    }
+
     public static NBigSlashVfx? CreateBigSlash(
         Creature target,
         Color tint,

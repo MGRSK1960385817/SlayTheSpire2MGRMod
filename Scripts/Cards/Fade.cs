@@ -19,7 +19,7 @@ public sealed class Fade : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move)
+        new BlockVar(5m, ValueProp.Move)
     ];
 
     public override bool GainsBlock => true;
@@ -47,5 +47,5 @@ public sealed class Fade : MgrCard
         await Cmd.Wait(0.35f);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
 }

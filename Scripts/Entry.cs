@@ -34,8 +34,15 @@ public partial class Entry
         _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
         _runtimePatcher.RegisterPatch<MgrCharacterSelectSfxPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
+        _runtimePatcher.RegisterPatch<MgrPerformancePowerCardVfxPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
         _runtimePatcher.RegisterPatch<MgrManimaniTargetPreviewPatch>();
+        _runtimePatcher.RegisterPatch<MgrCrossCharacterCombatCardPoolPatch>();
+        _runtimePatcher.RegisterPatch<MgrCrossCharacterRewardCardPoolPatch>();
+        _runtimePatcher.RegisterPatch<MgrOrobasCardPoolScopePatch>();
+        _runtimePatcher.RegisterPatch<MgrOrobasCharacterListPatch>();
+        _runtimePatcher.RegisterPatch<MgrKaleidoscopeCardPoolScopePatch>();
+        _runtimePatcher.RegisterPatch<MgrScopedCharacterCardPoolsPatch>();
         if (!RitsuLibFramework.ApplyRequiredPatcher(
                 _runtimePatcher,
                 () => IsModActive = false,
