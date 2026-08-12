@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using SlayTheSpire2MGRMod.Cards;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -19,6 +20,14 @@ public sealed class CanonFormPower : ModPowerTemplate
     private int _pendingStacks;
     private int _pendingActivationTurn;
     private bool _isResolving;
+    private int _visualTriggerSerial;
+
+    /// <summary>
+    /// Transient presentation counter observed by MGR's character-local aura.
+    /// It is deliberately not saved: loading/re-entering a combat recreates the
+    /// idle wheel, while only a real replay batch advances the wheel one turn.
+    /// </summary>
+    public int VisualTriggerSerial => _visualTriggerSerial;
 
     [SavedProperty]
     public int PendingStacks
@@ -109,6 +118,11 @@ public sealed class CanonFormPower : ModPowerTemplate
         try
         {
             Flash();
+            _visualTriggerSerial++;
+            MgrAbilityVfx.SpawnCastBurst(
+                Owner,
+                MgrAbilityVfxStyle.Echo,
+                0.82f);
             foreach (CardModel card in cardsToReplay)
             {
                 if (CombatManager.Instance.IsOverOrEnding || player.Creature.IsDead)

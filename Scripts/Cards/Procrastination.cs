@@ -15,7 +15,8 @@ public sealed class Procrastination : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 3m)
+        new IntVar("Performance", 3m),
+        new GoldVar(20)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
@@ -41,7 +42,12 @@ public sealed class Procrastination : MgrCard
                 [])
             .ToMutable();
         await PotionCmd.TryToProcure(potion, context.Player);
+
+        if (IsUpgraded)
+            await PlayerCmd.GainGold(DynamicVars.Gold.BaseValue, context.Player);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+    }
 }

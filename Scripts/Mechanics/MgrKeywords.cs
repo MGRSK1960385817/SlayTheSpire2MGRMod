@@ -160,8 +160,8 @@ public static class MgrKeywords
         CrimeAndPunishment => MgrKeywordKind.Forte,
         GalaxyLamp => MgrKeywordKind.StarryNote,
         StarfallSea => MgrKeywordKind.StarryNote,
-        GhostRule => MgrKeywordKind.CurseNote,
-        SandPlanet => MgrKeywordKind.AttackNote,
+        MarunouchiSadistic => MgrKeywordKind.CurseNote,
+        Samsara => MgrKeywordKind.AttackNote,
         Omnia => MgrKeywordKind.OmniaNote,
         _ => MgrKeywordKind.None
     };

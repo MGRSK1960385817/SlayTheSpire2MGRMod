@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -49,6 +50,13 @@ public sealed class SongOfSiren : MgrCard
         if (CombatState is null)
             return;
 
+        foreach (var enemy in CombatState.HittableEnemies)
+        {
+            MgrAbilityVfx.SpawnCastBurst(
+                enemy,
+                MgrAbilityVfxStyle.Siren,
+                0.52f);
+        }
         await PowerCmd.Apply<StrengthPower>(
             choiceContext,
             CombatState.HittableEnemies,

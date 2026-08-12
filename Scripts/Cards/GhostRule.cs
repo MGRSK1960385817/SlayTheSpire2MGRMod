@@ -1,8 +1,10 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -14,15 +16,17 @@ public sealed class GhostRule : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move),
-        new IntVar("NotesPerEnemy", 1m)
+        new CardsVar(1)
     ];
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
+
     public GhostRule() : base(
-        2,
-        CardType.Attack,
-        CardRarity.Rare,
-        TargetType.AllEnemies)
+        0,
+        CardType.Skill,
+        CardRarity.Common,
+        TargetType.Self)
     {
     }
 
@@ -30,27 +34,30 @@ public sealed class GhostRule : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
-        if (CombatState is not { } combatState)
-            return;
+        CardModel[] selected = (await CardSelectCmd.FromCombatPile(
+            choiceContext,
+            PileType.Discard.GetPile(Owner),
+            Owner,
+            new CardSelectorPrefs(
+                new LocString(
+                    "cards",
+                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_GHOST_RULE.selectionScreenPrompt"),
+                DynamicVars.Cards.IntValue))).ToArray();
 
-        int enemiesHit = combatState.HittableEnemies.Count;
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this, cardPlay)
-            .TargetingAllOpponents(combatState)
-            .WithHitVfxNode(target => MgrAttackVfx.CreateGaseousImpact(
-                target,
-                MgrAttackVfx.CurseDarkRed,
-                1.05f))
-            .WithHitFx(null, null, "blunt_attack.mp3")
-            .Execute(choiceContext);
-
-        int notesToGenerate = enemiesHit * DynamicVars["NotesPerEnemy"].IntValue;
-        for (int index = 0; index < notesToGenerate; index++)
-            await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
+        if (selected.Length > 0)
+        {
+            await CardPileCmd.Add(
+                selected,
+                PileType.Draw,
+                CardPilePosition.Top);
+        }
 
         await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Discard);
     }
 
-    protected override void OnUpgrade() =>
-        DynamicVars["NotesPerEnemy"].UpgradeValueBy(1m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Cards.UpgradeValueBy(1m);
+        RemoveKeyword(CardKeyword.Exhaust);
+    }
 }

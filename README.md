@@ -1,28 +1,66 @@
 # SlayTheSpire2MGRMod
 
-MGR 人物模组的《杀戮尖塔 2》重制工程。
+MGR 人物模组的《杀戮尖塔 2》重制工程。目前处于发布前收尾阶段。
 
-## 当前状态
+## 当前内容
 
-- 原生 Godot 4.5.1 Mono 工程，使用 `Godot.NET.Sdk/4.5.1` 和 `net9.0`。
-- 当前开发目标游戏版本 `0.110.0`，依赖 RitsuLib `0.5.1` 或更高版本。
-- 已建立角色、卡牌池、遗物池、药水池和 RitsuLib 自动注册入口。
-- 已建立人物场景、角色选择背景、能量面板、商店/营火场景及中英本地化。
-- 已迁移 4 张打击、4 张防御、窥视、安眠曲和迷你麦克风作为最小人物骨架。
-- 新的乐句规则目前只存在于独立领域模型中，尚未连接战斗 UI；详见 `docs/DESIGN.md`。
+- 80 张单人奖励池卡牌：20 张白卡、35 张蓝卡、25 张金卡。
+- 4 张基础牌、2 张先古牌和 3 张衍生牌。
+- 11 件职业遗物，包含初始遗物与先古替换遗物。
+- 核心机制：音符槽、和弦、演奏、强音、起音/尾音、星空、幽灵与万象音符。
+- 人物动画、战斗与选人特效、能量框、营火/商店表现、先古对话及中英本地化。
 
-## 构建
+内容名称、启用状态与效果摘要以
+[`docs/MGR_content_registry.json`](docs/MGR_content_registry.json) 为人类维护入口；实际游戏文本位于
+`SlayTheSpire2MGRMod/localization/<语言>/`。
 
-1. 安装 Godot 4.5.1 Mono 和 .NET 9 或以上 SDK。
-2. 复制 `local.props.template` 为 `local.props`，填写游戏与 Godot 路径。
-3. 日常开发验证执行下方的“仅编译检查”命令。
+## 环境与依赖
 
-日常开发约定（适用于 Codex）：只进行 C# 编译检查；**不主动推送 GitHub，不主动部署或复制文件到游戏目录，也无需每次重复说明该约定。** Git 同步与游戏部署均由作者手动决定和执行。
+- Godot 4.5.1 Mono
+- .NET 9 SDK
+- 《杀戮尖塔 2》最低版本 `0.110.0`
+- RitsuLib `0.5.1` 或更高版本（模组 ID：`STS2-RitsuLib`）
 
-仅验证 C# 编译：
+复制 `local.props.template` 为 `local.props`，然后填写本机游戏目录与 Godot 可执行文件路径。`local.props` 仅供本机使用，不应提交。
+
+## 日常检查
+
+只进行 C# 编译，不导出 PCK，也不复制到游戏目录：
 
 ```powershell
 dotnet build /p:RunPckExport=false /p:CopyModOnBuild=false
 ```
 
-工作区中的塔一旧模组、狐狸模组和塔二原版源码参考已移到仓库外，与本项目同级存放，不会进入 Git 或 Godot 导出包。
+检查登记表、注册代码、图片、Godot `.import` UID 和中英本地化是否同步：
+
+```powershell
+pwsh -NoProfile -File tools/Validate-MgrContent.ps1
+```
+
+把名称差异等警告也视为失败：
+
+```powershell
+pwsh -NoProfile -File tools/Validate-MgrContent.ps1 -WarningsAsErrors
+```
+
+校验器会固定核对奖励池基线 `20/35/25`，但不能替代进游戏后的机制、动画与存档回归测试。
+
+## 主要目录
+
+- `Scripts/Cards`：卡牌与卡牌基类。
+- `Scripts/Powers`：能力与持续战斗效果。
+- `Scripts/Relics`：职业遗物。
+- `Scripts/Mechanics`：音符、和弦、演奏、UI、动画及规则服务。
+- `Scripts/Characters`：人物模型、场景与人物周边特效。
+- `SlayTheSpire2MGRMod`：Godot 场景、图片、音频与本地化资源。
+- `docs`：内容登记、设计规范、架构图、特效登记和发布路线图。
+- `tools`：本地只读检查工具。
+
+完整结构见 [`docs/MGR架构图.md`](docs/MGR架构图.md)，发布前任务见
+[`docs/MGR发布前与后续开发路线图.md`](docs/MGR发布前与后续开发路线图.md)。
+
+## 开发约定
+
+- 日常修改完成后只做必要的编译与静态检查；Git 同步和游戏目录部署由作者手动执行。
+- 卡牌或遗物改名时，应同步检查类名、文件名、图片、注册主键、本地化键与内容登记表。
+- 塔一旧模组、狐狸、魔理沙、工匠、忍者及原版资源参考均位于仓库外，只作为实现参考，不进入导出包。

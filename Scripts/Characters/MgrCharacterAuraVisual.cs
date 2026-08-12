@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using SlayTheSpire2MGRMod.Mechanics;
+using SlayTheSpire2MGRMod.Powers;
 
 namespace SlayTheSpire2MGRMod.Characters;
 
@@ -72,6 +73,24 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     [Export(PropertyHint.Range, "3,12,1")]
     public int ResonanceWaveCount { get; set; } = 7;
 
+    [Export]
+    public Vector2 CanonWheelOffset { get; set; } = new(0f, 4f);
+
+    [Export(PropertyHint.Range, "100,260,1")]
+    public float CanonWheelRadius { get; set; } = 171f;
+
+    [Export(PropertyHint.Range, "1,16,0.1")]
+    public float CanonTriggerMinimumAngularSpeed { get; set; } = 5.4f;
+
+    [Export(PropertyHint.Range, "1,20,0.1")]
+    public float CanonTriggerMaximumAngularSpeed { get; set; } = 11.8f;
+
+    [Export]
+    public Vector2 HiganOrbitRadius { get; set; } = new(196f, 112f);
+
+    [Export(PropertyHint.Range, "70,220,1")]
+    public float PrismaticCrownRadius { get; set; } = 132f;
+
     private static readonly Color[] Palette =
     [
         new Color("fff1b8"), // warm stage light
@@ -94,6 +113,15 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private readonly RandomNumberGenerator _random = new();
     private Player? _player;
     private double _elapsed;
+    private float _satelliteVisibility;
+    private CanonFormPower? _observedCanonPower;
+    private int _lastCanonTriggerSerial;
+    private float _canonVisibility;
+    private float _canonRotation;
+    private float _canonSpinRemaining;
+    private float _canonFlash;
+    private float _higanVisibility;
+    private float _prismaticVisibility;
     private int _activeConstellationLinkCount;
     private int _lastStarryNoteCount = -1;
 
@@ -115,6 +143,20 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         _elapsed += delta;
         float elapsed = (float)delta;
         RefreshDynamicDensity(force: false);
+        float satelliteTarget = IsSatelliteAvailable() ? 1f : 0f;
+        _satelliteVisibility = Mathf.MoveToward(
+            _satelliteVisibility,
+            satelliteTarget,
+            elapsed * (satelliteTarget > 0f ? 4.5f : 7.5f));
+        UpdateCanonWheel(elapsed);
+        _higanVisibility = Mathf.MoveToward(
+            _higanVisibility,
+            HasDoubleNotes() ? 1f : 0f,
+            elapsed * 3.4f);
+        _prismaticVisibility = Mathf.MoveToward(
+            _prismaticVisibility,
+            HasPrismaticPower() ? 1f : 0f,
+            elapsed * 3.1f);
 
         foreach (AmbientStar star in _stars)
         {
@@ -137,8 +179,12 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     public override void _Draw()
     {
         float intensity = MathF.Max(0f, Intensity);
+        DrawCanonWheel(intensity);
+        DrawHiganDoubleOrbit(intensity);
+        DrawPrismaticCrown(intensity);
         DrawResonanceCrescents(intensity);
         DrawConstellationLinks(intensity);
+        DrawSatelliteStar(intensity);
 
         foreach (LightMote mote in _motes)
             DrawMote(mote, intensity);
@@ -222,6 +268,290 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
 
             ancestor = ancestor.GetParent();
         }
+    }
+
+    private bool IsSatelliteAvailable() =>
+        _player?.Creature.Powers
+            .OfType<SatelliteGirlPower>()
+            .Any(static power => power.IsAvailableThisTurn) == true;
+
+    private bool HasDoubleNotes() =>
+        _player?.Creature.GetPowerAmount<DoubleNotesPower>() > 0m;
+
+    private bool HasPrismaticPower() =>
+        _player?.Creature.GetPowerAmount<PrismaticPower>() > 0m;
+
+    private void UpdateCanonWheel(float delta)
+    {
+        CanonFormPower? power = _player?.Creature.GetPower<CanonFormPower>();
+        _canonVisibility = Mathf.MoveToward(
+            _canonVisibility,
+            power is null ? 0f : 1f,
+            delta * 3.2f);
+
+        if (power is null)
+        {
+            _observedCanonPower = null;
+            _lastCanonTriggerSerial = 0;
+            _canonSpinRemaining = 0f;
+            _canonFlash = Mathf.MoveToward(_canonFlash, 0f, delta * 2.8f);
+            return;
+        }
+
+        if (!ReferenceEquals(power, _observedCanonPower))
+        {
+            _observedCanonPower = power;
+            _lastCanonTriggerSerial = power.VisualTriggerSerial;
+        }
+        else if (power.VisualTriggerSerial > _lastCanonTriggerSerial)
+        {
+            int triggers = power.VisualTriggerSerial - _lastCanonTriggerSerial;
+            _lastCanonTriggerSerial = power.VisualTriggerSerial;
+            _canonSpinRemaining += Mathf.Tau * triggers;
+            _canonFlash = 1f;
+        }
+
+        if (_canonSpinRemaining > 0f)
+        {
+            // Ease through exactly one complete revolution per trigger. Extra
+            // queued triggers add another revolution instead of snapping.
+            float speed = Mathf.Lerp(
+                CanonTriggerMinimumAngularSpeed,
+                CanonTriggerMaximumAngularSpeed,
+                Math.Clamp(_canonSpinRemaining / Mathf.Tau, 0f, 1f));
+            float step = MathF.Min(_canonSpinRemaining, speed * delta);
+            _canonRotation = Mathf.PosMod(_canonRotation + step, Mathf.Tau);
+            _canonSpinRemaining -= step;
+        }
+
+        _canonFlash = Mathf.MoveToward(_canonFlash, 0f, delta * 1.55f);
+    }
+
+    private void DrawCanonWheel(float intensity)
+    {
+        float alpha = _canonVisibility * intensity;
+        if (alpha <= 0.005f)
+            return;
+
+        Vector2 center = AuraCenter + CanonWheelOffset;
+        float pulse = 1f + _canonFlash * 0.055f;
+        float outerRadius = CanonWheelRadius * pulse;
+        float rotation = _canonRotation;
+
+        Color deepHalo = new Color("513268");
+        deepHalo.A = alpha * (0.075f + _canonFlash * 0.055f);
+        DrawCircle(center, outerRadius * 1.04f, deepHalo);
+
+        Color outer = new Color("d7c0ff");
+        outer.A = alpha * (0.30f + _canonFlash * 0.38f);
+        DrawArc(center, outerRadius, 0f, Mathf.Tau, 96, outer, 2.1f + _canonFlash * 1.8f, true);
+
+        Color inner = new Color("87ddff");
+        inner.A = alpha * (0.20f + _canonFlash * 0.26f);
+        DrawArc(center, outerRadius * 0.72f, 0f, Mathf.Tau, 72, inner, 1.35f, true);
+        DrawArc(center, outerRadius * 0.45f, 0f, Mathf.Tau, 56, outer, 1.05f, true);
+
+        // Sixty ticks form a clock face; the twelve major ticks read clearly
+        // during the accelerated one-turn rotation.
+        for (int index = 0; index < 60; index++)
+        {
+            float angle = rotation + index * Mathf.Tau / 60f;
+            bool major = index % 5 == 0;
+            float length = major ? 13f : 6f;
+            Vector2 direction = Vector2.FromAngle(angle);
+            Color tick = major ? outer : inner;
+            tick.A *= major ? 0.92f : 0.55f;
+            DrawLine(
+                center + direction * (outerRadius - length),
+                center + direction * outerRadius,
+                tick,
+                major ? 2f : 1f,
+                true);
+        }
+
+        // Eight visible moon phases rotate with the dial. Offset shadow discs
+        // create changing crescents without relying on texture resources.
+        for (int index = 0; index < 8; index++)
+        {
+            float angle = rotation + index * Mathf.Tau / 8f - MathF.PI * 0.5f;
+            Vector2 moonCenter = center + Vector2.FromAngle(angle) * outerRadius * 0.83f;
+            DrawMoonPhase(moonCenter, 10.5f, index, alpha);
+        }
+
+        // A pair of time hands remains readable while the surrounding lunar
+        // dial turns, reinforcing “last turn replayed this turn”.
+        Color hand = new Color("fff0aa");
+        hand.A = alpha * (0.48f + _canonFlash * 0.40f);
+        DrawLine(center, center + Vector2.FromAngle(rotation * 0.35f - 1.2f) * 61f, hand, 2.4f, true);
+        DrawLine(center, center + Vector2.FromAngle(-rotation * 0.22f + 0.35f) * 39f, hand, 3.2f, true);
+        DrawCircle(center, 5.5f, hand);
+    }
+
+    private void DrawMoonPhase(Vector2 center, float radius, int phase, float alpha)
+    {
+        Color shadow = new Color("261b36");
+        shadow.A = alpha * 0.82f;
+        DrawCircle(center, radius + 1.7f, shadow);
+
+        float fullness = 1f - MathF.Abs(phase - 4f) / 4f;
+        Color light = new Color("f6e8c7");
+        light.A = alpha * Mathf.Lerp(0.22f, 0.85f, fullness);
+        float lightRadius = Mathf.Lerp(radius * 0.34f, radius, fullness);
+        float direction = phase < 4 ? -1f : 1f;
+        Vector2 lightCenter = center + Vector2.Right * direction * (radius - lightRadius) * 0.68f;
+        DrawCircle(lightCenter, lightRadius, light);
+
+        Color rim = new Color("cfaeff");
+        rim.A = alpha * 0.34f;
+        DrawArc(center, radius, 0f, Mathf.Tau, 20, rim, 1f, true);
+    }
+
+    private void DrawHiganDoubleOrbit(float intensity)
+    {
+        float alpha = _higanVisibility * intensity;
+        if (alpha <= 0.005f)
+            return;
+
+        Vector2 center = AuraCenter + new Vector2(0f, 10f);
+        float phase = (float)_elapsed * 0.72f;
+        Color first = new Color("ff9bd5");
+        Color second = new Color("8cecff");
+        first.A = alpha * 0.26f;
+        second.A = alpha * 0.26f;
+        DrawEllipseArc(
+            center,
+            HiganOrbitRadius.X,
+            HiganOrbitRadius.Y,
+            -0.68f,
+            0.68f,
+            first,
+            1.55f);
+        DrawEllipseArc(
+            center,
+            HiganOrbitRadius.X,
+            HiganOrbitRadius.Y,
+            MathF.PI - 0.68f,
+            MathF.PI + 0.68f,
+            second,
+            1.55f);
+
+        for (int track = 0; track < 2; track++)
+        {
+            float angle = phase + track * MathF.PI;
+            Vector2 position = center + new Vector2(
+                MathF.Cos(angle) * HiganOrbitRadius.X,
+                MathF.Sin(angle) * HiganOrbitRadius.Y);
+            Color color = track == 0 ? first : second;
+            color.A = alpha * 0.82f;
+            DrawCircle(position, 5.2f, color);
+            DrawLine(position, position + Vector2.Up * 17f, color, 2.2f, true);
+            Color halo = color;
+            halo.A *= 0.18f;
+            DrawCircle(position, 18f, halo);
+        }
+    }
+
+    private void DrawPrismaticCrown(float intensity)
+    {
+        float alpha = _prismaticVisibility * intensity;
+        if (alpha <= 0.005f)
+            return;
+
+        Color[] colors =
+        [
+            new Color("ff799c"), new Color("ffd875"), new Color("98f1c5"),
+            new Color("83ddff"), new Color("b8a0ff"), new Color("f59dff")
+        ];
+        Vector2 center = AuraCenter + new Vector2(0f, -8f);
+        float rotation = (float)_elapsed * 0.16f;
+        for (int index = 0; index < colors.Length; index++)
+        {
+            float angle = rotation + index * Mathf.Tau / colors.Length;
+            Vector2 position = center + Vector2.FromAngle(angle) * PrismaticCrownRadius;
+            Vector2 tangent = Vector2.FromAngle(angle + MathF.PI * 0.5f);
+            Vector2 radial = Vector2.FromAngle(angle);
+            Color color = colors[index];
+            color.A = alpha * 0.32f;
+            DrawLine(position - radial * 12f, position + radial * 12f, color, 3.2f, true);
+            DrawLine(position - tangent * 5f, position + tangent * 5f, color, 2f, true);
+        }
+    }
+
+    private void DrawEllipseArc(
+        Vector2 center,
+        float radiusX,
+        float radiusY,
+        float startAngle,
+        float endAngle,
+        Color color,
+        float width)
+    {
+        const int segmentCount = 32;
+        Vector2 previous = center + new Vector2(
+            MathF.Cos(startAngle) * radiusX,
+            MathF.Sin(startAngle) * radiusY);
+        for (int index = 1; index <= segmentCount; index++)
+        {
+            float angle = Mathf.Lerp(
+                startAngle,
+                endAngle,
+                index / (float)segmentCount);
+            Vector2 current = center + new Vector2(
+                MathF.Cos(angle) * radiusX,
+                MathF.Sin(angle) * radiusY);
+            DrawLine(previous, current, color, width, true);
+            previous = current;
+        }
+    }
+
+    private void DrawSatelliteStar(float intensity)
+    {
+        if (_satelliteVisibility <= 0.005f)
+            return;
+
+        float phase = (float)_elapsed * 1.32f - 0.35f;
+        Vector2 orbitRadius = new(152f, 91f);
+        Vector2 position = AuraCenter + new Vector2(
+            MathF.Cos(phase) * orbitRadius.X,
+            MathF.Sin(phase) * orbitRadius.Y);
+        float depth = 0.5f + 0.5f * MathF.Sin(phase);
+        float size = Mathf.Lerp(8.5f, 13.5f, depth);
+        float alpha = _satelliteVisibility * intensity *
+            Mathf.Lerp(0.62f, 1f, depth);
+
+        // A short dotted trail makes the star read as an orbiting satellite
+        // rather than another ambient twinkle.
+        for (int index = 5; index >= 1; index--)
+        {
+            float trailPhase = phase - index * 0.105f;
+            Vector2 trailPosition = AuraCenter + new Vector2(
+                MathF.Cos(trailPhase) * orbitRadius.X,
+                MathF.Sin(trailPhase) * orbitRadius.Y);
+            Color trail = new Color("d8d2ff");
+            trail.A = alpha * (0.18f - index * 0.022f);
+            DrawCircle(trailPosition, MathF.Max(1.2f, size * (0.20f - index * 0.018f)), trail);
+        }
+
+        Color halo = new Color("fff2a8");
+        halo.A = alpha * 0.13f;
+        DrawCircle(position, size * 3.8f, halo);
+
+        Color secondaryHalo = new Color("bda8ff");
+        secondaryHalo.A = alpha * 0.16f;
+        DrawCircle(position, size * 2.35f, secondaryHalo);
+
+        Color ray = new Color("fff7cf");
+        ray.A = alpha;
+        DrawLine(position - Vector2.Right * size * 1.75f, position + Vector2.Right * size * 1.75f, ray, 2.1f, true);
+        DrawLine(position - Vector2.Up * size * 1.75f, position + Vector2.Up * size * 1.75f, ray, 2.1f, true);
+        Vector2 diagonal = new Vector2(0.72f, 0.72f) * size;
+        DrawLine(position - diagonal, position + diagonal, ray, 1.25f, true);
+        diagonal.X *= -1f;
+        DrawLine(position - diagonal, position + diagonal, ray, 1.25f, true);
+
+        Color core = Colors.White;
+        core.A = alpha;
+        DrawCircle(position, size * 0.34f, core);
     }
 
     private void RandomizeStar(AmbientStar star, bool startAtRandomAge)

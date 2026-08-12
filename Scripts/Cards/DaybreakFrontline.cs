@@ -1,8 +1,10 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -22,6 +24,11 @@ public sealed class DaybreakFrontline : MgrCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        MgrHoverTips.CardsInCombat()
+    ];
+
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
     public DaybreakFrontline() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -37,19 +44,33 @@ public sealed class DaybreakFrontline : MgrCard
     {
         CardModel[] targets = MgrCurseUtils.SnapshotCursesAndStatuses(
             context.Player,
+            includePerformanceQueue: true,
+            PileType.Hand,
             PileType.Draw,
-            PileType.Discard);
+            PileType.Discard,
+            PileType.Exhaust);
+
+        if (targets.Length > 0)
+        {
+            CardCmd.Preview(
+                targets,
+                time: 0.62f,
+                style: CardPreviewStyle.MessyLayout);
+            await Cmd.Wait(0.42f);
+            MgrAbilityVfx.PlayCentralPurification(targets.Length);
+        }
 
         foreach (CardModel target in targets)
         {
             NoteKind kind = CardNoteResolver.Resolve(target);
-            await CardCmd.Exhaust(choiceContext, target);
+            MgrPerformanceSystem.DetachQueuedCard(context.Player, target);
+            await CardCmd.Exhaust(choiceContext, target, skipVisuals: true);
             await MgrNoteSystem.ChannelNote(choiceContext, context.Player, kind);
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(-1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

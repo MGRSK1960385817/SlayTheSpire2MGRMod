@@ -13,8 +13,8 @@ public sealed class LittleMiracles : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(3),
-        new IntVar("Performance", 3m)
+        new CardsVar(2),
+        new IntVar("Performance", 2m)
     ];
 
     public override int InitialPerformanceTurns =>
@@ -24,7 +24,7 @@ public sealed class LittleMiracles : MgrCard
         MgrGoldGlowCondition.PhraseStart |
         MgrGoldGlowCondition.PhraseEnd;
 
-    public LittleMiracles() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+    public LittleMiracles() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }
 

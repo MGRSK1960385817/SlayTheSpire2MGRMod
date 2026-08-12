@@ -100,6 +100,19 @@ public static class MgrPerformanceVisuals
             rack.QueuePlayedCardAnimation(entry, durationScale);
     }
 
+    /// <summary>
+    /// Short non-triggering pulse used when a card such as Encore increases an
+    /// existing queue entry's remaining performances. It never moves the real
+    /// card or invokes the staff playhead, so it cannot be mistaken for a play.
+    /// </summary>
+    public static void PulseModifiedEntries(
+        Player player,
+        IReadOnlyList<MgrPerformanceEntry> entries)
+    {
+        if (Racks.TryGetValue(player, out PerformanceRack? rack) && rack.IsValid)
+            rack.PulseModifiedEntries(entries);
+    }
+
     private static float GetEntryAnimationDurationScale(int queuedBeforeThisTurn) =>
         MathF.Max(
             MgrVisualTuning.Performances.MinimumEntryAnimationDurationScale,
@@ -474,6 +487,15 @@ public static class MgrPerformanceVisuals
             _staff.SetPerforming(isPerforming);
 
         public void PulseStaff() => _staff.Pulse();
+
+        public void PulseModifiedEntries(IReadOnlyList<MgrPerformanceEntry> entries)
+        {
+            foreach (MgrPerformanceEntry entry in entries)
+                FindView(entry)?.PlayBonusPulse();
+
+            if (entries.Count > 0)
+                _staff.Pulse();
+        }
 
         public async Task BeginFinisher(CardModel sourceCard)
         {
@@ -951,6 +973,37 @@ public static class MgrPerformanceVisuals
         }
 
         public void HidePreviewForOverlay() => HideHoverPreview();
+
+        public void PlayBonusPulse()
+        {
+            if (!GodotObject.IsInstanceValid(_anchor) || !_anchor.IsInsideTree())
+                return;
+
+            HideHoverPreview();
+            _pulseTween?.Kill();
+            _anchor.Scale = Vector2.One;
+            _triggerBurst.Burst();
+            _triggerGlow.Modulate = new Color(1f, 1f, 1f, 0f);
+
+            Tween tween = _anchor.CreateTween();
+            _pulseTween = tween;
+            tween.TweenProperty(_anchor, "scale", Vector2.One * 1.07f, 0.10f)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Back);
+            tween.Parallel().TweenProperty(
+                _triggerGlow,
+                "modulate",
+                new Color(0.92f, 0.72f, 1f, 0.62f),
+                0.10f);
+            tween.TweenProperty(_anchor, "scale", Vector2.One, 0.14f)
+                .SetEase(Tween.EaseType.InOut)
+                .SetTrans(Tween.TransitionType.Cubic);
+            tween.Parallel().TweenProperty(
+                _triggerGlow,
+                "modulate",
+                new Color(1f, 1f, 1f, 0f),
+                0.14f);
+        }
 
         public async Task PlayTriggerAnimation(
             bool consumesRemaining,

@@ -44,6 +44,21 @@ public static class MgrNoteEffects
         for (int noteIndex = 0; noteIndex < notes.Count; noteIndex++)
         {
             MgrNote note = notes[noteIndex];
+            // Samsara reacts to an actual Attack Note being consumed by this
+            // Chord. Omnia reproduces the Attack Note's effect, but is not an
+            // Attack Note itself and therefore does not satisfy this trigger.
+            if (note.Kind == NoteKind.Attack &&
+                player.Creature.GetPower<SamsaraPower>() is { } samsara)
+            {
+                samsara.Flash();
+                await PowerCmd.Apply<VigorPower>(
+                    choiceContext,
+                    player.Creature,
+                    samsara.Amount,
+                    player.Creature,
+                    cardSource: null);
+            }
+
             await Trigger(
                 choiceContext,
                 player,
@@ -102,25 +117,6 @@ public static class MgrNoteEffects
                     ? ValueProp.Unpowered | ValueProp.SkipHurtAnim
                     : ValueProp.Unpowered;
 
-                if (owner.GetPower<SandPlanetPower>() is { } sandPlanet)
-                {
-                    sandPlanet.Flash();
-                    foreach (var enemy in combatState.HittableEnemies)
-                    {
-                        MgrAttackVfx.SpawnFireBurst(
-                            enemy,
-                            MgrAttackVfx.DefaultFireTint,
-                            scale: 0.26f);
-                    }
-                    await CreatureCmd.Damage(
-                        choiceContext,
-                        combatState.HittableEnemies,
-                        amount,
-                        props,
-                        owner);
-                    return;
-                }
-
                 var target = player.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies);
                 if (target is null)
                     return;
@@ -151,12 +147,16 @@ public static class MgrNoteEffects
             case NoteKind.Power:
             {
                 await CardPileCmd.Draw(choiceContext, amount, player);
-                decimal powerNoteBlock = owner.GetPowerAmount<MindMiragePower>();
-                if (powerNoteBlock > 0m)
+                if (owner.GetPower<MindMiragePower>() is { Amount: > 0 } mindMirage)
                 {
+                    mindMirage.Flash();
+                    MgrAbilityVfx.SpawnCastBurst(
+                        owner,
+                        MgrAbilityVfxStyle.Mirage,
+                        0.58f);
                     await CreatureCmd.GainBlock(
                         owner,
-                        powerNoteBlock,
+                        mindMirage.Amount,
                         ValueProp.Unpowered,
                         cardPlay: null,
                         fast: fastPresentation);
@@ -179,6 +179,19 @@ public static class MgrNoteEffects
                     mindBrand.Amount > 0m)
                 {
                     mindBrand.Flash();
+                    foreach (var target in targets)
+                    {
+                        // Reuse the native gaze/eye feedback (the same VFX path
+                        // used by Evil Eye) on the creature that is actually
+                        // receiving Mind Brand.  Keep this presentation beside
+                        // the mark application so repeated Chord passes produce
+                        // one readable eye pulse per application.
+                        VfxCmd.PlayOnCreatureCenter(target, VfxCmd.gazePath);
+                        MgrAbilityVfx.SpawnCastBurst(
+                            target,
+                            MgrAbilityVfxStyle.Seal,
+                            0.56f);
+                    }
                     await PowerCmd.Apply<MindBrandMarkPower>(
                         choiceContext,
                         targets,
@@ -192,7 +205,16 @@ public static class MgrNoteEffects
             {
                 // Curse notes deliberately ignore Forte, but Curse Wardrobe is
                 // a separate flat bonus and therefore applies afterward.
-                int wardrobeBonus = Math.Max(0, (int)owner.GetPowerAmount<StainedNocturnePower>());
+                int wardrobeBonus = 0;
+                if (owner.GetPower<StainedNocturnePower>() is { Amount: > 0 } nocturne)
+                {
+                    wardrobeBonus = Math.Max(0, (int)nocturne.Amount);
+                    nocturne.Flash();
+                    MgrAbilityVfx.SpawnCastBurst(
+                        owner,
+                        MgrAbilityVfxStyle.Nocturne,
+                        0.58f);
+                }
                 await CreatureCmd.Heal(
                     owner,
                     amount + wardrobeBonus,

@@ -44,6 +44,10 @@ public sealed class ChaosMagicPower : ModPowerTemplate
             return;
 
         Flash();
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner,
+            MgrAbilityVfxStyle.Wheel,
+            0.76f);
         for (int index = 0; index < cards; index++)
         {
             CardModel? canonical = player.RunState.Rng.CombatCardGeneration.NextItem(candidates);

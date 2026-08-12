@@ -35,6 +35,10 @@ public sealed class SixthSensePower : ModPowerTemplate
             return;
 
         Flash();
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner,
+            MgrAbilityVfxStyle.Eye,
+            0.72f);
         IEnumerable<CardModel> drawn = await CardPileCmd.Draw(
             choiceContext,
             cardCount,

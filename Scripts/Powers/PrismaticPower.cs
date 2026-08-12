@@ -26,6 +26,10 @@ public sealed class PrismaticPower : ModPowerTemplate
             return;
 
         Flash();
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner,
+            MgrAbilityVfxStyle.Prism,
+            0.74f);
         await PowerCmd.Apply<StrengthPower>(
             choiceContext,
             Owner,

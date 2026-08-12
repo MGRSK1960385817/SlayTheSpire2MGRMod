@@ -31,6 +31,24 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     {
     }
 
+    public override Task BeforeCardPlayed(CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay);
+
+        CardModel card = cardPlay.Card;
+        if (card is MgrCard &&
+            card.Rarity is CardRarity.Rare or CardRarity.Ancient)
+        {
+            MgrAbilityVfx.PlayGoldCardCast(card);
+        }
+        else if (card is MgrCard && card.Rarity == CardRarity.Uncommon)
+        {
+            MgrAbilityVfx.PlayFeaturedUncommonCardCast(card);
+        }
+
+        return Task.CompletedTask;
+    }
+
     public override async Task BeforeCombatStart()
     {
         MgrPerformanceSystem.ClearAll();

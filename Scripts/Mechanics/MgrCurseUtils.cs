@@ -91,11 +91,29 @@ public static class MgrCurseUtils
 
     public static int CountCurses(Player player) =>
         CountedCombatPiles.Sum(pile =>
-            pile.GetPile(player).Cards.Count(card => card.Type == CardType.Curse));
+            pile.GetPile(player).Cards.Count(card => card.Type == CardType.Curse)) +
+        MgrPerformanceSystem.GetQueuedCards(player)
+            .Count(card => card.Type == CardType.Curse);
+
+    public static CardModel[] SnapshotCursesAndStatuses(
+        Player player,
+        bool includePerformanceQueue,
+        params PileType[] piles)
+    {
+        IEnumerable<CardModel> cards = piles
+            .SelectMany(pile => pile.GetPile(player).Cards)
+            .Where(card => card.Type is CardType.Curse or CardType.Status);
+
+        if (includePerformanceQueue)
+        {
+            cards = cards.Concat(
+                MgrPerformanceSystem.GetQueuedCards(player)
+                    .Where(card => card.Type is CardType.Curse or CardType.Status));
+        }
+
+        return cards.Distinct().ToArray();
+    }
 
     public static CardModel[] SnapshotCursesAndStatuses(Player player, params PileType[] piles) =>
-        piles
-            .SelectMany(pile => pile.GetPile(player).Cards)
-            .Where(card => card.Type is CardType.Curse or CardType.Status)
-            .ToArray();
+        SnapshotCursesAndStatuses(player, includePerformanceQueue: false, piles);
 }

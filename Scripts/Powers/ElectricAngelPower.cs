@@ -43,6 +43,10 @@ public sealed class ElectricAngelPower : ModPowerTemplate
             return;
 
         Flash();
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner,
+            MgrAbilityVfxStyle.Electric,
+            0.68f);
         for (int index = 0; index < cards; index++)
         {
             CardModel? canonical = MgrWeightedCardRandom.PickOne(

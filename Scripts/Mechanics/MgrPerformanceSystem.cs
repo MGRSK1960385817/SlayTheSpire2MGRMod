@@ -69,6 +69,42 @@ public static class MgrPerformanceSystem
     public static bool IsPerformanceCard(CardModel card) =>
         GetInitialPerformanceTurns(card) > 0;
 
+    /// <summary>
+    /// Returns the physical cards currently held by the Performance rack in
+    /// their normal right-to-left resolution order. This lets effects whose
+    /// rules say "in combat" inspect the rack without exposing mutable entries.
+    /// </summary>
+    public static IReadOnlyList<CardModel> GetQueuedCards(Player player) =>
+        MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state)
+            ? state.Entries.Select(static entry => entry.Card).ToArray()
+            : [];
+
+    /// <summary>
+    /// Detaches a non-resolving physical card from the rack before an external
+    /// effect moves it to a native pile. Gameplay movement remains the caller's
+    /// responsibility, so normal Exhaust/Discard hooks still run exactly once.
+    /// </summary>
+    public static bool DetachQueuedCard(Player player, CardModel card)
+    {
+        if (!MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState state))
+            return false;
+
+        MgrPerformanceEntry? entry = state.Entries.FirstOrDefault(
+            candidate => ReferenceEquals(candidate.Card, card));
+        if (entry is null || ResolvingEntries.Contains(entry))
+            return false;
+
+        PendingEntryReplacements.Remove(entry);
+        ActiveVfxWaitScales.Remove(entry);
+        bool removed = state.Remove(entry);
+        if (!removed)
+            return false;
+
+        entry.ResetRemainingTurns();
+        MgrPerformanceVisuals.Show(player, state.Entries);
+        return true;
+    }
+
     public static bool ShouldHoldForResolvedPlay(
         CardModel card,
         ResourceInfo resources)
@@ -226,7 +262,10 @@ public static class MgrPerformanceSystem
         }
 
         if (targets.Length > 0)
+        {
             MgrPerformanceVisuals.Show(player, state.Entries);
+            MgrPerformanceVisuals.PulseModifiedEntries(player, targets);
+        }
         return targets.Length;
     }
 

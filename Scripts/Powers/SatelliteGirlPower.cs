@@ -13,6 +13,12 @@ public sealed class SatelliteGirlPower : ModPowerTemplate
 {
     private bool _triggeredThisTurn;
 
+    /// <summary>
+    /// Read by MGR's character-local aura. Keeping the visual derived from the
+    /// power state avoids persistent combat-overlay nodes and save-state data.
+    /// </summary>
+    public bool IsAvailableThisTurn => !_triggeredThisTurn;
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 

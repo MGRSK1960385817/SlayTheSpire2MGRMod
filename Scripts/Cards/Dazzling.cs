@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -59,9 +60,16 @@ public sealed class Dazzling : MgrCard
         if (eligible.Length == 0)
             return;
 
-        CardModel? chosen = Owner.RunState.Rng.CombatCardSelection.NextItem(eligible);
+        CardModel? chosen = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(
+                CardSelectorPrefs.UpgradeSelectionPrompt,
+                1),
+            static card => card.IsUpgradable,
+            this)).FirstOrDefault();
         if (chosen is not null)
-            CardCmd.Upgrade(chosen);
+            CardCmd.Upgrade(chosen, CardPreviewStyle.HorizontalLayout);
     }
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);

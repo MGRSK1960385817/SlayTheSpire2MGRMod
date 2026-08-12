@@ -94,6 +94,10 @@ public sealed class ImagineCreatePower : ModPowerTemplate
                 return false;
 
             Flash();
+            MgrAbilityVfx.SpawnCastBurst(
+                Owner,
+                MgrAbilityVfxStyle.Creation,
+                0.78f);
             await CardCmd.Transform(original, chosen, CardPreviewStyle.None);
             return true;
         }

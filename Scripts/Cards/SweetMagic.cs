@@ -11,13 +11,12 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "neo_neon")]
-public sealed class NeoNeon : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "sweet_magic")]
+public sealed class SweetMagic : MgrCard
 {
     protected override bool TransformsCardsIntoNotes => true;
 
-    protected override MgrKeywordKind KeywordKinds =>
-        MgrKeywordKind.Forte;
+    protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.Forte;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -28,8 +27,8 @@ public sealed class NeoNeon : MgrCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
-    public NeoNeon() : base(
-        1,
+    public SweetMagic() : base(
+        2,
         CardType.Skill,
         CardRarity.Uncommon,
         TargetType.Self)
@@ -65,13 +64,18 @@ public sealed class NeoNeon : MgrCard
 
         if (kinds.Length != DynamicVars.Cards.IntValue ||
             kinds.Distinct().Count() != kinds.Length)
+        {
             return;
+        }
 
-        decimal amount = DynamicVars["FortePower"].BaseValue;
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner.Creature,
+            MgrAbilityVfxStyle.Neon,
+            0.82f);
         await PowerCmd.Apply<FortePower>(
             choiceContext,
             Owner.Creature,
-            amount,
+            DynamicVars["FortePower"].BaseValue,
             Owner.Creature,
             this);
     }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-09",
+  "lastUpdated": "2026-08-12",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -103,7 +103,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费，造成6点伤害，使最右侧1张演奏牌演奏+1；升级后改为最右侧2张。"
+      "summary": "1费，造成8点伤害，使最右侧1张演奏牌演奏+1；升级后改为最右侧2张。"
     },
     {
       "codeName": "NoteMagic",
@@ -207,7 +207,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "将1张随机诅咒加入弃牌堆；对局中每有1张诅咒便对随机敌人造成7点伤害；升级后伤害增加至10。"
+      "summary": "将1张随机诅咒加入弃牌堆；对局中（手牌、抽牌堆、弃牌堆、消耗堆与演奏队列）每有1张诅咒便对随机敌人造成7点伤害；升级后伤害增加至10。"
     },
     {
       "codeName": "Frenzy",
@@ -215,7 +215,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡能力；可以花费2点生命打出原本不可被打出的状态与诅咒牌；原本可打出的状态或诅咒不会扣血；升级后费用降为0。"
+      "summary": "1费蓝卡能力；可以花费1点生命打出原本不可被打出的状态与诅咒牌；原本可打出的状态或诅咒不会扣血；升级后费用降为0。"
     },
     {
       "codeName": "StainedNocturne",
@@ -231,7 +231,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费，演奏4（升级后3）；演奏结束时，消耗抽牌堆与弃牌堆中的所有状态和诅咒，并生成对应音符；消耗。"
+      "summary": "1费，演奏4；演奏结束时，将手牌、抽牌堆、弃牌堆、消耗堆与演奏队列中的所有状态和诅咒转化为对应音符；消耗；升级后费用降为0。"
     },
     {
       "codeName": "CumulonimbusGraffiti",
@@ -271,7 +271,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费，演奏3；起音时随机生成3个基础音符；尾音时演奏+1；升级后演奏4且起音生成4个基础音符。"
+      "summary": "0费，演奏2；起音时随机生成2个基础音符；尾音时演奏+1；升级后演奏3且起音生成3个基础音符。"
     },
     {
       "codeName": "Regulus",
@@ -519,7 +519,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费群攻，造成8点伤害并立刻结束全部演奏，每结束1张重复攻击1次；升级后伤害增加至11。"
+      "summary": "1费群攻，造成7（9）点伤害并抽1张牌；结束全部演奏，每结束一张便再次执行伤害与抽牌。"
     },
     {
       "codeName": "Procrastination",
@@ -527,7 +527,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费消耗，演奏3；演奏结束时获得1瓶随机药水；升级后费用降为0。"
+      "summary": "1费消耗，演奏3；演奏结束时获得1瓶随机药水；升级后额外获得20金币。"
     },
     {
       "codeName": "Dazzling",
@@ -535,7 +535,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费，造成5点伤害并随机升级1张手牌；起音时改为升级所有手牌；升级后伤害增加至8。"
+      "summary": "1费，造成5（8）点伤害并选择升级1张手牌；起音时改为升级所有手牌。"
     },
     {
       "codeName": "Omnia",
@@ -594,12 +594,12 @@
       "summary": "3费蓝卡星空技能；获得16点格挡，下个回合开始时生成1个星空音符；升级后改为生成2个。"
     },
     {
-      "codeName": "SubduingTheGhosts",
-      "name": "鬼怪降服",
+      "codeName": "GhostRule",
+      "name": "幽灵法则",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "1费白卡；抽2张牌，若其中抽到诅咒或状态牌则再抽2张；升级后该判定可以连续重复。"
+      "summary": "0费白卡技能；将弃牌堆中的1张牌放到抽牌堆顶，并将1张随机诅咒加入弃牌堆，消耗；升级后改为移动2张牌并移除消耗。"
     },
     {
       "codeName": "SongOfSiren",
@@ -658,12 +658,12 @@
       "summary": "3费金卡攻击；造成24点伤害，再随机生成伤害一半数量的基础音符；战斗中实时显示生成数；升级后伤害增加至30。"
     },
     {
-      "codeName": "GhostRule",
-      "name": "幽灵法则",
+      "codeName": "MarunouchiSadistic",
+      "name": "丸之内虐待狂",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符，并将1张随机诅咒加入弃牌堆；升级后每名敌人生成2个诅咒音符。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后每名敌人生成2个诅咒音符。"
     },
     {
       "codeName": "ElectricAngel",
@@ -690,8 +690,8 @@
       "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。"
     },
     {
-      "codeName": "NeoNeon",
-      "name": "霓虹霓虹",
+      "codeName": "SweetMagic",
+      "name": "甜蜜魔法",
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
@@ -714,12 +714,12 @@
       "summary": "0费蓝卡技能；获得4点格挡，与抽牌堆中最先会被抽到的诅咒牌交换位置；升级后获得保留。"
     },
     {
-      "codeName": "SandPlanet",
-      "name": "砂之惑星",
+      "codeName": "Samsara",
+      "name": "轮回",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡能力；攻击音符改为对所有敌人造成伤害，并附带小型火焰特效；升级后获得虚无。"
+      "summary": "1费蓝卡能力；每当一个攻击音符被和弦消耗，获得1点活力；重复和弦会重复计算；升级后生成3个攻击音符。"
     },
     {
       "codeName": "Manimani",

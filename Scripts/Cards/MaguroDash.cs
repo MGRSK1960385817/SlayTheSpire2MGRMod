@@ -15,7 +15,8 @@ public sealed class MaguroDash : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move)
+        new DamageVar(7m, ValueProp.Move),
+        new CardsVar(1)
     ];
 
     public MaguroDash() : base(
@@ -28,16 +29,19 @@ public sealed class MaguroDash : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await AttackAll(choiceContext, cardPlay);
+        await AttackAllAndDraw(choiceContext, cardPlay);
         await MgrPerformanceSystem.EndAllPerformancesWithFinisher(
             choiceContext,
             Owner,
             this,
-            _ => AttackAll(choiceContext, cardPlay));
+            _ => AttackAllAndDraw(choiceContext, cardPlay));
     }
 
-    private Task AttackAll(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+    private async Task AttackAllAndDraw(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
+    {
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(Owner.Creature.CombatState!)
             .WithHitVfxNode(target => MgrAttackVfx.CreateHorizontalSlash(
@@ -46,6 +50,11 @@ public sealed class MaguroDash : MgrCard
                 1.05f))
             .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
+        await CardPileCmd.Draw(
+            choiceContext,
+            DynamicVars.Cards.BaseValue,
+            Owner);
+    }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
 }

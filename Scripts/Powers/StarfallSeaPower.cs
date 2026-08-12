@@ -30,6 +30,10 @@ public sealed class StarfallSeaPower : ModPowerTemplate
             return;
 
         Flash();
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner,
+            MgrAbilityVfxStyle.Galaxy,
+            0.72f);
         for (int index = 0; index < noteCount; index++)
             await MgrNoteSystem.ChannelNote(choiceContext, player, NoteKind.Starry);
 
