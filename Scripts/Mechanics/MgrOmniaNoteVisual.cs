@@ -45,7 +45,7 @@ public partial class MgrOmniaNoteVisual : Sprite2D
         _shapeIndex = Random.Shared.Next(0, _textures.Count);
         Texture = _textures[_shapeIndex];
         FitCurrentTextureToDisplaySize();
-        Material = CreateRainbowMaterial();
+        Material = CreateRainbowMaterial(Texture);
         SetProcess(true);
         return true;
     }
@@ -61,6 +61,8 @@ public partial class MgrOmniaNoteVisual : Sprite2D
             _shapeElapsed -= MgrVisualTuning.Notes.OmniaNoteShapeSeconds;
             _shapeIndex = (_shapeIndex + 1) % _textures.Count;
             Texture = _textures[_shapeIndex];
+            if (Material is ShaderMaterial material)
+                material.SetShaderParameter("note_texture", Texture);
             FitCurrentTextureToDisplaySize();
         }
     }
@@ -79,13 +81,14 @@ public partial class MgrOmniaNoteVisual : Sprite2D
             : Vector2.One;
     }
 
-    private static ShaderMaterial CreateRainbowMaterial()
+    private static ShaderMaterial CreateRainbowMaterial(Texture2D noteTexture)
     {
         Shader shader = _rainbowShader ??= new Shader
         {
             Code = """
                 shader_type canvas_item;
 
+                uniform sampler2D note_texture : source_color, filter_linear, repeat_disable;
                 uniform float rainbow_speed = 0.22;
                 uniform float rainbow_frequency = 1.35;
                 uniform float glow_radius_ratio = 0.035;
@@ -98,7 +101,7 @@ public partial class MgrOmniaNoteVisual : Sprite2D
                 }
 
                 vec4 sample_source(vec2 uv) {
-                    return texture(TEXTURE, clamp(uv, vec2(0.0), vec2(1.0))) *
+                    return texture(note_texture, clamp(uv, vec2(0.0), vec2(1.0))) *
                         uv_mask(uv);
                 }
 
@@ -174,6 +177,7 @@ public partial class MgrOmniaNoteVisual : Sprite2D
                 """
         };
         var material = new ShaderMaterial { Shader = shader };
+        material.SetShaderParameter("note_texture", noteTexture);
         material.SetShaderParameter(
             "rainbow_speed",
             MgrVisualTuning.Notes.OmniaNoteRainbowSpeed);

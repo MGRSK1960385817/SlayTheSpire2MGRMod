@@ -809,7 +809,7 @@ public static class MgrNoteVisuals
             Color noteColor = GetOutlineColor(note.Kind);
             _noteColor = noteColor;
             if (note.Kind != NoteKind.OmniaNote)
-                sprite.Material = CreateNoteGlowMaterial(noteColor);
+                sprite.Material = CreateNoteGlowMaterial(noteColor, sprite.Texture!);
             _floatingRoot.AddChild(sprite);
 
             _amountLabel = new Label
@@ -969,13 +969,16 @@ public static class MgrNoteVisuals
             _ => Colors.Black
         };
 
-        private static ShaderMaterial CreateNoteGlowMaterial(Color glowColor)
+        private static ShaderMaterial CreateNoteGlowMaterial(
+            Color glowColor,
+            Texture2D noteTexture)
         {
             Shader shader = _noteGlowShader ??= new Shader
             {
                 Code = """
                     shader_type canvas_item;
 
+                    uniform sampler2D note_texture : source_color, filter_linear, repeat_disable;
                     uniform vec4 glow_color : source_color = vec4(1.0);
                     uniform float glow_radius_ratio = 0.035;
                     uniform float glow_strength = 0.38;
@@ -987,7 +990,7 @@ public static class MgrNoteVisuals
                     }
 
                     vec4 sample_source(vec2 uv) {
-                        return texture(TEXTURE, clamp(uv, vec2(0.0), vec2(1.0))) *
+                        return texture(note_texture, clamp(uv, vec2(0.0), vec2(1.0))) *
                             uv_mask(uv);
                     }
 
@@ -1043,6 +1046,7 @@ public static class MgrNoteVisuals
                     """
             };
             var material = new ShaderMaterial { Shader = shader };
+            material.SetShaderParameter("note_texture", noteTexture);
             material.SetShaderParameter("glow_color", glowColor);
             material.SetShaderParameter(
                 "glow_radius_ratio",

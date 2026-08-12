@@ -47,7 +47,7 @@ public sealed class FrenzyPower : ModPowerTemplate
         await CreatureCmd.Damage(
             choiceContext,
             Owner,
-            1m,
+            2m,
             ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move,
             Owner,
             cardSource: card,

@@ -9,8 +9,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "marunouchi_sadistic")]
-public sealed class MarunouchiSadistic : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "hyakki_yagyo")]
+public sealed class HyakkiYagyo : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -20,7 +20,7 @@ public sealed class MarunouchiSadistic : MgrCard
 
     protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.CurseNote;
 
-    public MarunouchiSadistic() : base(
+    public HyakkiYagyo() : base(
         2,
         CardType.Attack,
         CardRarity.Rare,
@@ -49,8 +49,10 @@ public sealed class MarunouchiSadistic : MgrCard
         int notesToGenerate = enemiesHit * DynamicVars["NotesPerEnemy"].IntValue;
         for (int index = 0; index < notesToGenerate; index++)
             await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
+
+        await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Discard);
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars["NotesPerEnemy"].UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
 }

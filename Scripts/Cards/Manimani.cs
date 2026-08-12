@@ -25,7 +25,8 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "manimani")]
 public sealed class Manimani : MgrCard
 {
-    private const int BaseDamage = 12;
+    private const int BaseDamage = 10;
+    private const int UpgradeDamage = 5;
     private const string NormalPortraitPath =
         $"{Entry.ResPath}/images/cards/Manimani1.png";
     private const string FatalPortraitPath =
@@ -88,7 +89,7 @@ public sealed class Manimani : MgrCard
         CombatState.HittableEnemies.Any(IsFatalTarget);
 
     public Manimani() : base(
-        3,
+        2,
         CardType.Attack,
         CardRarity.Rare,
         TargetType.AnyEnemy)
@@ -129,7 +130,7 @@ public sealed class Manimani : MgrCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Damage.UpgradeValueBy(UpgradeDamage);
     }
 
     protected override void AfterDowngraded() => UpdateDamage();
@@ -226,6 +227,9 @@ public sealed class Manimani : MgrCard
 
     private void UpdateDamage()
     {
-        CurrentDamage = checked(BaseDamage + IncreasedDamage);
+        CurrentDamage = checked(
+            BaseDamage +
+            (IsUpgraded ? UpgradeDamage : 0) +
+            IncreasedDamage);
     }
 }

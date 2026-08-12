@@ -13,8 +13,9 @@ public sealed class LittleMiracles : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(2),
-        new IntVar("Performance", 2m)
+        new CardsVar(3),
+        new IntVar("Performance", 3m),
+        new IntVar("TailPerformanceBonus", 1m)
     ];
 
     public override int InitialPerformanceTurns =>
@@ -31,7 +32,11 @@ public sealed class LittleMiracles : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (!cardPlay.IsAutoPlay && IsPhraseEnd)
-            MgrPerformanceSystem.AddPendingEnqueueBonus(this, 1);
+        {
+            MgrPerformanceSystem.AddPendingEnqueueBonus(
+                this,
+                DynamicVars["TailPerformanceBonus"].IntValue);
+        }
 
         if (IsPhraseStart)
         {
@@ -42,7 +47,6 @@ public sealed class LittleMiracles : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(1m);
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars["TailPerformanceBonus"].UpgradeValueBy(1m);
     }
 }
