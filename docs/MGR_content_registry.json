@@ -6,6 +6,7 @@
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
     "name": "当前中文显示名；英文、日文及其他语言不在本阶段登记。",
     "status": "内容启用状态：1 表示当前有效，0 表示暂时停用。",
+    "multiplayerOnly": "仅联机卡使用；1 表示只会在联机模式进入奖励池，并从单机卡池数量统计中排除。",
     "typeAndRarity": "卡牌类型与稀有度；遗物只记录稀有度。",
     "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。"
   },
@@ -471,7 +472,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少3点；升级后基础伤害增加至10。"
+      "summary": "1费能力；回合结束时对所有敌人造成8点伤害，本回合每触发1次和弦伤害减少2点；升级后基础伤害增加至10。"
     },
     {
       "codeName": "CubicPrism",
@@ -607,7 +608,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡；演奏1，获得7点格挡并使所有敌人失去1点力量，消耗；升级后演奏增加至2。"
+      "summary": "2费蓝卡；演奏2，获得6点格挡并使所有敌人失去1点力量，消耗；升级后格挡增加至9点。"
     },
     {
       "codeName": "PaleDread",
@@ -626,8 +627,8 @@
       "summary": "2费金卡能力；每当一张牌结束演奏，将1张随机演奏牌加入手牌；升级后变为1费。"
     },
     {
-      "codeName": "MindBrand",
-      "name": "心灵烙印",
+      "codeName": "WatchingU",
+      "name": "老大哥在看着你",
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
@@ -663,7 +664,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符，再将1张随机诅咒加入弃牌堆；升级后伤害增加2点。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后伤害增加2点。"
     },
     {
       "codeName": "ElectricAngel",
@@ -728,22 +729,67 @@
       "type": "Attack",
       "rarity": "Rare",
       "summary": "2费金卡攻击，消耗；造成10点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；升级后伤害增加到14点；瞄准可斩杀目标时切换插图与文本。"
+    },
+    {
+      "codeName": "LeaveItToMe",
+      "name": "交给我吧！",
+      "status": 1,
+      "multiplayerOnly": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "1费联机蓝卡技能，消耗；所有存活玩家抽2张牌并获得2点能量，再按存活玩家数向自己的弃牌堆加入随机诅咒；升级后0费。"
+    },
+    {
+      "codeName": "ProbablityHill",
+      "name": "确率之丘",
+      "status": 1,
+      "multiplayerOnly": 1,
+      "type": "Power",
+      "rarity": "Rare",
+      "summary": "2费联机金卡能力；其他玩家每次打出牌时，也按MGR的牌型解析为你生成对应音符；升级后获得固有。"
+    },
+    {
+      "codeName": "GiveItToYou",
+      "name": "交给你了！",
+      "status": 1,
+      "multiplayerOnly": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "0费联机蓝卡技能，指定另一名玩家；本回合将自己的和弦音符效果分享给该玩家，攻击与状态音符额外结算一次；消耗，升级后移除消耗。"
+    },
+    {
+      "codeName": "HyperdimensionalSong",
+      "name": "超次元爱歌",
+      "status": 1,
+      "multiplayerOnly": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "summary": "1费联机蓝卡技能，演奏2；给予所有存活玩家4点活力，升级后增加至7点。"
+    },
+    {
+      "codeName": "OfAllBeings",
+      "name": "众生于我",
+      "status": 1,
+      "multiplayerOnly": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "summary": "2费联机金卡技能，保留、消耗；指定另一名玩家，将其本回合打出的所有牌的消耗复制按顺序加入演奏队列，随后结束自己的回合；升级后1费。"
     }
   ],
   "relics": [
     {
-      "codeName": "MiniMicrophone",
-      "name": "迷你麦克风",
+      "codeName": "MyFriend",
+      "name": "“我的朋友”",
       "status": 1,
       "rarity": "Starter",
       "summary": "战斗开始时，依次生成攻击、技能和能力音符各 1 个。"
     },
     {
-      "codeName": "PerpetualMicrophone",
-      "name": "永续麦克风",
+      "codeName": "JourneyWithMe",
+      "name": "“与我同行”",
       "status": 1,
       "rarity": "Ancient",
-      "summary": "由欧洛巴斯之触将迷你麦克风精炼获得；每回合开始时依次生成攻击、技能和能力音符各1个，第一回合额外生成1个星空音符。"
+      "summary": "由欧洛巴斯之触将“我的朋友”精炼获得；每回合开始时依次生成攻击、技能和能力音符各1个，第一回合额外生成1个星空音符。"
     },
     {
       "codeName": "MgrFumo",
@@ -753,8 +799,8 @@
       "summary": "战斗开始时，获得 1 层强音。"
     },
     {
-      "codeName": "MiniStage",
-      "name": "迷你舞台",
+      "codeName": "YourStage",
+      "name": "“你的舞台”",
       "status": 1,
       "rarity": "Rare",
       "summary": "每回合手动打出的第一张演奏牌，演奏次数增加1。"

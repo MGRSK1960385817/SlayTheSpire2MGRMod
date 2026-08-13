@@ -2,18 +2,18 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "mind_brand")]
-public sealed class MindBrand : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "probablity_hill")]
+public sealed class ProbablityHill : MgrCard
 {
-    protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.StatusNote;
+    public override CardMultiplayerConstraint MultiplayerConstraint =>
+        CardMultiplayerConstraint.MultiplayerOnly;
 
-    public MindBrand() : base(
+    public ProbablityHill() : base(
         2,
         CardType.Power,
         CardRarity.Rare,
@@ -21,22 +21,14 @@ public sealed class MindBrand : MgrCard
     {
     }
 
-    protected override async Task OnPlay(
+    protected override Task OnPlay(
         PlayerChoiceContext choiceContext,
-        CardPlay cardPlay)
-    {
-        await PowerCmd.Apply<MindBrandPower>(
+        CardPlay cardPlay) => PowerCmd.Apply<ProbablityHillPower>(
             choiceContext,
             Owner.Creature,
             1m,
             Owner.Creature,
             this);
 
-        if (IsUpgraded)
-            await ChannelNote(choiceContext, NoteKind.Status);
-    }
-
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Innate);
 }

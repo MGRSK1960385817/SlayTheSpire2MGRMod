@@ -8,15 +8,15 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "perpetual_microphone")]
-public sealed class PerpetualMicrophone : ModRelicTemplate
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "journey_with_me")]
+public sealed class JourneyWithMe : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/PerpetualMicrophone.png",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/PerpetualMicrophone_outline.png",
-        BigIconPath: $"{Entry.ResPath}/images/relics/PerpetualMicrophone.png");
+        IconPath: $"{Entry.ResPath}/images/relics/JourneyWithMe.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/JourneyWithMe_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/JourneyWithMe.png");
 
     public override async Task AfterPlayerTurnStart(
         PlayerChoiceContext choiceContext,

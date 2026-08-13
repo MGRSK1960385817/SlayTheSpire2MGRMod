@@ -49,8 +49,6 @@ public sealed class HyakkiYagyo : MgrCard
         int notesToGenerate = enemiesHit * DynamicVars["NotesPerEnemy"].IntValue;
         for (int index = 0; index < notesToGenerate; index++)
             await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
-
-        await MgrCurseUtils.AddRandomCurseToCombat(Owner, PileType.Discard);
     }
 
     protected override void OnUpgrade() =>

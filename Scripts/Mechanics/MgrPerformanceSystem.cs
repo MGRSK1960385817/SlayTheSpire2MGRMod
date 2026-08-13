@@ -644,7 +644,7 @@ public static class MgrPerformanceSystem
         int bonusPerformances = 0;
         if (!replacedAfterPlay &&
             !cardPlay.IsAutoPlay &&
-            card.Owner.GetRelic<MiniStage>() is { } miniStage &&
+            card.Owner.GetRelic<YourStage>() is { } miniStage &&
             miniStage.TryGrantPerformanceBonus())
         {
             bonusPerformances = 1;

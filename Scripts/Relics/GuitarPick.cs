@@ -13,7 +13,7 @@ public sealed class GuitarPick : ModRelicTemplate
     public override RelicRarity Rarity => RelicRarity.Common;
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/GuitarPick.svg",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/GuitarPick_outline.svg",
-        BigIconPath: $"{Entry.ResPath}/images/relics/GuitarPick.svg");
+        IconPath: $"{Entry.ResPath}/images/relics/GuitarPick.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/GuitarPick_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/GuitarPick.png");
 }

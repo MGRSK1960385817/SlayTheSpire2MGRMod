@@ -65,8 +65,131 @@ public static class MgrNoteEffects
                 note,
                 forte,
                 fastPresentation);
+
+            // Give It to You shares beneficial Note effects with the chosen
+            // teammate. Attack and Status Notes are global/offensive effects,
+            // so sharing them means resolving their effect one additional time.
+            GiveItToYouPower[] sharingPowers = player.Creature.Powers
+                .OfType<GiveItToYouPower>()
+                .ToArray();
+            foreach (GiveItToYouPower sharingPower in sharingPowers)
+            {
+                if (!sharingPower.TryGetLivingTarget(out Player target))
+                    continue;
+
+                sharingPower.Flash();
+                await TriggerShared(
+                    choiceContext,
+                    player,
+                    target,
+                    note,
+                    forte,
+                    fastPresentation);
+            }
         }
 
+    }
+
+    private static async Task TriggerShared(
+        PlayerChoiceContext choiceContext,
+        Player sourcePlayer,
+        Player targetPlayer,
+        MgrNote note,
+        int forte,
+        bool fastPresentation)
+    {
+        if (note.Kind == NoteKind.OmniaNote)
+        {
+            foreach (NoteKind kind in new[]
+            {
+                NoteKind.Attack,
+                NoteKind.Skill,
+                NoteKind.Power,
+                NoteKind.Status,
+                NoteKind.Curse,
+                NoteKind.Starry
+            })
+            {
+                await TriggerShared(
+                    choiceContext,
+                    sourcePlayer,
+                    targetPlayer,
+                    MgrNoteFactory.Create(kind),
+                    forte,
+                    fastPresentation);
+            }
+            return;
+        }
+
+        int amount = note.GetEffectAmount(forte);
+        if (amount <= 0)
+            return;
+
+        switch (note.Kind)
+        {
+            case NoteKind.Attack:
+            case NoteKind.Status:
+                await Trigger(
+                    choiceContext,
+                    sourcePlayer,
+                    note,
+                    forte,
+                    fastPresentation);
+                return;
+
+            case NoteKind.Skill:
+                await CreatureCmd.GainBlock(
+                    targetPlayer.Creature,
+                    amount,
+                    ValueProp.Unpowered,
+                    cardPlay: null,
+                    fast: fastPresentation);
+                return;
+
+            case NoteKind.Power:
+                await CardPileCmd.Draw(choiceContext, amount, targetPlayer);
+                if (sourcePlayer.Creature.GetPower<MindMiragePower>() is
+                    { Amount: > 0 } mindMirage)
+                {
+                    await CreatureCmd.GainBlock(
+                        targetPlayer.Creature,
+                        mindMirage.Amount,
+                        ValueProp.Unpowered,
+                        cardPlay: null,
+                        fast: fastPresentation);
+                }
+                return;
+
+            case NoteKind.Curse:
+                int wardrobeBonus = sourcePlayer.Creature
+                    .GetPower<StainedNocturnePower>() is { Amount: > 0 } nocturne
+                    ? Math.Max(0, (int)nocturne.Amount)
+                    : 0;
+                await CreatureCmd.Heal(
+                    targetPlayer.Creature,
+                    amount + wardrobeBonus,
+                    playAnim: !fastPresentation);
+                return;
+
+            case NoteKind.Starry:
+                await PlayerCmd.GainEnergy(amount, targetPlayer);
+                return;
+
+            case NoteKind.Ghost:
+                await PowerCmd.Apply<IntangiblePower>(
+                    choiceContext,
+                    targetPlayer.Creature,
+                    amount,
+                    sourcePlayer.Creature,
+                    cardSource: null);
+                return;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(note),
+                    note.Kind,
+                    "Unknown shared MGR note kind.");
+        }
     }
 
     public static async Task Trigger(
@@ -175,15 +298,15 @@ public static class MgrNoteEffects
                 await PowerCmd.Apply<WeakPower>(choiceContext, targets, amount, owner, cardSource: null);
                 await PowerCmd.Apply<VulnerablePower>(choiceContext, targets, amount, owner, cardSource: null);
 
-                if (owner.GetPower<MindBrandPower>() is { } mindBrand &&
-                    mindBrand.Amount > 0m)
+                if (owner.GetPower<WatchingUPower>() is { } watchingU &&
+                    watchingU.Amount > 0m)
                 {
-                    mindBrand.Flash();
+                    watchingU.Flash();
                     foreach (var target in targets)
                     {
                         // Reuse the native gaze/eye feedback (the same VFX path
                         // used by Evil Eye) on the creature that is actually
-                        // receiving Mind Brand.  Keep this presentation beside
+                        // receiving Watching U. Keep this presentation beside
                         // the mark application so repeated Chord passes produce
                         // one readable eye pulse per application.
                         VfxCmd.PlayOnCreatureCenter(target, VfxCmd.gazePath);
@@ -192,10 +315,10 @@ public static class MgrNoteEffects
                             MgrAbilityVfxStyle.Seal,
                             0.56f);
                     }
-                    await PowerCmd.Apply<MindBrandMarkPower>(
+                    await PowerCmd.Apply<WatchingUMarkPower>(
                         choiceContext,
                         targets,
-                        mindBrand.Amount,
+                        watchingU.Amount,
                         owner,
                         cardSource: null);
                 }

@@ -52,7 +52,7 @@ public static class MgrAbilityVfx
             CrimeAndPunishment => MgrAbilityVfxStyle.Blood,
             DualLovers => MgrAbilityVfxStyle.Dual,
             Higan => MgrAbilityVfxStyle.Horizon,
-            MindBrand => MgrAbilityVfxStyle.Seal,
+            WatchingU => MgrAbilityVfxStyle.Seal,
             Prismatic => MgrAbilityVfxStyle.Prism,
             SatelliteGirl => MgrAbilityVfxStyle.Satellite,
             SixthSense => MgrAbilityVfxStyle.Eye,

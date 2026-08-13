@@ -219,7 +219,10 @@ foreach ($import in $importFiles) {
     }
 }
 
-$rewardCards = @($activeCards | Where-Object { $_.rarity -in @('Common', 'Uncommon', 'Rare') })
+$rewardCards = @($activeCards | Where-Object {
+    $_.rarity -in @('Common', 'Uncommon', 'Rare') -and
+    [int]($_.multiplayerOnly ?? 0) -ne 1
+})
 $distribution = $rewardCards | Group-Object rarity | ForEach-Object {
     [pscustomobject]@{ Rarity = $_.Name; Count = $_.Count }
 }

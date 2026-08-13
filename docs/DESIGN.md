@@ -6,7 +6,7 @@
 
 ## 保留的角色身份
 
-- 歌姬主题、橙色视觉和迷你麦克风初始遗物。
+- 歌姬主题、橙色视觉和“我的朋友”初始遗物。
 - 出牌会从左到右填充四个横排音符槽；填满时形成和弦并依次触发四个音符。
 - 起音、尾音、强音和和弦仍是值得保留的设计语汇。
 
@@ -47,7 +47,7 @@ MGR 独有的星空卡通过 `MgrCard.IsStarryCard` 覆盖为 Starry 音符。�
 禁止用本回合计数模拟本场战斗累计。
 
 `MgrNoteSystem` 通过 RitsuLib 的战斗 Hook 监听每一个 `CardPlay`，并调用塔二的 `CreatureCmd`、
-`CardPileCmd`、`PowerCmd` 与 `PlayerCmd` 结算效果。迷你麦克风会在战斗开始生成攻击、技能、能力
+`CardPileCmd`、`PowerCmd` 与 `PlayerCmd` 结算效果。“我的朋友”会在战斗开始生成攻击、技能、能力
 三个音符，填满前三个槽并保留一个可见空槽。
 
 ## 演奏规则

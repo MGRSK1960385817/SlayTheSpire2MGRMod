@@ -14,14 +14,14 @@ namespace SlayTheSpire2MGRMod.Powers;
 /// It intentionally has no duration and therefore lasts for the combat.
 /// </summary>
 [RegisterPower]
-public sealed class MindBrandMarkPower : ModPowerTemplate
+public sealed class WatchingUMarkPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/MindBrand.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/MindBrand.png");
+        IconPath: $"{Entry.ResPath}/images/cards/WatchingU.png",
+        BigIconPath: $"{Entry.ResPath}/images/cards/WatchingU.png");
 
     public override decimal ModifyDamageAdditive(
         Creature? target,

@@ -102,7 +102,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                     await ChannelNote(choiceContext, player, NoteKind.Attack);
             }
 
-            if (player.GetRelic<MiniMicrophone>() is not { IsUsedUp: false } relic)
+            if (player.GetRelic<MyFriend>() is not { IsUsedUp: false } relic)
                 continue;
 
             relic.Flash();

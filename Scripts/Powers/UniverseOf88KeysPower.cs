@@ -33,7 +33,7 @@ public sealed class UniverseOf88KeysPower : ModPowerTemplate
             MgrCombatStateStore.TryGet(player, out MgrCombatState state)
                 ? state.ChordTriggersThisTurn
                 : 0;
-        decimal damage = Math.Max(0m, Amount - 3m * chordTriggers);
+        decimal damage = Math.Max(0m, Amount - 2m * chordTriggers);
         if (damage <= 0m)
             return;
 

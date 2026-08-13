@@ -7,17 +7,17 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "mini_stage")]
-public sealed class MiniStage : ModRelicTemplate
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "your_stage")]
+public sealed class YourStage : ModRelicTemplate
 {
     private bool _grantedBonusThisTurn;
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/MiniStage.png",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/MiniStage_outline.png",
-        BigIconPath: $"{Entry.ResPath}/images/relics/MiniStage.png");
+        IconPath: $"{Entry.ResPath}/images/relics/YourStage.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/YourStage_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/YourStage.png");
 
     public override Task BeforeCombatStart()
     {
