@@ -1,12 +1,15 @@
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
+using MegaCrit.Sts2.Core.Nodes.Potions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -145,6 +148,7 @@ public static class MgrNoteVisuals
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
+        private SceneTree? _sceneTree;
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
 
@@ -157,6 +161,10 @@ public static class MgrNoteVisuals
                 ZIndex = MgrVisualTuning.Notes.RackZIndex
             };
             parent.AddChild(_root);
+            ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
+            _sceneTree = _root.GetTree();
+            _sceneTree.NodeAdded += OnSceneTreeNodeChanged;
+            _sceneTree.NodeRemoved += OnSceneTreeNodeChanged;
             EnsureScreenVisibilitySubscriptions();
         }
 
@@ -349,6 +357,14 @@ public static class MgrNoteVisuals
 
         private void OnMapVisibilityChanged() => RefreshScreenVisibility();
 
+        private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
+
+        private void OnSceneTreeNodeChanged(Node node)
+        {
+            if (node is NPotionPopup)
+                RefreshScreenVisibility();
+        }
+
         private void RefreshScreenVisibility()
         {
             bool hasOverlay =
@@ -363,7 +379,16 @@ public static class MgrNoteVisuals
                 _mapScreen is not null &&
                 GodotObject.IsInstanceValid(_mapScreen) &&
                 _mapScreen.IsOpen;
-            bool shouldShow = !hasOverlay && !hasCapstone && !hasOpenMap;
+            bool hasOpenRelicInspection =
+                NGame.Instance?.InspectRelicScreen is { Visible: true };
+            bool hasOpenPotionPopup = HasDescendantOfType<NPotionPopup>(
+                _sceneTree?.Root);
+            bool shouldShow =
+                !hasOverlay &&
+                !hasCapstone &&
+                !hasOpenMap &&
+                !hasOpenRelicInspection &&
+                !hasOpenPotionPopup;
 
             _root.Visible = shouldShow;
             if (!shouldShow)
@@ -371,6 +396,21 @@ public static class MgrNoteVisuals
                 foreach (NoteSlot slot in _slots)
                     slot.HideHoverTipForScreen();
             }
+        }
+
+        private static bool HasDescendantOfType<T>(Node? node)
+            where T : Node
+        {
+            if (node is null || !GodotObject.IsInstanceValid(node))
+                return false;
+
+            foreach (Node child in node.GetChildren())
+            {
+                if (child is T || HasDescendantOfType<T>(child))
+                    return true;
+            }
+
+            return false;
         }
 
         private void CancelScheduledClear()
@@ -419,6 +459,13 @@ public static class MgrNoteVisuals
         public void Dispose()
         {
             CancelScheduledClear();
+            ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
+            if (_sceneTree is not null && GodotObject.IsInstanceValid(_sceneTree))
+            {
+                _sceneTree.NodeAdded -= OnSceneTreeNodeChanged;
+                _sceneTree.NodeRemoved -= OnSceneTreeNodeChanged;
+            }
+
             if (_overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack))
             {
@@ -440,6 +487,7 @@ public static class MgrNoteVisuals
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
+            _sceneTree = null;
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
         }

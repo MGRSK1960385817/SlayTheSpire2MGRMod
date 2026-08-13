@@ -169,7 +169,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_SIXTH_SENSE.title": "第六感",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_SIXTH_SENSE.description": "回合开始时，抽{Cards:diff()}张牌。\n丢弃其中不为{RequiredCost:diff()}{energyPrefix:energyIcons(1)}的牌。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_CANON_FORM.title": "卡农形态",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CANON_FORM.description": "在你的回合结束时，打出你上一回合最后打出的牌的复制。\n从下个回合开始生效。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_CANON_FORM.description": "在你的回合结束时，打出你上个回合最后打出的牌的复制。\n从下个回合开始生效。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BIRD.title": "「 鳥 」",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_BIRD.description": "造成{Damage:diff()}点伤害。\n随机生成[gold]基础音符[/gold]，数量为伤害的一半。{InCombat:\n（生成{CalculatedNotes:diff()}个。）|}",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_HYAKKI_YAGYO.title": "百鬼夜行",

@@ -4,12 +4,15 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Potions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -257,6 +260,7 @@ public static class MgrPerformanceVisuals
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
+        private SceneTree? _sceneTree;
 
         public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
 
@@ -287,6 +291,10 @@ public static class MgrPerformanceVisuals
             };
             parent.AddChild(_previewLayer);
 
+            ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
+            _sceneTree = _root.GetTree();
+            _sceneTree.NodeAdded += OnSceneTreeNodeChanged;
+            _sceneTree.NodeRemoved += OnSceneTreeNodeChanged;
             EnsureScreenVisibilitySubscriptions();
         }
 
@@ -403,6 +411,14 @@ public static class MgrPerformanceVisuals
 
         private void OnMapVisibilityChanged() => RefreshScreenVisibility();
 
+        private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
+
+        private void OnSceneTreeNodeChanged(Node node)
+        {
+            if (node is NPotionPopup)
+                RefreshScreenVisibility();
+        }
+
         private void RefreshScreenVisibility()
         {
             bool hasOverlay =
@@ -417,7 +433,16 @@ public static class MgrPerformanceVisuals
                 _mapScreen is not null &&
                 GodotObject.IsInstanceValid(_mapScreen) &&
                 _mapScreen.IsOpen;
-            bool shouldShow = !hasOverlay && !hasCapstone && !hasOpenMap;
+            bool hasOpenRelicInspection =
+                NGame.Instance?.InspectRelicScreen is { Visible: true };
+            bool hasOpenPotionPopup = HasDescendantOfType<NPotionPopup>(
+                _sceneTree?.Root);
+            bool shouldShow =
+                !hasOverlay &&
+                !hasCapstone &&
+                !hasOpenMap &&
+                !hasOpenRelicInspection &&
+                !hasOpenPotionPopup;
 
             // The rack belongs to the combat field, not to any full-screen or
             // capstone UI. Hide both its world-space presentation and its private
@@ -429,6 +454,21 @@ public static class MgrPerformanceVisuals
                 foreach (PerformanceCardView view in _views)
                     view.HidePreviewForOverlay();
             }
+        }
+
+        private static bool HasDescendantOfType<T>(Node? node)
+            where T : Node
+        {
+            if (node is null || !GodotObject.IsInstanceValid(node))
+                return false;
+
+            foreach (Node child in node.GetChildren())
+            {
+                if (child is T || HasDescendantOfType<T>(child))
+                    return true;
+            }
+
+            return false;
         }
 
         private static float CalculateCardSpacing(int cardCount, bool isFilled)
@@ -767,6 +807,13 @@ public static class MgrPerformanceVisuals
         public void Dispose()
         {
             DisposeFinisherVisual();
+            ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
+            if (_sceneTree is not null && GodotObject.IsInstanceValid(_sceneTree))
+            {
+                _sceneTree.NodeAdded -= OnSceneTreeNodeChanged;
+                _sceneTree.NodeRemoved -= OnSceneTreeNodeChanged;
+            }
+
             if (_overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack))
             {
@@ -788,6 +835,7 @@ public static class MgrPerformanceVisuals
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
+            _sceneTree = null;
             ClearViews();
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
