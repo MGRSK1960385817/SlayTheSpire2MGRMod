@@ -317,4 +317,18 @@ public static class MgrVisualTuning
         public const double RaiseSeconds = 0.14;
         public const double HoldSeconds = 0.22;
     }
+
+    public static class FishVfx
+    {
+        // The main fish always begins at the requested 0.9 opacity. Two softer
+        // copies trail it to turn the solid artwork into a moving afterimage.
+        public const float MainOpacity = 0.90f;
+        public const float DesiredWidth = 138f;
+        public const float TargetOvershoot = 105f;
+        public const float ArcHeight = 34f;
+        public const float TravelSeconds = 0.30f;
+        public const float TrailDelay = 0.035f;
+        public const float FadeStartFraction = 0.58f;
+        public const int ZIndex = 175;
+    }
 }

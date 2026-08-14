@@ -48,6 +48,6 @@ public sealed class Samsara : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Notes"].UpgradeValueBy(3m);
+        DynamicVars["Notes"].UpgradeValueBy(2m);
     }
 }

@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using SlayTheSpire2MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -15,6 +16,8 @@ public sealed class BookOfGrudges : ModRelicTemplate
     private int _totalHpLost;
 
     public override RelicRarity Rarity => RelicRarity.Common;
+    public override bool IsAllowed(IRunState runState) =>
+        IsBeforeAct3TreasureChest(runState);
     public override bool ShowCounter => true;
     public override int DisplayAmount => CombatStartAttackNotes;
 

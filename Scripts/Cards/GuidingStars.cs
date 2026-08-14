@@ -18,7 +18,7 @@ public sealed class GuidingStars : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(12m, ValueProp.Move)
+        new DamageVar(8m, ValueProp.Move)
     ];
 
     public GuidingStars() : base(
@@ -57,16 +57,42 @@ public sealed class GuidingStars : MgrCard
             .Where(card => card.IsStarryCard && card.CanBeGeneratedInCombat)
             .Cast<CardModel>()
             .ToArray();
-        CardModel? canonical = Owner.RunState.Rng.CombatCardGeneration.NextItem(candidates);
+        CardModel? canonical = PickWeightedStarryCard(candidates);
         if (canonical is null)
             return;
 
         CardModel generated = combatState.CreateCard(canonical, Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(generated, PileType.Hand, Owner);
+        await MgrPerformanceSystem.EnqueueGeneratedCard(Owner, generated);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(6m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
+
+    private CardModel? PickWeightedStarryCard(IReadOnlyList<CardModel> candidates)
+    {
+        if (candidates.Count == 0)
+            return null;
+
+        // Normal Starry cards have weight 3. Satellite Girl and Regulus use
+        // weights 2 and 1 respectively, i.e. 2/3 and 1/3 of the normal rate.
+        int totalWeight = candidates.Sum(GetStarryWeight);
+        int roll = Owner.RunState.Rng.CombatCardGeneration.NextInt(0, totalWeight);
+        foreach (CardModel candidate in candidates)
+        {
+            roll -= GetStarryWeight(candidate);
+            if (roll < 0)
+                return candidate;
+        }
+
+        return candidates[^1];
+    }
+
+    private static int GetStarryWeight(CardModel card) => card switch
+    {
+        SatelliteGirl => 2,
+        Regulus => 1,
+        _ => 3
+    };
 }

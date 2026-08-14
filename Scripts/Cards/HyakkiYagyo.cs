@@ -52,5 +52,5 @@ public sealed class HyakkiYagyo : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars["NotesPerEnemy"].UpgradeValueBy(1m);
 }

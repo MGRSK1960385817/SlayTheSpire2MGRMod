@@ -15,14 +15,13 @@ public sealed class Procrastination : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 3m),
-        new GoldVar(20)
+        new IntVar("Performance", 3m)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public Procrastination() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public Procrastination() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -42,12 +41,8 @@ public sealed class Procrastination : MgrCard
                 [])
             .ToMutable();
         await PotionCmd.TryToProcure(potion, context.Player);
-
-        if (IsUpgraded)
-            await PlayerCmd.GainGold(DynamicVars.Gold.BaseValue, context.Player);
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() =>
+        DynamicVars["Performance"].UpgradeValueBy(-1m);
 }

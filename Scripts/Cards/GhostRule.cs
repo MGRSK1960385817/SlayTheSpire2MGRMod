@@ -16,7 +16,7 @@ public sealed class GhostRule : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(1)
+        new CardsVar(2)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

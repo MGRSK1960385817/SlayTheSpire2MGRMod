@@ -18,10 +18,13 @@ public sealed class GalaxyLamp : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
     {
-        MgrNoteSystem.ReplaceAllNotes(Owner, NoteKind.Starry);
-        return Task.CompletedTask;
+        int removedCount = MgrNoteSystem.RemoveAllNotes(Owner).Count;
+        for (int index = 0; index < removedCount; index++)
+            await ChannelNote(choiceContext, NoteKind.Starry);
     }
 
     protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Exhaust);

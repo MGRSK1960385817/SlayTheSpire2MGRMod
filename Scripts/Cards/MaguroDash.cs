@@ -41,6 +41,9 @@ public sealed class MaguroDash : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
+        foreach (var target in Owner.Creature.CombatState!.HittableEnemies)
+            MgrAttackVfx.SpawnFishRush(Owner.Creature, target, 0.92f);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(Owner.Creature.CombatState!)

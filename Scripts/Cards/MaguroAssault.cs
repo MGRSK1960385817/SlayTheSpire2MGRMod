@@ -36,6 +36,11 @@ public sealed class MaguroAssault : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
+        MgrAttackVfx.SpawnFishRush(
+            Owner.Creature,
+            cardPlay.Target,
+            0.86f);
+
         await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
@@ -61,6 +66,6 @@ public sealed class MaguroAssault : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.ExtraDamage.UpgradeValueBy(1m);
+        DynamicVars.CalculationBase.UpgradeValueBy(1m);
     }
 }

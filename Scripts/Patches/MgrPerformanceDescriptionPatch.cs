@@ -66,7 +66,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                     "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
                 combinedLine.Add(
                     "Times",
-                    checked(amount + (__instance.IsUpgraded ? 1 : 0)));
+                    amount);
                 string combinedText = combinedLine.GetFormattedText();
                 int firstLineBreak = __result.IndexOf('\n');
                 __result = firstLineBreak >= 0
@@ -127,7 +127,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
-            if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown)
+            if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown or CanonForm)
                 MoveKeywordToFirstLine(mgrCard, CardKeyword.Retain, ref __result);
             if (mgrCard is ByakkoyaGirl)
                 CompactPerformanceExhaustLine(ref __result);

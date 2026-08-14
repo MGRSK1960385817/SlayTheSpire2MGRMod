@@ -32,6 +32,10 @@ public sealed class MaguroReversal : MgrCard
         int repeats = NoteState.ChordsResolvedThisTurn == 0 ? 2 : 1;
         for (int index = 0; index < repeats; index++)
         {
+            MgrAttackVfx.SpawnFishRush(
+                Owner.Creature,
+                cardPlay.Target,
+                0.76f);
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)

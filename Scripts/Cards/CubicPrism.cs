@@ -13,13 +13,11 @@ public sealed class CubicPrism : MgrCard
     private int _performanceX;
 
     protected override bool HasEnergyCostX => true;
-    public override int InitialPerformanceTurns =>
-        checked(_performanceX + (IsUpgraded ? 1 : 0));
+    public override int InitialPerformanceTurns => _performanceX;
 
     internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
         checked(
             Math.Max(_performanceX, resources.EnergySpent) +
-            (IsUpgraded ? 1 : 0) +
             MgrPerformanceModifierState.GetAdditionalPerformances(this));
 
     public CubicPrism() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
@@ -42,8 +40,9 @@ public sealed class CubicPrism : MgrCard
             Owner.Creature,
             combatState.HittableEnemies.ToList(),
             MgrAttackVfx.StarPurple);
-        await DamageCmd.Attack(_performanceX)
-            .WithHitCount(_performanceX)
+        int damageAndHits = checked(_performanceX + (IsUpgraded ? 1 : 0));
+        await DamageCmd.Attack(damageAndHits)
+            .WithHitCount(damageAndHits)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .OnlyPlayAnimOnce()

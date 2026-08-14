@@ -14,6 +14,11 @@ public sealed class WhiteSouthWind : MgrCard
 {
     public override bool GainsBlock => true;
 
+    public override HashSet<CardKeyword> CanonicalKeywords =>
+    [
+        CardKeyword.Retain
+    ];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(3m, ValueProp.Move)
@@ -32,5 +37,6 @@ public sealed class WhiteSouthWind : MgrCard
         await CardCmd.Discard(choiceContext, cards);
     }
 
-    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
+    protected override void OnUpgrade() =>
+        DynamicVars.Block.UpgradeValueBy(1m);
 }

@@ -221,6 +221,20 @@
 | `FinisherExitDistance` | `150px` | 清空队列后卡影继续飞出的距离 |
 | `FinisherExitSeconds` | `0.13s` | 卡影离场时间 |
 
+### 金枪鱼图片虚影
+
+所有 `Maguro*` 攻击牌都会调用 `MgrFishVfx`，令 `images/characters/fish.png` 从角色方向掠过目标。主体图片起始透明度固定为 `0.9`，后方附带较淡的青色与紫色虚影；整个动画不等待、不改变伤害时机，因此连续演奏不会因鱼影额外变慢。
+
+| 参数 | 当前值 | 作用 |
+| --- | ---: | --- |
+| `FishVfx.MainOpacity` | `0.90` | 主鱼初始透明度 |
+| `FishVfx.DesiredWidth` | `138px` | 原图标准显示宽度；每张牌还可传入独立倍率 |
+| `FishVfx.TargetOvershoot` | `105px` | 鱼穿过目标后继续前进的距离 |
+| `FishVfx.ArcHeight` | `34px` | 游动路径向上拱起的高度 |
+| `FishVfx.TravelSeconds` | `0.30s` | 单条鱼影完整移动时间 |
+| `FishVfx.TrailDelay` | `0.035s` | 相邻拖影之间的延迟 |
+| `FishVfx.FadeStartFraction` | `0.58` | 行程达到该比例后开始淡出 |
+
 ### 待机边缘装饰
 
 | 参数 | 当前值 | 作用 |

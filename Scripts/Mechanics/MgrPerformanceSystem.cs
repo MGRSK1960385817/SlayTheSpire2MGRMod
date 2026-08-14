@@ -306,9 +306,7 @@ public static class MgrPerformanceSystem
             PileType.Play,
             player);
 
-        int initialTurns = Math.Max(
-            DefaultExternalPerformanceTurns,
-            GetInitialPerformanceTurns(card));
+        int initialTurns = GetExternalPerformanceTurns(card);
         MgrPerformanceState state = MgrPerformanceStateStore.For(player);
         MgrPerformanceEntry? entry = state.Enqueue(card, initialTurns);
         if (entry is null)
@@ -331,9 +329,7 @@ public static class MgrPerformanceSystem
         CardModel card) => EnqueueCardFromPile(
             player,
             card,
-            Math.Max(
-                DefaultExternalPerformanceTurns,
-                GetInitialPerformanceTurns(card)),
+            GetExternalPerformanceTurns(card),
             PileType.Hand);
 
     private static async Task<MgrPerformanceEntry?> EnqueueCardFromPile(

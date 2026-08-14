@@ -40,6 +40,9 @@ public sealed class MaguroCleave : MgrCard
             growthPerDoubling: 0.35f,
             maxScale: 1.75f);
 
+        foreach (var target in combatState.HittableEnemies)
+            MgrAttackVfx.SpawnFishRush(Owner.Creature, target, vfxScale * 0.78f);
+
         await DamageCmd.Attack(damage)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)

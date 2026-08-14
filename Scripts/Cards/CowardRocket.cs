@@ -15,7 +15,7 @@ public sealed class CowardRocket : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move)
+        new BlockVar(5m, ValueProp.Move)
     ];
 
     public CowardRocket() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -25,5 +25,5 @@ public sealed class CowardRocket : MgrCard
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
 }

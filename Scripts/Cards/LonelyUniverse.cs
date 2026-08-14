@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -11,12 +12,15 @@ public sealed class LonelyUniverse : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 2m)
+        new IntVar("Performance", 3m)
     ];
 
     public override bool IsStarryCard => true;
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
 
     public LonelyUniverse() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
@@ -25,8 +29,5 @@ public sealed class LonelyUniverse : MgrCard
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Performance"].UpgradeValueBy(1m);
-    }
+    protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Exhaust);
 }

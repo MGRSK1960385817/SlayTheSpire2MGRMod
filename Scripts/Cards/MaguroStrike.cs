@@ -35,6 +35,10 @@ public sealed class MaguroStrike : MgrCard
         int repetitions = chordWasAlreadyPlayed ? 2 : 1;
         for (int index = 0; index < repetitions; index++)
         {
+            MgrAttackVfx.SpawnFishRush(
+                Owner.Creature,
+                cardPlay.Target,
+                0.62f);
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)

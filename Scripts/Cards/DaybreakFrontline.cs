@@ -18,7 +18,7 @@ public sealed class DaybreakFrontline : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 4m)
+        new IntVar("Performance", 3m)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
@@ -51,14 +51,7 @@ public sealed class DaybreakFrontline : MgrCard
             PileType.Exhaust);
 
         if (targets.Length > 0)
-        {
-            CardCmd.Preview(
-                targets,
-                time: 0.62f,
-                style: CardPreviewStyle.MessyLayout);
-            await Cmd.Wait(0.42f);
-            MgrAbilityVfx.PlayCentralPurification(targets.Length);
-        }
+            await MgrAbilityVfx.PlayCentralCardExhaust(targets);
 
         foreach (CardModel target in targets)
         {

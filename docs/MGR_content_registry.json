@@ -1,13 +1,13 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-13",
-  "purpose": "供作者快速查看、确认和重命名 MGR 卡牌与遗物；本文件是开发登记表，不会被游戏运行时读取。",
+  "lastUpdated": "2026-08-14",
+  "purpose": "供作者快速查看、确认和重命名 MGR 卡牌、遗物与药水；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
     "name": "当前中文显示名；英文、日文及其他语言不在本阶段登记。",
     "status": "内容启用状态：1 表示当前有效，0 表示暂时停用。",
     "multiplayerOnly": "仅联机卡使用；1 表示只会在联机模式进入奖励池，并从单机卡池数量统计中排除。",
-    "typeAndRarity": "卡牌类型与稀有度；遗物只记录稀有度。",
+    "typeAndRarity": "卡牌记录类型与稀有度；遗物和药水只记录稀有度。",
     "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。"
   },
   "derivationGuide": "源码默认为 codeName.cs，图片默认为 codeName.png，遗物描边图默认为 codeName_outline.png；开发阶段的稳定注册键由 codeName 转为 lower_snake_case，卡牌与遗物本地化键由该注册键转为大写形式。",
@@ -48,7 +48,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "星空牌。1费。演奏 2（升级后3）"
+      "summary": "1费蓝卡星空技能；演奏3，消耗；升级后移除消耗。"
     },
     {
       "codeName": "FlawedGirl",
@@ -176,7 +176,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "造成5点伤害，本场战斗每触发一次和弦增加1点；作为尾音时伤害翻倍；升级后每次和弦加成增加至2。"
+      "summary": "造成5点伤害，本场战斗每触发一次和弦增加1点；作为尾音时伤害翻倍；升级后基础伤害增加至6点。"
     },
     {
       "codeName": "WarmUp",
@@ -320,7 +320,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费；造成9伤害，抽3，丢弃本次抽到且当前费用不为1的牌；可以无限升级，每次升级使抽牌数增加1，并在名称末尾追加1个“啊”。"
+      "summary": "1费；造成7点伤害，抽3张牌，丢弃本次抽到且当前费用不为1的牌；可以无限升级，每次升级使伤害与抽牌数各增加1，并在名称末尾追加1个“啊”。"
     },
     {
       "codeName": "MeteorAftermath",
@@ -456,7 +456,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡技能；丢弃所有手牌，每张获得3点格挡；升级后获得保留。"
+      "summary": "1费蓝卡技能，保留；丢弃所有手牌，每张获得3点格挡，升级后每张增加至4点。"
     },
     {
       "codeName": "CowardRocket",
@@ -480,7 +480,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "X费蓝卡攻击；演奏X，对所有敌人造成X点伤害X次；升级后演奏X+1。"
+      "summary": "X费蓝卡攻击；演奏X，对所有敌人造成X点伤害X次；升级后改为造成X+1点伤害X+1次。"
     },
     {
       "codeName": "LivingDream",
@@ -496,7 +496,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "1费星空技能；将所有音符替换为星空音符；升级后获得保留。"
+      "summary": "1费金卡星空技能；移除所有音符，再生成等量的星空音符；升级后移除消耗。"
     },
     {
       "codeName": "ParanoiaGirl",
@@ -528,7 +528,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费消耗，演奏3；演奏结束时获得1瓶随机药水；升级后额外获得20金币。"
+      "summary": "0费蓝卡技能，消耗；演奏3（升级后2）；演奏结束时获得1瓶随机药水。"
     },
     {
       "codeName": "Dazzling",
@@ -584,7 +584,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡星空攻击；造成12点伤害，将1张随机星空牌加入手牌；升级后伤害增加至15。"
+      "summary": "2费蓝卡星空攻击；造成8（12）点伤害，将1张随机星空牌直接加入演奏队列；卫星少女与轩辕十四的相对权重分别为2/3与1/3。"
     },
     {
       "codeName": "StarfallSea",
@@ -648,7 +648,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "3费金卡能力；从下一回合开始，在回合结束时按顺序打出上回合最后若干张牌的复制，数量等于层数；升级后费用降为2。"
+      "summary": "3费金卡能力；从下一回合开始，在回合结束时按顺序打出上回合最后若干张牌的复制，数量等于层数；升级后获得保留。"
     },
     {
       "codeName": "Bird",
@@ -664,7 +664,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后伤害增加2点。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后每名敌人生成2个。"
     },
     {
       "codeName": "ElectricAngel",
@@ -728,7 +728,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击，消耗；造成10点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；升级后伤害增加到14点；瞄准可斩杀目标时切换插图与文本。"
+      "summary": "3（升级后2）费金卡攻击，消耗；造成12点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；瞄准可斩杀目标时切换插图与文本。"
     },
     {
       "codeName": "LeaveItToMe",
@@ -810,7 +810,7 @@
       "name": "记仇小本本",
       "status": 1,
       "rarity": "Common",
-      "summary": "战斗开始生成2个攻击音符；获得后每累计失去5点生命，额外生成1个，任何来源均计入。"
+      "summary": "战斗开始生成2个攻击音符；获得后每累计失去5点生命，额外生成1个，任何来源均计入；单人第41层、多人第38层起不再出现。"
     },
     {
       "codeName": "Metronome",
@@ -824,7 +824,7 @@
       "name": "黑金唱片",
       "status": 1,
       "rarity": "Shop",
-      "summary": "每当一张演奏牌结束时，获得3金币。"
+      "summary": "每当一张演奏牌结束时，获得3金币；单人第41层、多人第38层起不再出现。"
     },
     {
       "codeName": "GuitarPick",
@@ -853,6 +853,22 @@
       "status": 1,
       "rarity": "Rare",
       "summary": "回合开始时，若初始抽牌中抽到的技能牌少于2张，抽4张牌。"
+    }
+  ],
+  "potions": [
+    {
+      "codeName": "FortePotion",
+      "name": "强音药水",
+      "status": 1,
+      "rarity": "Common",
+      "summary": "仅属于MGR药水池；获得2层强音；暂时复用原版集中药水图像。"
+    },
+    {
+      "codeName": "ImprovisationPotion",
+      "name": "即兴药水",
+      "status": 1,
+      "rarity": "Uncommon",
+      "summary": "仅属于MGR药水池；随机生成4个基础音符；暂时复用原版星星药水图像。"
     }
   ]
 }

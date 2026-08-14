@@ -48,6 +48,11 @@ public sealed class MaguroBash : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
+        MgrAttackVfx.SpawnFishRush(
+            Owner.Creature,
+            cardPlay.Target,
+            1.18f);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)

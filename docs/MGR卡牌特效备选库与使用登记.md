@@ -13,6 +13,7 @@
 
 - `Scripts/Mechanics/MgrAttackVfx.cs`：原版特效实例化、着色、缩放与短前摇。
 - `Scripts/Mechanics/MgrGunshotVfx.cs`：代码绘制的枪口闪光、弹道和命中闪光。
+- `Scripts/Mechanics/MgrFishVfx.cs`：使用 `images/characters/fish.png` 制作的金枪鱼冲锋虚影与彩色拖影。
 - `Scripts/Mechanics/MgrAbilityVfx.cs`：金卡技能/能力的非阻塞施放脉冲、祭品式血液冲击、八十八键蓝色音符群。
 - `Scripts/Characters/MgrCharacterAuraVisual.cs`：卫星少女可触发状态下的持续轨道星。
 - `Scripts/Mechanics/MgrVisualTuning.cs`：演奏触发速度和演奏期间特效等待倍率。
@@ -45,6 +46,7 @@
 | 气态冲击 | `NGaseousImpactVfx` | 是 | 是 | 诅咒、幽灵、黑暗气流 | 可正常使用 |
 | 火焰爆发 | `NFireBurstVfx` | 是 | 是 | 明确具有火焰语义的攻击 | 可正常使用 |
 | 自制枪击 | `MgrGunshotVfx` | 是 | 是 | 枪械、直线弹道 | 可正常使用；视觉尾迹不阻塞 |
+| 金枪鱼虚影 | `MgrFishVfx` + `images/characters/fish.png` | 可整体染色 | 是 | 所有金枪鱼主题攻击 | 纯视觉、无等待；主体初始透明度0.9 |
 
 ### 2.2 中型组合特效（适合招牌攻击）
 
@@ -95,23 +97,23 @@
 | 打击 | `MgrStrike` | 普通斩击 | 原版色 | 轻量 |
 | 最后一拍 | `FinalShot` | 自制枪口闪光、直线弹道、命中闪光 | 金色，尾音时约 1.22 倍 | 轻量，尾迹不阻塞 |
 | 安可 | `Encore` | 普通斩击 | 原版色 | 轻量 |
-| 金枪鱼打击 | `MaguroStrike` | 普通斩击 | 原版色 | 轻量 |
-| 金枪鱼横斩 | `MaguroCleave` | 全体横扫 | 白色；随和弦成长后的伤害对数放大 | 轻量 |
+| 金枪鱼打击 | `MaguroStrike` | 金枪鱼虚影 + 普通斩击 | 主体0.9透明度，青/紫拖影 | 轻量、虚影不阻塞 |
+| 金枪鱼横斩 | `MaguroCleave` | 每名敌人一条金枪鱼虚影 + 全体横扫 | 白色横扫；鱼影随伤害一起放大 | 轻量、虚影不阻塞 |
 | 幼星冲击 | `TinyStarImpact` | 每名敌人星光命中 | 原版星光色 | 轻量 |
-| 金枪鱼重击 | `MaguroBash` | 普通钝击 | 原版色 | 轻量 |
+| 金枪鱼重击 | `MaguroBash` | 大型金枪鱼虚影 + 普通钝击 | 1.18倍鱼影 | 轻量、虚影不阻塞 |
 | 花葬 | `FlowerFuneral` | 飞行斩击 | 原版色 | 轻量 |
-| 金枪鱼强袭 | `MaguroAssault` | 普通钝击 | 原版色 | 轻量 |
+| 金枪鱼强袭 | `MaguroAssault` | 金枪鱼虚影 + 普通钝击 | 0.86倍鱼影 | 轻量、虚影不阻塞 |
 | 夜行少女 | `NightWalker` | 暗紫气态冲击 | 暗紫，0.9 倍 | 一次主体 |
 | 点亮舞台 | `LightUp` | 普通斩击 | 原版色 | 一次主体 |
 | 轩辕十四 | `Regulus` | 星光命中 | 原版星光色 | 一次主体 |
 | 呀啊啊啊 | `Yaaaaaa` | 飞行斩击 | 原版色 | 轻量 |
 | 流☆星☆群 | `MeteorShower` | 紫色星光命中 | 紫色，0.9 倍 | 一次主体 |
-| 金枪鱼燕返 | `MaguroReversal` | 紫色巨斩 + 金色巨斩命中，方向交替 | 紫/金，约 0.8/0.72 倍 | 轻量组合 |
+| 金枪鱼燕返 | `MaguroReversal` | 每次攻击一条金枪鱼虚影 + 紫色巨斩 + 金色巨斩命中，方向交替 | 鱼影0.76倍；斩击紫/金 | 轻量组合 |
 | Adios | `Adios` | 戏剧性刺击 | 原版色 | 轻量；后续演奏由队列表现 |
 | 热异常 | `HeatAbnormal` | 火焰爆发 | 橙红；随成长后的基础伤害对数放大 | 轻量 |
 | 立方棱镜 | `CubicPrism` | 紫色横向光束 | 紫色 | 压缩等待 + 一次主体 |
 | 被害妄想携带女子 | `ParanoiaGirl` | 凝视 | 原版色 | 轻量 |
-| 金枪鱼冲锋 | `MaguroDash` | 首次全体横扫；随后由代码绘制的卡影从队列右端切入，逐槽撞散演奏牌并同步追加全体横扫 | 黄白、粉紫、青色拖尾与多色星芒；后续槽位逐渐加速 | 专属终曲演出；卡影不是实体牌，不会进入演奏队列 |
+| 金枪鱼冲锋 | `MaguroDash` | 每轮全体攻击生成鱼群虚影；随后由代码绘制的卡影从队列右端切入，逐槽撞散演奏牌并同步追加全体横扫 | 鱼影0.92倍；卡影带黄白、粉紫、青色拖尾与多色星芒 | 专属终曲演出；鱼影与卡影均不参与游戏结算 |
 | 炫目 | `Dazzling` | 金色刺击 | 金色 | 轻量 |
 | 星辰导引 | `GuidingStars` | 紫色小型星弹 + 紫色星光命中 | 紫色，命中 0.9 倍 | 压缩等待 |
 | 「 鳥 」 | `Bird` | 金色大型陨星 + 金色星光冲击 | 金色，命中 1.25 倍 | 压缩等待 |
@@ -150,7 +152,7 @@
 | 老大哥在看着你 | 状态音符实际施加标记时，播放短促暗红烙印脉冲 | `MgrNoteEffects` |
 | 第六感 | 回合开始额外抽牌前播放眼形脉冲；展示与弃牌动画仍保持最高信息优先级 | `SixthSensePower` |
 | 想象、创造 | 玩家选定类型且卡牌真正转化时播放五色创造脉冲，选牌界面打开期间不播放 | `ImagineCreatePower` |
-| 黎明前线 | 只有演奏结束且确实存在待净化的诅咒/状态时，播放一次黎明色脉冲；不会在每次演奏打出时重复大型净化 | `DaybreakFrontline.OnPerformanceFinished` |
+| 黎明前线 | 演奏结束且存在待转化的诅咒/状态时，牌从各个区域飞到中央铺开，随后统一使用原版“恶魔之焰”同源的完整牌面消耗特效；本牌专属溶解速度由原版约 0.4 秒放慢到 0.58 秒 | `DaybreakFrontline.OnPerformanceFinished` / `MgrAbilityVfx.PlayCentralCardExhaust` |
 
 ### 4.3 持续形态与场上装饰
 

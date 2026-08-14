@@ -1,11 +1,14 @@
 using Godot;
+using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.TestSupport;
 using SlayTheSpire2MGRMod.Cards;
 
@@ -19,6 +22,10 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public static class MgrAbilityVfx
 {
     private const string BloodyImpactPath = "vfx/vfx_bloody_impact";
+    private const float DaybreakGatherSeconds = 0.28f;
+    private const float DaybreakHoldSeconds = 0.22f;
+    private const float DaybreakExhaustSeconds = 0.58f;
+    private const float DaybreakExhaustStaggerSeconds = 0.035f;
 
     public static void PlayOfferingBlood(Creature target)
     {
@@ -113,20 +120,132 @@ public static class MgrAbilityVfx
     }
 
     /// <summary>
-    /// Sweeps a shared dawn-colored light across the central card-preview area.
-    /// Daybreak Frontline previews every affected card first, then this single
-    /// non-blocking visual makes their simultaneous purification legible without
-    /// serializing one long animation per pile.
+    /// Daybreak Frontline first gathers every affected card into the middle,
+    /// then passes those temporary card faces through Tower 2's full Fiend
+    /// Fire-style exhaust dissolve. Gameplay pile movement remains in the
+    /// caller, so hooks and pile bookkeeping still resolve exactly once.
     /// </summary>
-    public static void PlayCentralPurification(int cardCount)
+    public static async Task PlayCentralCardExhaust(
+        IReadOnlyList<CardModel> cards)
     {
-        if (TestMode.IsOn || NCombatRoom.Instance is not { } room || cardCount <= 0)
+        if (TestMode.IsOn ||
+            NCombatRoom.Instance is not { } room ||
+            cards.Count == 0)
+        {
+            return;
+        }
+
+        Control visualRoot = room.Ui.MessyCardPreviewContainer;
+        Vector2 center = room.GetViewportRect().Size * 0.5f;
+        List<NCard> cardNodes = [];
+        int visibleCount = Math.Min(cards.Count, 24);
+
+        for (int index = 0; index < visibleCount; index++)
+        {
+            NCard? node = NCard.Create(cards[index]);
+            if (node is null)
+                continue;
+
+            visualRoot.AddChildSafely(node);
+            node.UpdateVisuals(
+                cards[index].Pile?.Type ?? PileType.Play,
+                CardPreviewMode.Normal);
+            node.MouseFilter = Control.MouseFilterEnum.Ignore;
+            node.ZIndex = 120 + index;
+            node.GlobalPosition = GetDaybreakCardOrigin(
+                cards[index],
+                node,
+                center,
+                index);
+            node.Scale = Vector2.One * 0.22f;
+            node.Modulate = new Color(1f, 1f, 1f, 0.18f);
+            cardNodes.Add(node);
+
+            Tween gather = node.CreateTween().SetParallel();
+            gather.TweenProperty(
+                    node,
+                    "global_position",
+                    GetDaybreakCardPosition(center, index, visibleCount),
+                    DaybreakGatherSeconds)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Cubic);
+            gather.TweenProperty(
+                    node,
+                    "scale",
+                    Vector2.One * 0.72f,
+                    DaybreakGatherSeconds)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Back);
+            gather.TweenProperty(
+                node,
+                "modulate",
+                Colors.White,
+                DaybreakGatherSeconds * 0.82f);
+        }
+
+        if (cardNodes.Count == 0)
             return;
 
-        var visual = new MgrPurificationSweepVisual();
-        visual.Initialize(cardCount);
-        visual.GlobalPosition = room.GetViewportRect().Size * 0.5f;
-        room.CombatVfxContainer.AddChildSafely(visual);
+        await Cmd.Wait(DaybreakGatherSeconds + DaybreakHoldSeconds);
+
+        List<Task> exhaustAnimations = [];
+        for (int index = 0; index < cardNodes.Count; index++)
+        {
+            NCard node = cardNodes[index];
+            if (!GodotObject.IsInstanceValid(node))
+                continue;
+
+            if (index > 0)
+                await Cmd.Wait(DaybreakExhaustStaggerSeconds);
+
+            NCardExhaustVfx? exhaustVfx = NCardExhaustVfx.Create(node);
+            if (exhaustVfx is null)
+            {
+                node.QueueFreeSafely();
+                continue;
+            }
+
+            // Native Fiend Fire uses the ordinary 0.4-second dissolve. Only
+            // these private preview instances are slowed down for readability.
+            exhaustVfx._exhaustDuration = DaybreakExhaustSeconds;
+            room.Ui.AddChildSafely(exhaustVfx);
+            NDebugAudioManager.Instance?.Play("card_exhaust.mp3");
+            exhaustAnimations.Add(exhaustVfx.PlayAnimation());
+        }
+
+        await Task.WhenAll(exhaustAnimations);
+    }
+
+    private static Vector2 GetDaybreakCardPosition(
+        Vector2 center,
+        int index,
+        int count)
+    {
+        const int cardsPerRow = 8;
+        int rowCount = (count + cardsPerRow - 1) / cardsPerRow;
+        int row = index / cardsPerRow;
+        int firstInRow = row * cardsPerRow;
+        int countInRow = Math.Min(cardsPerRow, count - firstInRow);
+        int column = index - firstInRow;
+        float spacingX = countInRow <= 5 ? 154f : 118f;
+        float x = (column - (countInRow - 1) * 0.5f) * spacingX;
+        float y = (row - (rowCount - 1) * 0.5f) * 172f;
+        return center + new Vector2(x, y) - NCard.defaultSize * 0.36f;
+    }
+
+    private static Vector2 GetDaybreakCardOrigin(
+        CardModel card,
+        NCard visualNode,
+        Vector2 center,
+        int index)
+    {
+        NCard? tableCard = NCard.FindOnTable(card);
+        if (tableCard is not null)
+            return tableCard.GlobalPosition;
+
+        Vector2 source = card.Pile?.Type.GetTargetPosition(visualNode) ?? center;
+        float spread = (index % 5 - 2) * 13f;
+        return source + new Vector2(spread, 0f) - NCard.defaultSize * 0.11f;
     }
 
     /// <summary>
@@ -168,84 +287,6 @@ public static class MgrAbilityVfx
         {
             if (GodotObject.IsInstanceValid(visual))
                 visual.Burst();
-        }
-    }
-}
-
-internal sealed partial class MgrPurificationSweepVisual : Node2D
-{
-    private static readonly Color DawnGold = new("fff1a8");
-    private static readonly Color DawnRose = new("ff9f80");
-    private float _age;
-    private float _width;
-    private const float Lifetime = 0.52f;
-
-    public void Initialize(int cardCount)
-    {
-        _width = Math.Clamp(410f + Math.Min(cardCount, 12) * 46f, 520f, 960f);
-        ZIndex = 30;
-        SetProcess(true);
-        QueueRedraw();
-    }
-
-    public override void _Process(double delta)
-    {
-        _age += (float)delta;
-        if (_age >= Lifetime)
-        {
-            QueueFree();
-            return;
-        }
-
-        QueueRedraw();
-    }
-
-    public override void _Draw()
-    {
-        float progress = Math.Clamp(_age / Lifetime, 0f, 1f);
-        float envelope = MathF.Sin(progress * MathF.PI);
-        float halfWidth = _width * 0.5f;
-
-        Color wash = DawnGold;
-        wash.A = 0.12f * envelope;
-        DrawRect(
-            new Rect2(-halfWidth, -92f, _width, 184f),
-            wash);
-
-        Color core = Colors.White;
-        core.A = 0.92f * envelope;
-        DrawLine(
-            new Vector2(-halfWidth, 0f),
-            new Vector2(halfWidth, 0f),
-            core,
-            5.5f,
-            true);
-
-        Color outer = DawnRose;
-        outer.A = 0.58f * envelope;
-        DrawLine(
-            new Vector2(-halfWidth, -13f),
-            new Vector2(halfWidth, -13f),
-            outer,
-            2.2f,
-            true);
-        DrawLine(
-            new Vector2(-halfWidth, 13f),
-            new Vector2(halfWidth, 13f),
-            outer,
-            2.2f,
-            true);
-
-        for (int index = 0; index < 18; index++)
-        {
-            float unit = index / 17f;
-            float x = Mathf.Lerp(-halfWidth, halfWidth, unit);
-            float y = MathF.Sin(index * 2.31f) * 68f;
-            float size = 5f + index % 3 * 2f;
-            Color star = index % 2 == 0 ? DawnGold : DawnRose;
-            star.A = envelope * (0.54f + index % 4 * 0.08f);
-            DrawLine(new Vector2(x - size, y), new Vector2(x + size, y), star, 1.8f, true);
-            DrawLine(new Vector2(x, y - size), new Vector2(x, y + size), star, 1.8f, true);
         }
     }
 }

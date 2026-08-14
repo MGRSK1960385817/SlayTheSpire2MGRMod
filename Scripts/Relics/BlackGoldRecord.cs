@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Runs;
 using SlayTheSpire2MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
@@ -14,6 +15,9 @@ public sealed class BlackGoldRecord : ModRelicTemplate
     protected override IEnumerable<DynamicVar> CanonicalVars => [new GoldVar(3)];
 
     public override RelicRarity Rarity => RelicRarity.Shop;
+
+    public override bool IsAllowed(IRunState runState) =>
+        IsBeforeAct3TreasureChest(runState);
 
     public override RelicAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/relics/BlackGoldRecord.png",

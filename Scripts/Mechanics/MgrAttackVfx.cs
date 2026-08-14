@@ -164,6 +164,19 @@ public static class MgrAttackVfx
         float scale = 1f) =>
         MgrGunshotVfx.Create(attacker, target, tint, scale);
 
+    public static void SpawnFishRush(
+        Creature attacker,
+        Creature target,
+        float scale = 1f)
+    {
+        if (NCombatRoom.Instance is not { } room)
+            return;
+
+        MgrFishVfx? vfx = MgrFishVfx.Create(attacker, target, scale);
+        if (vfx is not null)
+            room.CombatVfxContainer.AddChildSafely(vfx);
+    }
+
     public static async Task PlaySmallMagicMissile(
         CardModel sourceCard,
         Creature target,
