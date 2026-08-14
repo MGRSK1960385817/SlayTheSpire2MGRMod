@@ -32,6 +32,13 @@ public sealed class MaguroReversal : MgrCard
         int repeats = NoteState.ChordsResolvedThisTurn == 0 ? 2 : 1;
         for (int index = 0; index < repeats; index++)
         {
+            if (index > 0)
+            {
+                await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
+                    this,
+                    0.08f));
+            }
+
             MgrAttackVfx.SpawnFishRush(
                 Owner.Creature,
                 cardPlay.Target,
@@ -39,15 +46,11 @@ public sealed class MaguroReversal : MgrCard
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
-                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlash(
+                .WithHitVfxNode(target => MgrAttackVfx.CreateFlyingSlash(
                     target,
-                    MgrAttackVfx.StarPurple,
-                    0.8f))
-                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlashImpact(
-                    target,
-                    MgrAttackVfx.StarGold,
-                    0.72f,
-                    index % 2 == 0 ? 48f : -48f))
+                    MgrAttackVfx.FlyingSlashBlue,
+                    1.02f,
+                    reverse: index % 2 == 1))
                 .WithHitFx(null, null, "slash_attack.mp3")
                 .Execute(choiceContext);
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);

@@ -62,7 +62,9 @@ public static class MgrCurseUtils
     public static async Task<CardModel> AddRandomCurseToCombat(
         Player player,
         PileType pileType,
-        CardPilePosition position = CardPilePosition.Random)
+        CardPilePosition position = CardPilePosition.Random,
+        float pilePreviewDuration = 2f,
+        float pilePreviewWait = 0.8f)
     {
         CardModel curse = CreateRandomCurse(player);
         CardPileAddResult result = await CardPileCmd.AddGeneratedCardToCombat(
@@ -82,8 +84,10 @@ public static class MgrCurseUtils
             // Gunk Up-style generated pile card. MGR curse effects can create
             // several cards in sequence, so keep each preview on screen longer
             // than the vanilla default cadence to make its identity readable.
-            CardCmd.PreviewCardPileAdd(result, 2f);
-            await Cmd.Wait(0.8f);
+            CardCmd.PreviewCardPileAdd(
+                result,
+                Math.Max(0.05f, pilePreviewDuration));
+            await Cmd.Wait(Math.Max(0f, pilePreviewWait));
         }
 
         return curse;

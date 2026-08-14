@@ -28,7 +28,8 @@ public sealed class FlowerFuneral : MgrCard
         var command = DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx(VfxCmd.flyingSlashPath);
+            .WithHitVfxNode(MgrSignatureVfx.CreateFlowerBloom)
+            .WithHitFx(null, null, "slash_attack.mp3");
         await command.Execute(choiceContext);
 
         int notes = command.Results.SelectMany(result => result)

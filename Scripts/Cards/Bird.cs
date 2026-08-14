@@ -40,10 +40,12 @@ public sealed class Bird : MgrCard
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
         int notesToGenerate = GetNotesToGenerate(cardPlay.Target, cardPlay);
+        MgrSignatureVfx.SpawnFallingBird(cardPlay.Target, 1.22f);
         await MgrAttackVfx.PlayLargeMagicMissile(
             this,
             cardPlay.Target,
-            MgrAttackVfx.StarGold);
+            MgrAttackVfx.StarGold,
+            scale: 1.38f);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)

@@ -27,7 +27,12 @@ public sealed class Adios : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx(VfxCmd.dramaticStabPath)
+            .WithHitVfxNode(target => MgrAttackVfx.CreateGunshot(
+                Owner.Creature,
+                target,
+                MgrAttackVfx.StarGold,
+                1.05f))
+            .WithHitFx(null, null, "blunt_attack.mp3")
             .Execute(choiceContext);
         await MgrPerformanceSystem.TriggerQueuedCardsOnceAndConsume(choiceContext, Owner);
     }

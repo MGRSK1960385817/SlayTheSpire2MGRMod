@@ -58,6 +58,9 @@ public sealed class ImagineCreatePower : ModPowerTemplate
         if (eligibleCards.Length == 0)
             return false;
 
+        using IDisposable screenFilter =
+            MgrSelectionScreenVfx.BeginGrayscale(player);
+
         var chooseCardPrompt = new LocString(
             "cards",
             "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_CARD");

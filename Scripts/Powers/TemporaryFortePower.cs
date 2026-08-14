@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -26,6 +27,8 @@ public sealed class TemporaryFortePower : ModPowerTemplate
         if (side != Owner.Side)
             return;
 
+        if (Owner.Player is { } player)
+            MgrSpringStormVfx.Hide(player);
         Flash();
         await PowerCmd.Apply<FortePower>(
             choiceContext,

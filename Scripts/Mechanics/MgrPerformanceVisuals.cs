@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
+using SlayTheSpire2MGRMod.Cards;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -33,6 +34,9 @@ public static class MgrPerformanceVisuals
                 ? state.PerformanceCardsPlayedThisCombat
                 : 0;
         rack?.Show(entries, cardsPlayed);
+        MgrByakkoyaPerformanceVfx.Update(
+            player,
+            entries.Any(static entry => entry.Card is ByakkoyaGirl));
     }
 
     /// <summary>
@@ -206,6 +210,7 @@ public static class MgrPerformanceVisuals
             rack.Dispose();
 
         Racks.Clear();
+        MgrByakkoyaPerformanceVfx.ClearAll();
     }
 
     private static PerformanceRack? GetOrCreateRack(Player player)

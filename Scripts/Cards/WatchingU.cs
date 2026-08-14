@@ -25,6 +25,7 @@ public sealed class WatchingU : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
+        MgrSignatureVfx.SpawnWatchingEyes();
         await PowerCmd.Apply<WatchingUPower>(
             choiceContext,
             Owner.Creature,

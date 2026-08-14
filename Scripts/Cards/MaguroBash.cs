@@ -51,12 +51,20 @@ public sealed class MaguroBash : MgrCard
         MgrAttackVfx.SpawnFishRush(
             Owner.Creature,
             cardPlay.Target,
-            1.18f);
+            1.52f);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_blunt")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlash(
+                target,
+                MgrAttackVfx.StarPurple,
+                1.18f))
+            .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlashImpact(
+                target,
+                MgrAttackVfx.StarGold,
+                1.08f))
+            .WithHitFx(null, null, "heavy_attack.mp3")
             .Execute(choiceContext);
     }
 

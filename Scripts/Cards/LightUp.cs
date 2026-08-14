@@ -36,7 +36,9 @@ public sealed class LightUp : MgrCard
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
+            .WithHitVfxNode(target =>
+                MgrSignatureVfx.CreateStageSpotlight(target, empowered: false))
+            .WithHitFx(null, null, "blunt_attack.mp3")
             .OnlyPlayAnimOnce()
             .Execute(choiceContext);
 

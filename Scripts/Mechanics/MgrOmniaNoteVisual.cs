@@ -22,7 +22,9 @@ public partial class MgrOmniaNoteVisual : Sprite2D
     ];
 
     private readonly List<Texture2D> _textures = [];
+    private readonly List<OmniaSpark> _sparks = [];
     private double _shapeElapsed;
+    private float _sparkElapsed;
     private int _shapeIndex;
 
     public bool Initialize()
@@ -52,19 +54,76 @@ public partial class MgrOmniaNoteVisual : Sprite2D
 
     public override void _Process(double delta)
     {
-        if (_textures.Count <= 1)
-            return;
-
-        _shapeElapsed += delta;
-        while (_shapeElapsed >= MgrVisualTuning.Notes.OmniaNoteShapeSeconds)
+        if (_textures.Count > 1)
         {
-            _shapeElapsed -= MgrVisualTuning.Notes.OmniaNoteShapeSeconds;
-            _shapeIndex = (_shapeIndex + 1) % _textures.Count;
-            Texture = _textures[_shapeIndex];
-            if (Material is ShaderMaterial material)
-                material.SetShaderParameter("note_texture", Texture);
-            FitCurrentTextureToDisplaySize();
+            _shapeElapsed += delta;
+            while (_shapeElapsed >= MgrVisualTuning.Notes.OmniaNoteShapeSeconds)
+            {
+                _shapeElapsed -= MgrVisualTuning.Notes.OmniaNoteShapeSeconds;
+                _shapeIndex = (_shapeIndex + 1) % _textures.Count;
+                Texture = _textures[_shapeIndex];
+                if (Material is ShaderMaterial material)
+                    material.SetShaderParameter("note_texture", Texture);
+                FitCurrentTextureToDisplaySize();
+            }
         }
+
+        float seconds = (float)delta;
+        _sparkElapsed += seconds;
+        while (_sparkElapsed >= MgrVisualTuning.Notes.OmniaNoteSparkSeconds)
+        {
+            _sparkElapsed -= MgrVisualTuning.Notes.OmniaNoteSparkSeconds;
+            SpawnSpark();
+        }
+
+        for (int index = _sparks.Count - 1; index >= 0; index--)
+        {
+            OmniaSpark spark = _sparks[index];
+            spark.Age += seconds;
+            spark.Position += spark.Velocity * seconds;
+            spark.Rotation += spark.Spin * seconds;
+            if (spark.Age >= spark.Lifetime)
+                _sparks.RemoveAt(index);
+        }
+
+        QueueRedraw();
+    }
+
+    public override void _Draw()
+    {
+        foreach (OmniaSpark spark in _sparks)
+        {
+            float progress = Math.Clamp(spark.Age / spark.Lifetime, 0f, 1f);
+            float alpha = MathF.Sin(progress * MathF.PI) * 0.88f;
+            Vector2 horizontal = Vector2.FromAngle(spark.Rotation) * spark.Size;
+            Vector2 vertical = Vector2.FromAngle(spark.Rotation + MathF.PI * 0.5f) *
+                spark.Size * 1.45f;
+            Color glow = spark.Color with { A = alpha * 0.15f };
+            Color core = spark.Color with { A = alpha };
+            DrawCircle(spark.Position, spark.Size * 3.4f, glow);
+            DrawLine(spark.Position - horizontal, spark.Position + horizontal, core, 5f, true);
+            DrawLine(spark.Position - vertical, spark.Position + vertical, core, 5.5f, true);
+        }
+    }
+
+    private void SpawnSpark()
+    {
+        if (_sparks.Count >= MgrVisualTuning.Notes.OmniaNoteMaximumSparks)
+            _sparks.RemoveAt(0);
+
+        float angle = Random.Shared.NextSingle() * Mathf.Tau;
+        Vector2 direction = Vector2.FromAngle(angle);
+        _sparks.Add(new OmniaSpark
+        {
+            Position = direction * RandomRange(78f, 116f),
+            Velocity = direction.Rotated(RandomRange(-0.22f, 0.22f)) *
+                RandomRange(62f, 118f),
+            Lifetime = RandomRange(0.72f, 1.14f),
+            Size = RandomRange(10f, 18f),
+            Rotation = angle,
+            Spin = RandomRange(-2.3f, 2.3f),
+            Color = Color.FromHsv(Random.Shared.NextSingle(), 0.48f, 1f)
+        });
     }
 
     private void FitCurrentTextureToDisplaySize()
@@ -114,8 +173,8 @@ public partial class MgrOmniaNoteVisual : Sprite2D
                 vec3 spectral_palette(float phase) {
                     // A softer musical palette: lavender, cyan, warm gold and
                     // rose flow into one another without harsh RGB bands.
-                    vec3 center = vec3(0.62, 0.58, 0.70);
-                    vec3 range = vec3(0.34, 0.31, 0.27);
+                    vec3 center = vec3(0.80, 0.81, 0.84);
+                    vec3 range = vec3(0.18, 0.17, 0.14);
                     vec3 offset = vec3(0.02, 0.19, 0.39);
                     return clamp(
                         center + range * cos(6.2831853 * (phase + offset)),
@@ -144,7 +203,7 @@ public partial class MgrOmniaNoteVisual : Sprite2D
                         (UV.x * 0.78 + UV.y * 0.36) * rainbow_frequency +
                         TIME * rainbow_speed;
                     vec3 color = spectral_palette(fract(flow));
-                    float shimmer = 0.88 + 0.12 * sin(
+                    float shimmer = 0.96 + 0.08 * sin(
                         6.2831853 * (flow * 1.7 - TIME * rainbow_speed * 0.35));
 
                     float outer_alpha = max(
@@ -194,5 +253,20 @@ public partial class MgrOmniaNoteVisual : Sprite2D
             "canvas_margin_ratio",
             MgrVisualTuning.Notes.ArtworkGlowCanvasMarginRatio);
         return material;
+    }
+
+    private static float RandomRange(float minimum, float maximum) =>
+        Mathf.Lerp(minimum, maximum, Random.Shared.NextSingle());
+
+    private sealed class OmniaSpark
+    {
+        public Vector2 Position;
+        public Vector2 Velocity;
+        public float Age;
+        public float Lifetime;
+        public float Size;
+        public float Rotation;
+        public float Spin;
+        public Color Color;
     }
 }

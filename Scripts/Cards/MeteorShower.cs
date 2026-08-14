@@ -48,10 +48,15 @@ public sealed class MeteorShower : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        int hitCount = DynamicVars["Hits"].IntValue;
+        await MgrSignatureVfx.PlayMeteorShower(
+            this,
+            cardPlay.Target,
+            hitCount);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitCount(DynamicVars["Hits"].IntValue)
+            .WithHitCount(hitCount)
             .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
                 target,
                 MgrAttackVfx.StarPurple,

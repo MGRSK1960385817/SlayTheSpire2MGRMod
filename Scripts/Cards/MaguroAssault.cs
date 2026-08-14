@@ -35,17 +35,39 @@ public sealed class MaguroAssault : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        bool doubled = IsPhraseEndBonusActive;
 
         MgrAttackVfx.SpawnFishRush(
             Owner.Creature,
             cardPlay.Target,
-            0.86f);
+            doubled ? 1.12f : 0.86f);
 
-        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
+        var attack = DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_blunt")
-            .Execute(choiceContext);
+            .Targeting(cardPlay.Target);
+
+        if (doubled)
+        {
+            attack
+                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlash(
+                    target,
+                    MgrAttackVfx.StarPurple,
+                    1.08f))
+                .WithHitVfxNode(target => MgrAttackVfx.CreateBigSlashImpact(
+                    target,
+                    MgrAttackVfx.StarGold,
+                    0.98f))
+                .WithHitFx(null, null, "heavy_attack.mp3");
+        }
+        else
+        {
+            attack.WithHitFx(
+                VfxCmd.dramaticStabPath,
+                null,
+                "slash_attack.mp3");
+        }
+
+        await attack.Execute(choiceContext);
     }
 
     public override decimal ModifyDamageMultiplicative(

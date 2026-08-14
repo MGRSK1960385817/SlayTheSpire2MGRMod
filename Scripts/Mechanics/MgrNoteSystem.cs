@@ -188,9 +188,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         NoteKind kind = roll switch
         {
             < 38 => NoteKind.Attack,
-            < 72 => NoteKind.Skill,
-            < 79 => NoteKind.Status,
-            < 95 => NoteKind.Power,
+            < 74 => NoteKind.Skill,
+            < 80 => NoteKind.Status,
+            < 96 => NoteKind.Power,
             _ => NoteKind.Curse
         };
 
@@ -209,6 +209,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int notesGeneratedBefore = state.NotesGeneratedThisTurn;
         int chordTriggersBefore = state.ChordTriggersThisTurn;
         PhraseResolution? resolution = state.AddNote(note);
+        if (kind == NoteKind.Starry)
+            MgrStarryNoteVfx.Spawn(player);
         RefreshConditionalCardGlows(player);
 
         MgrAudio.PlayNoteChannel();
@@ -230,7 +232,12 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             return;
 
         MgrAudio.PlayChord();
-        await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
+        await TriggerResolvedChord(
+            choiceContext,
+            player,
+            resolution.Notes,
+            state.Forte);
+        RefreshConditionalCardGlows(player);
     }
 
     /// <summary>

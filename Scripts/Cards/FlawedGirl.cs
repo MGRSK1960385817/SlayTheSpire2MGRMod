@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using SlayTheSpire2MGRMod.Cards.Choices;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -36,24 +37,30 @@ public sealed class FlawedGirl : MgrCard
             combatState.CreateCard<FlawedGirl0>(Owner),
             combatState.CreateCard<FlawedGirl1>(Owner)
         ];
-
-        var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
-        CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
-            choiceContext,
-            options,
-            Owner,
-            prefs)).FirstOrDefault();
-
-        if (chosen is INoteSlotChoice choice)
-            await choice.Apply(choiceContext, this);
-
-        // The selection screen has released its card nodes after the awaited
-        // command. Remove both temporary combat models on the following tick.
-        await Task.Yield();
-        foreach (CardModel option in options)
+        using IDisposable screenFilter =
+            MgrSelectionScreenVfx.BeginGlitch(Owner);
+        try
         {
-            if (option.CombatState is not null)
-                option.RemoveFromState();
+            var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
+            CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
+                choiceContext,
+                options,
+                Owner,
+                prefs)).FirstOrDefault();
+
+            if (chosen is INoteSlotChoice choice)
+                await choice.Apply(choiceContext, this);
+        }
+        finally
+        {
+            // The selection screen has released its card nodes after the awaited
+            // command. Remove both temporary combat models on the following tick.
+            await Task.Yield();
+            foreach (CardModel option in options)
+            {
+                if (option.CombatState is not null)
+                    option.RemoveFromState();
+            }
         }
     }
 

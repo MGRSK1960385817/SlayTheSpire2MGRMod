@@ -46,6 +46,11 @@ public sealed class SongOfSiren : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
+        // Match the vanilla Shockwave's central flying-slash cue. OnPlay also
+        // runs for Performance replays, so every Siren trigger gets the cue.
+        VfxCmd.PlayOnCreatureCenter(
+            Owner.Creature,
+            "vfx/vfx_flying_slash");
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         if (CombatState is null)
             return;

@@ -77,13 +77,13 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     public Vector2 CanonWheelOffset { get; set; } = new(0f, 4f);
 
     [Export(PropertyHint.Range, "100,260,1")]
-    public float CanonWheelRadius { get; set; } = 171f;
+    public float CanonWheelRadius { get; set; } = 196f;
 
     [Export(PropertyHint.Range, "1,16,0.1")]
-    public float CanonTriggerMinimumAngularSpeed { get; set; } = 5.4f;
+    public float CanonTriggerMinimumAngularSpeed { get; set; } = 3.2f;
 
     [Export(PropertyHint.Range, "1,20,0.1")]
-    public float CanonTriggerMaximumAngularSpeed { get; set; } = 11.8f;
+    public float CanonTriggerMaximumAngularSpeed { get; set; } = 6.4f;
 
     [Export]
     public Vector2 HiganOrbitRadius { get; set; } = new(196f, 112f);
@@ -114,6 +114,11 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private Player? _player;
     private double _elapsed;
     private float _satelliteVisibility;
+    private Vector2 _satelliteOrbitRadius;
+    private float _satelliteOrbitTilt;
+    private float _satelliteAngularSpeed;
+    private float _satellitePhaseOffset;
+    private float _satelliteWobblePhase;
     private CanonFormPower? _observedCanonPower;
     private int _lastCanonTriggerSerial;
     private float _canonVisibility;
@@ -121,6 +126,8 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private float _canonSpinRemaining;
     private float _canonFlash;
     private float _higanVisibility;
+    private Sprite2D? _characterVisual;
+    private readonly List<CharacterAfterimage> _characterAfterimages = [];
     private float _prismaticVisibility;
     private int _activeConstellationLinkCount;
     private int _lastStarryNoteCount = -1;
@@ -128,7 +135,9 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     public override void _Ready()
     {
         _random.Randomize();
+        RandomizeSatelliteOrbit();
         TryResolvePlayer();
+        ResolveCharacterVisual();
         RebuildParticles();
         RefreshDynamicDensity(force: true);
         SetProcess(true);
@@ -153,6 +162,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             _higanVisibility,
             HasDoubleNotes() ? 1f : 0f,
             elapsed * 3.4f);
+        UpdateCharacterAfterimages(elapsed);
         _prismaticVisibility = Mathf.MoveToward(
             _prismaticVisibility,
             HasPrismaticPower() ? 1f : 0f,
@@ -278,6 +288,166 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private bool HasDoubleNotes() =>
         _player?.Creature.GetPowerAmount<DoubleNotesPower>() > 0m;
 
+    private void ResolveCharacterVisual()
+    {
+        _characterVisual = GetParent()?.GetNodeOrNull<Sprite2D>("Visuals");
+    }
+
+    private void UpdateCharacterAfterimages(float delta)
+    {
+        if (_characterVisual is null)
+            ResolveCharacterVisual();
+        if (_characterVisual is null)
+            return;
+
+        HashSet<(AfterimageKind Kind, int Index)> desired = [];
+        if (HasDoubleNotes())
+            desired.Add((AfterimageKind.Higan, 0));
+        if (_player?.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
+            desired.Add((AfterimageKind.DualLovers, 0));
+
+        int chaosCount = Math.Clamp(
+            (int)(_player?.Creature.GetPowerAmount<ChaosMagicPower>() ?? 0m),
+            0,
+            8);
+        for (int index = 0; index < chaosCount; index++)
+            desired.Add((AfterimageKind.ChaosMagic, index));
+
+        foreach ((AfterimageKind kind, int index) in desired)
+        {
+            if (_characterAfterimages.Any(state =>
+                    state.Kind == kind && state.Index == index))
+            {
+                continue;
+            }
+
+            _characterAfterimages.Add(CreateCharacterAfterimage(kind, index));
+        }
+
+        for (int listIndex = _characterAfterimages.Count - 1;
+             listIndex >= 0;
+             listIndex--)
+        {
+            CharacterAfterimage state = _characterAfterimages[listIndex];
+            bool active = desired.Contains((state.Kind, state.Index));
+            state.Visibility = Mathf.MoveToward(
+                state.Visibility,
+                active ? 1f : 0f,
+                delta * (active ? 3.1f : 4.8f));
+            if (!active && state.Visibility <= 0.001f)
+            {
+                state.Sprite.QueueFree();
+                _characterAfterimages.RemoveAt(listIndex);
+                continue;
+            }
+
+            UpdateCharacterAfterimage(state);
+        }
+    }
+
+    private CharacterAfterimage CreateCharacterAfterimage(
+        AfterimageKind kind,
+        int index)
+    {
+        ArgumentNullException.ThrowIfNull(_characterVisual);
+        Vector2 baseOffset = kind switch
+        {
+            AfterimageKind.Higan => new Vector2(-35f, 24f),
+            AfterimageKind.DualLovers => new Vector2(32f, 21f),
+            _ => Vector2.FromAngle(index * 2.23f + _random.RandfRange(-0.4f, 0.4f)) *
+                _random.RandfRange(24f, 43f) + Vector2.Down * 20f
+        };
+        baseOffset += new Vector2(
+            _random.RandfRange(-5f, 5f),
+            _random.RandfRange(-4f, 4f));
+
+        var sprite = new Sprite2D
+        {
+            Name = $"MgrAfterimage_{kind}_{index}",
+            Centered = _characterVisual.Centered,
+            TextureFilter = _characterVisual.TextureFilter,
+            ZIndex = -2 - _characterAfterimages.Count,
+            Visible = false
+        };
+        AddChild(sprite);
+        return new CharacterAfterimage
+        {
+            Kind = kind,
+            Index = index,
+            Sprite = sprite,
+            BaseOffset = baseOffset,
+            PhaseX = _random.RandfRange(0f, Mathf.Tau),
+            PhaseY = _random.RandfRange(0f, Mathf.Tau),
+            SpeedX = _random.RandfRange(0.46f, 1.02f),
+            SpeedY = _random.RandfRange(0.38f, 0.91f),
+            DriftRadius = new Vector2(
+                _random.RandfRange(5f, 14f),
+                _random.RandfRange(4f, 11f)),
+            ScaleMultiplier = _random.RandfRange(0.95f, 1.01f),
+            ColorPhase = _random.RandfRange(0f, 1f)
+        };
+    }
+
+    private void UpdateCharacterAfterimage(CharacterAfterimage state)
+    {
+        ArgumentNullException.ThrowIfNull(_characterVisual);
+        float time = (float)_elapsed;
+        Vector2 drift = new(
+            MathF.Sin(time * state.SpeedX + state.PhaseX) * state.DriftRadius.X,
+            MathF.Cos(time * state.SpeedY + state.PhaseY) * state.DriftRadius.Y);
+
+        // The animation state machine swaps the source Sprite2D texture every
+        // frame. Every independently drifting copy mirrors that exact texture,
+        // so multiple ability shadows stay frame-perfect while never sitting
+        // at precisely the same offset.
+        state.Sprite.Texture = _characterVisual.Texture;
+        state.Sprite.Position = _characterVisual.Position + state.BaseOffset + drift;
+        state.Sprite.Scale = _characterVisual.Scale * Vector2.One * state.ScaleMultiplier;
+        state.Sprite.Rotation = _characterVisual.Rotation;
+        state.Sprite.FlipH = _characterVisual.FlipH;
+        state.Sprite.FlipV = _characterVisual.FlipV;
+        state.Sprite.Modulate = GetAfterimageColor(state, time);
+        state.Sprite.Visible = state.Visibility > 0.005f;
+    }
+
+    private static Color GetAfterimageColor(
+        CharacterAfterimage state,
+        float time) => state.Kind switch
+    {
+        AfterimageKind.Higan =>
+            new Color(0.18f, 0.48f, 1f, state.Visibility * 0.40f),
+        AfterimageKind.DualLovers =>
+            new Color(1f, 0.22f, 0.30f, state.Visibility * 0.36f),
+        _ => Color.FromHsv(
+            Mathf.PosMod(state.ColorPhase + time * 0.085f, 1f),
+            0.68f,
+            1f,
+            state.Visibility * 0.20f)
+    };
+
+    private enum AfterimageKind
+    {
+        Higan,
+        DualLovers,
+        ChaosMagic
+    }
+
+    private sealed class CharacterAfterimage
+    {
+        public required AfterimageKind Kind;
+        public required int Index;
+        public required Sprite2D Sprite;
+        public required Vector2 BaseOffset;
+        public required float PhaseX;
+        public required float PhaseY;
+        public required float SpeedX;
+        public required float SpeedY;
+        public required Vector2 DriftRadius;
+        public required float ScaleMultiplier;
+        public required float ColorPhase;
+        public float Visibility;
+    }
+
     private bool HasPrismaticPower() =>
         _player?.Creature.GetPowerAmount<PrismaticPower>() > 0m;
 
@@ -324,7 +494,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             _canonSpinRemaining -= step;
         }
 
-        _canonFlash = Mathf.MoveToward(_canonFlash, 0f, delta * 1.55f);
+        _canonFlash = Mathf.MoveToward(_canonFlash, 0f, delta * 0.68f);
     }
 
     private void DrawCanonWheel(float intensity)
@@ -334,20 +504,20 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             return;
 
         Vector2 center = AuraCenter + CanonWheelOffset;
-        float pulse = 1f + _canonFlash * 0.055f;
+        float pulse = 1f + _canonFlash * 0.16f;
         float outerRadius = CanonWheelRadius * pulse;
         float rotation = _canonRotation;
 
         Color deepHalo = new Color("513268");
-        deepHalo.A = alpha * (0.075f + _canonFlash * 0.055f);
+        deepHalo.A = alpha * (0.075f + _canonFlash * 0.12f);
         DrawCircle(center, outerRadius * 1.04f, deepHalo);
 
         Color outer = new Color("d7c0ff");
-        outer.A = alpha * (0.30f + _canonFlash * 0.38f);
-        DrawArc(center, outerRadius, 0f, Mathf.Tau, 96, outer, 2.1f + _canonFlash * 1.8f, true);
+        outer.A = alpha * (0.30f + _canonFlash * 0.55f);
+        DrawArc(center, outerRadius, 0f, Mathf.Tau, 96, outer, 2.1f + _canonFlash * 3.2f, true);
 
         Color inner = new Color("87ddff");
-        inner.A = alpha * (0.20f + _canonFlash * 0.26f);
+        inner.A = alpha * (0.20f + _canonFlash * 0.38f);
         DrawArc(center, outerRadius * 0.72f, 0f, Mathf.Tau, 72, inner, 1.35f, true);
         DrawArc(center, outerRadius * 0.45f, 0f, Mathf.Tau, 56, outer, 1.05f, true);
 
@@ -509,27 +679,29 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         if (_satelliteVisibility <= 0.005f)
             return;
 
-        float phase = (float)_elapsed * 1.32f - 0.35f;
-        Vector2 orbitRadius = new(152f, 91f);
-        Vector2 position = AuraCenter + new Vector2(
-            MathF.Cos(phase) * orbitRadius.X,
-            MathF.Sin(phase) * orbitRadius.Y);
+        float time = (float)_elapsed;
+        float phase = time * _satelliteAngularSpeed + _satellitePhaseOffset;
+        Vector2 position = GetSatelliteOrbitPosition(phase, time);
         float depth = 0.5f + 0.5f * MathF.Sin(phase);
-        float size = Mathf.Lerp(8.5f, 13.5f, depth);
+        float pulse = 0.94f + 0.06f * MathF.Sin(time * 4.7f + _satelliteWobblePhase);
+        float size = Mathf.Lerp(15.5f, 22.5f, depth) * pulse;
         float alpha = _satelliteVisibility * intensity *
-            Mathf.Lerp(0.62f, 1f, depth);
+            Mathf.Lerp(0.72f, 1f, depth);
 
         // A short dotted trail makes the star read as an orbiting satellite
         // rather than another ambient twinkle.
         for (int index = 5; index >= 1; index--)
         {
-            float trailPhase = phase - index * 0.105f;
-            Vector2 trailPosition = AuraCenter + new Vector2(
-                MathF.Cos(trailPhase) * orbitRadius.X,
-                MathF.Sin(trailPhase) * orbitRadius.Y);
+            float trailPhase = phase - index * 0.13f;
+            Vector2 trailPosition = GetSatelliteOrbitPosition(
+                trailPhase,
+                time - index * 0.045f);
             Color trail = new Color("d8d2ff");
-            trail.A = alpha * (0.18f - index * 0.022f);
-            DrawCircle(trailPosition, MathF.Max(1.2f, size * (0.20f - index * 0.018f)), trail);
+            trail.A = alpha * (0.24f - index * 0.028f);
+            DrawCircle(
+                trailPosition,
+                MathF.Max(1.8f, size * (0.22f - index * 0.019f)),
+                trail);
         }
 
         Color halo = new Color("fff2a8");
@@ -542,16 +714,44 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
 
         Color ray = new Color("fff7cf");
         ray.A = alpha;
-        DrawLine(position - Vector2.Right * size * 1.75f, position + Vector2.Right * size * 1.75f, ray, 2.1f, true);
-        DrawLine(position - Vector2.Up * size * 1.75f, position + Vector2.Up * size * 1.75f, ray, 2.1f, true);
+        DrawLine(position - Vector2.Right * size * 1.75f, position + Vector2.Right * size * 1.75f, ray, 3.1f, true);
+        DrawLine(position - Vector2.Up * size * 1.75f, position + Vector2.Up * size * 1.75f, ray, 3.1f, true);
         Vector2 diagonal = new Vector2(0.72f, 0.72f) * size;
-        DrawLine(position - diagonal, position + diagonal, ray, 1.25f, true);
+        DrawLine(position - diagonal, position + diagonal, ray, 1.8f, true);
         diagonal.X *= -1f;
-        DrawLine(position - diagonal, position + diagonal, ray, 1.25f, true);
+        DrawLine(position - diagonal, position + diagonal, ray, 1.8f, true);
 
         Color core = Colors.White;
         core.A = alpha;
         DrawCircle(position, size * 0.34f, core);
+    }
+
+    private void RandomizeSatelliteOrbit()
+    {
+        _satelliteOrbitRadius = new Vector2(
+            _random.RandfRange(170f, 216f),
+            _random.RandfRange(98f, 142f));
+        _satelliteOrbitTilt = _random.RandfRange(-0.42f, 0.42f);
+        _satelliteAngularSpeed = _random.RandfRange(1.9f, 2.45f);
+        _satellitePhaseOffset = _random.RandfRange(0f, Mathf.Tau);
+        _satelliteWobblePhase = _random.RandfRange(0f, Mathf.Tau);
+    }
+
+    private Vector2 GetSatelliteOrbitPosition(float phase, float time)
+    {
+        // The radius and tilt breathe at deliberately different low
+        // frequencies. The star still clearly orbits MGR, but no two combat
+        // instances trace the same mechanical ellipse.
+        float radiusX = _satelliteOrbitRadius.X *
+            (1f + 0.10f * MathF.Sin(time * 0.53f + _satelliteWobblePhase));
+        float radiusY = _satelliteOrbitRadius.Y *
+            (1f + 0.14f * MathF.Cos(time * 0.41f + _satelliteWobblePhase * 0.73f));
+        float tilt = _satelliteOrbitTilt +
+            0.11f * MathF.Sin(time * 0.34f + _satelliteWobblePhase);
+        Vector2 local = new(
+            MathF.Cos(phase) * radiusX,
+            MathF.Sin(phase) * radiusY);
+        return AuraCenter + local.Rotated(tilt);
     }
 
     private void RandomizeStar(AmbientStar star, bool startAtRandomAge)

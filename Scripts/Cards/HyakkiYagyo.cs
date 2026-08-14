@@ -51,6 +51,9 @@ public sealed class HyakkiYagyo : MgrCard
             await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
     }
 
-    protected override void OnUpgrade() =>
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(2m);
         DynamicVars["NotesPerEnemy"].UpgradeValueBy(1m);
+    }
 }

@@ -27,7 +27,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_STRIKE.title": "Maguro Strike",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_STRIKE.description": "Deal {Damage:diff()} damage and generate {Notes:diff()} additional Attack Note(s). If a Chord was performed this turn, repeat this effect once.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.title": "Maguro Cleave",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.description": "Deal {Damage:diff()} damage to ALL enemies. Deal {BonusPerChord:diff()} additional damage for each Chord performed this turn.",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.description": "Deal {CalculatedDamage:diff()} damage to ALL enemies. Deal {ExtraDamage:diff()} additional damage for each Chord performed this turn.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_TINY_STAR_IMPACT.title": "Tiny Star Impact",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_TINY_STAR_IMPACT.description": "Deal {Damage:diff()} damage to ALL enemies.",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_REHEARSAL.title": "Rehearsal",

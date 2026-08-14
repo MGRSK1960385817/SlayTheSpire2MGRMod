@@ -28,6 +28,13 @@ public sealed class Finale : MgrCard
         CardModel[] discarded = PileType.Hand.GetPile(Owner).Cards.ToArray();
         await CardCmd.Discard(choiceContext, discarded);
 
+        if (discarded.Length >= 6)
+        {
+            await MgrAttackVfx.PlayGrandFinaleFlourish(
+                Owner.Creature,
+                CombatState?.HittableEnemies ?? []);
+        }
+
         int notes = discarded.Length * DynamicVars["NotesPerCard"].IntValue;
         for (int index = 0; index < notes; index++)
             await ChannelNote(choiceContext, NoteKind.Attack);

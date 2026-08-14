@@ -134,6 +134,8 @@ public static class MgrVisualTuning
         public const double OmniaNoteShapeSeconds = 0.30;
         public const float OmniaNoteRainbowSpeed = 0.22f;
         public const float OmniaNoteRainbowFrequency = 1.35f;
+        public const float OmniaNoteSparkSeconds = 0.10f;
+        public const int OmniaNoteMaximumSparks = 14;
     }
 
     public static class Performances
@@ -330,5 +332,24 @@ public static class MgrVisualTuning
         public const float TrailDelay = 0.035f;
         public const float FadeStartFraction = 0.58f;
         public const int ZIndex = 175;
+    }
+
+    public static class StarryNoteVfx
+    {
+        public const int MinimumStarsPerNote = 2;
+        public const int MaximumStarsPerNote = 4;
+        public const int ZIndex = 190;
+    }
+
+    public static class SpringStormVfx
+    {
+        public const float Opacity = 0.68f;
+        public const float FlashHoldSeconds = 0.18f;
+        public const float ShakeAmplitude = 7f;
+        public const float ShakeTargetSeconds = 0.045f;
+        public const float ShakeSmoothing = 24f;
+        public const float DrawPadding = 16f;
+        public const float FadeOutSeconds = 0.20f;
+        public const int ZIndex = 20;
     }
 }

@@ -35,12 +35,17 @@ public sealed class CubicPrism : MgrCard
         if (_performanceX <= 0 || combatState.HittableEnemies.Count == 0)
             return;
 
+        int damageAndHits = checked(_performanceX + (IsUpgraded ? 1 : 0));
+        float beamScale = Math.Clamp(
+            0.24f + MathF.Sqrt(damageAndHits) * 0.25f,
+            0.32f,
+            1.75f);
         await MgrAttackVfx.PlaySweepingBeam(
             this,
             Owner.Creature,
             combatState.HittableEnemies.ToList(),
-            MgrAttackVfx.StarPurple);
-        int damageAndHits = checked(_performanceX + (IsUpgraded ? 1 : 0));
+            MgrAttackVfx.StarPurple,
+            beamScale);
         await DamageCmd.Attack(damageAndHits)
             .WithHitCount(damageAndHits)
             .FromCard(this, cardPlay)

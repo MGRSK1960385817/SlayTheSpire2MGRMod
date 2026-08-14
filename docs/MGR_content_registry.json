@@ -664,7 +664,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后每名敌人生成2个。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后伤害变为12点且每名敌人生成2个。"
     },
     {
       "codeName": "ElectricAngel",
@@ -857,18 +857,25 @@
   ],
   "potions": [
     {
-      "codeName": "FortePotion",
-      "name": "强音药水",
+      "codeName": "BottledNotePotion",
+      "name": "瓶装音符",
       "status": 1,
       "rarity": "Common",
-      "summary": "仅属于MGR药水池；获得2层强音；暂时复用原版集中药水图像。"
+      "summary": "仅属于MGR药水池；随机生成16个基础音符；暂时复用原版星星药水图像。"
     },
     {
-      "codeName": "ImprovisationPotion",
-      "name": "即兴药水",
+      "codeName": "ThroatLozengePotion",
+      "name": "润喉糖",
+      "status": 1,
+      "rarity": "Rare",
+      "summary": "仅属于MGR药水池；获得1层强音；暂时复用原版集中药水图像。"
+    },
+    {
+      "codeName": "StageSoulPotion",
+      "name": "舞台之魂",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "仅属于MGR药水池；随机生成4个基础音符；暂时复用原版星星药水图像。"
+      "summary": "仅属于MGR药水池；将所有手牌加入演奏队列；暂时复用原版瓶装幽灵图像。"
     }
   ]
 }

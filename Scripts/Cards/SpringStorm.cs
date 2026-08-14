@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -38,6 +39,7 @@ public sealed class SpringStorm : MgrCard
             amount,
             Owner.Creature,
             this);
+        MgrSpringStormVfx.Show(Owner);
     }
 
     protected override void OnUpgrade()

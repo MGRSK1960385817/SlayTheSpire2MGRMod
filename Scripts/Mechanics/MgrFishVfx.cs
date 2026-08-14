@@ -16,7 +16,7 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public sealed partial class MgrFishVfx : Node2D
 {
     private const string TexturePath =
-        $"{Entry.ResPath}/images/characters/fish.png";
+        $"{Entry.ResPath}/images/vfx/fish.png";
 
     private readonly List<FishLayer> _layers = [];
     private Vector2 _travelOffset;

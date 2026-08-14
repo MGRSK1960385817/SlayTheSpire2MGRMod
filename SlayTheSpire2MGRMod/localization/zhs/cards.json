@@ -27,7 +27,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_STRIKE.title": "金枪鱼打击",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_STRIKE.description": "造成{Damage:diff()}点伤害。\n生成{Notes:diff()}个[gold]攻击音符[/gold]。\n若本回合触发过[gold]和弦[/gold]，重复一次。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.title": "金枪鱼横斩",
-  "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.description": "对所有敌人造成{Damage:diff()}点伤害。\n本回合每触发一次[gold]和弦[/gold]，伤害增加{BonusPerChord:diff()}点。",
+  "SLAY_THE_SPIRE2_MGR_MOD_CARD_MAGURO_CLEAVE.description": "对所有敌人造成{CalculatedDamage:diff()}点伤害。\n本回合每触发一次[gold]和弦[/gold]，伤害增加{ExtraDamage:diff()}点。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_TINY_STAR_IMPACT.title": "幼星冲击",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_TINY_STAR_IMPACT.description": "对所有敌人造成{Damage:diff()}点伤害。",
   "SLAY_THE_SPIRE2_MGR_MOD_CARD_REHEARSAL.title": "预演",

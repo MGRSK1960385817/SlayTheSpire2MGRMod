@@ -72,6 +72,7 @@ public sealed class SweetMagic : MgrCard
             Owner.Creature,
             MgrAbilityVfxStyle.Neon,
             0.82f);
+        MgrSignatureVfx.SpawnCelebrationStars(Owner.Creature);
         await PowerCmd.Apply<FortePower>(
             choiceContext,
             Owner.Creature,

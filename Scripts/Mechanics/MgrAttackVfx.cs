@@ -24,6 +24,7 @@ public static class MgrAttackVfx
     public static readonly Color DefaultFireTint = new("ff8b57");
     public static readonly Color StarPurple = new("c88cff");
     public static readonly Color StarGold = new("ffd27a");
+    public static readonly Color FlyingSlashBlue = new("62b8ff");
     public static readonly Color CursePurple = new("67265f");
     public static readonly Color CurseDarkRed = new("6f1728");
 
@@ -157,6 +158,44 @@ public static class MgrAttackVfx
             tint,
             scale);
 
+    public static Node2D? CreateFlyingSlash(
+        Creature target,
+        Color tint,
+        float scale = 1f,
+        bool reverse = false)
+    {
+        Node2D? vfx = CreateTintedSceneAtTarget(
+            target,
+            VfxCmd.flyingSlashPath,
+            tint,
+            scale);
+        if (vfx is not null && reverse)
+            vfx.Scale = new Vector2(-MathF.Abs(vfx.Scale.X), vfx.Scale.Y);
+        return vfx;
+    }
+
+    public static async Task PlayGrandFinaleFlourish(
+        Creature performer,
+        IEnumerable<Creature> targets)
+    {
+        if (TestMode.IsOn || NCombatRoom.Instance is not { } room)
+            return;
+
+        NGrandFinaleVfx? anticipation = NGrandFinaleVfx.Create(performer);
+        if (anticipation is not null)
+        {
+            room.CombatVfxContainer.AddChildSafely(anticipation);
+            await Cmd.Wait(NGrandFinaleVfx.totalAnticipationDuration);
+        }
+
+        foreach (Creature target in targets.Where(target => target.IsAlive))
+        {
+            NGrandFinaleImpactVfx? impact = NGrandFinaleImpactVfx.Create(target);
+            if (impact is not null)
+                room.CombatVfxContainer.AddChildSafely(impact);
+        }
+    }
+
     public static MgrGunshotVfx? CreateGunshot(
         Creature attacker,
         Creature target,
@@ -201,7 +240,8 @@ public static class MgrAttackVfx
     public static async Task PlayLargeMagicMissile(
         CardModel sourceCard,
         Creature target,
-        Color tint)
+        Color tint,
+        float scale = 1f)
     {
         NCreature? creatureNode = NCombatRoom.Instance?.GetCreatureNode(target);
         if (creatureNode is null || NCombatRoom.Instance is null)
@@ -213,6 +253,8 @@ public static class MgrAttackVfx
         if (vfx is null)
             return;
 
+        vfx.Scale *= Math.Max(0.01f, scale);
+
         NCombatRoom.Instance.CombatVfxContainer.AddChildSafely(vfx);
         await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
             sourceCard,
@@ -223,7 +265,8 @@ public static class MgrAttackVfx
         CardModel sourceCard,
         Creature attacker,
         List<Creature> targets,
-        Color tint)
+        Color tint,
+        float particleSizeScale = 1f)
     {
         if (targets.Count == 0 || NCombatRoom.Instance is null)
             return;
@@ -235,10 +278,34 @@ public static class MgrAttackVfx
         // Root modulation colors the beam body. The original impact sparks keep
         // a small amount of their native blue, producing a purple-blue prism.
         vfx.Modulate = tint;
+        ScaleParticleSprites(vfx, Math.Max(0.12f, particleSizeScale));
         NCombatRoom.Instance.CombatVfxContainer.AddChildSafely(vfx);
         await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
             sourceCard,
             0.38f));
+    }
+
+    private static void ScaleParticleSprites(Node root, float scale)
+    {
+        foreach (Node node in root.FindChildren(
+                     "*",
+                     "GPUParticles2D",
+                     recursive: true,
+                     owned: false))
+        {
+            if (node is not GpuParticles2D particles ||
+                particles.ProcessMaterial is not ParticleProcessMaterial source)
+            {
+                continue;
+            }
+
+            // Duplicate each material before modifying it: cached vanilla scene
+            // resources may be shared by later effects and must stay untouched.
+            var material = (ParticleProcessMaterial)source.Duplicate();
+            material.ScaleMin *= scale;
+            material.ScaleMax *= scale;
+            particles.ProcessMaterial = material;
+        }
     }
 
     private static Node2D? CreateTintedSceneAtTarget(

@@ -4,7 +4,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using Godot;
 using SlayTheSpire2MGRMod.Characters;
+using SlayTheSpire2MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
@@ -30,11 +32,14 @@ public sealed class WhiteSouthWind : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        MgrSignatureVfx.PlayWhirlwindWind(
+            new Color(0.78f, 0.94f, 1f, 0.72f));
         CardModel[] cards = PileType.Hand.GetPile(Owner).Cards.ToArray();
         foreach (CardModel card in cards)
+        {
+            await CardCmd.Discard(choiceContext, card);
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-
-        await CardCmd.Discard(choiceContext, cards);
+        }
     }
 
     protected override void OnUpgrade() =>

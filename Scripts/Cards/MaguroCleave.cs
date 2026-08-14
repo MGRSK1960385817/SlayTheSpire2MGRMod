@@ -18,8 +18,13 @@ public sealed class MaguroCleave : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
-        new IntVar("BonusPerChord", 3m)
+        new CalculationBaseVar(6m),
+        new ExtraDamageVar(3m),
+        new CalculatedDamageVar(ValueProp.Move)
+            .WithMultiplier(static (card, _) =>
+                card is MaguroCleave cleave
+                    ? cleave.NoteState.ChordsResolvedThisTurn
+                    : 0m)
     ];
 
     public MaguroCleave() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
@@ -31,11 +36,10 @@ public sealed class MaguroCleave : MgrCard
         if (CombatState is not { } combatState)
             return;
 
-        decimal damage = DynamicVars.Damage.BaseValue +
-            DynamicVars["BonusPerChord"].BaseValue * NoteState.ChordsResolvedThisTurn;
+        decimal damage = DynamicVars.CalculatedDamage.Calculate(null);
         float vfxScale = MgrAttackVfx.ScaleByDamage(
             damage,
-            DynamicVars.Damage.BaseValue,
+            DynamicVars.CalculationBase.BaseValue,
             baseScale: 0.9f,
             growthPerDoubling: 0.35f,
             maxScale: 1.75f);
@@ -43,7 +47,7 @@ public sealed class MaguroCleave : MgrCard
         foreach (var target in combatState.HittableEnemies)
             MgrAttackVfx.SpawnFishRush(Owner.Creature, target, vfxScale * 0.78f);
 
-        await DamageCmd.Attack(damage)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .WithHitVfxNode(target => MgrAttackVfx.CreateHorizontalSlash(
@@ -56,6 +60,6 @@ public sealed class MaguroCleave : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.CalculationBase.UpgradeValueBy(3m);
     }
 }

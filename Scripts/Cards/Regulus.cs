@@ -36,7 +36,16 @@ public sealed class Regulus : MgrCard
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_starry_impact")
+            .WithHitVfxNode(target => MgrAttackVfx.CreateGunshot(
+                Owner.Creature,
+                target,
+                MgrAttackVfx.StarGold,
+                0.62f))
+            .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
+                target,
+                MgrAttackVfx.StarGold,
+                0.72f))
+            .WithHitFx(null, null, "blunt_attack.mp3")
             .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }

@@ -14,10 +14,10 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Potions;
 
-[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "forte_potion")]
-public sealed class FortePotion : MgrPotion
+[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "throat_lozenge_potion")]
+public sealed class ThroatLozengePotion : MgrPotion
 {
-    public override PotionRarity Rarity => PotionRarity.Common;
+    public override PotionRarity Rarity => PotionRarity.Rare;
     public override TargetType TargetType => TargetType.Self;
 
     // Temporary art: the Defect's Focus Potion.
@@ -26,7 +26,7 @@ public sealed class FortePotion : MgrPotion
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<FortePower>(2m)
+        new PowerVar<FortePower>(1m)
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

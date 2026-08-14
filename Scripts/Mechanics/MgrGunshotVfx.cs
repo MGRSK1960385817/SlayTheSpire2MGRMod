@@ -15,6 +15,7 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public sealed partial class MgrGunshotVfx : Node2D
 {
     private Vector2 _targetOffset;
+    private Vector2[] _tracerPoints = [];
     private Color _tint;
     private float _effectScale = 1f;
     private Tween? _tween;
@@ -45,6 +46,7 @@ public sealed partial class MgrGunshotVfx : Node2D
 
     public override void _Ready()
     {
+        _tracerPoints = BuildTracerCurve();
         AddTracer(_tint with { A = 0.22f }, 16f * _effectScale);
         AddTracer(_tint with { A = 0.85f }, 5f * _effectScale);
         AddTracer(Colors.White with { A = 0.95f }, 1.8f * _effectScale);
@@ -59,7 +61,7 @@ public sealed partial class MgrGunshotVfx : Node2D
     {
         AddChild(new Line2D
         {
-            Points = [Vector2.Zero, _targetOffset],
+            Points = _tracerPoints,
             Width = width,
             DefaultColor = color,
             Antialiased = true,
@@ -67,6 +69,55 @@ public sealed partial class MgrGunshotVfx : Node2D
             EndCapMode = Line2D.LineCapMode.Round
         });
     }
+
+    /// <summary>
+    /// Builds one deliberately asymmetric cubic arc for this shot. The broad
+    /// Bézier bend keeps repeated shots separated, while a smaller two-lobed
+    /// normal displacement prevents the trajectory from reading as a tidy,
+    /// mirrored parabola. Both end points remain exact, so the muzzle and hit
+    /// flashes still line up with their creatures.
+    /// </summary>
+    private Vector2[] BuildTracerCurve()
+    {
+        const int segments = 26;
+        var points = new Vector2[segments + 1];
+        float distance = Math.Max(1f, _targetOffset.Length());
+        Vector2 direction = _targetOffset / distance;
+        Vector2 normal = new(-direction.Y, direction.X);
+        float sign = Random.Shared.Next(2) == 0 ? -1f : 1f;
+        float arcHeight = sign * RandomRange(
+            Math.Min(52f, distance * 0.10f),
+            Math.Min(168f, Math.Max(74f, distance * 0.27f)));
+        float secondBend = arcHeight * RandomRange(-0.48f, 0.84f);
+        Vector2 controlA = _targetOffset * RandomRange(0.18f, 0.34f) +
+            normal * arcHeight;
+        Vector2 controlB = _targetOffset * RandomRange(0.62f, 0.82f) +
+            normal * secondBend;
+        float ripple = Math.Min(42f, distance * RandomRange(0.025f, 0.065f));
+        float ripplePhase = RandomRange(-1.1f, 1.1f);
+
+        for (int index = 0; index <= segments; index++)
+        {
+            float t = index / (float)segments;
+            float inverse = 1f - t;
+            Vector2 cubic =
+                3f * inverse * inverse * t * controlA +
+                3f * inverse * t * t * controlB +
+                t * t * t * _targetOffset;
+            float endpointEnvelope = MathF.Sin(MathF.PI * t);
+            float unevenWave = MathF.Sin(
+                t * MathF.PI * 2.35f + ripplePhase) *
+                endpointEnvelope * ripple;
+            points[index] = cubic + normal * unevenWave;
+        }
+
+        points[0] = Vector2.Zero;
+        points[^1] = _targetOffset;
+        return points;
+    }
+
+    private static float RandomRange(float minimum, float maximum) =>
+        Mathf.Lerp(minimum, maximum, Random.Shared.NextSingle());
 
     private void AddFlash(Vector2 position, float radius)
     {

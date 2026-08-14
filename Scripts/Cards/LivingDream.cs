@@ -17,6 +17,15 @@ public sealed class LivingDream : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner.Creature,
+            MgrAbilityVfxStyle.Mirage,
+            1.04f);
+        MgrAbilityVfx.SpawnCastBurst(
+            Owner.Creature,
+            MgrAbilityVfxStyle.Galaxy,
+            0.72f);
+
         IReadOnlyList<MgrNote> notes = MgrNoteSystem.RemoveAllNotes(Owner);
         foreach (MgrNote note in notes)
         {
