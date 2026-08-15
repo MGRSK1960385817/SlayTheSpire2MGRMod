@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -15,7 +16,7 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 public static class MgrDiscardPresentation
 {
-    private const float ReadablePauseSeconds = 0.24f;
+    private const float ReadablePauseSeconds = 0.38f;
 
     public static async Task DiscardWithPreview(
         PlayerChoiceContext choiceContext,
@@ -29,18 +30,39 @@ public static class MgrDiscardPresentation
 
         if (NPlayerHand.Instance is { } hand)
         {
-            foreach (CardModel card in discardCards)
+            var highlighted = new List<(NCardHighlight Node, Color OriginalColor)>();
+            try
             {
-                if (hand.GetCard(card) is not { } cardNode)
-                    continue;
+                foreach (CardModel card in discardCards)
+                {
+                    if (hand.GetCard(card) is not { } cardNode)
+                        continue;
 
-                cardNode.CardHighlight.Modulate = NCardHighlight.red;
-                cardNode.CardHighlight.AnimFlash();
+                    NCardHighlight highlight = cardNode.CardHighlight;
+                    highlighted.Add((highlight, highlight.Modulate));
+                    highlight.Modulate = NCardHighlight.red;
+                    highlight.AnimFlash();
+                }
+
+                // Let the newly drawn cards settle and the red flash become
+                // unmistakable before the native parallel discard begins.
+                await Cmd.Wait(ReadablePauseSeconds);
             }
+            finally
+            {
+                // Hand holders and highlights are pooled. Leaving the red
+                // modulation behind makes unrelated cards glow red when those
+                // nodes are reused later, so always restore both color and
+                // shader width before cards leave the hand.
+                foreach ((NCardHighlight highlight, Color originalColor) in highlighted)
+                {
+                    if (!GodotObject.IsInstanceValid(highlight))
+                        continue;
 
-            // Let the newly drawn cards settle and the red flash become visible
-            // before the native parallel flight to the discard pile begins.
-            await Cmd.Wait(ReadablePauseSeconds);
+                    highlight.AnimHideInstantly();
+                    highlight.Modulate = originalColor;
+                }
+            }
         }
 
         // Scrape uses this bulk overload. Besides moving all selected cards in

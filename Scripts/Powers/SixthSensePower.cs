@@ -15,6 +15,7 @@ public sealed class SixthSensePower : ModPowerTemplate
 {
     private const int CardsPerStack = 2;
     private const int RequiredCost = 1;
+    private const float PostHandDrawPauseSeconds = 0.5f;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -34,6 +35,15 @@ public sealed class SixthSensePower : ModPowerTemplate
         if (cardCount == 0)
             return;
 
+        // AfterPlayerTurnStart runs after Tower 2's ordinary hand draw. Leave
+        // a short visual beat so the starting hand settles before this power's
+        // additional cards enter it.
+        await Cmd.Wait(PostHandDrawPauseSeconds);
+
+        // PowerModel.Flash is Tower 2's native triggered-power presentation:
+        // besides flashing the power bar entry, it raises this power's BigIcon
+        // over its owner. Keep it immediately before the additional draw so
+        // the source of those cards is unambiguous.
         Flash();
         MgrAbilityVfx.SpawnCastBurst(
             Owner,

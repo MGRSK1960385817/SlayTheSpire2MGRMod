@@ -14,7 +14,8 @@ public sealed class LittleParade : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 4m)
+        new IntVar("Performance", 4m),
+        new IntVar("Notes", 1m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
@@ -25,12 +26,15 @@ public sealed class LittleParade : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ChannelNote(choiceContext, NoteKind.Attack);
-        await ChannelNote(choiceContext, NoteKind.Skill);
+        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
+        {
+            await ChannelNote(choiceContext, NoteKind.Attack);
+            await ChannelNote(choiceContext, NoteKind.Skill);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(2m);
+        DynamicVars["Notes"].UpgradeValueBy(1m);
     }
 }

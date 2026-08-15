@@ -4,6 +4,8 @@ namespace SlayTheSpire2MGRMod.Characters;
 
 internal static class MgrAudio
 {
+    private const float CharacterSelectVolumeMultiplier = 0.8f;
+
     // Character profiles require an event-like identifier. Selection call sites route
     // this private sentinel to the packed OGG through RitsuLib's resource backend.
     internal const string CharacterSelectSfx = "mgr://audio/character_select";
@@ -14,14 +16,20 @@ internal static class MgrAudio
 
     internal static void PlayCharacterSelect(float volume = 1f)
     {
+        float effectiveVolume = Math.Clamp(
+            volume * CharacterSelectVolumeMultiplier,
+            0f,
+            1f);
         AudioPlayResult result = PlayResource(
             CharacterSelectResource,
             "MGR character select",
-            volume,
+            effectiveVolume,
             AudioLifecycleScope.Screen);
 
         if (!result.Succeeded)
-            GameFmod.Studio.PlayOneShot("event:/sfx/characters/silent/silent_select", volume);
+            GameFmod.Studio.PlayOneShot(
+                "event:/sfx/characters/silent/silent_select",
+                effectiveVolume);
     }
 
     internal static void PlayNoteChannel(float volume = 0.2f) =>

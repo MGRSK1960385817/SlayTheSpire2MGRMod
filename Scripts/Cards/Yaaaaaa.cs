@@ -50,7 +50,7 @@ public sealed class Yaaaaaa : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx(VfxCmd.flyingSlashPath)
+            .WithHitFx(VfxCmd.bluntPath, null, "blunt_attack.mp3")
             .Execute(choiceContext);
 
         IEnumerable<CardModel> drawn = await CardPileCmd.Draw(

@@ -16,7 +16,7 @@ public sealed class NoteMagic : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move),
+        new BlockVar(7m, ValueProp.Move),
         new IntVar("Copies", 1m)
     ];
 
@@ -37,6 +37,10 @@ public sealed class NoteMagic : MgrCard
             DynamicVars["Copies"].IntValue);
     }
 
-    protected override void OnUpgrade() =>
+    protected override void OnUpgrade()
+    {
         DynamicVars["Copies"].UpgradeValueBy(1m);
+        DynamicVars.Block.UpgradeValueBy(1m);
+    }
+        
 }

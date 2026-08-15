@@ -31,5 +31,5 @@ public sealed class CanonForm : MgrCard
             Owner.PlayerCombatState!.TurnNumber);
     }
 
-    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

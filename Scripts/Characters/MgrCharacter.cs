@@ -22,7 +22,7 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
     public override Color EnergyLabelOutlineColor => new(0.32f, 0.08f, 0.02f);
     public override Color MapDrawingColor => ThemeColor;
     public override CharacterGender Gender => CharacterGender.Feminine;
-    public override int StartingHp => 66;
+    public override int StartingHp => 67;
     public override int StartingGold => 114;
 
     public override CharacterAssetProfile AssetProfile => MgrCharacterAssets.Profile;

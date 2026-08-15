@@ -20,7 +20,7 @@ public sealed class Sacrifice : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move)
+        new BlockVar(6m, ValueProp.Move)
     ];
 
     public Sacrifice() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)

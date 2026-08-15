@@ -13,7 +13,7 @@ public sealed class MindMirage : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("BlockPerNote", 3m)
+        new IntVar("BlockPerNote", 4m)
     ];
 
     public MindMirage() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
