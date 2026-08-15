@@ -1,8 +1,8 @@
 {
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTE_POTION.title": "Bottled Note",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTE_POTION.description": "Generate [blue]{Notes}[/blue] random [gold]Basic Notes[/gold].",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_THROAT_LOZENGE_POTION.title": "Throat Lozenge",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_THROAT_LOZENGE_POTION.description": "Gain [blue]{FortePower}[/blue] [gold]Forte[/gold].",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_STAGE_SOUL_POTION.title": "Stage Soul",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_STAGE_SOUL_POTION.description": "Move all cards in your [gold]Hand[/gold] to the [gold]Performance[/gold] queue."
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTES.title": "Bottled Notes",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTES.description": "Generate [blue]{Notes}[/blue] random [gold]Basic Notes[/gold].",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_LOZENGE.title": "Lozenge",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_LOZENGE.description": "Gain [blue]{FortePower}[/blue] [gold]Forte[/gold].",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_SOUL_OF_STAGE.title": "Stage Soul",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_SOUL_OF_STAGE.description": "Move all cards in your [gold]Hand[/gold] to the [gold]Performance[/gold] queue."
 }

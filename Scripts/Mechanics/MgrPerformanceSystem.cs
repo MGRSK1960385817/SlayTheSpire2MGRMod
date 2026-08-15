@@ -291,7 +291,8 @@ public static class MgrPerformanceSystem
     /// </summary>
     public static async Task<MgrPerformanceEntry> EnqueueGeneratedCard(
         Player player,
-        CardModel card)
+        CardModel card,
+        bool previewBeforeEnqueue = false)
     {
         ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(card);
@@ -316,6 +317,8 @@ public static class MgrPerformanceSystem
         }
 
         MgrPerformanceVisuals.Show(player, state.Entries);
+        if (previewBeforeEnqueue)
+            await MgrPerformanceVisuals.PlayGeneratedEntryAnimation(player, entry);
         return entry;
     }
 

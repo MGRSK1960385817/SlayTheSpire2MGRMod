@@ -26,7 +26,7 @@ public sealed class Masterful : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move),
+        new BlockVar(6m, ValueProp.Move),
         new PowerVar<StrengthPower>(1m),
         new PowerVar<DexterityPower>(1m)
     ];

@@ -176,7 +176,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "造成5点伤害，本场战斗每触发一次和弦增加1点；作为尾音时伤害翻倍；升级后基础伤害增加至6点。"
+      "summary": "造成伤害，本场战斗每触发一次和弦增加1点；作为尾音时伤害翻倍；升级后基础伤害与每次和弦的伤害增量均增加1点。"
     },
     {
       "codeName": "WarmUp",
@@ -192,7 +192,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Rare",
-      "summary": "2费；将所有手牌转化为音符，每张获得5点格挡；消耗；升级后获得保留。"
+      "summary": "2费；将所有手牌转化为音符，每张获得4（5）点格挡；消耗；升级后同时获得保留。"
     },
     {
       "codeName": "Resonate",
@@ -267,12 +267,12 @@
       "summary": "1费技能，演奏2（升级后3）；先抽1张牌，再随机将1张费用最低的手牌转化为音符；诅咒与状态同费时优先诅咒；消耗。"
     },
     {
-      "codeName": "LittleMiracles",
+      "codeName": "EverydayMiracles",
       "name": "点滴奇迹",
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费，演奏3；起音时随机生成3个基础音符；尾音时演奏+1，升级后改为演奏+2。"
+      "summary": "0费，演奏3；起音时随机生成3（4）个基础音符；尾音时演奏+1，升级后改为演奏+2。"
     },
     {
       "codeName": "Regulus",
@@ -419,12 +419,12 @@
       "summary": "1费白卡星空技能；自行选择并丢弃2张手牌，生成1个星空音符；升级后获得保留。"
     },
     {
-      "codeName": "Finale",
-      "name": "终曲",
+      "codeName": "NeoNeon",
+      "name": "霓虹霓虹",
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "1费虚无攻击，丢弃所有手牌并为每张生成2个攻击音符；升级后每张生成3个。"
+      "summary": "0费蓝卡攻击，演奏1；造成3（5）点伤害；生成攻击、技能和能力音符各一个。"
     },
     {
       "codeName": "HeatAbnormal",
@@ -664,7 +664,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符；升级后伤害变为12点且每名敌人生成2个。"
+      "summary": "2费金卡攻击；对所有敌人造成10点伤害，每命中一名敌人生成1个诅咒音符，并将一张随机诅咒加入弃牌堆；升级后伤害变为12点且每名敌人生成2个。"
     },
     {
       "codeName": "ElectricAngel",
@@ -688,7 +688,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，获得3点格挡；战斗中实时显示格挡总量。"
+      "summary": "1费白卡攻击；造成6（9）点伤害；目标每有一种不同负面状态，抽1张牌；战斗中实时显示抽牌总数。"
     },
     {
       "codeName": "SweetMagic",
@@ -720,7 +720,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费蓝卡能力；每当一个攻击音符被和弦消耗，获得1点活力；重复和弦会重复计算；升级后生成3个攻击音符。"
+      "summary": "1费蓝卡能力；虚无；每当一个攻击音符被和弦消耗，获得1点活力；重复和弦会重复计算；升级后移除虚无。"
     },
     {
       "codeName": "Manimani",
@@ -728,7 +728,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
-      "summary": "3（升级后2）费金卡攻击，消耗；造成12点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；瞄准可斩杀目标时切换插图与文本。"
+      "summary": "2费金卡攻击，消耗；造成10（15）点伤害。斩杀非爪牙敌人时，将其本场战斗对你造成的穿透格挡攻击伤害永久附加到此牌；瞄准可斩杀目标时切换插图与文本。"
     },
     {
       "codeName": "LeaveItToMe",
@@ -838,7 +838,7 @@
       "name": "苍白花",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "战斗开始时，将1张未升级的苍白置入手牌。"
+      "summary": "战斗开始时，将1张苍白+置入手牌。"
     },
     {
       "codeName": "Maguroyaki",
@@ -857,25 +857,25 @@
   ],
   "potions": [
     {
-      "codeName": "BottledNotePotion",
+      "codeName": "BottledNotes",
       "name": "瓶装音符",
       "status": 1,
       "rarity": "Common",
-      "summary": "仅属于MGR药水池；随机生成16个基础音符；暂时复用原版星星药水图像。"
+      "summary": "仅属于MGR药水池；随机生成16个基础音符；图片为images/potion/BottledNotes.png。"
     },
     {
-      "codeName": "ThroatLozengePotion",
+      "codeName": "Lozenge",
       "name": "润喉糖",
       "status": 1,
-      "rarity": "Rare",
-      "summary": "仅属于MGR药水池；获得1层强音；暂时复用原版集中药水图像。"
+      "rarity": "Uncommon",
+      "summary": "仅属于MGR药水池；获得1层强音；图片为images/potion/Lozenge.png。"
     },
     {
-      "codeName": "StageSoulPotion",
+      "codeName": "SoulOfStage",
       "name": "舞台之魂",
       "status": 1,
-      "rarity": "Uncommon",
-      "summary": "仅属于MGR药水池；将所有手牌加入演奏队列；暂时复用原版瓶装幽灵图像。"
+      "rarity": "Rare",
+      "summary": "仅属于MGR药水池；将所有手牌加入演奏队列；图片为images/potion/SoulOfStage.png。"
     }
   ]
 }

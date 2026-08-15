@@ -11,6 +11,6 @@ public sealed class SamsaraPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/Samsara.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/Samsara.png");
+        IconPath: $"{Entry.ResPath}/images/powers/SamsaraPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/SamsaraPower.png");
 }

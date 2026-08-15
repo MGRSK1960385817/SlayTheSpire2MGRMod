@@ -7,6 +7,7 @@
 [node name="MgrCharacter" type="Node2D"]
 
 [node name="GroundShadow" type="Node2D" parent="."]
+z_index = -1
 position = Vector2(-20, 0)
 scale = Vector2(0.92, 0.92)
 script = ExtResource("2_shadow")
@@ -30,11 +31,12 @@ polygon = PackedVector2Array(-108, 0, -100, -5, -76, -9, -41, -11, 0, -12, 41, -
 antialiased = true
 
 [node name="AmbientAura" type="Node2D" parent="."]
-z_index = -1
+z_index = 1
 script = ExtResource("3_aura")
 
 [node name="Visuals" type="Sprite2D" parent="."]
 unique_name_in_owner = true
+z_index = 3
 self_modulate = Color(0.9, 0.9, 0.9, 1)
 position = Vector2(0, -166)
 scale = Vector2(0.35, 0.35)

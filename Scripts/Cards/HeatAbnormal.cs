@@ -47,6 +47,14 @@ public sealed class HeatAbnormal : MgrCard
             return;
 
         bool isStarting = IsPhraseStart;
+        if (isStarting)
+        {
+            MgrCombatCardMutationState.Increase(
+                this,
+                "Damage",
+                GetIntrinsicDamage());
+        }
+
         decimal intrinsicDamage = GetIntrinsicDamage();
         float vfxScale = MgrAttackVfx.ScaleByDamage(
             intrinsicDamage,
@@ -63,14 +71,6 @@ public sealed class HeatAbnormal : MgrCard
                 vfxScale))
             .WithHitFx(null, null, "heavy_attack.mp3")
             .Execute(choiceContext);
-
-        if (isStarting)
-        {
-            MgrCombatCardMutationState.Increase(
-                this,
-                "Damage",
-                intrinsicDamage);
-        }
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ public sealed class Yaaaaaa : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new CardsVar(3),
         new IntVar("RequiredCost", 1m)
     ];

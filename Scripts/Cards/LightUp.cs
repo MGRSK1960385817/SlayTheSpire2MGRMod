@@ -32,6 +32,9 @@ public sealed class LightUp : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         bool isStarting = IsPhraseStart;
+        if (isStarting)
+            MgrCombatCardMutationState.Increase(this, "Hits", 1m);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)
@@ -41,9 +44,6 @@ public sealed class LightUp : MgrCard
             .WithHitFx(null, null, "blunt_attack.mp3")
             .OnlyPlayAnimOnce()
             .Execute(choiceContext);
-
-        if (isStarting)
-            MgrCombatCardMutationState.Increase(this, "Hits", 1m);
     }
 
     protected override void OnUpgrade()

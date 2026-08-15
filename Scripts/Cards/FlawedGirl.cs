@@ -1,4 +1,3 @@
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -41,12 +40,13 @@ public sealed class FlawedGirl : MgrCard
             MgrSelectionScreenVfx.BeginGlitch(Owner);
         try
         {
-            var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1);
-            CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
+            // Use the same compact, centred choice presentation as Discovery.
+            // The glitch filter is inserted below the overlay stack, leaving
+            // both candidates crisp and fully readable above the interference.
+            CardModel? chosen = await CardSelectCmd.FromChooseACardScreen(
                 choiceContext,
                 options,
-                Owner,
-                prefs)).FirstOrDefault();
+                Owner);
 
             if (chosen is INoteSlotChoice choice)
                 await choice.Apply(choiceContext, this);

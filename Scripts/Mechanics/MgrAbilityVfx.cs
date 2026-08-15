@@ -92,7 +92,6 @@ public static class MgrAbilityVfx
             ElectricAngel => MgrAbilityVfxStyle.Electric,
             MindMirage => MgrAbilityVfxStyle.Mirage,
             StainedNocturne => MgrAbilityVfxStyle.Nocturne,
-            SongOfSiren => MgrAbilityVfxStyle.Siren,
             StarfallSea => MgrAbilityVfxStyle.Galaxy,
             PaleDread => MgrAbilityVfxStyle.Ghost,
             WhiteSouthWind => MgrAbilityVfxStyle.Wind,

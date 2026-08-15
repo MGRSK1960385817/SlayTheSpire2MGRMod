@@ -16,9 +16,11 @@ public sealed class Samsara : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<VigorPower>(1m),
-        new IntVar("Notes", 0m)
+        new PowerVar<VigorPower>(1m)
     ];
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        [CardKeyword.Ethereal];
 
     protected override MgrKeywordKind KeywordKinds =>
         MgrKeywordKind.AttackNote | MgrKeywordKind.Chord;
@@ -41,13 +43,7 @@ public sealed class Samsara : MgrCard
             1m,
             Owner.Creature,
             this);
-
-        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
-            await ChannelNote(choiceContext, NoteKind.Attack);
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Notes"].UpgradeValueBy(2m);
-    }
+    protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Ethereal);
 }

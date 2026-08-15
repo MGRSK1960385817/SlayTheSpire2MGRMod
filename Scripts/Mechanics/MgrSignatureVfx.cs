@@ -83,11 +83,12 @@ public static class MgrSignatureVfx
         visual.GlobalPosition = targetNode.VfxSpawnPosition;
         room.CombatVfxContainer.AddChildSafely(visual);
 
-        // Let the first overlapping cluster enter the screen, then allow the
-        // native multi-hit command to resolve while later meteors keep falling.
+        // Let the first meteor complete most of its flight before the native
+        // multi-hit resolves. The visual itself then continues in a strictly
+        // serial cadence instead of releasing overlapping clusters.
         await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
             sourceCard,
-            0.15f));
+            0.34f));
     }
 
     public static void PlayWhirlwindWind(
@@ -196,7 +197,20 @@ public static class MgrSignatureVfx
             return;
         }
 
-        globalUi.AddChildSafely(new MgrWashoutFlashVisual());
+        // A translucent grey rectangle only brightens the picture; it cannot
+        // remove its colour. Use a short-lived screen-texture post-process in
+        // the same high overlay family as Imagine/Create instead.
+        var filterLayer = new CanvasLayer
+        {
+            Name = "MgrWashoutFlashLayer",
+            Layer = 96
+        };
+        filterLayer.AddChild(new BackBufferCopy
+        {
+            CopyMode = BackBufferCopy.CopyModeEnum.Viewport
+        });
+        filterLayer.AddChild(new MgrWashoutFlashVisual());
+        globalUi.AddChildSafely(filterLayer);
     }
 
     public static void SpawnWatchingEyes()
@@ -210,17 +224,29 @@ public static class MgrSignatureVfx
     }
 }
 
-internal sealed partial class MgrWashoutFlashVisual : Control
+internal sealed partial class MgrWashoutFlashVisual : ColorRect
 {
-    private const float Lifetime = 0.38f;
+    private const float Lifetime = 0.82f;
+    private static Shader? _shader;
     private float _age;
+    private ShaderMaterial? _shaderMaterial;
 
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
         FocusMode = FocusModeEnum.None;
         ZIndex = 48;
+        Color = Colors.White;
         SetAnchorsPreset(LayoutPreset.FullRect);
+        OffsetLeft = 0f;
+        OffsetTop = 0f;
+        OffsetRight = 0f;
+        OffsetBottom = 0f;
+        _shaderMaterial = new ShaderMaterial
+        {
+            Shader = GetShader()
+        };
+        Material = _shaderMaterial;
         SetProcess(true);
     }
 
@@ -229,26 +255,31 @@ internal sealed partial class MgrWashoutFlashVisual : Control
         _age += (float)delta;
         if (_age >= Lifetime)
         {
-            QueueFree();
+            GetParent()?.QueueFree();
             return;
         }
 
-        QueueRedraw();
-    }
-
-    public override void _Draw()
-    {
         float progress = Math.Clamp(_age / Lifetime, 0f, 1f);
         float envelope = MathF.Sin(progress * MathF.PI);
-        DrawRect(
-            new Rect2(Vector2.Zero, Size),
-            new Color(0.86f, 0.88f, 0.91f, 0.34f * envelope));
-        DrawRect(
-            new Rect2(Vector2.Zero, Size),
-            new Color(0.42f, 0.42f, 0.45f, 0.08f * envelope),
-            filled: false,
-            width: 18f);
+        _shaderMaterial?.SetShaderParameter("strength", envelope);
     }
+
+    private static Shader GetShader() => _shader ??= new Shader
+    {
+        Code = """
+            shader_type canvas_item;
+            uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear;
+            uniform float strength : hint_range(0.0, 1.0) = 0.0;
+
+            void fragment() {
+                vec4 source = texture(screen_texture, SCREEN_UV);
+                float luminance = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
+                float contrasted = clamp((luminance - 0.5) * 1.42 + 0.5, 0.0, 1.0);
+                vec3 monochrome = vec3(contrasted);
+                COLOR = vec4(mix(source.rgb, monochrome, strength), source.a);
+            }
+            """
+    };
 }
 
 internal sealed partial class MgrRainbowStarRingVisual : Node2D
@@ -261,7 +292,7 @@ internal sealed partial class MgrRainbowStarRingVisual : Node2D
 
     private readonly List<BurstStar> _stars = [];
     private float _age;
-    private const float Lifetime = 0.78f;
+    private const float Lifetime = 0.52f;
 
     private sealed record BurstStar(
         float Angle,
@@ -278,11 +309,11 @@ internal sealed partial class MgrRainbowStarRingVisual : Node2D
         {
             float evenAngle = index * Mathf.Tau / count;
             _stars.Add(new BurstStar(
-                evenAngle + RandomRange(-0.075f, 0.075f),
-                RandomRange(165f, 285f),
-                RandomRange(0f, 0.10f),
-                RandomRange(3.0f, 7.2f),
-                RandomRange(-2.5f, 2.5f),
+                evenAngle + RandomRange(-0.095f, 0.095f),
+                RandomRange(300f, 470f),
+                RandomRange(0f, 0.045f),
+                RandomRange(3.4f, 8.0f),
+                RandomRange(-3.2f, 3.2f),
                 Palette[index % Palette.Length]));
         }
 
@@ -312,7 +343,7 @@ internal sealed partial class MgrRainbowStarRingVisual : Node2D
 
             float progress = Math.Clamp(localAge / (Lifetime - star.Delay), 0f, 1f);
             float alpha = MathF.Pow(1f - progress, 0.72f);
-            float distance = 24f + star.Speed * localAge;
+            float distance = 18f + star.Speed * localAge;
             Vector2 center = Vector2.FromAngle(star.Angle) * distance;
             float rotation = star.Angle + star.Spin * localAge;
             Vector2 horizontal = Vector2.FromAngle(rotation) * star.Size;
@@ -331,12 +362,15 @@ internal sealed partial class MgrRainbowStarRingVisual : Node2D
 
 internal sealed partial class MgrWatchingEyesVisual : Node2D
 {
-    private const float Lifetime = 0.78f;
+    private const float Lifetime = 1.05f;
     private float _age;
 
     public override void _Ready()
     {
-        ZIndex = -40;
+        // BackCombatVfxContainer is already ordered behind creatures and in
+        // front of the room background. A negative local Z index placed this
+        // child underneath the background as well, making the eyes invisible.
+        ZIndex = 0;
         SetProcess(true);
     }
 
@@ -617,14 +651,14 @@ internal sealed partial class MgrMeteorShowerVisual : Node2D
     public void Initialize(int count)
     {
         int meteorCount = Math.Clamp(count, 1, 40);
+        float nextStart = 0f;
         for (int index = 0; index < meteorCount; index++)
         {
-            // Clusters overlap two or three meteors, while adjacent clusters
-            // retain a short beat. This reads as a shower rather than a volley
-            // or a strictly serial projectile list.
-            int cluster = index / 3;
-            float delay = cluster * 0.060f + Random.Shared.NextSingle() * 0.032f;
-            float duration = 0.21f + Random.Shared.NextSingle() * 0.080f;
+            // Each meteor begins only after the previous flight has ended.
+            // A visible random beat between them makes the sequence readable
+            // without becoming mechanically uniform.
+            float delay = nextStart;
+            float duration = RandomRange(0.30f, 0.38f);
             Vector2 end = new(
                 RandomRange(-48f, 48f),
                 RandomRange(-18f, 34f));
@@ -644,6 +678,9 @@ internal sealed partial class MgrMeteorShowerVisual : Node2D
                 end,
                 RandomRange(6.2f, 10.2f),
                 color));
+            nextStart += duration + RandomRange(
+                MgrVisualTuning.MeteorShowerVfx.SequentialGapMinSeconds,
+                MgrVisualTuning.MeteorShowerVfx.SequentialGapMaxSeconds);
             _lifetime = Math.Max(_lifetime, delay + duration + 0.18f);
         }
 

@@ -14,15 +14,14 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Potions;
 
-[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "throat_lozenge_potion")]
-public sealed class ThroatLozengePotion : MgrPotion
+[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "lozenge")]
+public sealed class Lozenge : MgrPotion
 {
-    public override PotionRarity Rarity => PotionRarity.Rare;
+    public override PotionRarity Rarity => PotionRarity.Uncommon;
     public override TargetType TargetType => TargetType.Self;
 
-    // Temporary art: the Defect's Focus Potion.
     public override PotionAssetProfile AssetProfile =>
-        VanillaArt("focus_potion");
+        LocalArt(nameof(Lozenge));
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

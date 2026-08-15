@@ -1,6 +1,8 @@
 using Godot;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using SlayTheSpire2MGRMod.Mechanics;
 using SlayTheSpire2MGRMod.Powers;
 
@@ -119,6 +121,8 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     private float _satelliteAngularSpeed;
     private float _satellitePhaseOffset;
     private float _satelliteWobblePhase;
+    private float _satelliteSpinSpeed;
+    private float _satelliteSpinPhase;
     private CanonFormPower? _observedCanonPower;
     private int _lastCanonTriggerSerial;
     private float _canonVisibility;
@@ -278,6 +282,20 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
 
             ancestor = ancestor.GetParent();
         }
+
+        // RitsuLib may place the custom scene behind an intermediate visuals
+        // owner whose ancestry is not yet complete during _Ready. Keep the
+        // ancestor route as the multiplayer-safe primary path, then recover
+        // the local MGR player once the combat creature list is available.
+        if (NCombatRoom.Instance is not { } room)
+            return;
+
+        Player? localPlayer = LocalContext.GetMe(
+            room.CreatureNodes
+                .Select(static node => node.Entity?.Player)
+                .OfType<Player>());
+        if (localPlayer?.Character is MgrCharacter)
+            _player = localPlayer;
     }
 
     private bool IsSatelliteAvailable() =>
@@ -366,7 +384,10 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             Name = $"MgrAfterimage_{kind}_{index}",
             Centered = _characterVisual.Centered,
             TextureFilter = _characterVisual.TextureFilter,
-            ZIndex = -2 - _characterAfterimages.Count,
+            // Scene order is now explicit: aura=1, afterimage=2, character=3.
+            // This keeps the copy behind MGR without inheriting the old
+            // negative aura layer that buried it under the room background.
+            ZIndex = 1,
             Visible = false
         };
         AddChild(sprite);
@@ -415,14 +436,14 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         float time) => state.Kind switch
     {
         AfterimageKind.Higan =>
-            new Color(0.18f, 0.48f, 1f, state.Visibility * 0.40f),
+            new Color(0.18f, 0.48f, 1f, state.Visibility * 0.52f),
         AfterimageKind.DualLovers =>
-            new Color(1f, 0.22f, 0.30f, state.Visibility * 0.36f),
+            new Color(1f, 0.22f, 0.30f, state.Visibility * 0.48f),
         _ => Color.FromHsv(
             Mathf.PosMod(state.ColorPhase + time * 0.085f, 1f),
             0.68f,
             1f,
-            state.Visibility * 0.20f)
+            state.Visibility * 0.34f)
     };
 
     private enum AfterimageKind
@@ -684,9 +705,10 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         Vector2 position = GetSatelliteOrbitPosition(phase, time);
         float depth = 0.5f + 0.5f * MathF.Sin(phase);
         float pulse = 0.94f + 0.06f * MathF.Sin(time * 4.7f + _satelliteWobblePhase);
-        float size = Mathf.Lerp(15.5f, 22.5f, depth) * pulse;
+        float size = Mathf.Lerp(13.5f, 19.5f, depth) * pulse;
         float alpha = _satelliteVisibility * intensity *
             Mathf.Lerp(0.72f, 1f, depth);
+        float spin = time * _satelliteSpinSpeed + _satelliteSpinPhase;
 
         // A short dotted trail makes the star read as an orbiting satellite
         // rather than another ambient twinkle.
@@ -696,7 +718,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             Vector2 trailPosition = GetSatelliteOrbitPosition(
                 trailPhase,
                 time - index * 0.045f);
-            Color trail = new Color("d8d2ff");
+            Color trail = new Color("b797ff");
             trail.A = alpha * (0.24f - index * 0.028f);
             DrawCircle(
                 trailPosition,
@@ -704,24 +726,26 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
                 trail);
         }
 
-        Color halo = new Color("fff2a8");
-        halo.A = alpha * 0.13f;
+        Color halo = new Color("8a5cf2");
+        halo.A = alpha * 0.15f;
         DrawCircle(position, size * 3.8f, halo);
 
-        Color secondaryHalo = new Color("bda8ff");
-        secondaryHalo.A = alpha * 0.16f;
+        Color secondaryHalo = new Color("c7acff");
+        secondaryHalo.A = alpha * 0.18f;
         DrawCircle(position, size * 2.35f, secondaryHalo);
 
-        Color ray = new Color("fff7cf");
+        Color ray = new Color("eadfff");
         ray.A = alpha;
-        DrawLine(position - Vector2.Right * size * 1.75f, position + Vector2.Right * size * 1.75f, ray, 3.1f, true);
-        DrawLine(position - Vector2.Up * size * 1.75f, position + Vector2.Up * size * 1.75f, ray, 3.1f, true);
-        Vector2 diagonal = new Vector2(0.72f, 0.72f) * size;
+        Vector2 horizontal = Vector2.Right.Rotated(spin) * size * 1.75f;
+        Vector2 vertical = Vector2.Up.Rotated(spin) * size * 1.75f;
+        DrawLine(position - horizontal, position + horizontal, ray, 3.1f, true);
+        DrawLine(position - vertical, position + vertical, ray, 3.1f, true);
+        Vector2 diagonal = new Vector2(0.72f, 0.72f).Rotated(spin) * size;
         DrawLine(position - diagonal, position + diagonal, ray, 1.8f, true);
-        diagonal.X *= -1f;
+        diagonal = new Vector2(-0.72f, 0.72f).Rotated(spin) * size;
         DrawLine(position - diagonal, position + diagonal, ray, 1.8f, true);
 
-        Color core = Colors.White;
+        Color core = new Color("fbf7ff");
         core.A = alpha;
         DrawCircle(position, size * 0.34f, core);
     }
@@ -735,6 +759,9 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         _satelliteAngularSpeed = _random.RandfRange(1.9f, 2.45f);
         _satellitePhaseOffset = _random.RandfRange(0f, Mathf.Tau);
         _satelliteWobblePhase = _random.RandfRange(0f, Mathf.Tau);
+        _satelliteSpinSpeed = _random.RandfRange(0.85f, 1.25f) *
+            (_random.Randf() < 0.5f ? -1f : 1f);
+        _satelliteSpinPhase = _random.RandfRange(0f, Mathf.Tau);
     }
 
     private Vector2 GetSatelliteOrbitPosition(float phase, float time)

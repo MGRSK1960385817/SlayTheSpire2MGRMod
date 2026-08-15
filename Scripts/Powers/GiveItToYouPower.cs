@@ -25,8 +25,8 @@ public sealed class GiveItToYouPower : ModPowerTemplate
         [new StringVar("TargetPlayer")];
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/GiveItToYou.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/GiveItToYou.png");
+        IconPath: $"{Entry.ResPath}/images/powers/GiveItToYouPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/GiveItToYouPower.png");
 
     public Player PlayerTarget
     {

@@ -19,7 +19,7 @@ public sealed class OtomeDissection : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move)
+        new BlockVar(4m, ValueProp.Move)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
@@ -42,6 +42,7 @@ public sealed class OtomeDissection : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Block.UpgradeValueBy(1m);
         AddKeyword(CardKeyword.Retain);
     }
 }

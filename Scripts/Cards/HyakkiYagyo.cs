@@ -39,16 +39,22 @@ public sealed class HyakkiYagyo : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
-            .WithHitVfxNode(target => MgrAttackVfx.CreateGaseousImpact(
+            .WithHitVfxNode(target => MgrAttackVfx.CreateFireBurst(
                 target,
-                MgrAttackVfx.CurseDarkRed,
-                1.05f))
+                MgrAttackVfx.CurseBlackFlame,
+                1.16f))
             .WithHitFx(null, null, "blunt_attack.mp3")
             .Execute(choiceContext);
 
         int notesToGenerate = enemiesHit * DynamicVars["NotesPerEnemy"].IntValue;
         for (int index = 0; index < notesToGenerate; index++)
             await MgrNoteSystem.ChannelNote(choiceContext, Owner, NoteKind.Curse);
+
+        await MgrCurseUtils.AddRandomCurseToCombat(
+            Owner,
+            PileType.Discard,
+            pilePreviewDuration: 1.15f,
+            pilePreviewWait: 0.42f);
     }
 
     protected override void OnUpgrade()

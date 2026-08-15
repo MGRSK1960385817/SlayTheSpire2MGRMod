@@ -134,8 +134,6 @@ public static class MgrVisualTuning
         public const double OmniaNoteShapeSeconds = 0.30;
         public const float OmniaNoteRainbowSpeed = 0.22f;
         public const float OmniaNoteRainbowFrequency = 1.35f;
-        public const float OmniaNoteSparkSeconds = 0.10f;
-        public const int OmniaNoteMaximumSparks = 14;
     }
 
     public static class Performances
@@ -344,12 +342,20 @@ public static class MgrVisualTuning
     public static class SpringStormVfx
     {
         public const float Opacity = 0.68f;
-        public const float FlashHoldSeconds = 0.18f;
-        public const float ShakeAmplitude = 7f;
+        public const float FlashHoldSeconds = 0.30f;
+        public const float ShakeAmplitude = 10f;
         public const float ShakeTargetSeconds = 0.045f;
         public const float ShakeSmoothing = 24f;
         public const float DrawPadding = 16f;
-        public const float FadeOutSeconds = 0.20f;
+        public const float FadeOutSeconds = 0.24f;
         public const int ZIndex = 20;
+    }
+
+    public static class MeteorShowerVfx
+    {
+        // Each meteor still waits for the previous flight to finish. These two
+        // values control only the breathing room between consecutive meteors.
+        public const float SequentialGapMinSeconds = 0.04f;
+        public const float SequentialGapMaxSeconds = 0.07f;
     }
 }

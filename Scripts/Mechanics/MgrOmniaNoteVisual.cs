@@ -22,9 +22,7 @@ public partial class MgrOmniaNoteVisual : Sprite2D
     ];
 
     private readonly List<Texture2D> _textures = [];
-    private readonly List<OmniaSpark> _sparks = [];
     private double _shapeElapsed;
-    private float _sparkElapsed;
     private int _shapeIndex;
 
     public bool Initialize()
@@ -68,62 +66,6 @@ public partial class MgrOmniaNoteVisual : Sprite2D
             }
         }
 
-        float seconds = (float)delta;
-        _sparkElapsed += seconds;
-        while (_sparkElapsed >= MgrVisualTuning.Notes.OmniaNoteSparkSeconds)
-        {
-            _sparkElapsed -= MgrVisualTuning.Notes.OmniaNoteSparkSeconds;
-            SpawnSpark();
-        }
-
-        for (int index = _sparks.Count - 1; index >= 0; index--)
-        {
-            OmniaSpark spark = _sparks[index];
-            spark.Age += seconds;
-            spark.Position += spark.Velocity * seconds;
-            spark.Rotation += spark.Spin * seconds;
-            if (spark.Age >= spark.Lifetime)
-                _sparks.RemoveAt(index);
-        }
-
-        QueueRedraw();
-    }
-
-    public override void _Draw()
-    {
-        foreach (OmniaSpark spark in _sparks)
-        {
-            float progress = Math.Clamp(spark.Age / spark.Lifetime, 0f, 1f);
-            float alpha = MathF.Sin(progress * MathF.PI) * 0.88f;
-            Vector2 horizontal = Vector2.FromAngle(spark.Rotation) * spark.Size;
-            Vector2 vertical = Vector2.FromAngle(spark.Rotation + MathF.PI * 0.5f) *
-                spark.Size * 1.45f;
-            Color glow = spark.Color with { A = alpha * 0.15f };
-            Color core = spark.Color with { A = alpha };
-            DrawCircle(spark.Position, spark.Size * 3.4f, glow);
-            DrawLine(spark.Position - horizontal, spark.Position + horizontal, core, 5f, true);
-            DrawLine(spark.Position - vertical, spark.Position + vertical, core, 5.5f, true);
-        }
-    }
-
-    private void SpawnSpark()
-    {
-        if (_sparks.Count >= MgrVisualTuning.Notes.OmniaNoteMaximumSparks)
-            _sparks.RemoveAt(0);
-
-        float angle = Random.Shared.NextSingle() * Mathf.Tau;
-        Vector2 direction = Vector2.FromAngle(angle);
-        _sparks.Add(new OmniaSpark
-        {
-            Position = direction * RandomRange(78f, 116f),
-            Velocity = direction.Rotated(RandomRange(-0.22f, 0.22f)) *
-                RandomRange(62f, 118f),
-            Lifetime = RandomRange(0.72f, 1.14f),
-            Size = RandomRange(10f, 18f),
-            Rotation = angle,
-            Spin = RandomRange(-2.3f, 2.3f),
-            Color = Color.FromHsv(Random.Shared.NextSingle(), 0.48f, 1f)
-        });
     }
 
     private void FitCurrentTextureToDisplaySize()
@@ -255,18 +197,4 @@ public partial class MgrOmniaNoteVisual : Sprite2D
         return material;
     }
 
-    private static float RandomRange(float minimum, float maximum) =>
-        Mathf.Lerp(minimum, maximum, Random.Shared.NextSingle());
-
-    private sealed class OmniaSpark
-    {
-        public Vector2 Position;
-        public Vector2 Velocity;
-        public float Age;
-        public float Lifetime;
-        public float Size;
-        public float Rotation;
-        public float Spin;
-        public Color Color;
-    }
 }

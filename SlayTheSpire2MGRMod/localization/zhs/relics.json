@@ -24,7 +24,7 @@
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.description": "每当你触发和弦，获得1点格挡。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_GUITAR_PICK.flavor": "注意保管，非常容易找不到TT",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.title": "苍白花",
-  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.description": "战斗开始时，将1张[color=#c8c8c8]苍白[/color]置入[gold]手牌[/gold]。",
+  "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.description": "战斗开始时，将1张[color=#c8c8c8]苍白+[/color]置入[gold]手牌[/gold]。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_PALE_FLOWER.flavor": "在没有阳光的塔里，连花也变得苍白。",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MAGUROYAKI.title": "鮪鱼烧",
   "SLAY_THE_SPIRE2_MGR_MOD_RELIC_MAGUROYAKI.description": "每当你在休息处锻造时，回复最大生命的{Heal:diff()}%。",

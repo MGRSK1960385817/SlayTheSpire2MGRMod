@@ -19,8 +19,8 @@ public sealed class ChaosMagicPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/ChaosMagic.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/ChaosMagic.png");
+        IconPath: $"{Entry.ResPath}/images/powers/ChaosMagicPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/ChaosMagicPower.png");
 
     public async Task OnPerformanceEnded(Player player)
     {

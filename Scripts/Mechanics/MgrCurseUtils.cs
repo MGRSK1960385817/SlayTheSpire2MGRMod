@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using MegaCrit.Sts2.Core.Random;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -12,16 +13,19 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 public static class MgrCurseUtils
 {
-    // These three vanilla curses are deliberately excluded from every random
-    // curse effect in MGR: Enthralled (执迷), Debt (债务), Bad Luck (霉运).
-    // Type names are used here so the rule remains centralized without tying
-    // this utility to the concrete vanilla card namespaces.
-    private static readonly HashSet<string> ExcludedRandomCurseTypeNames =
-    [
-        "Enthralled",
-        "Debt",
-        "BadLuck"
-    ];
+    // Integer weights use 6 as a common denominator. Every ordinary curse has
+    // weight 6; Bad Luck and Debt have half that weight, while Enthralled has
+    // one third. Type names keep the shared utility independent of the vanilla
+    // curse namespaces while still covering every MGR random-curse source.
+    private const int OrdinaryCurseWeight = 6;
+
+    private static readonly IReadOnlyDictionary<string, int>
+        ReducedRandomCurseWeights = new Dictionary<string, int>
+        {
+            ["BadLuck"] = 3,
+            ["Debt"] = 3,
+            ["Enthralled"] = 2
+        };
 
     private static readonly PileType[] CountedCombatPiles =
     [
@@ -31,11 +35,35 @@ public static class MgrCurseUtils
         PileType.Exhaust
     ];
 
-    public static bool IsExcludedRandomCurse(CardModel card)
+    public static int GetRandomCurseWeight(CardModel card)
     {
         ArgumentNullException.ThrowIfNull(card);
-        return card.Type == CardType.Curse &&
-            ExcludedRandomCurseTypeNames.Contains(card.GetType().Name);
+        return ReducedRandomCurseWeights.TryGetValue(
+            card.GetType().Name,
+            out int weight)
+            ? weight
+            : OrdinaryCurseWeight;
+    }
+
+    public static CardModel? PickRandomCurseCanonical(
+        IReadOnlyList<CardModel> candidates,
+        Rng rng)
+    {
+        ArgumentNullException.ThrowIfNull(candidates);
+        ArgumentNullException.ThrowIfNull(rng);
+        if (candidates.Count == 0)
+            return null;
+
+        int totalWeight = candidates.Sum(GetRandomCurseWeight);
+        int roll = rng.NextInt(0, totalWeight);
+        foreach (CardModel candidate in candidates)
+        {
+            roll -= GetRandomCurseWeight(candidate);
+            if (roll < 0)
+                return candidate;
+        }
+
+        return candidates[^1];
     }
 
     public static CardModel CreateRandomCurse(Player player)
@@ -48,13 +76,14 @@ public static class MgrCurseUtils
             .AllCards
             .Where(card =>
                 card.Type == CardType.Curse &&
-                card.CanBeGeneratedInCombat &&
-                !IsExcludedRandomCurse(card))
+                card.CanBeGeneratedInCombat)
             .ToArray();
         if (candidates.Length == 0)
             throw new InvalidOperationException("The Tower-2 curse pool contains no generatable curses.");
 
-        CardModel canonical = player.RunState.Rng.CombatCardGeneration.NextItem(candidates)
+        CardModel canonical = PickRandomCurseCanonical(
+                candidates,
+                player.RunState.Rng.CombatCardGeneration)
             ?? throw new InvalidOperationException("Tower-2 returned no random curse candidate.");
         return combatState.CreateCard(canonical, player);
     }

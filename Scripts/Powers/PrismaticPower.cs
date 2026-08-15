@@ -15,8 +15,8 @@ public sealed class PrismaticPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/Prismatic.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/Prismatic.png");
+        IconPath: $"{Entry.ResPath}/images/powers/PrismaticPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/PrismaticPower.png");
 
     public async Task OnChordTriggered(
         PlayerChoiceContext choiceContext,

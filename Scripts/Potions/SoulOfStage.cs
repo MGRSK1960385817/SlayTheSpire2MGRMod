@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Mechanics;
@@ -12,20 +12,14 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace SlayTheSpire2MGRMod.Potions;
 
-[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "bottled_note_potion")]
-public sealed class BottledNotePotion : MgrPotion
+[RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "soul_of_stage")]
+public sealed class SoulOfStage : MgrPotion
 {
-    public override PotionRarity Rarity => PotionRarity.Common;
+    public override PotionRarity Rarity => PotionRarity.Rare;
     public override TargetType TargetType => TargetType.Self;
 
-    // Temporary art: the Regent's Star Potion.
     public override PotionAssetProfile AssetProfile =>
-        VanillaArt("star_potion");
-
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new IntVar("Notes", 16m)
-    ];
+        LocalArt(nameof(SoulOfStage));
 
     protected override async Task OnUse(
         PlayerChoiceContext choiceContext,
@@ -33,9 +27,13 @@ public sealed class BottledNotePotion : MgrPotion
     {
         AssertValidForTargetedPotion(target);
         ArgumentNullException.ThrowIfNull(target.Player);
-        NCombatRoom.Instance?.PlaySplashVfx(target, new Color("d68cff"));
+        NCombatRoom.Instance?.PlaySplashVfx(target, new Color("b18cff"));
 
-        for (int index = 0; index < DynamicVars["Notes"].IntValue; index++)
-            await MgrNoteSystem.ChannelRandomBasicNote(choiceContext, target.Player);
+        CardModel[] handSnapshot = PileType.Hand
+            .GetPile(target.Player)
+            .Cards
+            .ToArray();
+        foreach (CardModel card in handSnapshot)
+            await MgrPerformanceSystem.EnqueueCardFromHand(target.Player, card);
     }
 }

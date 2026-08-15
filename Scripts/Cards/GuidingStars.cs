@@ -18,7 +18,7 @@ public sealed class GuidingStars : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move)
+        new DamageVar(10m, ValueProp.Move)
     ];
 
     public GuidingStars() : base(
@@ -62,7 +62,10 @@ public sealed class GuidingStars : MgrCard
             return;
 
         CardModel generated = combatState.CreateCard(canonical, Owner);
-        await MgrPerformanceSystem.EnqueueGeneratedCard(Owner, generated);
+        await MgrPerformanceSystem.EnqueueGeneratedCard(
+            Owner,
+            generated,
+            previewBeforeEnqueue: true);
     }
 
     protected override void OnUpgrade()

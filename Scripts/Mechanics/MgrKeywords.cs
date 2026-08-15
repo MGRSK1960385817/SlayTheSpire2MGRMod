@@ -136,13 +136,15 @@ public static class MgrKeywords
         DaybreakFrontline => MgrKeywordKind.CurseNote | MgrKeywordKind.StatusNote,
         CumulonimbusGraffiti => MgrKeywordKind.Chord,
         LongDream => MgrKeywordKind.Performance,
-        LittleMiracles => MgrKeywordKind.BasicNotes,
+        EverydayMiracles => MgrKeywordKind.BasicNotes,
         Resonate => MgrKeywordKind.Performance,
         EastOfTimeline => MgrKeywordKind.AttackNote,
         Higan => MgrKeywordKind.Forte,
         SpringStorm => MgrKeywordKind.Forte,
         MeteorShower => MgrKeywordKind.StarryNote,
-        Finale => MgrKeywordKind.AttackNote,
+        NeoNeon => MgrKeywordKind.AttackNote |
+            MgrKeywordKind.SkillNote |
+            MgrKeywordKind.PowerNote,
         Adios => MgrKeywordKind.Performance,
         Encore => MgrKeywordKind.Performance,
         MindMirage => MgrKeywordKind.PowerNote,

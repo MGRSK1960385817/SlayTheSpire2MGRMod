@@ -107,6 +107,21 @@ public static class MgrPerformanceVisuals
     }
 
     /// <summary>
+    /// Presents a generated card at readable size in the screen centre, then
+    /// flies that temporary face into its already-created Performance slot.
+    /// The real combat card remains in Play and is never duplicated.
+    /// </summary>
+    public static Task PlayGeneratedEntryAnimation(
+        Player player,
+        MgrPerformanceEntry entry)
+    {
+        if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
+            return Task.CompletedTask;
+
+        return rack.PlayGeneratedEntryAnimation(entry);
+    }
+
+    /// <summary>
     /// Short non-triggering pulse used when a card such as Encore increases an
     /// existing queue entry's remaining performances. It never moves the real
     /// card or invokes the staff playhead, so it cannot be mistaken for a play.
@@ -643,6 +658,68 @@ public static class MgrPerformanceVisuals
                     durationScale));
         }
 
+        public async Task PlayGeneratedEntryAnimation(MgrPerformanceEntry entry)
+        {
+            PerformanceCardView? destination = FindView(entry);
+            if (destination is null || !_root.IsInsideTree())
+                return;
+
+            NCard? preview = NCard.Create(entry.Card, ModelVisibility.Visible);
+            if (preview is null)
+                return;
+
+            destination.SetPresentationVisible(false);
+            try
+            {
+                preview.Name = "GeneratedPerformancePreview";
+                preview.MouseFilter = Control.MouseFilterEnum.Ignore;
+                preview.ZIndex = 320;
+                _previewLayer.AddChild(preview);
+                preview.PivotOffset = Vector2.Zero;
+                preview.Position = _root.GetViewport().GetVisibleRect().GetCenter();
+                preview.Scale = Vector2.One * 0.72f;
+                preview.Modulate = Colors.White;
+                preview.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
+
+                Tween reveal = preview.CreateTween();
+                reveal.TweenProperty(preview, "scale", Vector2.One * 0.90f, 0.13)
+                    .SetEase(Tween.EaseType.Out)
+                    .SetTrans(Tween.TransitionType.Back);
+                reveal.TweenInterval(0.28);
+                await preview.ToSignal(reveal, Tween.SignalName.Finished);
+                if (!GodotObject.IsInstanceValid(preview))
+                    return;
+
+                Tween flight = preview.CreateTween().SetParallel();
+                flight.TweenProperty(
+                        preview,
+                        "position",
+                        destination.ViewportCenter,
+                        MgrVisualTuning.Performances.EnterQueueSeconds)
+                    .SetEase(Tween.EaseType.InOut)
+                    .SetTrans(Tween.TransitionType.Cubic);
+                flight.TweenProperty(
+                        preview,
+                        "scale",
+                        PerformanceCardView.MiniatureScale,
+                        MgrVisualTuning.Performances.EnterQueueSeconds)
+                    .SetEase(Tween.EaseType.In)
+                    .SetTrans(Tween.TransitionType.Back);
+                flight.TweenProperty(
+                    preview,
+                    "modulate",
+                    new Color(1f, 1f, 1f, 0.12f),
+                    MgrVisualTuning.Performances.EnterQueueSeconds);
+                await preview.ToSignal(flight, Tween.SignalName.Finished);
+            }
+            finally
+            {
+                destination.SetPresentationVisible(true);
+                if (GodotObject.IsInstanceValid(preview))
+                    ReleaseTemporaryCard(preview);
+            }
+        }
+
         private async Task AwaitPlayedCardAndAnimate(
             CardModel card,
             Vector2 destination,
@@ -971,6 +1048,9 @@ public static class MgrPerformanceVisuals
             PositionHoverHitbox();
             ReconcileHoverPresentation();
         }
+
+        public void SetPresentationVisible(bool visible) =>
+            _anchor.Visible = visible;
 
         public void SetLayer(int layer)
         {

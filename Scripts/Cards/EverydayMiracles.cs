@@ -8,8 +8,8 @@ using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace SlayTheSpire2MGRMod.Cards;
 
-[RegisterCard(typeof(MgrCardPool), StableEntryStem = "little_miracles")]
-public sealed class LittleMiracles : MgrCard
+[RegisterCard(typeof(MgrCardPool), StableEntryStem = "everyday_miracles")]
+public sealed class EverydayMiracles : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -25,7 +25,7 @@ public sealed class LittleMiracles : MgrCard
         MgrGoldGlowCondition.PhraseStart |
         MgrGoldGlowCondition.PhraseEnd;
 
-    public LittleMiracles() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
+    public EverydayMiracles() : base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }
 
@@ -47,6 +47,7 @@ public sealed class LittleMiracles : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Cards.UpgradeValueBy(1m);
         DynamicVars["TailPerformanceBonus"].UpgradeValueBy(1m);
     }
 }

@@ -4,6 +4,8 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.TestSupport;
+using SlayTheSpire2MGRMod.Characters;
+using STS2RitsuLib.Audio;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -15,14 +17,15 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 public static class MgrSelectionScreenVfx
 {
     public static IDisposable BeginGrayscale(Player player) =>
-        Begin(player, MgrSelectionFilterMode.Grayscale);
+        Begin(player, MgrSelectionFilterMode.Grayscale, playWritingLoop: true);
 
     public static IDisposable BeginGlitch(Player player) =>
-        Begin(player, MgrSelectionFilterMode.Glitch);
+        Begin(player, MgrSelectionFilterMode.Glitch, playWritingLoop: false);
 
     private static IDisposable Begin(
         Player player,
-        MgrSelectionFilterMode mode)
+        MgrSelectionFilterMode mode,
+        bool playWritingLoop)
     {
         if (TestMode.IsOn ||
             !LocalContext.IsMe(player) ||
@@ -31,20 +34,75 @@ public static class MgrSelectionScreenVfx
             return EmptyLease.Instance;
         }
 
-        var filter = new MgrSelectionScreenFilter(mode);
-        globalUi.AddChildSafely(filter);
-        return new FilterLease(filter);
+        Node filterRoot;
+        if (mode == MgrSelectionFilterMode.Glitch)
+        {
+            // Flawed Girl needs the battlefield to glitch while its Discovery-
+            // style candidates remain readable. Insert this post-process before
+            // the vanilla overlay stack, so the subsequently pushed choice
+            // screen and its cards render above the interference.
+            var filterUnderlay = new Control
+            {
+                Name = "MgrGlitchSelectionFilterUnderlay",
+                MouseFilter = Control.MouseFilterEnum.Ignore
+            };
+            filterUnderlay.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            filterUnderlay.AddChild(new BackBufferCopy
+            {
+                CopyMode = BackBufferCopy.CopyModeEnum.Viewport
+            });
+            filterUnderlay.AddChild(new MgrSelectionScreenFilter(mode));
+            globalUi.AddChildSafely(filterUnderlay);
+            globalUi.MoveChild(
+                filterUnderlay,
+                Math.Max(0, globalUi.Overlays.GetIndex()));
+            filterRoot = filterUnderlay;
+        }
+        else
+        {
+            // Card grids and the combat hand can live on overlay canvas layers
+            // above ordinary GlobalUi children. Grayscale intentionally owns a
+            // high post-process layer so the first frame and every candidate are
+            // sampled as one complete black-and-white picture.
+            var filterLayer = new CanvasLayer
+            {
+                Name = $"Mgr{mode}SelectionFilterLayer",
+                Layer = 96
+            };
+            filterLayer.AddChild(new BackBufferCopy
+            {
+                CopyMode = BackBufferCopy.CopyModeEnum.Viewport
+            });
+            filterLayer.AddChild(new MgrSelectionScreenFilter(mode));
+            globalUi.AddChildSafely(filterLayer);
+            filterRoot = filterLayer;
+        }
+
+        IAudioHandle? writingLoop = playWritingLoop
+            ? MgrAudio.BeginWritingLoop()
+            : null;
+        return new FilterLease(filterRoot, writingLoop);
     }
 
-    private sealed class FilterLease(MgrSelectionScreenFilter filter) : IDisposable
+    private sealed class FilterLease(
+        Node filterRoot,
+        IAudioHandle? writingLoop) : IDisposable
     {
-        private MgrSelectionScreenFilter? _filter = filter;
+        private Node? _filterRoot = filterRoot;
+        private IAudioHandle? _writingLoop = writingLoop;
 
         public void Dispose()
         {
-            if (_filter is { } current && GodotObject.IsInstanceValid(current))
+            if (_writingLoop is { } currentLoop)
+            {
+                currentLoop.TryStop(allowFadeOut: false);
+                currentLoop.TryRelease();
+            }
+            _writingLoop = null;
+
+            if (_filterRoot is { } current && GodotObject.IsInstanceValid(current))
                 current.QueueFree();
-            _filter = null;
+            _filterRoot = null;
         }
     }
 
@@ -75,7 +133,10 @@ internal sealed partial class MgrSelectionScreenFilter : ColorRect
     {
         MouseFilter = MouseFilterEnum.Ignore;
         FocusMode = FocusModeEnum.None;
-        ZIndex = 850;
+        // The glitch underlay relies on normal sibling order so the vanilla
+        // choice overlay stays above it. Grayscale lives in a dedicated high
+        // CanvasLayer and can safely retain a large local Z index.
+        ZIndex = _mode == MgrSelectionFilterMode.Grayscale ? 850 : 0;
         Color = Colors.White;
         SetAnchorsPreset(LayoutPreset.FullRect);
         OffsetLeft = 0f;
@@ -99,7 +160,8 @@ internal sealed partial class MgrSelectionScreenFilter : ColorRect
             void fragment() {
                 vec4 source = texture(screen_texture, SCREEN_UV);
                 float luminance = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-                COLOR = vec4(vec3(luminance), source.a);
+                float contrasted = clamp((luminance - 0.5) * 1.38 + 0.5, 0.0, 1.0);
+                COLOR = vec4(vec3(contrasted), source.a);
             }
             """
     };

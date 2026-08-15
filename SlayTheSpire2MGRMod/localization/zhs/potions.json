@@ -1,8 +1,8 @@
 {
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTE_POTION.title": "瓶装音符",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTE_POTION.description": "随机生成[blue]{Notes}[/blue]个[gold]基础音符[/gold]。",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_THROAT_LOZENGE_POTION.title": "润喉糖",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_THROAT_LOZENGE_POTION.description": "获得[blue]{FortePower}[/blue]层[gold]强音[/gold]。",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_STAGE_SOUL_POTION.title": "舞台之魂",
-  "SLAY_THE_SPIRE2_MGR_MOD_POTION_STAGE_SOUL_POTION.description": "将所有[gold]手牌[/gold]加入[gold]演奏[/gold]队列。"
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTES.title": "瓶装音符",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_BOTTLED_NOTES.description": "随机生成[blue]{Notes}[/blue]个[gold]基础音符[/gold]。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_LOZENGE.title": "润喉糖",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_LOZENGE.description": "获得[blue]{FortePower}[/blue]层[gold]强音[/gold]。",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_SOUL_OF_STAGE.title": "舞台之魂",
+  "SLAY_THE_SPIRE2_MGR_MOD_POTION_SOUL_OF_STAGE.description": "将所有[gold]手牌[/gold]加入[gold]演奏[/gold]队列。"
 }

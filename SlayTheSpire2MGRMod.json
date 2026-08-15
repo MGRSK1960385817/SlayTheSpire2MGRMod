@@ -4,15 +4,15 @@
   "pck_name": "SlayTheSpire2MGRMod",
   "author": "MGRSK",
   "description": "MGRMod For SlayTheSpire2.",
-  "version": "0.7.0",
-  "min_game_version": "0.110.0",
+  "version": "0.8.0",
+  "min_game_version": "0.111.0",
   "has_pck": true,
   "has_dll": true,
   "affects_gameplay": true,
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "min_version": "0.5.1"
+      "min_version": "0.5.12"
     }
   ]
 }

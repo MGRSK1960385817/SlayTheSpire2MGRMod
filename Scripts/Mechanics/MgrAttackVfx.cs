@@ -27,6 +27,9 @@ public static class MgrAttackVfx
     public static readonly Color FlyingSlashBlue = new("62b8ff");
     public static readonly Color CursePurple = new("67265f");
     public static readonly Color CurseDarkRed = new("6f1728");
+    // Nearly-black burgundy remains readable inside the native additive fire
+    // texture while presenting as black flame rather than an ordinary red hit.
+    public static readonly Color CurseBlackFlame = new("19040d");
 
     /// <summary>
     /// Grows once per damage doubling and clamps the result so cards whose

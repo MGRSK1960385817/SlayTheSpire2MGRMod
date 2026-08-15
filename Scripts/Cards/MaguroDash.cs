@@ -16,7 +16,14 @@ public sealed class MaguroDash : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(7m, ValueProp.Move),
-        new CardsVar(1)
+        new CardsVar(1),
+        new CalculationBaseVar(0m),
+        new CalculationExtraVar(1m),
+        new CalculatedVar("TotalHits").WithMultiplier(
+            static (card, _) =>
+                card.CombatState is null
+                    ? 0m
+                    : 1m + MgrPerformanceSystem.GetQueuedCards(card.Owner).Count)
     ];
 
     public MaguroDash() : base(

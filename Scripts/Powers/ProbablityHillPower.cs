@@ -15,8 +15,8 @@ public sealed class ProbablityHillPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Single;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/ProbablityHill.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/ProbablityHill.png");
+        IconPath: $"{Entry.ResPath}/images/powers/ProbablityHillPower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/ProbablityHillPower.png");
 
     public override async Task AfterCardPlayed(
         PlayerChoiceContext choiceContext,

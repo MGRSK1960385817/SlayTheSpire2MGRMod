@@ -15,6 +15,6 @@ public sealed class WatchingUPower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/WatchingU.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/WatchingU.png");
+        IconPath: $"{Entry.ResPath}/images/powers/WatchingU.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/WatchingU.png");
 }

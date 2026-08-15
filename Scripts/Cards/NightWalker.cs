@@ -20,7 +20,19 @@ public sealed class NightWalker : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move)
+        new CalculationBaseVar(0m),
+        new CalculationExtraVar(1m),
+        new DamageVar(6m, ValueProp.Move),
+        new CalculatedVar("TotalHits").WithMultiplier(
+            static (card, _) =>
+            {
+                if (card.CombatState is null)
+                    return 0m;
+
+                // Night Walker creates its curse before resolving damage, so
+                // the combat preview includes that guaranteed new curse.
+                return MgrCurseUtils.CountCurses(card.Owner) + 1m;
+            })
     ];
 
     public NightWalker() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
@@ -52,6 +64,6 @@ public sealed class NightWalker : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

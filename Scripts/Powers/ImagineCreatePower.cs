@@ -30,8 +30,8 @@ public sealed class ImagineCreatePower : ModPowerTemplate
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override PowerAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/cards/ImagineCreate.png",
-        BigIconPath: $"{Entry.ResPath}/images/cards/ImagineCreate.png");
+        IconPath: $"{Entry.ResPath}/images/powers/ImagineCreatePower.png",
+        BigIconPath: $"{Entry.ResPath}/images/powers/ImagineCreatePower.png");
 
     public override async Task AfterPlayerTurnStart(
         PlayerChoiceContext choiceContext,
@@ -41,75 +41,89 @@ public sealed class ImagineCreatePower : ModPowerTemplate
             return;
 
         int changes = Math.Max(0, (int)Amount);
-        for (int index = 0; index < changes; index++)
-        {
-            if (!await TryChangeOneCard(choiceContext, player))
-                break;
-        }
+        if (changes > 0)
+            await ChangeCardsInOneBatch(choiceContext, player, changes);
     }
 
-    private async Task<bool> TryChangeOneCard(
+    private async Task ChangeCardsInOneBatch(
         PlayerChoiceContext choiceContext,
-        Player player)
+        Player player,
+        int maximumChanges)
     {
         CardModel[] eligibleCards = PileType.Hand.GetPile(player).Cards
             .Where(IsEligible)
             .ToArray();
         if (eligibleCards.Length == 0)
-            return false;
+            return;
 
         using IDisposable screenFilter =
             MgrSelectionScreenVfx.BeginGrayscale(player);
 
+        int selectMaximum = Math.Min(maximumChanges, eligibleCards.Length);
         var chooseCardPrompt = new LocString(
             "cards",
             "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_CARD");
-        var chooseCardPrefs = new CardSelectorPrefs(chooseCardPrompt, 0, 1)
+        var chooseCardPrefs = new CardSelectorPrefs(
+            chooseCardPrompt,
+            0,
+            selectMaximum)
         {
             Cancelable = true,
             RequireManualConfirmation = true
         };
-        CardModel? original = (await CardSelectCmd.FromHand(
+        List<CardModel> originals = (await CardSelectCmd.FromHand(
             choiceContext,
             player,
             chooseCardPrefs,
             IsEligible,
-            this)).FirstOrDefault();
-        if (original is null)
-            return false;
+            this)).ToList();
+        if (originals.Count == 0)
+            return;
 
-        List<CardModel> options = TypeOptions
-            .Select(type => CreateTypeOption(original, type))
-            .ToList();
-        CardModel? chosen = null;
+        var pendingTransforms = new List<(CardModel Original, CardModel Chosen)>();
+        var temporaryOptions = new List<CardModel>();
         try
         {
-            var chooseTypePrompt = new LocString(
-                "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
-            var chooseTypePrefs = new CardSelectorPrefs(chooseTypePrompt, 1);
-            chosen = (await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                options,
-                player,
-                chooseTypePrefs)).FirstOrDefault();
-            if (chosen is null)
-                return false;
+            // Decide every selected card's destination type before replacing
+            // anything in the hand. This keeps stacked copies of the Power as
+            // one coherent batch instead of repeatedly reopening the hand.
+            foreach (CardModel original in originals)
+            {
+                List<CardModel> options = TypeOptions
+                    .Select(type => CreateTypeOption(original, type))
+                    .ToList();
+                temporaryOptions.AddRange(options);
+
+                var chooseTypePrompt = new LocString(
+                    "cards",
+                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
+                var chooseTypePrefs = new CardSelectorPrefs(chooseTypePrompt, 1);
+                CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
+                    choiceContext,
+                    options,
+                    player,
+                    chooseTypePrefs)).FirstOrDefault();
+                if (chosen is not null)
+                    pendingTransforms.Add((original, chosen));
+            }
+
+            if (pendingTransforms.Count == 0)
+                return;
 
             Flash();
             MgrAbilityVfx.SpawnCastBurst(
                 Owner,
                 MgrAbilityVfxStyle.Creation,
                 0.78f);
-            await CardCmd.Transform(original, chosen, CardPreviewStyle.None);
-            return true;
+            foreach ((CardModel original, CardModel chosen) in pendingTransforms)
+                await CardCmd.Transform(original, chosen, CardPreviewStyle.None);
         }
         finally
         {
-            // The selected option belongs to the hand after Transform. The other
-            // four are temporary combat models used only by the selection grid.
+            // Selected options belong to the hand after Transform. Every other
+            // option is a temporary combat model used only by the type grids.
             await Task.Yield();
-            foreach (CardModel option in options)
+            foreach (CardModel option in temporaryOptions)
             {
                 if (option.Pile is null && option.CombatState is not null)
                     option.RemoveFromState();

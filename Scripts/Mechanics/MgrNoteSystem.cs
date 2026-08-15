@@ -25,6 +25,18 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 [RegisterSingleton]
 public sealed class MgrNoteSystem : HookedSingletonModel
 {
+    // Explicit integer weights make random-note tuning work like MGR's random
+    // curse pool. Removing one entry automatically redistributes its chance
+    // among every remaining kind when the total weight is recalculated.
+    private static readonly (NoteKind Kind, int Weight)[] RandomBasicNoteWeights =
+    [
+        (NoteKind.Attack, 36),
+        (NoteKind.Skill, 36),
+        (NoteKind.Status, 6),
+        (NoteKind.Power, 16),
+        (NoteKind.Curse, 6)
+    ];
+
     private readonly Dictionary<Player, CardModel> _lastPlayedCards = [];
 
     public MgrNoteSystem() : base(HookType.Combat)
@@ -175,26 +187,36 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     }
 
     /// <summary>
-    /// STS1 "Improvise": generates one weighted random basic note. The original
-    /// distribution is preserved while mapping its old note names to STS2's
-    /// direct card-type names: Attack 35%, Skill 35%, Status 8%, Power 17%,
-    /// and Curse 5%.
+    /// STS1 "Improvise": generates one weighted random basic note.
     /// </summary>
     public static Task ChannelRandomBasicNote(
         PlayerChoiceContext choiceContext,
         Player player)
     {
-        int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, 100);
-        NoteKind kind = roll switch
-        {
-            < 38 => NoteKind.Attack,
-            < 74 => NoteKind.Skill,
-            < 80 => NoteKind.Status,
-            < 96 => NoteKind.Power,
-            _ => NoteKind.Curse
-        };
+        bool suppressAttack =
+            player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m;
+        int totalWeight = RandomBasicNoteWeights
+            .Where(entry => !suppressAttack || entry.Kind != NoteKind.Attack)
+            .Sum(static entry => entry.Weight);
+        if (totalWeight <= 0)
+            throw new InvalidOperationException("The random Basic Note pool has no positive weights.");
 
-        return ChannelNote(choiceContext, player, kind);
+        int roll = player.RunState.Rng.CombatCardGeneration.NextInt(0, totalWeight);
+        foreach ((NoteKind kind, int weight) in RandomBasicNoteWeights)
+        {
+            if (suppressAttack && kind == NoteKind.Attack)
+                continue;
+
+            roll -= weight;
+            if (roll < 0)
+                return ChannelNote(choiceContext, player, kind);
+        }
+
+        // Defensive fallback for an RNG implementation with unexpected bounds.
+        NoteKind fallback = RandomBasicNoteWeights
+            .Last(entry => !suppressAttack || entry.Kind != NoteKind.Attack)
+            .Kind;
+        return ChannelNote(choiceContext, player, fallback);
     }
 
     private static async Task ChannelSingleNote(

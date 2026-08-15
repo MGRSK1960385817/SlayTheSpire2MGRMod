@@ -26,6 +26,7 @@ public sealed class PaleFlower : ModRelicTemplate
 
         Flash();
         CardModel pale = combatState.CreateCard(ModelDb.Card<Pale>(), Owner);
+        CardCmd.Upgrade(pale);
         await CardPileCmd.AddGeneratedCardToCombat(pale, PileType.Hand, Owner);
     }
 }

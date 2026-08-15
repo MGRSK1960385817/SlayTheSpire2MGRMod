@@ -41,11 +41,17 @@ public sealed class Regulus : MgrCard
                 target,
                 MgrAttackVfx.StarGold,
                 0.62f))
-            .WithHitVfxNode(target => MgrAttackVfx.CreateStarryImpact(
-                target,
-                MgrAttackVfx.StarGold,
-                0.72f))
-            .WithHitFx(null, null, "blunt_attack.mp3")
+            .WithHitVfxNode(target =>
+            {
+                // Regulus is a volley of generated notes rather than a blunt
+                // strike: keep its visual impact, but sound every hit with the
+                // same packed channeling cue used by note generation.
+                MgrAudio.PlayNoteChannel();
+                return MgrAttackVfx.CreateStarryImpact(
+                    target,
+                    MgrAttackVfx.StarGold,
+                    0.72f);
+            })
             .OnlyPlayAnimOnce()
             .Execute(choiceContext);
     }
