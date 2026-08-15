@@ -13,21 +13,29 @@ namespace SlayTheSpire2MGRMod.Telemetry;
 /// </summary>
 internal static class MgrRunSanityValidator
 {
-    private const int MaximumActs = 10;
-    private const int MaximumMapPoints = 200;
+    // Single source of truth for every hard numeric ceiling used when deciding
+    // whether a telemetry record is accepted. Keep MGR_TELEMETRY.md in sync.
+    private const int MaximumActs = 6;
+    private const int MaximumMapPoints = 100;
     private const int MaximumRoomsPerMapPoint = 16;
     private const int MaximumChoicesPerMapPoint = 128;
-    private const int MaximumDeckSize = 500;
-    private const int MaximumRelics = 300;
-    private const int MaximumPotions = 50;
-    private const int MaximumAscension = 100;
-    private const int MaximumHitPoints = 10_000;
-    private const int MaximumEnergy = 100;
+    private const int MaximumDeckSize = 1000;
+    private const int MaximumRelics = 100;
+    private const int MaximumPotions = 11;
+    private const int MaximumAscension = 20;
+    private const int MaximumHitPoints = 1_000;
+    private const int MaximumEnergy = 10;
     private const int MaximumNoteSlots = 100;
-    private const int MaximumGold = 10_000_000;
-    private const int MaximumReloads = 1_000;
-    private const long MaximumDurationSeconds = 72L * 60L * 60L;
+    private const int MaximumGold = 10000;
+    private const int MaximumReloads = 1000;
+    private const long MaximumDurationSeconds = 24L * 60L * 60L;
     private const int MaximumSerializedCharacters = 2_000_000;
+
+    // The accumulator performs these checks because it owns the counters, but
+    // their limits live here so all telemetry acceptance limits are searchable
+    // and maintained in one place.
+    internal const int MaximumMechanicCount = 1_000_000;
+    internal const int MaximumDamagePerSource = 100_000_000;
 
     public static bool IsValidSource(RunEndedEvent evt, out string reason)
     {

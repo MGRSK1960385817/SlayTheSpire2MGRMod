@@ -15,8 +15,6 @@ namespace SlayTheSpire2MGRMod.Telemetry;
 /// </summary>
 internal static class MgrRunTelemetryAccumulator
 {
-    private const int MaximumMechanicCount = 1_000_000;
-    private const int MaximumDamagePerSource = 100_000_000;
     private static readonly AsyncLocal<int> NoteDamageDepth = new();
     private static readonly Dictionary<NoteKind, int> NotesByKind = [];
 
@@ -114,25 +112,25 @@ internal static class MgrRunTelemetryAccumulator
 
     public static bool IsSane(out string reason)
     {
-        if (_notesGenerated is < 0 or > MaximumMechanicCount
-            || _chordsCompleted is < 0 or > MaximumMechanicCount
-            || _chordEffectTriggers is < 0 or > MaximumMechanicCount
-            || _performanceTriggers is < 0 or > MaximumMechanicCount)
+        if (_notesGenerated is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || _chordsCompleted is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || _chordEffectTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || _performanceTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
         {
             reason = "an MGR mechanic counter is out of range";
             return false;
         }
 
-        if (NotesByKind.Values.Any(value => value is < 0 or > MaximumMechanicCount)
+        if (NotesByKind.Values.Any(value => value is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
             || NotesByKind.Values.Sum(value => (long)value) != _notesGenerated)
         {
             reason = "the per-kind note counts do not match the total note count";
             return false;
         }
 
-        if (_cardDamage is < 0 or > MaximumDamagePerSource
-            || _noteDamage is < 0 or > MaximumDamagePerSource
-            || _otherPlayerDamage is < 0 or > MaximumDamagePerSource)
+        if (_cardDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
+            || _noteDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
+            || _otherPlayerDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource)
         {
             reason = "an MGR damage counter is out of range";
             return false;
