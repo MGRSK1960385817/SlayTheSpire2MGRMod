@@ -223,6 +223,44 @@ $rewardCards = @($activeCards | Where-Object {
     $_.rarity -in @('Common', 'Uncommon', 'Rare') -and
     [int]($_.multiplayerOnly ?? 0) -ne 1
 })
+
+function Test-RecordedCount([int]$Actual, [object]$Recorded, [string]$Label) {
+    if ($null -eq $Recorded -or $Actual -ne [int]$Recorded) {
+        Add-ValidationError "Registry currentCounts mismatch for ${Label}: recorded='$Recorded', actual='$Actual'."
+    }
+}
+
+$counts = $registry.currentCounts
+Test-RecordedCount $activeCards.Count $counts.activeCardsTotal 'activeCardsTotal'
+foreach ($rarity in @('Common', 'Uncommon', 'Rare')) {
+    $rarityCards = @($rewardCards | Where-Object rarity -eq $rarity)
+    Test-RecordedCount $rarityCards.Count $counts.singlePlayerRewardPool[$rarity].total "singlePlayerRewardPool.$rarity.total"
+    foreach ($type in @('Attack', 'Skill', 'Power')) {
+        $actual = @($rarityCards | Where-Object type -eq $type).Count
+        Test-RecordedCount $actual $counts.singlePlayerRewardPool[$rarity][$type] "singlePlayerRewardPool.$rarity.$type"
+    }
+}
+Test-RecordedCount $rewardCards.Count $counts.singlePlayerRewardPool.total 'singlePlayerRewardPool.total'
+foreach ($rarity in @('Basic', 'Ancient', 'Token')) {
+    $actual = @($activeCards | Where-Object rarity -eq $rarity).Count
+    Test-RecordedCount $actual $counts.otherCards[$rarity] "otherCards.$rarity"
+}
+Test-RecordedCount @($activeCards | Where-Object { [int]($_.multiplayerOnly ?? 0) -eq 1 }).Count `
+    $counts.otherCards.multiplayerOnlyRewardCards 'otherCards.multiplayerOnlyRewardCards'
+
+foreach ($rarity in @('Starter', 'Common', 'Uncommon', 'Rare', 'Shop', 'Ancient')) {
+    $actual = @($activeRelics | Where-Object rarity -eq $rarity).Count
+    Test-RecordedCount $actual $counts.activeRelics[$rarity] "activeRelics.$rarity"
+}
+Test-RecordedCount $activeRelics.Count $counts.activeRelics.total 'activeRelics.total'
+
+$activePotions = @($registry.potions | Where-Object { [int]$_.status -eq 1 })
+foreach ($rarity in @('Common', 'Uncommon', 'Rare')) {
+    $actual = @($activePotions | Where-Object rarity -eq $rarity).Count
+    Test-RecordedCount $actual $counts.activePotions[$rarity] "activePotions.$rarity"
+}
+Test-RecordedCount $activePotions.Count $counts.activePotions.total 'activePotions.total'
+
 $distribution = $rewardCards | Group-Object rarity | ForEach-Object {
     [pscustomobject]@{ Rarity = $_.Name; Count = $_.Count }
 }

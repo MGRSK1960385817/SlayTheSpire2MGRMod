@@ -29,15 +29,16 @@ public sealed class FinalShot : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        bool endingActive = IsPhraseEndBonusActive;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitVfxNode(target => MgrAttackVfx.CreateGunshot(
-                Owner.Creature,
-                target,
-                MgrAttackVfx.StarGold,
-                IsPhraseEndBonusActive ? 1.28f : 1f))
-            .WithHitFx(null, null, "blunt_attack.mp3")
+            .WithHitFx(
+                endingActive
+                    ? "vfx/vfx_attack_blunt"
+                    : "vfx/vfx_attack_slash",
+                null,
+                endingActive ? "blunt_attack.mp3" : null)
             .Execute(choiceContext);
     }
 

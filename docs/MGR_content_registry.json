@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-14",
+  "lastUpdated": "2026-08-16",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌、遗物与药水；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -8,7 +8,8 @@
     "status": "内容启用状态：1 表示当前有效，0 表示暂时停用。",
     "multiplayerOnly": "仅联机卡使用；1 表示只会在联机模式进入奖励池，并从单机卡池数量统计中排除。",
     "typeAndRarity": "卡牌记录类型与稀有度；遗物和药水只记录稀有度。",
-    "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。"
+    "summary": "仅供人类辨认内容的简要效果摘要，包含基础效果和升级变化。",
+    "currentCounts": "由下方有效条目汇总的快速统计；Validate-MgrContent.ps1 会检查其是否过期。"
   },
   "derivationGuide": "源码默认为 codeName.cs，图片默认为 codeName.png，遗物描边图默认为 codeName_outline.png；开发阶段的稳定注册键由 codeName 转为 lower_snake_case，卡牌与遗物本地化键由该注册键转为大写形式。",
   "renameGuide": "修改 name 时同步中文本地化；修改 codeName 时同步 C# 类型、源码文件、图片资源、lower_snake_case 注册键和本地化键。当前开发阶段无需兼容旧测试存档；正式发布后再冻结注册键。",
@@ -16,6 +17,31 @@
   "statusGuide": {
     "1": "当前有效，会作为模组内容维护。",
     "0": "暂时停用，保留登记但不应注册进游戏内容池。"
+  },
+  "currentCounts": {
+    "activeCardsTotal": 94,
+    "singlePlayerRewardPool": {
+      "Common": { "Attack": 9, "Skill": 11, "Power": 0, "total": 20 },
+      "Uncommon": { "Attack": 11, "Skill": 16, "Power": 8, "total": 35 },
+      "Rare": { "Attack": 8, "Skill": 8, "Power": 9, "total": 25 },
+      "total": 80
+    },
+    "otherCards": {
+      "Basic": 4,
+      "Ancient": 2,
+      "Token": 3,
+      "multiplayerOnlyRewardCards": 5
+    },
+    "activeRelics": {
+      "Starter": 1,
+      "Common": 2,
+      "Uncommon": 2,
+      "Rare": 3,
+      "Shop": 2,
+      "Ancient": 1,
+      "total": 11
+    },
+    "activePotions": { "Common": 1, "Uncommon": 1, "Rare": 1, "total": 3 }
   },
   "cards": [
     {
@@ -424,7 +450,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "0费蓝卡攻击，演奏1；造成3（5）点伤害；生成攻击、技能和能力音符各一个。"
+      "summary": "0费蓝卡攻击，演奏1（升级后2）；造成3点伤害；生成攻击、技能和能力音符各一个。"
     },
     {
       "codeName": "HeatAbnormal",
@@ -652,7 +678,7 @@
     },
     {
       "codeName": "Bird",
-      "name": "鳥",
+      "name": "「 鳥 」",
       "status": 1,
       "type": "Attack",
       "rarity": "Rare",
@@ -668,7 +694,7 @@
     },
     {
       "codeName": "ElectricAngel",
-      "name": "电子天使",
+      "name": "ʚ电子♡天使ɞ",
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
@@ -793,7 +819,7 @@
     },
     {
       "codeName": "MgrFumo",
-      "name": "MGR抚摸",
+      "name": "Fumo",
       "status": 1,
       "rarity": "Rare",
       "summary": "战斗开始时，获得 1 层强音。"

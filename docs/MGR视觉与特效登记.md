@@ -1,13 +1,9 @@
-# MGR 卡牌特效备选库与使用登记
+# MGR 视觉与特效登记
 
 本文档用于管理两件事：
 
 1. 《杀戮尖塔 2》原版或当前工程能够实现的卡牌特效备选方案。
 2. 当前 MGR 卡牌已经使用的特效、颜色、播放方式与演奏适配情况。
-
-原版技能牌、能力牌、持续形态与能力触发特效的详细盘点见：
-
-- `docs/MGR原版技能与能力特效盘点与分配建议.md`
 
 修改卡牌特效后应同步更新本文档。实现细节主要位于：
 
@@ -18,6 +14,25 @@
 - `Scripts/Characters/MgrCharacterAuraVisual.cs`：卫星少女可触发状态下的持续轨道星。
 - `Scripts/Mechanics/MgrVisualTuning.cs`：演奏触发速度和演奏期间特效等待倍率。
 - `Scripts/Cards/*.cs`：每张卡自己的播放顺序、颜色与是否只播放一次。
+
+### 核心调参入口
+
+常规布局、透明度、速度与缩放优先修改 `Scripts/Mechanics/MgrVisualTuning.cs`，不要直接改状态层：
+
+| 目标 | 主要参数组 |
+|---|---|
+| 音符排位置、尺寸、间距 | `Notes.RackOffset`、`ArtworkFillRatio`、`DesiredSlotSpacing`、`MaximumRackWidth` |
+| 音符数值位置与发光 | `Notes.AmountLabelPosition`、`AmountLabelSize`、`ArtworkGlowRadiusRatio`、`ArtworkGlowStrength` |
+| 音符生成与和弦速度 | `FirstNoteEntranceSeconds`、`MinimumNoteEntranceSeconds`、`FirstChordHoldSeconds`、`MinimumChordHoldSeconds` |
+| 演奏线谱位置与宽度 | `Performances.RackOffset`、`StaffOffset`、`StaffWidth`、`StaffLineAlpha` |
+| 演奏牌位置、大小与间距 | `CardOffsetY`、`MiniatureScale`、`UnfilledCardSpacing`、`FilledRack*Width` |
+| 演奏次数标记 | `RemainingCounterSize`、`RemainingCounterTopGap`、`RemainingCounterFontSize`、`RemainingCounterColor` |
+| 演奏入队和连续触发速度 | `EnterQueueSeconds`、`EntryAnimationAccelerationPerCard`、`SequentialTriggerDurationMultiplierPerCard` |
+| 演奏扫线前后摇 | `StaffPlayheadApproachSeconds`、`StaffPlayheadDepartureSeconds` |
+| 流星群坠落节奏 | `MeteorShowerVfx` 参数组 |
+| 金枪鱼虚影 | `FishVfx` 参数组与 `images/vfx/fish.png` |
+
+涉及鼠标命中、牌堆路由、演奏次数或和弦结算时，应修改对应机制文件，不能用视觉参数补偿逻辑错误。
 
 ## 一、使用原则
 
@@ -95,7 +110,7 @@
 | 卡牌 | Code | 当前视觉 | 色彩/尺寸 | 演奏适配 |
 |---|---|---|---|---|
 | 打击 | `MgrStrike` | 普通斩击 | 原版色 | 轻量 |
-| 最后一拍 | `FinalShot` | 自制枪口闪光、非对称曲线弹道与命中闪光 | 金色；尾音翻倍时弹道及两端闪光放大到1.28倍 | 轻量，尾迹不阻塞 |
+| 最后一拍 | `FinalShot` | 未触发尾音时使用原版普通攻击斩击；触发尾音翻倍时改用原版普通钝击 | 原版默认色 | 不再使用枪线特效 |
 | 安可 | `Encore` | 普通斩击 | 原版色 | 轻量 |
 | 金枪鱼打击 | `MaguroStrike` | 金枪鱼虚影 + 普通斩击 | 主体0.9透明度，青/紫拖影 | 轻量、虚影不阻塞 |
 | 金枪鱼横斩 | `MaguroCleave` | 每名敌人一条金枪鱼虚影 + 全体横扫 | 白色横扫；鱼影随伤害一起放大 | 轻量、虚影不阻塞 |
@@ -107,7 +122,7 @@
 | 点亮舞台 | `LightUp` | 每段伤害均从敌人上方向脚底投下一束小型舞台追光 | 金白/淡紫，带脚底光斑与少量星屑 | 轻量，多段追光可短暂重叠 |
 | 轩辕十四 | `Regulus` | 每段伤害各自生成枪口闪光、弧线弹道与命中闪光，并叠加星光命中；命中声音改用音符生成声 | 金色弹道与金色星光，缩小到适合14连击 | 轻量，多段尾迹和音符声可重叠 |
 | 呀啊啊啊 | `Yaaaaaa` | 普通钝击 | 原版色 | 轻量；不使用波动效果 |
-| 流☆星☆群 | `MeteorShower` | 每段伤害对应一颗较大的小流星；严格等前一颗完成飞行后才生成下一颗，并在两颗之间保留0.04至0.07秒随机间隔 | 紫蓝流星与紫色命中光，单颗6.2至10.2单位 | 首颗预演等待0.34秒；后续视觉串行播放；间隔参数位于 `MgrVisualTuning.MeteorShowerVfx` |
+| 流☆星☆群 | `MeteorShower` | 每段伤害对应一颗较大的小流星；相邻流星每隔0.17至0.22秒开始坠落，允许前后交叠形成流星雨 | 紫蓝流星与紫色命中光，单颗6.2至10.2单位 | 首颗预演等待0.34秒；坠落间隔只影响视觉、不影响伤害结算；参数位于 `MgrVisualTuning.MeteorShowerVfx` |
 | 金枪鱼燕返 | `MaguroReversal` | 每次攻击一条金枪鱼虚影 + 蓝色飞行斩击；重复时短暂间隔后从反方向再斩一次 | 鱼影0.76倍；蓝色飞行斩击1.02倍 | 轻量组合；第二斩只等待0.08秒并服从演奏加速 |
 | Adios | `Adios` | 自制枪口闪光、直线弹道、命中闪光 | 金色，1.05倍 | 轻量；后续演奏由队列表现 |
 | 热异常 | `HeatAbnormal` | 火焰爆发 | 橙红；随成长后的基础伤害对数放大 | 轻量 |
@@ -126,7 +141,7 @@
 | 卡牌 | 原因 |
 |---|---|
 | 时间线之东 `EastOfTimeline` | 不直接造成伤害，依赖音符生成反馈。 |
-| 霓虹霓虹 `NeoNeon` | 使用轻量星光命中反馈，随后由三种音符的生成动画完成演出。 |
+| 霓虹霓虹 `NeoNeon` | 使用原“最后一拍”的金色弧形枪线；命中时从敌人身上爆出一圈彩色星星，随后生成三种音符。 |
 | 随之任之 `Manimani` | 星光冲击；瞄准可斩杀的非爪牙敌人时切换为 `Manimani2.png` 并显示血红抖动的“雷鸣！”。 |
 
 ## 四、当前 MGR 技能与能力特效登记

@@ -44,5 +44,5 @@ public sealed class Procrastination : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars["Performance"].UpgradeValueBy(-1m);
+        DynamicVars["Performance"].UpgradeValueBy(-2m);
 }

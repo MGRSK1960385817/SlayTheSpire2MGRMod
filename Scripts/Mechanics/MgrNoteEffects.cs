@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Powers;
 using SlayTheSpire2MGRMod.Relics;
+using SlayTheSpire2MGRMod.Telemetry;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
 
@@ -246,14 +247,17 @@ public static class MgrNoteEffects
 
                 // STS1 used THORNS damage: note damage is deliberately unpowered and
                 // is not attributed to the card that completed the chord.
-                await CreatureCmd.Damage(
-                    choiceContext,
-                    target,
-                    amount,
-                    props,
-                    owner,
-                    cardSource: null,
-                    cardPlay: null);
+                using (MgrRunTelemetryAccumulator.BeginNoteDamage())
+                {
+                    await CreatureCmd.Damage(
+                        choiceContext,
+                        target,
+                        amount,
+                        props,
+                        owner,
+                        cardSource: null,
+                        cardPlay: null);
+                }
 
                 return;
             }

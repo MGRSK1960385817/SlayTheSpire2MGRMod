@@ -13,6 +13,7 @@ using SlayTheSpire2MGRMod.Characters;
 using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Powers;
 using SlayTheSpire2MGRMod.Relics;
+using SlayTheSpire2MGRMod.Telemetry;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
 
@@ -231,6 +232,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int notesGeneratedBefore = state.NotesGeneratedThisTurn;
         int chordTriggersBefore = state.ChordTriggersThisTurn;
         PhraseResolution? resolution = state.AddNote(note);
+        MgrRunTelemetryAccumulator.RecordNoteGenerated(player, kind);
         if (kind == NoteKind.Starry)
             MgrStarryNoteVfx.Spawn(player);
         RefreshConditionalCardGlows(player);
@@ -496,6 +498,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (MgrCombatStateStore.TryGet(player, out MgrCombatState state))
         {
             state.ResetTurnCounters();
+            player.Creature
+                .GetPower<UniverseOf88KeysPower>()?
+                .NotifyChordCounterChanged();
             RefreshConditionalCardGlows(player);
         }
 
@@ -594,6 +599,12 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (target.IsEnemy && result.UnblockedDamage > 0)
             RefreshManimaniHandGlows();
 
+        MgrRunTelemetryAccumulator.RecordOutgoingDamage(
+            target,
+            result,
+            dealer,
+            cardSource);
+
         return Task.CompletedTask;
     }
 
@@ -617,6 +628,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int forte)
     {
         MgrCombatState state = MgrCombatStateStore.For(player);
+        MgrRunTelemetryAccumulator.RecordChordCompleted(player);
         int triggerCount = 1 + state.ConsumePendingChordTriggers();
         if (player.GetRelic<Metronome>()?.TryDoubleCurrentChord() == true)
             triggerCount++;
@@ -624,7 +636,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
         {
+            MgrRunTelemetryAccumulator.RecordChordEffectTrigger(player);
             int chordTriggersBefore = state.RecordChordTrigger();
+            player.Creature
+                .GetPower<UniverseOf88KeysPower>()?
+                .NotifyChordCounterChanged();
             lastTriggerBefore = chordTriggersBefore;
             if (index > 0)
             {

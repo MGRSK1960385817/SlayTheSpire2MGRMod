@@ -34,13 +34,13 @@ dotnet build /p:RunPckExport=false /p:CopyModOnBuild=false
 检查登记表、注册代码、图片、Godot `.import` UID 和中英本地化是否同步：
 
 ```powershell
-pwsh -NoProfile -File tools/Validate-MgrContent.ps1
+pwsh -NoProfile -File docs/Validate-MgrContent.ps1
 ```
 
 把名称差异等警告也视为失败：
 
 ```powershell
-pwsh -NoProfile -File tools/Validate-MgrContent.ps1 -WarningsAsErrors
+pwsh -NoProfile -File docs/Validate-MgrContent.ps1 -WarningsAsErrors
 ```
 
 校验器会固定核对奖励池基线 `20/35/25`，但不能替代进游戏后的机制、动画与存档回归测试。
@@ -53,11 +53,10 @@ pwsh -NoProfile -File tools/Validate-MgrContent.ps1 -WarningsAsErrors
 - `Scripts/Mechanics`：音符、和弦、演奏、UI、动画及规则服务。
 - `Scripts/Characters`：人物模型、场景与人物周边特效。
 - `SlayTheSpire2MGRMod`：Godot 场景、图片、音频与本地化资源。
-- `docs`：内容登记、设计规范、架构图、特效登记和发布路线图。
-- `tools`：本地只读检查工具。
+- `docs`：内容登记、卡池设计、架构与检查、特效登记、文本规范及只读校验器。
+- `DataAnalysis`：PostHog 下载脚本和被 Git 忽略的本地数据。
 
-完整结构见 [`docs/MGR架构图.md`](docs/MGR架构图.md)，发布前任务见
-[`docs/MGR发布前与后续开发路线图.md`](docs/MGR发布前与后续开发路线图.md)。
+完整结构与发布前检查见 [`docs/MGR模组架构与开发检查.md`](docs/MGR模组架构与开发检查.md)。
 
 ## 开发约定
 

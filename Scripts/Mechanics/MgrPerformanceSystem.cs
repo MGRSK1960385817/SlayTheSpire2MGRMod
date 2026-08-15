@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using SlayTheSpire2MGRMod.Cards;
 using SlayTheSpire2MGRMod.Powers;
+using SlayTheSpire2MGRMod.Telemetry;
 using SlayTheSpire2MGRMod.Relics;
 
 namespace SlayTheSpire2MGRMod.Mechanics;
@@ -395,6 +396,7 @@ public static class MgrPerformanceSystem
                 ActiveVfxWaitScales[entry] = durationScale;
                 try
                 {
+                    MgrRunTelemetryAccumulator.RecordPerformanceTrigger(player);
                     await AutoPlayPerformanceCard(choiceContext, entry.Card);
                 }
                 finally
@@ -735,6 +737,7 @@ public static class MgrPerformanceSystem
                 ActiveVfxWaitScales[entry] = durationScale;
                 try
                 {
+                    MgrRunTelemetryAccumulator.RecordPerformanceTrigger(player);
                     await AutoPlayPerformanceCard(choiceContext, entry.Card);
                 }
                 finally

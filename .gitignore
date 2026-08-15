@@ -17,3 +17,7 @@ local.props
 
 # Local manual Git sync helper; never publish it with the mod source.
 /同步.BAT
+
+# Local telemetry exports may contain raw Steam IDs. Keep the analysis scripts,
+# but never commit downloaded player data.
+/DataAnalysis/Data/

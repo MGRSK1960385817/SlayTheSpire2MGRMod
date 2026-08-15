@@ -654,9 +654,9 @@ internal sealed partial class MgrMeteorShowerVisual : Node2D
         float nextStart = 0f;
         for (int index = 0; index < meteorCount; index++)
         {
-            // Each meteor begins only after the previous flight has ended.
-            // A visible random beat between them makes the sequence readable
-            // without becoming mechanically uniform.
+            // Meteors start before the previous flight has finished. Their
+            // start-to-start interval is independent from damage timing and
+            // gives the visual the overlapping cadence of a meteor shower.
             float delay = nextStart;
             float duration = RandomRange(0.30f, 0.38f);
             Vector2 end = new(
@@ -678,9 +678,9 @@ internal sealed partial class MgrMeteorShowerVisual : Node2D
                 end,
                 RandomRange(6.2f, 10.2f),
                 color));
-            nextStart += duration + RandomRange(
-                MgrVisualTuning.MeteorShowerVfx.SequentialGapMinSeconds,
-                MgrVisualTuning.MeteorShowerVfx.SequentialGapMaxSeconds);
+            nextStart += RandomRange(
+                MgrVisualTuning.MeteorShowerVfx.SpawnIntervalMinSeconds,
+                MgrVisualTuning.MeteorShowerVfx.SpawnIntervalMaxSeconds);
             _lifetime = Math.Max(_lifetime, delay + duration + 0.18f);
         }
 

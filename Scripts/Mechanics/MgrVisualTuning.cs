@@ -353,9 +353,11 @@ public static class MgrVisualTuning
 
     public static class MeteorShowerVfx
     {
-        // Each meteor still waits for the previous flight to finish. These two
-        // values control only the breathing room between consecutive meteors.
-        public const float SequentialGapMinSeconds = 0.04f;
-        public const float SequentialGapMaxSeconds = 0.07f;
+        // Time from one meteor beginning its fall to the next meteor beginning.
+        // This controls only the sky visual and does not change damage timing.
+        // It is intentionally shorter than one meteor's 0.30-0.38 second
+        // flight, so consecutive meteors overlap like an actual shower.
+        public const float SpawnIntervalMinSeconds = 0.07f;
+        public const float SpawnIntervalMaxSeconds = 0.14f;
     }
 }

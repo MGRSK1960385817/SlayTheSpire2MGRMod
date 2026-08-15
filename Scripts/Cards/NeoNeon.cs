@@ -36,7 +36,16 @@ public sealed class NeoNeon : MgrCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_starry_impact")
+            .WithHitVfxNode(target =>
+            {
+                MgrSignatureVfx.SpawnRainbowStarRing(target, 26);
+                return MgrAttackVfx.CreateGunshot(
+                    Owner.Creature,
+                    target,
+                    MgrAttackVfx.StarGold,
+                    1f);
+            })
+            .WithHitFx(null, null, "blunt_attack.mp3")
             .Execute(choiceContext);
 
         await ChannelNote(choiceContext, NoteKind.Attack);
@@ -44,5 +53,6 @@ public sealed class NeoNeon : MgrCard
         await ChannelNote(choiceContext, NoteKind.Power);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+    protected override void OnUpgrade() =>
+        DynamicVars["Performance"].UpgradeValueBy(1m);
 }
