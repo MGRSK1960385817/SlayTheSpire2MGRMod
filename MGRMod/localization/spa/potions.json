@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "Notas embotelladas",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "Genera [blue]{Notes}[/blue] [gold]Notas básicas[/gold] aleatorias.",
+  "MGR_MOD_POTION_LOZENGE.title": "Pastilla para la garganta",
+  "MGR_MOD_POTION_LOZENGE.description": "Gana [blue]{FortePower}[/blue] de [gold]Forte[/gold].",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "Alma del escenario",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "Añade todas las cartas de tu [gold]Mano[/gold] a la cola de [gold]Interpretación[/gold]."
+}

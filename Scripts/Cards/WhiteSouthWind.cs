@@ -23,7 +23,7 @@ public sealed class WhiteSouthWind : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(3m, ValueProp.Move)
+        new BlockVar(2m, ValueProp.Move)
     ];
 
     public WhiteSouthWind() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)

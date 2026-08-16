@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]Je deviendrai l'étoile de tout le monde.[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "Hmm hmm~ (fredonne nonchalamment)",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "Glou glou…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "Les cartes de MGR peuvent apparaître dans les récompenses et dans la boutique.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "Cartes de MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "Une petite étoile colorée, une chanson dérivant dans l'Univers.\nPlanifiez notes et interprétations pour transformer le combat en spectacle.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "Pardon, pardon TT ne me fais pas ça…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "Ouah, tout cet argent ! Je ne sais même pas comment le dépenser ?!",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "son/sa/ses",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "elle",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "le sien/la sienne/les siens/les siennes",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "elle",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "Jouez une partie avec [pink]{Prerequisite}[/pink] pour débloquer MGR."
+}

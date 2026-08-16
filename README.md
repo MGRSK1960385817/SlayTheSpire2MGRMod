@@ -18,7 +18,7 @@ MGR 人物模组的《杀戮尖塔 2》重制工程。目前处于发布前收�
 
 - Godot 4.5.1 Mono
 - .NET 9 SDK
-- 《杀戮尖塔 2》最低版本 `0.110.0`
+- 《杀戮尖塔 2》最低版本 `0.111.0`
 - RitsuLib `0.5.1` 或更高版本（模组 ID：`STS2-RitsuLib`）
 
 复制 `local.props.template` 为 `local.props`，然后填写本机游戏目录与 Godot 可执行文件路径。`local.props` 仅供本机使用，不应提交。

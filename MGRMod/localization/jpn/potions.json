@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "瓶詰めの音符",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "ランダムな[gold]基本音符[/gold]を[blue]{Notes}[/blue]個生成する。",
+  "MGR_MOD_POTION_LOZENGE.title": "のど飴",
+  "MGR_MOD_POTION_LOZENGE.description": "[gold]フォルテ[/gold][blue]{FortePower}[/blue]を得る。",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "舞台の魂",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "[gold]手札[/gold]をすべて[gold]演奏[/gold]キューに加える。"
+}

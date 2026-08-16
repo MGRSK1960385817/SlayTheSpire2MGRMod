@@ -120,8 +120,9 @@ public static class MgrAbilityVfx
 
     /// <summary>
     /// Daybreak Frontline first gathers every affected card into the middle,
-    /// then passes those temporary card faces through Tower 2's full Fiend
-    /// Fire-style exhaust dissolve. Gameplay pile movement remains in the
+    /// then passes them through Tower 2's full Fiend Fire-style exhaust
+    /// dissolve. Hand targets contribute their real visible NCard; cards from
+    /// hidden piles use temporary faces. Gameplay pile movement remains in the
     /// caller, so hooks and pile bookkeeping still resolve exactly once.
     /// </summary>
     public static async Task PlayCentralCardExhaust(
@@ -141,23 +142,37 @@ public static class MgrAbilityVfx
 
         for (int index = 0; index < visibleCount; index++)
         {
-            NCard? node = NCard.Create(cards[index]);
+            CardModel card = cards[index];
+            NCard? node = TakeHandCardNodeForDaybreak(card, visualRoot);
+            bool usesRealHandNode = node is not null;
+            node ??= NCard.Create(card);
             if (node is null)
                 continue;
 
-            visualRoot.AddChildSafely(node);
+            if (!usesRealHandNode)
+                visualRoot.AddChildSafely(node);
             node.UpdateVisuals(
-                cards[index].Pile?.Type ?? PileType.Play,
+                card.Pile?.Type ?? PileType.Play,
                 CardPreviewMode.Normal);
             node.MouseFilter = Control.MouseFilterEnum.Ignore;
             node.ZIndex = 120 + index;
-            node.GlobalPosition = GetDaybreakCardOrigin(
-                cards[index],
-                node,
-                center,
-                index);
-            node.Scale = Vector2.One * 0.22f;
-            node.Modulate = new Color(1f, 1f, 1f, 0.18f);
+            if (!usesRealHandNode)
+            {
+                node.GlobalPosition = GetDaybreakCardOrigin(
+                    card,
+                    node,
+                    center,
+                    index);
+                node.Scale = Vector2.One * 0.22f;
+                node.Modulate = new Color(1f, 1f, 1f, 0.18f);
+            }
+            else
+            {
+                // Reparent(..., keepGlobalTransform: true) preserves the exact
+                // on-screen hand position and scale. The tween below therefore
+                // begins at the real card rather than a duplicated preview.
+                node.Modulate = Colors.White;
+            }
             cardNodes.Add(node);
 
             Tween gather = node.CreateTween().SetParallel();
@@ -213,6 +228,34 @@ public static class MgrAbilityVfx
         }
 
         await Task.WhenAll(exhaustAnimations);
+    }
+
+    /// <summary>
+    /// Detaches the actual hand NCard from its holder and transfers it to the
+    /// Daybreak presentation layer without changing its combat pile yet. The
+    /// later silent CardCmd.Exhaust still owns hooks and model bookkeeping;
+    /// this method owns only the already-visible hand presentation.
+    /// </summary>
+    private static NCard? TakeHandCardNodeForDaybreak(
+        CardModel card,
+        Control visualRoot)
+    {
+        if (card.Pile?.Type is not PileType.Hand ||
+            NPlayerHand.Instance is not { } hand ||
+            hand.GetCard(card) is not { } node ||
+            !GodotObject.IsInstanceValid(node))
+        {
+            return null;
+        }
+
+        // Move the node before clearing the holder. NCardHolder.Clear only
+        // releases its reference when the card already has another parent, so
+        // NPlayerHand.Remove can safely clean up the holder without freeing the
+        // NCard that is about to fly into the central exhaust row.
+        node.PlayPileTween?.Kill();
+        node.Reparent(visualRoot, keepGlobalTransform: true);
+        hand.Remove(card);
+        return node;
     }
 
     private static Vector2 GetDaybreakCardPosition(

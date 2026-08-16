@@ -205,8 +205,16 @@ public static class MgrNoteVisuals
                 if (enteringIndex >= 0 && enteringIndex < _slots.Count)
                 {
                     _slots[enteringIndex].RandomizeIdleMotion();
+                    // Omnia can immediately fan out into six component effects
+                    // when it completes a chord. Give it a dedicated very short
+                    // beat so its card is not held in the played-card position
+                    // before entering Performance.
+                    double entranceSeconds =
+                        notes[enteringIndex].Kind == NoteKind.OmniaNote
+                            ? MgrVisualTuning.Notes.OmniaNoteEntranceSeconds
+                            : GetNoteEntranceSeconds(notesGeneratedBefore);
                     await _slots[enteringIndex].PlayEntranceAnimation(
-                        GetNoteEntranceSeconds(notesGeneratedBefore));
+                        entranceSeconds);
                 }
 
                 if (clearAfterDelay && IsValid)

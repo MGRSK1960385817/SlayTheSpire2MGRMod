@@ -64,6 +64,7 @@ public sealed class Masterful : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Block.UpgradeValueBy(2m);
         DynamicVars["StrengthPower"].UpgradeValueBy(1m);
         DynamicVars["DexterityPower"].UpgradeValueBy(1m);
     }

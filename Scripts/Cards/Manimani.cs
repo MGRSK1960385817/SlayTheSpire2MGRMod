@@ -83,8 +83,16 @@ public sealed class Manimani : MgrCard
         FatalPortraitPath
     ];
 
+    // Manimani reserves the native red warning channel for its fully satisfied
+    // Fatal condition. Its ordinary inherited gold rules remain untouched, but
+    // the lethal/history hint is no longer added to the gold channel.
     protected override bool ShouldGlowGoldInternal =>
-        base.ShouldGlowGoldInternal ||
+        base.ShouldGlowGoldInternal;
+
+    protected override bool ShouldGlowRedInternal =>
+        base.ShouldGlowRedInternal || HasSatisfiedFatalTarget;
+
+    private bool HasSatisfiedFatalTarget =>
         CombatState is not null &&
         CombatState.HittableEnemies.Any(IsFatalTarget);
 
@@ -103,21 +111,33 @@ public sealed class Manimani : MgrCard
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
         Creature target = cardPlay.Target;
-        bool shouldTriggerFatal = CanTriggerFatal(target);
-        int rememberedDamage = shouldTriggerFatal
-            ? GetDamageDealtByTargetThisCombat(target)
-            : 0;
+        UpdateDynamicVarPreview(
+            CardPreviewMode.Normal,
+            target,
+            DynamicVars);
+        int rememberedDamage = GetDamageDealtByTargetThisCombat(target);
+        bool fatalConditionSatisfied = IsFatalConditionSatisfied(
+            target,
+            DynamicVars.Damage.PreviewValue,
+            rememberedDamage);
+
+        // The full-screen m1-m4/m6 sequence belongs only to a fully satisfied
+        // Fatal target. Ordinary plays skip the image sequence but retain the
+        // target-local impact below.
+        if (fatalConditionSatisfied)
+            await MgrManimaniVfx.PlayPrelude(fatalConditionSatisfied);
+        MgrManimaniVfx.SpawnImpact(target, fatalConditionSatisfied);
 
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .Targeting(target)
-            .WithHitFx("vfx/vfx_starry_impact", null, "heavy_attack.mp3")
+            .WithHitFx(null)
             .Execute(choiceContext);
 
         bool wasKilled = attack.Results
             .SelectMany(static results => results)
             .Any(static result => result.WasTargetKilled);
-        if (!shouldTriggerFatal || !wasKilled || rememberedDamage <= 0)
+        if (!fatalConditionSatisfied || !wasKilled)
             return;
 
         IncreaseDamagePermanently(rememberedDamage);
@@ -174,9 +194,6 @@ public sealed class Manimani : MgrCard
 
     private bool IsFatalTarget(Creature target)
     {
-        if (!CanTriggerFatal(target))
-            return false;
-
         decimal damage = DynamicVars.Damage.BaseValue;
         if (Pile?.Type is PileType.Hand or PileType.Play)
         {
@@ -187,12 +204,25 @@ public sealed class Manimani : MgrCard
             damage = DynamicVars.Damage.PreviewValue;
         }
 
-        return damage >= target.CurrentHp + target.Block;
+        return IsFatalConditionSatisfied(
+            target,
+            damage,
+            GetDamageDealtByTargetThisCombat(target));
     }
 
     private bool IsFatalTargetFromPreview(Creature target) =>
+        IsFatalConditionSatisfied(
+            target,
+            DynamicVars.Damage.PreviewValue,
+            GetDamageDealtByTargetThisCombat(target));
+
+    private static bool IsFatalConditionSatisfied(
+        Creature target,
+        decimal projectedDamage,
+        int rememberedDamage) =>
+        rememberedDamage > 0 &&
         CanTriggerFatal(target) &&
-        DynamicVars.Damage.PreviewValue >= target.CurrentHp + target.Block;
+        projectedDamage >= target.CurrentHp + target.Block;
 
     private static bool CanTriggerFatal(Creature target) =>
         target.IsAlive &&
@@ -200,10 +230,10 @@ public sealed class Manimani : MgrCard
         target.Powers.All(static power => power.ShouldOwnerDeathTriggerFatal());
 
     /// <summary>
-    /// Reads the combat history directly so the permanent-growth effect does
-    /// not depend on a separate listener having mirrored every damage event.
-    /// Only powered Move damage that actually reached this player's HP counts;
-    /// blocked damage and damage from powers/relics are therefore excluded.
+    /// Reads the combat history directly so the permanent-growth effect and
+    /// its target preview share exactly the same source of truth. Any damage
+    /// dealt by this enemy that actually reached this player's HP counts;
+    /// fully blocked hits are excluded by UnblockedDamage.
     /// </summary>
     private int GetDamageDealtByTargetThisCombat(Creature target)
     {
@@ -212,7 +242,7 @@ public sealed class Manimani : MgrCard
             .Where(entry =>
                 ReferenceEquals(entry.Receiver, Owner.Creature) &&
                 ReferenceEquals(entry.Dealer, target) &&
-                entry.Result.Props.IsPoweredAttack())
+                entry.Result.UnblockedDamage > 0)
             .Sum(static entry => entry.Result.UnblockedDamage);
     }
 

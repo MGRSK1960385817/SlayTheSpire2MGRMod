@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "Ноты в бутылке",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "Создает случайные [gold]базовые ноты[/gold]: [blue]{Notes}[/blue].",
+  "MGR_MOD_POTION_LOZENGE.title": "Леденец для горла",
+  "MGR_MOD_POTION_LOZENGE.description": "Дает [blue]{FortePower}[/blue] [gold]форте[/gold].",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "Душа сцены",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "Добавляет все карты из [gold]руки[/gold] в [gold]очередь исполнения[/gold]."
+}

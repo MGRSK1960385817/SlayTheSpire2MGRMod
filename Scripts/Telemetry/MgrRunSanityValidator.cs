@@ -25,7 +25,6 @@ internal static class MgrRunSanityValidator
     private const int MaximumAscension = 20;
     private const int MaximumHitPoints = 1_000;
     private const int MaximumEnergy = 10;
-    private const int MaximumNoteSlots = 100;
     private const int MaximumGold = 10000;
     private const int MaximumReloads = 1000;
     private const long MaximumDurationSeconds = 24L * 60L * 60L;
@@ -83,9 +82,6 @@ internal static class MgrRunSanityValidator
         if (player.MaxEnergy is < 0 or > MaximumEnergy)
             return Reject($"maximum energy {player.MaxEnergy} is out of range", out reason);
 
-        if (player.BaseOrbSlotCount is < 0 or > MaximumNoteSlots)
-            return Reject($"base note slots {player.BaseOrbSlotCount} is out of range", out reason);
-
         if (player.Gold is < 0 or > MaximumGold)
             return Reject($"gold {player.Gold} is out of range", out reason);
 
@@ -133,7 +129,9 @@ internal static class MgrRunSanityValidator
             }
         }
 
-        if (!MgrRunTelemetryAccumulator.IsSane(out reason))
+        if (!MgrRunTelemetryAccumulator.IsSane(
+                player.ExtraFields?.DamageDealt ?? 0,
+                out reason))
             return false;
 
         reason = string.Empty;

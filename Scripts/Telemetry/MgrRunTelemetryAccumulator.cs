@@ -6,51 +6,82 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
+using STS2RitsuLib;
+using STS2RitsuLib.RunData;
 
 namespace MGRMod.Telemetry;
 
 /// <summary>
-/// Keeps only compact, run-wide MGR mechanic totals. It deliberately does not
-/// retain individual card plays, damage events, note order or combat snapshots.
+/// Keeps only compact, run-wide MGR mechanic totals. The totals live in a
+/// RitsuLib run-saved-data slot, so saving and loading a combat rewinds them to
+/// the same checkpoint as the run instead of losing or double-counting data.
 /// </summary>
 internal static class MgrRunTelemetryAccumulator
 {
+    private const string SavedDataKey = "telemetry_aggregate";
     private static readonly AsyncLocal<int> NoteDamageDepth = new();
-    private static readonly Dictionary<NoteKind, int> NotesByKind = [];
 
-    private static IRunState? _run;
-    private static int _notesGenerated;
-    private static int _chordsCompleted;
-    private static int _chordEffectTriggers;
-    private static int _performanceTriggers;
-    private static int _cardDamage;
-    private static int _noteDamage;
-    private static int _otherPlayerDamage;
+    private static RunSavedData<MgrTelemetryRunState>? _savedState;
+    private static RunState? _run;
+
+    public static void RegisterSavedData()
+    {
+        if (_savedState is not null)
+            return;
+
+        using (RitsuLibFramework.BeginModDataRegistration(Entry.ModId))
+        {
+            _savedState = RitsuLibFramework
+                .GetRunSavedDataStore(Entry.ModId)
+                .Register(
+                    SavedDataKey,
+                    () => new MgrTelemetryRunState(),
+                    new RunSavedDataOptions
+                    {
+                        SchemaVersion = 1,
+                        WritePolicy = RunSavedDataWritePolicy.WhenNonDefault
+                    });
+        }
+    }
+
+    public static void BeginRun(RunState run, bool isNewRun)
+    {
+        _run = run;
+        NoteDamageDepth.Value = 0;
+
+        RunSavedData<MgrTelemetryRunState>? savedState = _savedState;
+        if (savedState is null)
+            return;
+
+        if (isNewRun)
+            savedState.Set(run, new MgrTelemetryRunState());
+        else
+            _ = savedState.Get(run);
+    }
 
     public static void RecordNoteGenerated(Player player, NoteKind kind)
     {
-        EnsureRun(player);
-        _notesGenerated = SaturatingAdd(_notesGenerated, 1);
-        NotesByKind[kind] = SaturatingAdd(NotesByKind.GetValueOrDefault(kind), 1);
+        Modify(player, state =>
+        {
+            state.NotesGenerated = SaturatingAdd(state.NotesGenerated, 1);
+            string key = GetNoteKindKey(kind);
+            state.NotesByKind[key] = SaturatingAdd(
+                state.NotesByKind.GetValueOrDefault(key),
+                1);
+        });
     }
 
-    public static void RecordChordCompleted(Player player)
-    {
-        EnsureRun(player);
-        _chordsCompleted = SaturatingAdd(_chordsCompleted, 1);
-    }
+    public static void RecordChordCompleted(Player player) =>
+        Modify(player, state =>
+            state.ChordsCompleted = SaturatingAdd(state.ChordsCompleted, 1));
 
-    public static void RecordChordEffectTrigger(Player player)
-    {
-        EnsureRun(player);
-        _chordEffectTriggers = SaturatingAdd(_chordEffectTriggers, 1);
-    }
+    public static void RecordChordEffectTrigger(Player player) =>
+        Modify(player, state =>
+            state.ChordEffectTriggers = SaturatingAdd(state.ChordEffectTriggers, 1));
 
-    public static void RecordPerformanceTrigger(Player player)
-    {
-        EnsureRun(player);
-        _performanceTriggers = SaturatingAdd(_performanceTriggers, 1);
-    }
+    public static void RecordPerformanceTrigger(Player player) =>
+        Modify(player, state =>
+            state.PerformanceTriggers = SaturatingAdd(state.PerformanceTriggers, 1));
 
     public static IDisposable BeginNoteDamage() => new NoteDamageScope();
 
@@ -63,76 +94,114 @@ internal static class MgrRunTelemetryAccumulator
         if (!target.IsEnemy || result.UnblockedDamage <= 0)
             return;
 
-        Player? sourcePlayer = dealer?.Player ?? cardSource?.Owner;
+        // Match the base game's ExtraFields.DamageDealt definition exactly:
+        // only damage whose dealer belongs to the MGR player is classified.
+        Player? sourcePlayer = dealer?.Player;
         if (sourcePlayer?.Character is not MgrCharacter)
             return;
 
-        EnsureRun(sourcePlayer);
-        if (NoteDamageDepth.Value > 0)
+        Modify(sourcePlayer, state =>
         {
-            _noteDamage = SaturatingAdd(_noteDamage, result.UnblockedDamage);
-        }
-        else if (cardSource is not null)
-        {
-            _cardDamage = SaturatingAdd(_cardDamage, result.UnblockedDamage);
-        }
-        else
-        {
-            _otherPlayerDamage = SaturatingAdd(
-                _otherPlayerDamage,
-                result.UnblockedDamage);
-        }
+            if (NoteDamageDepth.Value > 0)
+            {
+                state.NoteDamage = SaturatingAdd(
+                    state.NoteDamage,
+                    result.UnblockedDamage);
+            }
+            else if (cardSource is not null)
+            {
+                state.CardDamage = SaturatingAdd(
+                    state.CardDamage,
+                    result.UnblockedDamage);
+            }
+            else
+            {
+                state.OtherPlayerDamage = SaturatingAdd(
+                    state.OtherPlayerDamage,
+                    result.UnblockedDamage);
+            }
+        });
     }
 
-    public static JsonObject BuildSnapshot(int reloadCount)
+    public static JsonObject BuildSnapshot(int totalDamageDealt)
     {
+        MgrTelemetryRunState state = GetCurrentState(out bool trackingAvailable);
+        long classifiedDamage = (long)state.CardDamage
+                                + state.NoteDamage
+                                + state.OtherPlayerDamage;
+        int unclassifiedDamage = classifiedDamage >= totalDamageDealt
+            ? 0
+            : (int)Math.Min(int.MaxValue, totalDamageDealt - classifiedDamage);
         JsonObject noteKinds = new();
         foreach (NoteKind kind in Enum.GetValues<NoteKind>())
-            noteKinds[GetNoteKindKey(kind)] = NotesByKind.GetValueOrDefault(kind);
+        {
+            string key = GetNoteKindKey(kind);
+            noteKinds[key] = state.NotesByKind.GetValueOrDefault(key);
+        }
 
         return new JsonObject
         {
-            // Reloading can rewind combat state while this in-memory aggregate
-            // cannot. Keep the totals useful, but make partial/duplicated samples
-            // explicitly filterable in PostHog.
-            ["tracking_complete"] = reloadCount == 0,
-            ["notes_generated"] = _notesGenerated,
+            // These totals now share the run's save/checkpoint lifecycle. An SL
+            // restores the saved aggregate before replaying the combat.
+            ["tracking_complete"] = trackingAvailable,
+            ["reload_safe"] = trackingAvailable,
+            ["notes_generated"] = state.NotesGenerated,
             ["notes_by_kind"] = noteKinds,
-            ["chords_completed"] = _chordsCompleted,
-            ["chord_effect_triggers"] = _chordEffectTriggers,
-            ["performance_triggers"] = _performanceTriggers,
+            ["chords_completed"] = state.ChordsCompleted,
+            ["chord_effect_triggers"] = state.ChordEffectTriggers,
+            ["performance_triggers"] = state.PerformanceTriggers,
             ["damage_by_source"] = new JsonObject
             {
-                ["card"] = _cardDamage,
-                ["note"] = _noteDamage,
-                ["other"] = _otherPlayerDamage
+                ["card"] = state.CardDamage,
+                ["note"] = state.NoteDamage,
+                ["other"] = state.OtherPlayerDamage,
+                // This keeps the categories reconcilable with the base game's
+                // authoritative total if a new damage path bypasses our hook.
+                ["unclassified"] = unclassifiedDamage
             }
         };
     }
 
-    public static bool IsSane(out string reason)
+    public static bool IsSane(int totalDamageDealt, out string reason)
     {
-        if (_notesGenerated is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
-            || _chordsCompleted is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
-            || _chordEffectTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
-            || _performanceTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
+        MgrTelemetryRunState state = GetCurrentState(out bool trackingAvailable);
+        if (!trackingAvailable)
+        {
+            reason = "the MGR run-saved telemetry state is unavailable";
+            return false;
+        }
+        if (state.NotesGenerated is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || state.ChordsCompleted is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || state.ChordEffectTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount
+            || state.PerformanceTriggers is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
         {
             reason = "an MGR mechanic counter is out of range";
             return false;
         }
 
-        if (NotesByKind.Values.Any(value => value is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
-            || NotesByKind.Values.Sum(value => (long)value) != _notesGenerated)
+        if (state.NotesByKind.Values.Any(
+                value => value is < 0 or > MgrRunSanityValidator.MaximumMechanicCount)
+            || state.NotesByKind.Values.Sum(value => (long)value) != state.NotesGenerated)
         {
             reason = "the per-kind note counts do not match the total note count";
             return false;
         }
 
-        if (_cardDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
-            || _noteDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
-            || _otherPlayerDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource)
+        if (state.CardDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
+            || state.NoteDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource
+            || state.OtherPlayerDamage is < 0 or > MgrRunSanityValidator.MaximumDamagePerSource)
         {
             reason = "an MGR damage counter is out of range";
+            return false;
+        }
+
+        long classifiedDamage = (long)state.CardDamage
+                                + state.NoteDamage
+                                + state.OtherPlayerDamage;
+        if (classifiedDamage > totalDamageDealt)
+        {
+            reason =
+                $"classified MGR damage {classifiedDamage} exceeds the base-game total {totalDamageDealt}";
             return false;
         }
 
@@ -142,26 +211,41 @@ internal static class MgrRunTelemetryAccumulator
 
     public static void Reset()
     {
+        // Do not clear the saved slot here. RunEnded can serialize after this
+        // callback, and a newly started run gets an explicit fresh state.
         _run = null;
-        _notesGenerated = 0;
-        _chordsCompleted = 0;
-        _chordEffectTriggers = 0;
-        _performanceTriggers = 0;
-        _cardDamage = 0;
-        _noteDamage = 0;
-        _otherPlayerDamage = 0;
-        NotesByKind.Clear();
         NoteDamageDepth.Value = 0;
     }
 
-    private static void EnsureRun(Player player)
+    private static void Modify(Player player, Action<MgrTelemetryRunState> mutation)
     {
-        if (ReferenceEquals(_run, player.RunState))
+        if (player.RunState is not RunState run)
             return;
 
-        Reset();
-        _run = player.RunState;
+        _run = run;
+        _savedState?.Modify(run, state =>
+        {
+            Normalize(state);
+            mutation(state);
+        });
     }
+
+    private static MgrTelemetryRunState GetCurrentState(out bool trackingAvailable)
+    {
+        if (_run is not null && _savedState is not null)
+        {
+            MgrTelemetryRunState state = _savedState.Get(_run);
+            Normalize(state);
+            trackingAvailable = true;
+            return state;
+        }
+
+        trackingAvailable = false;
+        return new MgrTelemetryRunState();
+    }
+
+    private static void Normalize(MgrTelemetryRunState state) =>
+        state.NotesByKind ??= new Dictionary<string, int>(StringComparer.Ordinal);
 
     private static int SaturatingAdd(int current, int amount) =>
         amount <= 0 || current >= int.MaxValue - amount
@@ -196,4 +280,21 @@ internal static class MgrRunTelemetryAccumulator
             NoteDamageDepth.Value = Math.Max(0, NoteDamageDepth.Value - 1);
         }
     }
+}
+
+/// <summary>
+/// Serializable, aggregate-only state embedded in the current run save.
+/// Public setters are required by the run-saved-data serializer.
+/// </summary>
+public sealed class MgrTelemetryRunState
+{
+    public int NotesGenerated { get; set; }
+    public Dictionary<string, int> NotesByKind { get; set; } =
+        new(StringComparer.Ordinal);
+    public int ChordsCompleted { get; set; }
+    public int ChordEffectTriggers { get; set; }
+    public int PerformanceTriggers { get; set; }
+    public int CardDamage { get; set; }
+    public int NoteDamage { get; set; }
+    public int OtherPlayerDamage { get; set; }
 }

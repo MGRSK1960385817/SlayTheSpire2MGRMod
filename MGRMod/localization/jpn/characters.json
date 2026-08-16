@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]みんなの星になるよ。[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "ふふふ～ん♪（のんびり鼻歌）",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "ぐるぐる……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "MGRのカードが報酬とショップに出現するようになる。",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGRカード",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "宇宙を漂う歌のような、色鮮やかな小さな星。\n音符と演奏を組み立て、戦闘をステージに変える。",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "ごめんなさいごめんなさいTT そんなことしないで……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "わあ、こんなにお金が！どう使えばいいの？！",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "彼女の",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "彼女",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "彼女の",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "彼女",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "[pink]{Prerequisite}[/pink]でゲームをクリアするとMGRがアンロックされる。"
+}

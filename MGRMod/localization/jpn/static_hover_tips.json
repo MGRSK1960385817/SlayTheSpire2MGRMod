@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "戦闘中",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "手札、山札、捨て札、廃棄札、演奏キューにあるカードを含む。",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "基本ダメージ",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "カード自体のダメージ。筋力や活力などのボーナスは含まない。",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "音符に変換",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "対象のカードを廃棄し、対応する音符を生成する。"
+}

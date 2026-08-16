@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "Notes en bouteille",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "Générez [blue]{Notes}[/blue] [gold]notes de base[/gold] aléatoires.",
+  "MGR_MOD_POTION_LOZENGE.title": "Pastille pour la gorge",
+  "MGR_MOD_POTION_LOZENGE.description": "Gagnez [gold]Forte[/gold] ([blue]{FortePower}[/blue]).",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "Âme de la scène",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "Ajoutez toutes les cartes de votre [gold]Main[/gold] à la [gold]file d'interprétation[/gold]."
+}

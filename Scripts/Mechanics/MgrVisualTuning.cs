@@ -68,6 +68,10 @@ public static class MgrVisualTuning
         // both paths retain a visible minimum duration.
         public const double FirstNoteEntranceSeconds = 0.28;
         public const double MinimumNoteEntranceSeconds = 0.10;
+        // Omnia holds its played card in the native centre presentation until
+        // this awaited entrance beat completes. Keep it visible but brief so
+        // the card can proceed into the Performance rack promptly.
+        public const double OmniaNoteEntranceSeconds = 0.04;
         public const double NoteEntranceAccelerationPerNote = 0.018;
         public const double FirstChordHoldSeconds = 0.42;
         public const double MinimumChordHoldSeconds = 0.12;
@@ -334,8 +338,10 @@ public static class MgrVisualTuning
 
     public static class StarryNoteVfx
     {
-        public const int MinimumStarsPerNote = 2;
-        public const int MaximumStarsPerNote = 4;
+        // Number of falling stars scattered across the upper combat field for
+        // each actually generated Starry Note.
+        public const int MinimumStarsPerNote = 5;
+        public const int MaximumStarsPerNote = 8;
         public const int ZIndex = 190;
     }
 
@@ -349,6 +355,59 @@ public static class MgrVisualTuning
         public const float DrawPadding = 16f;
         public const float FadeOutSeconds = 0.24f;
         public const int ZIndex = 20;
+    }
+
+    /// <summary>
+    /// Full-screen, frame-by-frame presentation and target-local impact for
+    /// Manimani (随之任之). The backdrop uses a dedicated CanvasLayer so the
+    /// native played-card display cannot cover the centre of the artwork.
+    /// </summary>
+    public static class ManimaniVfx
+    {
+        // m1-m3 are quick animation beats; m4 is the deliberate anticipation
+        // hold. Damage begins on the same beat that m6 appears.
+        public const float Frame1Seconds = 0.2f;
+        public const float Frame2Seconds = 0.2f;
+        public const float Frame3Seconds = 0.2f;
+        public const float Frame4Seconds = 0.5f;
+        // m6 starts fading immediately upon appearing.
+        public const float OutcomeFadeSeconds = 0.2f;
+
+        // Source art is 3000x1500. Cover scaling fills the combat viewport and
+        // crops only the excess edge caused by a different aspect ratio.
+        public const float BackdropScale = 1f;
+        public static readonly Vector2 BackdropOffset = new(-100f, 0f);
+        public const float BackdropBrightness = 0.98f;
+        // Every frame in the conditional full-screen sequence uses the same
+        // opacity so texture changes do not introduce unintended brightness
+        // steps. The outcome frame is m6; the unused m5 asset was removed.
+        public const float Frame1Opacity = 0.9f;
+        public const float Frame2Opacity = 0.9f;
+        public const float Frame3Opacity = 0.9f;
+        public const float Frame4Opacity = 0.9f;
+        public const float OutcomeOpacity = 0.9f;
+        // Higher than the native combat/played-card canvases, while remaining
+        // below MGR's hover preview (90) and full-screen post-process (96).
+        public const int BackdropCanvasLayer = 85;
+
+        public const float ImpactLifetimeSeconds = 0.30f;
+        public const float ImpactScale = 1f;
+        public const float FatalImpactScale = 1.5f;
+        public const int ImpactShardCount = 42;
+        public const int ImpactZIndex = 220;
+        public static readonly Color ImpactFireColor = new("ff542e");
+        public const float ImpactFireScale = 1.35f;
+        public const float FatalImpactFireScale = 1.65f;
+        // Linear playback ratio for NoteChannel.ogg at the final impact. The
+        // m1-m4 image transitions are silent. This replaces the old
+        // heavy_attack.mp3 hit and stays louder than ordinary note generation.
+        public const float ImpactNoteSoundVolume = 0.42f;
+        // The satisfied Fatal branch replaces the note cue with these two
+        // impact layers. The gunshot layer matches MGR's gun-themed cards.
+        public const float FatalGaseousImpactSoundVolume = 0.75f;
+        public const float FatalGunshotImpactSoundVolume = 0.90f;
+        // The burn layer is played only for the satisfied Fatal branch.
+        public const float FatalFireSoundVolume = 0.86f;
     }
 
     public static class MeteorShowerVfx

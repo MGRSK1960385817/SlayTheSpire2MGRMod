@@ -12,7 +12,7 @@
   "MGR_MOD_RELIC_YOUR_STAGE.description": "你每回合打出的第一张演奏牌的演奏次数增加1。",
   "MGR_MOD_RELIC_YOUR_STAGE.flavor": "世界聚焦于你。",
   "MGR_MOD_RELIC_BOOK_OF_GRUDGES.title": "记仇小本本",
-  "MGR_MOD_RELIC_BOOK_OF_GRUDGES.description": "战斗开始时，生成2个攻击音符。\n每累计失去5点生命，就额外生成1个。",
+  "MGR_MOD_RELIC_BOOK_OF_GRUDGES.description": "战斗开始时，生成{Notes:diff()}个攻击音符。\n每累计失去5点生命，就额外生成1个。",
   "MGR_MOD_RELIC_BOOK_OF_GRUDGES.flavor": "你们给我等着……！",
   "MGR_MOD_RELIC_METRONOME.title": "节拍器",
   "MGR_MOD_RELIC_METRONOME.description": "你每触发的第7次和弦会触发两次。",

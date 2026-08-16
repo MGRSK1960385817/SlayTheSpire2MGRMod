@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -7,6 +8,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MGRMod.Cards;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -82,6 +85,8 @@ public sealed class ImagineCreatePower : ModPowerTemplate
 
         var pendingTransforms = new List<(CardModel Original, CardModel Chosen)>();
         var temporaryOptions = new List<CardModel>();
+        List<NCardHolder> hiddenSelectedHolders =
+            HideSelectedHandCards(originals);
         try
         {
             // Decide every selected card's destination type before replacing
@@ -94,15 +99,10 @@ public sealed class ImagineCreatePower : ModPowerTemplate
                     .ToList();
                 temporaryOptions.AddRange(options);
 
-                var chooseTypePrompt = new LocString(
-                    "cards",
-                    "MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
-                var chooseTypePrefs = new CardSelectorPrefs(chooseTypePrompt, 1);
-                CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
+                CardModel? chosen = await MgrWideCardSelectCmd.FromChooseACardScreen(
                     choiceContext,
                     options,
-                    player,
-                    chooseTypePrefs)).FirstOrDefault();
+                    player);
                 if (chosen is not null)
                     pendingTransforms.Add((original, chosen));
             }
@@ -110,6 +110,8 @@ public sealed class ImagineCreatePower : ModPowerTemplate
             if (pendingTransforms.Count == 0)
                 return;
 
+            RestoreSelectedHandCards(hiddenSelectedHolders);
+            hiddenSelectedHolders.Clear();
             Flash();
             MgrAbilityVfx.SpawnCastBurst(
                 Owner,
@@ -120,6 +122,7 @@ public sealed class ImagineCreatePower : ModPowerTemplate
         }
         finally
         {
+            RestoreSelectedHandCards(hiddenSelectedHolders);
             // Selected options belong to the hand after Transform. Every other
             // option is a temporary combat model used only by the type grids.
             await Task.Yield();
@@ -128,6 +131,44 @@ public sealed class ImagineCreatePower : ModPowerTemplate
                 if (option.Pile is null && option.CombatState is not null)
                     option.RemoveFromState();
             }
+        }
+    }
+
+    /// <summary>
+    /// FromHand intentionally keeps selected holders in its raised selection
+    /// container until the caller consumes or moves those cards. Imagine/Create
+    /// opens another choice screen first, so temporarily hide those holders to
+    /// keep the selected hand cards from covering the five type candidates.
+    /// </summary>
+    private static List<NCardHolder> HideSelectedHandCards(
+        IEnumerable<CardModel> cards)
+    {
+        var hidden = new List<NCardHolder>();
+        if (NPlayerHand.Instance is not { } hand)
+            return hidden;
+
+        foreach (CardModel card in cards)
+        {
+            if (hand.GetCardHolder(card) is not { } holder ||
+                !GodotObject.IsInstanceValid(holder))
+            {
+                continue;
+            }
+
+            holder.Visible = false;
+            hidden.Add(holder);
+        }
+
+        return hidden;
+    }
+
+    private static void RestoreSelectedHandCards(
+        IEnumerable<NCardHolder> holders)
+    {
+        foreach (NCardHolder holder in holders)
+        {
+            if (GodotObject.IsInstanceValid(holder))
+                holder.Visible = true;
         }
     }
 

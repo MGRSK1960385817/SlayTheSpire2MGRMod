@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]Ich werde der Stern für alle sein.[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "Hm-hm-hm~ (summt unbekümmert)",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "Blubber, blubber …",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "MGR-Karten erscheinen jetzt in Belohnungen und Läden.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGR-Karten",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "Ein buntes Sternchen, ein Lied, das durchs All treibt.\nPlane Noten und Auftritte, um jeden Kampf zur Show zu machen.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "Tut mir leid, tut mir leid TT Bitte tu mir das nicht an …",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "Wow, so viel Geld! Ich weiß gar nicht, wofür ich es ausgeben soll?!",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "ihr",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "sie",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "ihres",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "sie",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "Schließe einen Spieldurchlauf mit [pink]{Prerequisite}[/pink] ab, um MGR freizuschalten."
+}

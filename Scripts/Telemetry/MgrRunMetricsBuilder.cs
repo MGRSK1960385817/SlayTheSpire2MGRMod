@@ -22,8 +22,8 @@ internal sealed record MgrRunMetrics(
 /// </summary>
 internal static class MgrRunMetricsBuilder
 {
-    internal const int SchemaVersion = 5;
-    private const int MaximumEncounterDamage = 100;
+    internal const int SchemaVersion = 7;
+    private const int MaximumFloorHpLoss = 100_000;
 
     public static MgrRunMetrics Build(
         RunEndedEvent evt,
@@ -54,7 +54,8 @@ internal static class MgrRunMetricsBuilder
             ["killed_by_encounter"] = evt.IsVictory ? null : FindLastEncounterId(run),
             ["acts"] = BuildActs(run, evt.IsVictory),
             ["final_player"] = BuildFinalPlayer(player),
-            ["mgr_mechanics"] = MgrRunTelemetryAccumulator.BuildSnapshot(run.NumReloads),
+            ["mgr_mechanics"] = MgrRunTelemetryAccumulator.BuildSnapshot(
+                player.ExtraFields?.DamageDealt ?? 0),
             ["floors"] = BuildFloors(run, player.NetId)
         };
 
@@ -108,7 +109,6 @@ internal static class MgrRunMetricsBuilder
             ["max_hp"] = player.MaxHp,
             ["max_energy"] = player.MaxEnergy,
             ["max_potion_slots"] = player.MaxPotionSlotCount,
-            ["base_note_slots"] = player.BaseOrbSlotCount,
             ["gold"] = player.Gold,
             ["damage_dealt"] = player.ExtraFields?.DamageDealt ?? 0,
             ["debuffs_applied"] = player.ExtraFields?.DebuffsApplied ?? 0,
@@ -137,6 +137,7 @@ internal static class MgrRunMetricsBuilder
     {
         JsonArray floors = [];
         int floorNumber = 0;
+        int? previousCurrentHp = null;
 
         for (int actIndex = 0; actIndex < run.MapPointHistory.Count; actIndex++)
         {
@@ -144,7 +145,13 @@ internal static class MgrRunMetricsBuilder
             {
                 floorNumber++;
                 PlayerMapPointHistoryEntry playerEntry = mapPoint.GetEntry(localPlayerId);
-                floors.Add(BuildFloor(mapPoint, playerEntry, actIndex, floorNumber));
+                floors.Add(BuildFloor(
+                    mapPoint,
+                    playerEntry,
+                    actIndex,
+                    floorNumber,
+                    previousCurrentHp));
+                previousCurrentHp = playerEntry.CurrentHp;
             }
         }
 
@@ -155,7 +162,8 @@ internal static class MgrRunMetricsBuilder
         MapPointHistoryEntry mapPoint,
         PlayerMapPointHistoryEntry playerEntry,
         int actIndex,
-        int floorNumber)
+        int floorNumber,
+        int? previousCurrentHp)
     {
         JsonArray rooms = [];
         foreach (MapPointRoomHistoryEntry room in mapPoint.Rooms)
@@ -164,8 +172,7 @@ internal static class MgrRunMetricsBuilder
             {
                 ["type"] = room.RoomType.ToString(),
                 ["id"] = EntryOf(room.ModelId),
-                ["turns"] = room.TurnsTaken,
-                ["monsters"] = BuildIdArray(room.MonsterIds)
+                ["turns"] = room.TurnsTaken
             });
         }
 
@@ -209,23 +216,42 @@ internal static class MgrRunMetricsBuilder
             });
         }
 
+        // The first Ancient node initializes the creature by healing from zero
+        // to its starting HP. That is setup, not run healing. For later floors,
+        // reconcile the base counter with the observable HP delta so lethal HP
+        // loss and direct-HP effects are not silently omitted by run history.
+        bool isInitialSetup = floorNumber == 1
+                              && mapPoint.MapPointType == MegaCrit.Sts2.Core.Map.MapPointType.Ancient;
+        int hpHealed = isInitialSetup ? 0 : Math.Max(0, playerEntry.HpHealed);
+        int reportedDamage = Math.Max(0, playerEntry.DamageTaken);
+        int inferredHpLoss = previousCurrentHp.HasValue
+            ? Math.Max(0, previousCurrentHp.Value + hpHealed - playerEntry.CurrentHp)
+            : reportedDamage;
+        int damageTaken = Math.Clamp(
+            Math.Max(reportedDamage, inferredHpLoss),
+            0,
+            MaximumFloorHpLoss);
+        string? resolvedRoomType = mapPoint.Rooms.LastOrDefault()?.RoomType.ToString();
+
         return new JsonObject
         {
             ["floor"] = floorNumber,
             ["act_index"] = actIndex,
             ["map_point_type"] = mapPoint.MapPointType.ToString(),
+            ["resolved_room_type"] = resolvedRoomType,
             ["rooms"] = rooms,
             ["current_hp"] = playerEntry.CurrentHp,
             ["max_hp"] = playerEntry.MaxHp,
             ["current_gold"] = playerEntry.CurrentGold,
-            ["damage_taken"] = Math.Clamp(
-                playerEntry.DamageTaken,
-                0,
-                Math.Min(Math.Max(playerEntry.MaxHp, 0), MaximumEncounterDamage)),
-            ["hp_healed"] = Math.Max(0, playerEntry.HpHealed),
+            ["damage_taken"] = damageTaken,
+            ["hp_healed"] = hpHealed,
+            ["max_hp_gained"] = Math.Max(0, playerEntry.MaxHpGained),
+            ["max_hp_lost"] = Math.Max(0, playerEntry.MaxHpLost),
             ["gold_gained"] = Math.Max(0, playerEntry.GoldGained),
             ["gold_spent"] = Math.Max(0, playerEntry.GoldSpent),
-            ["cards_gained"] = BuildCardArray(playerEntry.CardsGained),
+            ["gold_lost"] = Math.Max(0, playerEntry.GoldLost),
+            ["gold_stolen"] = Math.Max(0, playerEntry.GoldStolen),
+            ["cards_gained"] = BuildCardArray(playerEntry.CardsGained, floorNumber),
             ["cards_removed"] = BuildCardArray(playerEntry.CardsRemoved),
             ["cards_upgraded"] = BuildIdArray(playerEntry.UpgradedCards),
             ["cards_downgraded"] = BuildIdArray(playerEntry.DowngradedCards),
@@ -244,13 +270,15 @@ internal static class MgrRunMetricsBuilder
         };
     }
 
-    private static JsonObject BuildCard(SerializableCard card)
+    private static JsonObject BuildCard(
+        SerializableCard card,
+        int? fallbackFloorAdded = null)
     {
         JsonObject result = new()
         {
             ["id"] = EntryOf(card.Id),
             ["upgrade_level"] = card.CurrentUpgradeLevel,
-            ["floor_added"] = card.FloorAddedToDeck
+            ["floor_added"] = card.FloorAddedToDeck ?? fallbackFloorAdded
         };
 
         if (card.Enchantment is { } enchantment)
@@ -267,11 +295,13 @@ internal static class MgrRunMetricsBuilder
         return result;
     }
 
-    private static JsonArray BuildCardArray(IEnumerable<SerializableCard> cards)
+    private static JsonArray BuildCardArray(
+        IEnumerable<SerializableCard> cards,
+        int? fallbackFloorAdded = null)
     {
         JsonArray result = [];
         foreach (SerializableCard card in cards)
-            result.Add(BuildCard(card));
+            result.Add(BuildCard(card, fallbackFloorAdded));
         return result;
     }
 

@@ -17,15 +17,21 @@ namespace MGRMod.Mechanics;
 public static class MgrSelectionScreenVfx
 {
     public static IDisposable BeginGrayscale(Player player) =>
-        Begin(player, MgrSelectionFilterMode.Grayscale, playWritingLoop: true);
+        Begin(
+            player,
+            MgrSelectionFilterMode.Grayscale,
+            static () => MgrAudio.BeginWritingLoop());
 
     public static IDisposable BeginGlitch(Player player) =>
-        Begin(player, MgrSelectionFilterMode.Glitch, playWritingLoop: false);
+        Begin(
+            player,
+            MgrSelectionFilterMode.Glitch,
+            static () => MgrAudio.BeginGlitchLoop());
 
     private static IDisposable Begin(
         Player player,
         MgrSelectionFilterMode mode,
-        bool playWritingLoop)
+        Func<IAudioHandle?> beginAudioLoop)
     {
         if (TestMode.IsOn ||
             !LocalContext.IsMe(player) ||
@@ -78,27 +84,25 @@ public static class MgrSelectionScreenVfx
             filterRoot = filterLayer;
         }
 
-        IAudioHandle? writingLoop = playWritingLoop
-            ? MgrAudio.BeginWritingLoop()
-            : null;
-        return new FilterLease(filterRoot, writingLoop);
+        IAudioHandle? audioLoop = beginAudioLoop();
+        return new FilterLease(filterRoot, audioLoop);
     }
 
     private sealed class FilterLease(
         Node filterRoot,
-        IAudioHandle? writingLoop) : IDisposable
+        IAudioHandle? audioLoop) : IDisposable
     {
         private Node? _filterRoot = filterRoot;
-        private IAudioHandle? _writingLoop = writingLoop;
+        private IAudioHandle? _audioLoop = audioLoop;
 
         public void Dispose()
         {
-            if (_writingLoop is { } currentLoop)
+            if (_audioLoop is { } currentLoop)
             {
                 currentLoop.TryStop(allowFadeOut: false);
                 currentLoop.TryRelease();
             }
-            _writingLoop = null;
+            _audioLoop = null;
 
             if (_filterRoot is { } current && GodotObject.IsInstanceValid(current))
                 current.QueueFree();
@@ -160,7 +164,9 @@ internal sealed partial class MgrSelectionScreenFilter : ColorRect
             void fragment() {
                 vec4 source = texture(screen_texture, SCREEN_UV);
                 float luminance = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-                float contrasted = clamp((luminance - 0.5) * 1.38 + 0.5, 0.0, 1.0);
+                // Grayscale contrast multiplier. 1.0 is neutral; values above
+                // 1.0 deepen shadows and brighten highlights around mid-gray.
+                float contrasted = clamp((luminance - 0.5) * 1.20 + 0.5, 0.0, 1.0);
                 COLOR = vec4(vec3(contrasted), source.a);
             }
             """

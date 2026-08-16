@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MGRMod.Characters;
@@ -15,6 +16,11 @@ public sealed class BookOfGrudges : ModRelicTemplate
     private const int HpLostPerExtraNote = 5;
     private int _totalHpLost;
 
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new IntVar("Notes", BaseAttackNotes)
+    ];
+
     public override RelicRarity Rarity => RelicRarity.Common;
     public override bool IsAllowed(IRunState runState) =>
         IsBeforeAct3TreasureChest(runState);
@@ -29,6 +35,7 @@ public sealed class BookOfGrudges : ModRelicTemplate
         {
             AssertMutable();
             _totalHpLost = Math.Max(0, value);
+            DynamicVars["Notes"].BaseValue = CombatStartAttackNotes;
             InvokeDisplayAmountChanged();
         }
     }

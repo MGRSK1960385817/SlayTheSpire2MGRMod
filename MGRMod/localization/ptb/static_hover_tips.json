@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "Em Combate",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Inclui as cartas na Mão, Pilha de Compra, Pilha de Descarte, Cartas Exauridas e fila de Apresentação.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Dano Base",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "O dano da própria carta, sem incluir bônus de Força, Vigor e similares.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "Transformar em Nota",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Exaure a carta selecionada e gera a Nota correspondente."
+}

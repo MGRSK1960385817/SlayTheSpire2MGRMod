@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]모두의 별이 될 거야.[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "흐흥흥~ (느긋하게 흥얼거린다)",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "꼬르륵꼬르륵……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "이제 보상과 상점에 MGR 카드가 등장합니다.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGR 카드",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "우주를 떠도는 노래이자 알록달록한 작은 별.\n음표와 연주를 설계해 전투를 공연으로 바꿉니다.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "미안해 미안해 TT 나한테 이러지 마……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "우와, 돈이 이렇게 많아! 어디다 써야 하지?!",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "그녀의",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "그녀",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "그녀의",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "그녀",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "[pink]{Prerequisite}[/pink](으)로 게임을 완료해 MGR을 해금하세요."
+}

@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "전투 중",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "손, 뽑을 카드 더미, 버린 카드 더미, 소멸된 카드, 연주 대기열의 카드를 포함합니다.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "기본 피해",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "힘, 활력 등의 보너스를 제외한 카드 자체의 피해입니다.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "음표로 변환",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "대상 카드를 소멸시키고 해당 음표를 생성합니다."
+}

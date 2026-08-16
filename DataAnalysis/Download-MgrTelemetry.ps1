@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [int]$ProjectId = 559558,
+    [int]$ProjectId = 560344,
     [ValidateSet('https://us.posthog.com', 'https://eu.posthog.com')]
     [string]$PostHogHost = 'https://us.posthog.com',
     [ValidatePattern('^[A-Za-z0-9_.-]+$')]
@@ -34,10 +34,10 @@ SELECT
     uuid,
     timestamp,
     event,
-    distinct_id,
     properties
 FROM events
 WHERE event = '$EventName'
+  AND properties.request_id = 'mgr_clean_run_metrics'
 ORDER BY timestamp DESC
 LIMIT $Limit
 "@
@@ -62,12 +62,38 @@ $response = Invoke-RestMethod `
     -Body $requestBody
 
 $columns = @($response.columns)
-$events = foreach ($row in @($response.results)) {
+$rawEvents = foreach ($row in @($response.results)) {
     $record = [ordered]@{}
     for ($index = 0; $index -lt $columns.Count; $index++) {
         $record[[string]$columns[$index]] = $row[$index]
     }
     [pscustomobject]$record
+}
+
+# Store only analysis fields. PostHog may enrich an event from its request IP;
+# retain one country and city value, while dropping the raw IP, coordinates,
+# postal data, person-profile copies, generic runtime diagnostics and empty
+# columns from the local dataset.
+$events = foreach ($record in @($rawEvents)) {
+    $properties = $record.properties
+    if ($properties -is [string]) {
+        $properties = $properties | ConvertFrom-Json -Depth 100
+    }
+
+    $applicantPayload = $properties.payload.applicant_payload
+    if ($null -eq $applicantPayload) {
+        continue
+    }
+
+    [pscustomobject][ordered]@{
+        uuid       = $record.uuid
+        timestamp  = $record.timestamp
+        event      = $record.event
+        request_id = $properties.request_id
+        country    = $properties.'$geoip_country_name'
+        city       = $properties.'$geoip_city_name'
+        payload    = $applicantPayload
+    }
 }
 
 $resolvedOutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
@@ -82,7 +108,7 @@ $download = [ordered]@{
     host              = $PostHogHost
     event_name        = $EventName
     count             = @($events).Count
-    columns           = $columns
+    columns           = @('uuid', 'timestamp', 'event', 'request_id', 'country', 'city', 'payload')
     events            = @($events)
 }
 

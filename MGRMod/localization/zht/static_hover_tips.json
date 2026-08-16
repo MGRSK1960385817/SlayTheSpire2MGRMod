@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "對局中",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "包括手牌、抽牌堆、棄牌堆、消耗堆與演奏佇列中的牌。",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "基礎傷害",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "卡牌本身的傷害，不包括力量、活力等加成。",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "轉化為音符",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "消耗目標牌並生成對應的音符。"
+}

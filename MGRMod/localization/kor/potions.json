@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "병에 든 음표",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "무작위 [gold]기본 음표[/gold]를 [blue]{Notes}[/blue]개 생성합니다.",
+  "MGR_MOD_POTION_LOZENGE.title": "목캔디",
+  "MGR_MOD_POTION_LOZENGE.description": "[gold]포르테[/gold]를 [blue]{FortePower}[/blue] 얻습니다.",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "무대의 혼",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "[gold]손[/gold]의 모든 카드를 [gold]연주[/gold] 대기열에 추가합니다."
+}

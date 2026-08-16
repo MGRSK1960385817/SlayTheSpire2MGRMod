@@ -585,6 +585,26 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         return Task.CompletedTask;
     }
 
+    public override Task AfterDamageGiven(
+        PlayerChoiceContext choiceContext,
+        Creature? dealer,
+        DamageResult result,
+        ValueProp props,
+        Creature target,
+        CardModel? cardSource)
+    {
+        // AfterDamageReceived is skipped for lethal hits by the base game.
+        // AfterDamageGiven runs for every resolved hit, so this keeps MGR's
+        // source totals aligned with the base game's DamageDealt counter.
+        MgrRunTelemetryAccumulator.RecordOutgoingDamage(
+            target,
+            result,
+            dealer,
+            cardSource);
+
+        return Task.CompletedTask;
+    }
+
     public override Task AfterDamageReceived(
         PlayerChoiceContext choiceContext,
         Creature target,
@@ -593,17 +613,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Creature? dealer,
         CardModel? cardSource)
     {
-        // Manimani's lethal glow depends on live enemy HP. Damage does not
+        // Manimani's red lethal glow depends on live enemy HP. Damage does not
         // otherwise raise a card-model change event, so explicitly ask the
-        // native hand holder to re-read ShouldGlowGold after an enemy is hurt.
+        // native hand holder to re-read its glow channels after an enemy is hurt.
         if (target.IsEnemy && result.UnblockedDamage > 0)
             RefreshManimaniHandGlows();
-
-        MgrRunTelemetryAccumulator.RecordOutgoingDamage(
-            target,
-            result,
-            dealer,
-            cardSource);
 
         return Task.CompletedTask;
     }
@@ -668,7 +682,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// <summary>
     /// MGR's phrase and chord counters live outside Tower 2's immutable combat
     /// state, so changing them does not itself raise CombatStateChanged. Refresh
-    /// the native hand holders explicitly so ShouldGlowGoldInternal is re-read
+    /// the native hand holders explicitly so conditional glow channels are read
     /// immediately instead of waiting for an unrelated engine state update.
     /// </summary>
     private static void RefreshConditionalCardGlows(Player player)

@@ -24,7 +24,10 @@ public static class MgrNoteEffects
         // Standard commands deliberately spend time on hit/block/heal feedback.
         // Once a turn contains several chord passes, use their supported fast
         // presentation paths while preserving the same hooks and game state.
+        bool containsOmnia = notes.Any(
+            static note => note.Kind == NoteKind.OmniaNote);
         bool fastPresentation =
+            containsOmnia ||
             chordTriggersBefore >=
             MgrVisualTuning.Notes.FastChordCommandThreshold;
 
@@ -299,8 +302,20 @@ public static class MgrNoteEffects
                 if (targets.Count == 0)
                     return;
 
-                await PowerCmd.Apply<WeakPower>(choiceContext, targets, amount, owner, cardSource: null);
-                await PowerCmd.Apply<VulnerablePower>(choiceContext, targets, amount, owner, cardSource: null);
+                await PowerCmd.Apply<WeakPower>(
+                    choiceContext,
+                    targets,
+                    amount,
+                    owner,
+                    cardSource: null,
+                    silent: fastPresentation);
+                await PowerCmd.Apply<VulnerablePower>(
+                    choiceContext,
+                    targets,
+                    amount,
+                    owner,
+                    cardSource: null,
+                    silent: fastPresentation);
 
                 if (owner.GetPower<WatchingUPower>() is { } watchingU &&
                     watchingU.Amount > 0m)
@@ -324,7 +339,8 @@ public static class MgrNoteEffects
                         targets,
                         watchingU.Amount,
                         owner,
-                        cardSource: null);
+                        cardSource: null,
+                        silent: fastPresentation);
                 }
                 return;
             }

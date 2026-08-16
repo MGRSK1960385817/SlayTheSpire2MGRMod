@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "En combate",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Incluye las cartas de tu Mano, Pila de robo, Pila de descarte, Pila de agotamiento y cola de Interpretación.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Daño base",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "El daño propio de la carta, sin bonificaciones como Fuerza o Vigor.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "Transformar en Nota",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Agota la carta objetivo y genera la Nota correspondiente."
+}

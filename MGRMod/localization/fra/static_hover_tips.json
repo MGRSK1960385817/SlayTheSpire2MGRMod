@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "En combat",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Comprend les cartes de votre Main, Pioche, Défausse, les cartes Épuisées et la file d'interprétation.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Dégâts de base",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "Dégâts propres à la carte, sans bonus de Force, de Vigueur ou autre.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "Transformer en note",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Épuise la carte ciblée et génère la note correspondante."
+}

@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]Я стану звездой для всех.[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "М-м-м~ (беззаботно напевает)",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "Буль-буль…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "Карты MGR теперь могут появляться в наградах и у Торговца.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "Карты MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "Разноцветная звездочка, песня, плывущая по Вселенной.\nПланируйте ноты и исполнения, превращая бой в представление.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "Прости-прости, TT не надо так со мной…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "Ого, сколько денег! Я даже не знаю, куда их потратить?!",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "ее",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "ее",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "ее",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "она",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "…",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "Завершите одну вылазку за [pink]{Prerequisite}[/pink], чтобы открыть MGR."
+}

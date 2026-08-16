@@ -23,7 +23,7 @@ public static class MgrTelemetry
     // A PostHog project ingestion token is intentionally client-readable. Never
     // replace it with a personal/admin key capable of reading or managing data.
     private const string PostHogHost = "https://us.i.posthog.com";
-    private const string PostHogProjectApiKey = "phc_AHHvoCCfFG2V3pKwCwefpFeKzcdskxddjUFrcp6BH7oA";
+    private const string PostHogProjectApiKey = "phc_ABLRS6Ap6jd2w4JbaJG9Y7tFhAJ4uQbgTefbSKR97aXq";
 
     private static ITelemetryClient? _client;
     private static IDisposable? _runStartedSubscription;
@@ -37,6 +37,17 @@ public static class MgrTelemetry
             return;
 
         _registered = true;
+        try
+        {
+            MgrRunTelemetryAccumulator.RegisterSavedData();
+        }
+        catch (Exception exception)
+        {
+            // Telemetry is optional. A registration/API mismatch must never
+            // prevent the character mod itself from loading.
+            Entry.Logger.Warn(
+                $"MGR telemetry run-save registration failed; uploads will be disabled: {exception}");
+        }
         RitsuLibFramework.RegisterTelemetryApplicant(
             new TelemetryApplicant
             {
@@ -62,10 +73,18 @@ public static class MgrTelemetry
         _client = TelemetryApi.GetClient(Entry.ModId);
         MgrLoadoutUsageTracker.Register();
         _runStartedSubscription = RitsuLibFramework.SubscribeLifecycle<RunStartedEvent>(
-            _ => MgrLoadoutUsageTracker.BeginRun(),
+            evt =>
+            {
+                MgrLoadoutUsageTracker.BeginRun();
+                MgrRunTelemetryAccumulator.BeginRun(evt.RunState, isNewRun: true);
+            },
             replayCurrentState: false);
         _runLoadedSubscription = RitsuLibFramework.SubscribeLifecycle<RunLoadedEvent>(
-            _ => MgrLoadoutUsageTracker.BeginRun(),
+            evt =>
+            {
+                MgrLoadoutUsageTracker.BeginRun();
+                MgrRunTelemetryAccumulator.BeginRun(evt.RunState, isNewRun: false);
+            },
             replayCurrentState: false);
         _runEndedSubscription = RitsuLibFramework.SubscribeLifecycle<RunEndedEvent>(
             CaptureCleanRun,
@@ -155,7 +174,7 @@ public static class MgrTelemetry
                 "MGR telemetry is ready, but its cloud endpoint has not been configured.");
         }
 
-        return new PostHogTelemetryAdapter(
+        return new MgrSanitizedPostHogTelemetryAdapter(
             host: PostHogHost,
             projectApiKey: PostHogProjectApiKey);
     }

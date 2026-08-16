@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "Karten im Kampf",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Umfasst Karten auf der Hand, im Nachziehstapel, im Abwurfstapel, im Erschöpfungsstapel und in der Auftrittsreihe.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Grundschaden",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "Der eigene Schaden der Karte, ohne Boni durch Stärke, Elan usw.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "In Note umwandeln",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Erschöpft die gewählte Karte und erzeugt die entsprechende Note."
+}

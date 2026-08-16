@@ -90,6 +90,9 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
     [Export]
     public Vector2 HiganOrbitRadius { get; set; } = new(196f, 112f);
 
+    [Export(PropertyHint.Range, "0.4,1.2,0.01")]
+    public float CharacterAfterimageDistanceScale { get; set; } = 0.50f;
+
     [Export(PropertyHint.Range, "70,220,1")]
     public float PrismaticCrownRadius { get; set; } = 132f;
 
@@ -378,6 +381,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         baseOffset += new Vector2(
             _random.RandfRange(-5f, 5f),
             _random.RandfRange(-4f, 4f));
+        baseOffset *= CharacterAfterimageDistanceScale;
 
         var sprite = new Sprite2D
         {
@@ -403,7 +407,8 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             SpeedY = _random.RandfRange(0.38f, 0.91f),
             DriftRadius = new Vector2(
                 _random.RandfRange(5f, 14f),
-                _random.RandfRange(4f, 11f)),
+                _random.RandfRange(4f, 11f)) *
+                CharacterAfterimageDistanceScale,
             ScaleMultiplier = _random.RandfRange(0.95f, 1.01f),
             ColorPhase = _random.RandfRange(0f, 1f)
         };

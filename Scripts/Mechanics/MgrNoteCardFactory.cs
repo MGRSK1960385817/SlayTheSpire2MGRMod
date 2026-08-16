@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MGRMod.Cards;
 
 namespace MGRMod.Mechanics;
 
@@ -23,6 +24,17 @@ public static class MgrNoteCardFactory
         ArgumentNullException.ThrowIfNull(player);
         if (player.Creature.CombatState is not { } combatState)
             return null;
+
+        // Omnia is an Ancient card and is intentionally excluded from the
+        // ordinary unlocked/combat-generation pool below. Its unique Note has
+        // an exact reverse mapping: Living Dream must return Omnia itself.
+        if (kind == NoteKind.OmniaNote)
+        {
+            CardModel omnia = combatState.CreateCard<Omnia>(player);
+            if (upgraded)
+                CardCmd.Upgrade(omnia, CardPreviewStyle.None);
+            return omnia;
+        }
 
         CardModel[] candidates = GetCandidates(player, kind)
             .Where(card => card.CanBeGeneratedInCombat)

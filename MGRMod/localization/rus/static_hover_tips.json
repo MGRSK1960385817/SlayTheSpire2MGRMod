@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "В бою",
+  "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "Карты в руке, стопках добора, сброса и сжигания, а также в очереди исполнения.",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "Базовый урон",
+  "MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "Урон самой карты без бонусов от силы, бодрости и других эффектов.",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "Превратить в ноту",
+  "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "Сжигает выбранную карту и создает соответствующую ноту."
+}

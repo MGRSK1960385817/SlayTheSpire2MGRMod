@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]Seré la estrella de todos.[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "Mmm, mm~ (tararea relajadamente)",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "Glub, glub...",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "Ahora las cartas de MGR aparecerán en las recompensas y tiendas.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "Cartas de MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "Una pequeña estrella multicolor, una canción que surca el universo.\nPlanifica con esmero tus Notas e Interpretaciones para convertir cada combate en un espectáculo.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "¡Lo siento, lo siento! TT No me hagas esto...",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "¡Hala, cuánto dinero! ¡¿Y ahora en qué me lo gasto?!",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "su",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "a ella",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "suya",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "ella",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "...",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "Completa una partida con [pink]{Prerequisite}[/pink] para desbloquear a MGR."
+}
