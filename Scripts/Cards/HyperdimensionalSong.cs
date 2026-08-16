@@ -59,5 +59,5 @@ public sealed class HyperdimensionalSong : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars["VigorPower"].UpgradeValueBy(3m);
+        DynamicVars["VigorPower"].UpgradeValueBy(2m);
 }

@@ -127,7 +127,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             CompactStarryRetainLine(mgrCard, starryText, ref __result);
             CompactTerminalKeywordLines(mgrCard, ref __result);
-            if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown or CanonForm)
+            if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown)
                 MoveKeywordToFirstLine(mgrCard, CardKeyword.Retain, ref __result);
             if (mgrCard is ByakkoyaGirl)
                 CompactPerformanceExhaustLine(ref __result);

@@ -143,12 +143,16 @@ public static class MgrNoteVisuals
         private readonly List<NoteSlot> _slots = [];
         private readonly SemaphoreSlim _channelAnimationGate = new(1, 1);
         private Tween? _clearTween;
+        private bool _disposed;
         private bool _isPerforming;
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
 
-        public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
+        public bool IsValid =>
+            !_disposed &&
+            GodotObject.IsInstanceValid(_root) &&
+            _root.IsInsideTree();
 
         public NoteRack(Node parent)
         {
@@ -356,6 +360,16 @@ public static class MgrNoteVisuals
 
         private void RefreshScreenVisibility()
         {
+            // Quick SL frees the old combat room without running the ordinary
+            // combat-end hooks. The rack can therefore remain subscribed to
+            // screen events after its Godot node has already been destroyed.
+            // Detach that stale rack before touching the disposed node.
+            if (!IsValid)
+            {
+                Dispose();
+                return;
+            }
+
             bool hasOverlay =
                 _overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack) &&
@@ -386,7 +400,12 @@ public static class MgrNoteVisuals
 
         private void CancelScheduledClear()
         {
-            _clearTween?.Kill();
+            if (_clearTween is not null &&
+                GodotObject.IsInstanceValid(_clearTween))
+            {
+                _clearTween.Kill();
+            }
+
             _clearTween = null;
         }
 
@@ -429,6 +448,10 @@ public static class MgrNoteVisuals
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             CancelScheduledClear();
             ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
             if (_overlayStack is not null &&

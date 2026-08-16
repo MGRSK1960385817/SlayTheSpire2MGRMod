@@ -11,9 +11,6 @@ public sealed class GalaxyLamp : MgrCard
 {
     public override bool IsStarryCard => true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
-
     public GalaxyLamp() : base(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
     {
     }
@@ -27,5 +24,5 @@ public sealed class GalaxyLamp : MgrCard
             await ChannelNote(choiceContext, NoteKind.Starry);
     }
 
-    protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Exhaust);
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }
