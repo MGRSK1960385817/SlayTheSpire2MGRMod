@@ -3,9 +3,9 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 public enum MgrCardWeightProfile
 {

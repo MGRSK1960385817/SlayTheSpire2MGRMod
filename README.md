@@ -1,4 +1,4 @@
-# SlayTheSpire2MGRMod
+# MGRMod
 
 MGR 人物模组的《杀戮尖塔 2》重制工程。目前处于发布前收尾阶段。
 
@@ -12,7 +12,7 @@ MGR 人物模组的《杀戮尖塔 2》重制工程。目前处于发布前收�
 
 内容名称、启用状态与效果摘要以
 [`docs/MGR_content_registry.json`](docs/MGR_content_registry.json) 为人类维护入口；实际游戏文本位于
-`SlayTheSpire2MGRMod/localization/<语言>/`。
+`MGRMod/localization/<语言>/`。
 
 ## 环境与依赖
 
@@ -52,7 +52,7 @@ pwsh -NoProfile -File docs/Validate-MgrContent.ps1 -WarningsAsErrors
 - `Scripts/Relics`：职业遗物。
 - `Scripts/Mechanics`：音符、和弦、演奏、UI、动画及规则服务。
 - `Scripts/Characters`：人物模型、场景与人物周边特效。
-- `SlayTheSpire2MGRMod`：Godot 场景、图片、音频与本地化资源。
+- `MGRMod`：Godot 场景、图片、音频与本地化资源。
 - `docs`：内容登记、卡池设计、架构与检查、特效登记、文本规范及只读校验器。
 - `DataAnalysis`：PostHog 下载脚本和被 Git 忽略的本地数据。
 

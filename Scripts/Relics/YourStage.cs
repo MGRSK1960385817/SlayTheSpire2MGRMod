@@ -1,11 +1,11 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Relics;
+namespace MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "your_stage")]
 public sealed class YourStage : ModRelicTemplate

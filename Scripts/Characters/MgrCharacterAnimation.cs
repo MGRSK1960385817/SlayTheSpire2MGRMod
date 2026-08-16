@@ -1,7 +1,7 @@
 using STS2RitsuLib.Scaffolding.Visuals;
 using STS2RitsuLib.Scaffolding.Visuals.Definition;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 /// <summary>
 /// Central definition for MGR's texture-sequence character animation.

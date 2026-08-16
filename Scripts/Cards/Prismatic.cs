@@ -1,11 +1,11 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Powers;
+using MGRMod.Characters;
+using MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "prismatic")]
 public sealed class Prismatic : MgrCard

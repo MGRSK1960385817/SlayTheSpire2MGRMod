@@ -5,11 +5,11 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "pale_dread")]
 public sealed class PaleDread : MgrCard

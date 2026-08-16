@@ -4,11 +4,11 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Mechanics;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Mechanics;
+using MGRMod.Cards;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Adds the combat-only Performance modifier to any card's rendered text. The
@@ -48,7 +48,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         {
             var starry = new LocString(
                 "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_STARRY_TYPE_LINE");
+                "MGR_MOD_CARD_STARRY_TYPE_LINE");
             starryText = $"[sine][color=#b96cff]{starry.GetFormattedText()}[/color][/sine]";
         }
 
@@ -63,7 +63,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                 // prepending a contradictory fixed "Performance 1" line.
                 var combinedLine = new LocString(
                     "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
+                    "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
                 combinedLine.Add(
                     "Times",
                     amount);
@@ -78,7 +78,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                 int totalBonus = checked(amount + (lightSong.IsUpgraded ? 1 : 0));
                 var combinedLine = new LocString(
                     "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_LIGHT_SONG_PERFORMANCE_BONUS");
+                    "MGR_MOD_CARD_LIGHT_SONG_PERFORMANCE_BONUS");
                 combinedLine.Add("Times", totalBonus);
                 string combinedText = combinedLine.GetFormattedText();
                 int firstLineBreak = __result.IndexOf('\n');
@@ -90,7 +90,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             {
                 var line = new LocString(
                     "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
+                    "MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
                 line.Add("Times", amount);
                 addedPerformanceText = line.GetFormattedText();
             }
@@ -326,7 +326,7 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
     {
         var title = new LocString(
             "card_keywords",
-            "SLAY_THE_SPIRE2_MGR_MOD_KEYWORD_STARRY_NOTE.title");
+            "MGR_MOD_KEYWORD_STARRY_NOTE.title");
         string starryNote = title.GetFormattedText();
         if (string.IsNullOrWhiteSpace(starryNote) ||
             !description.Contains(starryNote, StringComparison.Ordinal))

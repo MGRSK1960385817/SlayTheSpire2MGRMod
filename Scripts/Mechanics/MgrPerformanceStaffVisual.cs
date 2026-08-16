@@ -2,7 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// A code-drawn music staff behind the performance queue. This node is kept

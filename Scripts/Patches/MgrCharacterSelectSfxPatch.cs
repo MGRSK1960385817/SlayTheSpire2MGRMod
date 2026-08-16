@@ -4,10 +4,10 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Character selection normally sends CharacterSelectSfx directly to SfxCmd, which

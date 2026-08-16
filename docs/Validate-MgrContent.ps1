@@ -69,7 +69,7 @@ function Get-DeclaredAssetPaths([System.IO.FileInfo]$Source, [string]$AssetFolde
         [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
 
     return @($matches | ForEach-Object {
-        "SlayTheSpire2MGRMod/images/$AssetFolder/$($_.Groups[1].Value)"
+        "MGRMod/images/$AssetFolder/$($_.Groups[1].Value)"
     } | Sort-Object -Unique)
 }
 
@@ -118,10 +118,10 @@ function Test-LocalizationEntry(
 
 $registryPath = Join-Path $repoRoot 'docs/MGR_content_registry.json'
 $registry = Read-JsonHashtable $registryPath
-$zhsCards = Read-JsonHashtable (Join-Path $repoRoot 'SlayTheSpire2MGRMod/localization/zhs/cards.json')
-$engCards = Read-JsonHashtable (Join-Path $repoRoot 'SlayTheSpire2MGRMod/localization/eng/cards.json')
-$zhsRelics = Read-JsonHashtable (Join-Path $repoRoot 'SlayTheSpire2MGRMod/localization/zhs/relics.json')
-$engRelics = Read-JsonHashtable (Join-Path $repoRoot 'SlayTheSpire2MGRMod/localization/eng/relics.json')
+$zhsCards = Read-JsonHashtable (Join-Path $repoRoot 'MGRMod/localization/zhs/cards.json')
+$engCards = Read-JsonHashtable (Join-Path $repoRoot 'MGRMod/localization/eng/cards.json')
+$zhsRelics = Read-JsonHashtable (Join-Path $repoRoot 'MGRMod/localization/zhs/relics.json')
+$engRelics = Read-JsonHashtable (Join-Path $repoRoot 'MGRMod/localization/eng/relics.json')
 
 $activeCards = @($registry.cards | Where-Object { [int]$_.status -eq 1 })
 $activeRelics = @($registry.relics | Where-Object { [int]$_.status -eq 1 })
@@ -143,11 +143,11 @@ foreach ($card in $activeCards) {
     Test-ContentAssets `
         $source `
         'cards' `
-        @("SlayTheSpire2MGRMod/images/cards/$codeName.png") `
+        @("MGRMod/images/cards/$codeName.png") `
         "card '$codeName'"
 
     if ($stem) {
-        $prefix = 'SLAY_THE_SPIRE2_MGR_MOD_CARD_' + $stem.ToUpperInvariant()
+        $prefix = 'MGR_MOD_CARD_' + $stem.ToUpperInvariant()
         Test-LocalizationEntry $zhsCards $prefix 'zhs' 'card' $codeName ([string]$card.name)
         Test-LocalizationEntry $engCards $prefix 'eng' 'card' $codeName ([string]$card.name)
     }
@@ -162,13 +162,13 @@ foreach ($relic in $activeRelics) {
         $source `
         'relics' `
         @(
-            "SlayTheSpire2MGRMod/images/relics/$codeName.png",
-            "SlayTheSpire2MGRMod/images/relics/${codeName}_outline.png"
+            "MGRMod/images/relics/$codeName.png",
+            "MGRMod/images/relics/${codeName}_outline.png"
         ) `
         "relic '$codeName'"
 
     if ($stem) {
-        $prefix = 'SLAY_THE_SPIRE2_MGR_MOD_RELIC_' + $stem.ToUpperInvariant()
+        $prefix = 'MGR_MOD_RELIC_' + $stem.ToUpperInvariant()
         Test-LocalizationEntry $zhsRelics $prefix 'zhs' 'relic' $codeName ([string]$relic.name)
         Test-LocalizationEntry $engRelics $prefix 'eng' 'relic' $codeName ([string]$relic.name)
     }
@@ -203,7 +203,7 @@ foreach ($source in $registeredRelicFiles) {
 
 # Godot reports duplicate UIDs at import time; catch them without starting Godot.
 $uidOwners = @{}
-$importFiles = Get-ChildItem -LiteralPath (Join-Path $repoRoot 'SlayTheSpire2MGRMod') `
+$importFiles = Get-ChildItem -LiteralPath (Join-Path $repoRoot 'MGRMod') `
     -Recurse -File -Filter '*.import'
 foreach ($import in $importFiles) {
     $uidLine = Select-String -LiteralPath $import.FullName -Pattern '^uid="([^"]+)"$' |

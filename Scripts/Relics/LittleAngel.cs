@@ -6,11 +6,11 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Relics;
+namespace MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "little_angel")]
 public sealed class LittleAngel : ModRelicTemplate

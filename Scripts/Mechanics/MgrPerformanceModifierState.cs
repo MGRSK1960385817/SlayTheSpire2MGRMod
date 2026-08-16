@@ -1,8 +1,8 @@
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Keywords;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Combat-only additions to a card's printed Performance value. This mirrors

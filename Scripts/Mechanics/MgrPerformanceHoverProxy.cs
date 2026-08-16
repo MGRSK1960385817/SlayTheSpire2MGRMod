@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Screen-space hitbox that mirrors a card living under the combat creature

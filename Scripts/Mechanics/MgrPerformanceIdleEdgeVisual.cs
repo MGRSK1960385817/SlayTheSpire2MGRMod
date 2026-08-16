@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Four fixed-color corner brackets for an idle Performance card. They use the

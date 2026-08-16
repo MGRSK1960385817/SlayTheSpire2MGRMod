@@ -5,12 +5,12 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
-using SlayTheSpire2MGRMod.Cards;
-using SlayTheSpire2MGRMod.Powers;
-using SlayTheSpire2MGRMod.Telemetry;
-using SlayTheSpire2MGRMod.Relics;
+using MGRMod.Cards;
+using MGRMod.Powers;
+using MGRMod.Telemetry;
+using MGRMod.Relics;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Centralized scheduler for the MGR Performance mechanic. A stable snapshot is

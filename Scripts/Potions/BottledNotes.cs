@@ -5,12 +5,12 @@ using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Potions;
+namespace MGRMod.Potions;
 
 [RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "bottled_notes")]
 public sealed class BottledNotes : MgrPotion

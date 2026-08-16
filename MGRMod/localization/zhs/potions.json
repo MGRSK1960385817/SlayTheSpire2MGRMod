@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "瓶装音符",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "随机生成[blue]{Notes}[/blue]个[gold]基础音符[/gold]。",
+  "MGR_MOD_POTION_LOZENGE.title": "润喉糖",
+  "MGR_MOD_POTION_LOZENGE.description": "获得[blue]{FortePower}[/blue]层[gold]强音[/gold]。",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "舞台之魂",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "将所有[gold]手牌[/gold]加入[gold]演奏[/gold]队列。"
+}

@@ -1,0 +1,8 @@
+{
+  "MGR_MOD_POTION_BOTTLED_NOTES.title": "Bottled Notes",
+  "MGR_MOD_POTION_BOTTLED_NOTES.description": "Generate [blue]{Notes}[/blue] random [gold]Basic Notes[/gold].",
+  "MGR_MOD_POTION_LOZENGE.title": "Lozenge",
+  "MGR_MOD_POTION_LOZENGE.description": "Gain [blue]{FortePower}[/blue] [gold]Forte[/gold].",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.title": "Stage Soul",
+  "MGR_MOD_POTION_SOUL_OF_STAGE.description": "Move all cards in your [gold]Hand[/gold] to the [gold]Performance[/gold] queue."
+}

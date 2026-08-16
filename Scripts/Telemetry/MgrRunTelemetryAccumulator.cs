@@ -4,10 +4,10 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 
-namespace SlayTheSpire2MGRMod.Telemetry;
+namespace MGRMod.Telemetry;
 
 /// <summary>
 /// Keeps only compact, run-wide MGR mechanic totals. It deliberately does not

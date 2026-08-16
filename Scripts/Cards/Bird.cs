@@ -6,11 +6,11 @@ using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "bird")]
 public sealed class Bird : MgrCard

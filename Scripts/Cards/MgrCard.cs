@@ -4,9 +4,9 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Scaffolding.Content;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Mechanics;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [Flags]
 public enum MgrGoldGlowCondition

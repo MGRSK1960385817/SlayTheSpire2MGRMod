@@ -1,11 +1,11 @@
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 using STS2RitsuLib.Scaffolding.Content.Patches;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 [RegisterPower]
 public sealed class LongDreamPower : TemporaryStrengthPower, IModPowerAssetOverrides

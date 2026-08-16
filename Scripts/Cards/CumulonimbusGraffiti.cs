@@ -2,11 +2,11 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "cumulonimbus_graffiti")]
 public sealed class CumulonimbusGraffiti : MgrCard

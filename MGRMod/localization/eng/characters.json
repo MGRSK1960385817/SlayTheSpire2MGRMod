@@ -1,0 +1,17 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][orange]The stage is ready.[/orange][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "That measure is complete.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "The performance... is not over.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "MGR cards can now appear in rewards and shops.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGR Cards",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "A young singer who turns played cards into phrases and brings each completed melody to a climax.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "The song pulls her back onto the stage.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "Enough gold to prepare the next performance.",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "her",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "her",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "hers",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "she",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "Complete a run as [pink]{Prerequisite}[/pink] to unlock MGR."
+}

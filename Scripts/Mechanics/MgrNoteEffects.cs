@@ -3,11 +3,11 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using SlayTheSpire2MGRMod.Powers;
-using SlayTheSpire2MGRMod.Relics;
-using SlayTheSpire2MGRMod.Telemetry;
+using MGRMod.Powers;
+using MGRMod.Relics;
+using MGRMod.Telemetry;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Tower-2 command implementation of the original MGR note effects.

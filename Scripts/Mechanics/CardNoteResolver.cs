@@ -1,8 +1,8 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Converts any played or otherwise inspected card into its corresponding MGR note.

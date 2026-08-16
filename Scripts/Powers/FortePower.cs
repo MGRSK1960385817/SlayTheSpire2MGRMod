@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 /// <summary>
 /// STS2-native version of MGR's Forte. Notes read its current amount when a chord

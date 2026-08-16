@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Persistent idle-motion node for a filled note slot. Entrance animation is

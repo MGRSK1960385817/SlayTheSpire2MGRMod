@@ -3,7 +3,7 @@ using Godot;
 using Godot.Collections;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 /// <summary>
 /// Reconnects particle children after a mod-local Godot scene is loaded.

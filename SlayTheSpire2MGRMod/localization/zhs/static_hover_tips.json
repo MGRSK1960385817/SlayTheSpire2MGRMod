@@ -1,8 +1,0 @@
-{
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.title": "对局中",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT.description": "包括手牌、抽牌堆、弃牌堆、消耗堆与演奏队列中的牌。",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE.title": "基础伤害",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE.description": "卡牌本身的伤害，不包括力量、活力等加成。",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.title": "转化为音符",
-  "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE.description": "消耗目标牌并生成对应的音符。"
-}

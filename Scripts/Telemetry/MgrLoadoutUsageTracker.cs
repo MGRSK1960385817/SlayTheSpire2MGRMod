@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 
-namespace SlayTheSpire2MGRMod.Telemetry;
+namespace MGRMod.Telemetry;
 
 /// <summary>
 /// Detects an actual Loadout2 mutation instead of treating installation alone

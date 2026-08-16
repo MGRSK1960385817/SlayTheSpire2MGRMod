@@ -7,7 +7,7 @@ using STS2RitsuLib.Scaffolding.Characters;
 using STS2RitsuLib.Scaffolding.Godot;
 using STS2RitsuLib.Scaffolding.Visuals.StateMachine;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 [RegisterCharacter]
 public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPool, MgrPotionPool>

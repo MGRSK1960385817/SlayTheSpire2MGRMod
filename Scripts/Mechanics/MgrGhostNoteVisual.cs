@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Presentation-only opacity drift for Ghost Note artwork. This node modulates

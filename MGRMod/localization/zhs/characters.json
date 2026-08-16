@@ -1,0 +1,18 @@
+{
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.aromaPrinciple": "[sine][purple]我会成为大家的星星。[/purple][/sine]",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.alive.endTurnPing": "嗯哼哼~（悠闲地哼着歌）",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.banter.dead.endTurnPing": "咕噜咕噜……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierDescription": "MGR卡牌现在会出现在奖励和商店中。",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.cardsModifierTitle": "MGR卡牌",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.description": "彩色的小星星，飘荡在宇宙间的歌谣。\n精心规划音符与演奏，将战斗变成一场演出。",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.eventDeathPrevention": "对不起对不起TT不要这样对我……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.goldMonologue": "哇啊这么多钱！我真不知道该怎么花？！",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.possessiveAdjective": "她的",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounObject": "她",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounPossessive": "她的",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.pronounSubject": "她",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.title": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.titleObject": "MGR",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.bestiaryQuote": "……",
+  "MGR_MOD_CHARACTER_MGR_CHARACTER.unlockText": "使用[pink]{Prerequisite}[/pink]完成一局游戏来解锁MGR。"
+}

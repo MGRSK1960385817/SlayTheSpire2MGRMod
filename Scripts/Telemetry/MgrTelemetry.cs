@@ -6,7 +6,7 @@ using STS2RitsuLib;
 using STS2RitsuLib.Settings;
 using STS2RitsuLib.Telemetry;
 
-namespace SlayTheSpire2MGRMod.Telemetry;
+namespace MGRMod.Telemetry;
 
 /// <summary>
 /// Sends an explicitly allow-listed, single-player MGR balance payload.
@@ -45,7 +45,7 @@ public static class MgrTelemetry
                 DisplayName = "MGR",
                 DisplayNameText = ModSettingsText.LocString(
                     "settings_ui",
-                    "SLAY_THE_SPIRE2_MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME",
+                    "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME",
                     "MGR Mod"),
                 Adapter = CreateAdapter(),
                 Requests =
@@ -54,7 +54,7 @@ public static class MgrTelemetry
                         CleanRunRequestId,
                         ModSettingsText.LocString(
                             "settings_ui",
-                            "SLAY_THE_SPIRE2_MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY",
+                            "MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY",
                             "Send sanitized single-player MGR balance data."))
                 ]
             });

@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 /// <summary>
 /// Enemy-side stacking mark. Every stack adds one point to damage received.

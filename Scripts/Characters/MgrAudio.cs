@@ -1,6 +1,6 @@
 using STS2RitsuLib.Audio;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 internal static class MgrAudio
 {

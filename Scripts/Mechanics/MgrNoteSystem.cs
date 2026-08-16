@@ -9,15 +9,15 @@ using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.ValueProps;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Cards;
-using SlayTheSpire2MGRMod.Powers;
-using SlayTheSpire2MGRMod.Relics;
-using SlayTheSpire2MGRMod.Telemetry;
+using MGRMod.Characters;
+using MGRMod.Cards;
+using MGRMod.Powers;
+using MGRMod.Relics;
+using MGRMod.Telemetry;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Global combat listener that generates exactly one note for every resolved CardPlay

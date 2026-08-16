@@ -1,12 +1,12 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Relics;
+namespace MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "journey_with_me")]
 public sealed class JourneyWithMe : ModRelicTemplate

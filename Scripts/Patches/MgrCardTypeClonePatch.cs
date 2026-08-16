@@ -1,8 +1,8 @@
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Keeps the combat type replacement when another effect clones the modified card.

@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 /// <summary>
 /// Player-side ability: every triggered Status Note applies one stack of

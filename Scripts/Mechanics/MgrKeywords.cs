@@ -2,9 +2,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 [Flags]
 public enum MgrKeywordKind

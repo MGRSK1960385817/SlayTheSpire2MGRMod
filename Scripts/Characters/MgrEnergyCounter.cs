@@ -1,7 +1,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 /// <summary>
 /// Mod-local energy counter root. Both the layered orb and its burst now use

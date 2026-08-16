@@ -6,11 +6,11 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "paranoia_girl")]
 public sealed class ParanoiaGirl : MgrCard

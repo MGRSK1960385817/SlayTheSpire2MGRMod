@@ -1,6 +1,6 @@
 using Godot;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Animated artwork for the Omnia Note. The shape cycles through the five

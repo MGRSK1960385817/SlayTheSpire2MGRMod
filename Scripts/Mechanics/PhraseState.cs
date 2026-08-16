@@ -1,4 +1,4 @@
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Game-independent state for MGR's planned Phrase mechanic.

@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Explanatory hover boxes for MGR rules-language phrases that should help the
@@ -10,13 +10,13 @@ namespace SlayTheSpire2MGRMod.Mechanics;
 /// </summary>
 internal static class MgrHoverTips
 {
-    private const string SupplementalIdPrefix = "SLAY_THE_SPIRE2_MGR_MOD_SUPPLEMENTAL_HOVER_TIP:";
+    private const string SupplementalIdPrefix = "MGR_MOD_SUPPLEMENTAL_HOVER_TIP:";
     private const string CardsInCombatKey =
-        "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT";
+        "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT";
     private const string BaseDamageKey =
-        "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_BASE_DAMAGE";
+        "MGR_MOD_HOVER_TIP_BASE_DAMAGE";
     private const string TransformIntoNoteKey =
-        "SLAY_THE_SPIRE2_MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE";
+        "MGR_MOD_HOVER_TIP_TRANSFORM_INTO_NOTE";
 
     public static IHoverTip CardsInCombat() => new HoverTip(
         new LocString("static_hover_tips", $"{CardsInCombatKey}.title"),

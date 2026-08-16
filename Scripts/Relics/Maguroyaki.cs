@@ -2,11 +2,11 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Relics;
+namespace MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "maguroyaki")]
 public sealed class Maguroyaki : ModRelicTemplate

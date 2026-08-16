@@ -7,12 +7,12 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
-using SlayTheSpire2MGRMod.Cards;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Cards;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 [RegisterPower]
 public sealed class ImagineCreatePower : ModPowerTemplate
@@ -62,7 +62,7 @@ public sealed class ImagineCreatePower : ModPowerTemplate
         int selectMaximum = Math.Min(maximumChanges, eligibleCards.Length);
         var chooseCardPrompt = new LocString(
             "cards",
-            "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_CARD");
+            "MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_CARD");
         var chooseCardPrefs = new CardSelectorPrefs(
             chooseCardPrompt,
             0,
@@ -96,7 +96,7 @@ public sealed class ImagineCreatePower : ModPowerTemplate
 
                 var chooseTypePrompt = new LocString(
                     "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
+                    "MGR_MOD_CARD_IMAGINE_CREATE_CHOOSE_TYPE");
                 var chooseTypePrefs = new CardSelectorPrefs(chooseTypePrompt, 1);
                 CardModel? chosen = (await CardSelectCmd.FromSimpleGrid(
                     choiceContext,

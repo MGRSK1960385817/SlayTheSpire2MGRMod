@@ -1,10 +1,10 @@
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using SlayTheSpire2MGRMod.Characters;
+using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Relics;
+namespace MGRMod.Relics;
 
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "metronome")]
 public sealed class Metronome : ModRelicTemplate

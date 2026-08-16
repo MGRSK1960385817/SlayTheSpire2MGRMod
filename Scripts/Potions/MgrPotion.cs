@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Potions;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Potions;
+namespace MGRMod.Potions;
 
 /// <summary>
 /// Common base for potions owned by the MGR character pool.

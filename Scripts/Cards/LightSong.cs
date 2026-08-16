@@ -4,11 +4,11 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "light_song")]
 public sealed class LightSong : MgrCard
@@ -84,7 +84,7 @@ public sealed class LightSong : MgrCard
     }
 
     private static CardSelectorPrefs CreateSelectionPrefs(string key) =>
-        new(new LocString("cards", $"SLAY_THE_SPIRE2_MGR_MOD_CARD_{key}"), 1);
+        new(new LocString("cards", $"MGR_MOD_CARD_{key}"), 1);
 
     public override Task OnPerformanceFinished(
         PlayerChoiceContext choiceContext,

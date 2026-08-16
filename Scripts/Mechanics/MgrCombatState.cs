@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using STS2RitsuLib.Utils;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Per-player, per-combat MGR mechanic state.

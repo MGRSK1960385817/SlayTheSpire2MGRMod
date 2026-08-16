@@ -5,11 +5,11 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "ghost_rule")]
 public sealed class GhostRule : MgrCard
@@ -41,7 +41,7 @@ public sealed class GhostRule : MgrCard
             new CardSelectorPrefs(
                 new LocString(
                     "cards",
-                    "SLAY_THE_SPIRE2_MGR_MOD_CARD_GHOST_RULE.selectionScreenPrompt"),
+                    "MGR_MOD_CARD_GHOST_RULE.selectionScreenPrompt"),
                 DynamicVars.Cards.IntValue))).ToArray();
 
         if (selected.Length > 0)

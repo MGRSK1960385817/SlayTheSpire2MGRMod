@@ -7,12 +7,12 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using SlayTheSpire2MGRMod.Cards;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Cards;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Powers;
+namespace MGRMod.Powers;
 
 [RegisterPower]
 public sealed class CanonFormPower : ModPowerTemplate

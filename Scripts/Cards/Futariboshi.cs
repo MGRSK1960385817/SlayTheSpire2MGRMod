@@ -5,11 +5,11 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "futariboshi")]
 public sealed class Futariboshi : MgrCard
@@ -34,7 +34,7 @@ public sealed class Futariboshi : MgrCard
         {
             var prompt = new LocString(
                 "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_FUTARIBOSHI_CHOOSE");
+                "MGR_MOD_CARD_FUTARIBOSHI_CHOOSE");
             var prefs = new CardSelectorPrefs(prompt, discardCount);
             CardModel[] discarded = (await CardSelectCmd.FromHand(
                 choiceContext,

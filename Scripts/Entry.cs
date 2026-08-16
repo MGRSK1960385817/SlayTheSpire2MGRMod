@@ -4,16 +4,16 @@ using MegaCrit.Sts2.Core.Modding;
 using STS2RitsuLib;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Patching.Core;
-using SlayTheSpire2MGRMod.Patches;
-using SlayTheSpire2MGRMod.Telemetry;
+using MGRMod.Patches;
+using MGRMod.Telemetry;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
-namespace SlayTheSpire2MGRMod;
+namespace MGRMod;
 
 [ModInitializer(nameof(Initialize))]
 public partial class Entry
 {
-    public const string ModId = "SlayTheSpire2MGRMod";
+    public const string ModId = "MGRMod";
     public const string ResPath = $"res://{ModId}";
 
     public static Logger Logger { get; } = new(ModId, LogType.Generic);
@@ -54,6 +54,6 @@ public partial class Entry
         MgrTelemetry.Register();
 
         IsModActive = true;
-        Logger.Info("SlayTheSpire2MGRMod initialized.");
+        Logger.Info("MGRMod initialized.");
     }
 }

@@ -1,6 +1,6 @@
 using STS2RitsuLib.Scaffolding.Characters;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 /// <summary>
 /// Complete character asset profile. Each STS2 UI role receives an intentional asset

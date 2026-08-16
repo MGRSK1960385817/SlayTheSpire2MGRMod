@@ -1,11 +1,11 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Cards;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Cards;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Tower 2 places CardModel.ExtraHoverTips before all native and registered

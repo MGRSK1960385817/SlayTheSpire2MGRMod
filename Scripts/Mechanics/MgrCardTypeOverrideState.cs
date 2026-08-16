@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Replaces the real card type on combat instances made by A Tale of Mine.

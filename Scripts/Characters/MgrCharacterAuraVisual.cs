@@ -3,10 +3,10 @@ using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using SlayTheSpire2MGRMod.Mechanics;
-using SlayTheSpire2MGRMod.Powers;
+using MGRMod.Mechanics;
+using MGRMod.Powers;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 /// <summary>
 /// Texture-free ambient presentation around MGR's combat character. Sparse

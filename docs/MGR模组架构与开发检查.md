@@ -38,9 +38,9 @@ flowchart TB
 | `Scripts/Mechanics` | 音符、和弦、演奏、选牌、随机池、UI 和特效公共逻辑 | 跨卡牌系统性问题 |
 | `Scripts/Patches` | 对原版与 RitsuLib 流程的最小兼容补丁 | 层级、卡牌描述、跨角色卡池问题 |
 | `Scripts/Telemetry` | 单人对局统计、隐私过滤、限流和数据清洗 | 不应影响正常游戏流程 |
-| `SlayTheSpire2MGRMod/localization` | 游戏真正读取的本地化 | 缺键、变量显示、关键词顺序错误 |
-| `SlayTheSpire2MGRMod/images` | 卡图、遗物、人物、音符、药水与 VFX 资源 | UID、导入、尺寸和引用错误 |
-| `SlayTheSpire2MGRMod/scenes` | Godot 场景与 UI 节点 | 层级、锚点、缩放错误 |
+| `MGRMod/localization` | 游戏真正读取的本地化 | 缺键、变量显示、关键词顺序错误 |
+| `MGRMod/images` | 卡图、遗物、人物、音符、药水与 VFX 资源 | UID、导入、尺寸和引用错误 |
+| `MGRMod/scenes` | Godot 场景与 UI 节点 | 层级、锚点、缩放错误 |
 | `docs` | 长期维护文档与内容登记 | 不参与运行与打包 |
 | `DataAnalysis` | PostHog 下载脚本和本地数据 | `Data/` 被 Git 忽略，不参与打包 |
 

@@ -1,4 +1,4 @@
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Runtime representation of one MGR note. It deliberately remains independent of

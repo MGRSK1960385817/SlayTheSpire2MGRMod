@@ -2,7 +2,7 @@ using Godot;
 using STS2RitsuLib.Scaffolding.Content;
 using STS2RitsuLib.Utils;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 public sealed class MgrCardPool : TypeListCardPoolModel
 {

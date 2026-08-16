@@ -1,6 +1,6 @@
 using MegaCrit.Sts2.Core.Models;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// One card in the ordered performance sequence. The initial and remaining

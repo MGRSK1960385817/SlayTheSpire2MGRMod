@@ -10,13 +10,13 @@ config_version=5
 
 [application]
 
-config/name="SlayTheSpire2MGRMod"
+config/name="MGRMod"
 config/features=PackedStringArray("4.5", "C#", "Mobile")
 config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="SlayTheSpire2MGRMod"
+project/assembly_name="MGRMod"
 
 [rendering]
 

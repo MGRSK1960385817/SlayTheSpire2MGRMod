@@ -1,10 +1,10 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Cards;
-using SlayTheSpire2MGRMod.Cards;
+using MGRMod.Cards;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Lets Manimani use Tower 2's native target-preview lifecycle without

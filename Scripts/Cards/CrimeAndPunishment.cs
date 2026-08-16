@@ -5,11 +5,11 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Powers;
+using MGRMod.Characters;
+using MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "crime_and_punishment")]
 public sealed class CrimeAndPunishment : MgrCard

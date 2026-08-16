@@ -1,7 +1,7 @@
 using Godot;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Characters;
+namespace MGRMod.Characters;
 
 public sealed class MgrRelicPool : TypeListRelicPoolModel
 {

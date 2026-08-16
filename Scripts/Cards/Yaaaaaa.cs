@@ -5,11 +5,11 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
-namespace SlayTheSpire2MGRMod.Cards;
+namespace MGRMod.Cards;
 
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "yaaaaaa")]
 public sealed class Yaaaaaa : MgrCard
@@ -26,7 +26,7 @@ public sealed class Yaaaaaa : MgrCard
 
             string suffix = new LocString(
                 "cards",
-                "SLAY_THE_SPIRE2_MGR_MOD_CARD_YAAAAAA.upgradeTitleSuffix")
+                "MGR_MOD_CARD_YAAAAAA.upgradeTitleSuffix")
                 .GetFormattedText();
             return title + string.Concat(
                 Enumerable.Repeat(suffix, CurrentUpgradeLevel));

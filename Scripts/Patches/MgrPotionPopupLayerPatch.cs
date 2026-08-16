@@ -2,7 +2,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Potions;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// MGR's combat-field visuals use positive Z indices so the notes and

@@ -14,7 +14,7 @@ using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Presentation adapter for the game-independent phrase state. Each slot and

@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
-using SlayTheSpire2MGRMod.Mechanics;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Patching.Models;
 
-namespace SlayTheSpire2MGRMod.Patches;
+namespace MGRMod.Patches;
 
 /// <summary>
 /// Gives a Performance Power card one visual owner. Tower 2 normally flies every

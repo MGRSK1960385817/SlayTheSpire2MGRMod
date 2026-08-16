@@ -1,4 +1,4 @@
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// The single construction point for note runtime objects.

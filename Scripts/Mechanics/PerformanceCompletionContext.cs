@@ -1,6 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Immutable information exposed to a card when its final performance ends.

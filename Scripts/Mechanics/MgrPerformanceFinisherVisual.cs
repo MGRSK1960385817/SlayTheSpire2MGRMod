@@ -1,7 +1,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Presentation-only card silhouette used by Maguro Dash while it clears the

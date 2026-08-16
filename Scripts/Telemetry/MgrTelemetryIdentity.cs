@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using MegaCrit.Sts2.Core.Platform;
 using MegaCrit.Sts2.Core.Saves;
 
-namespace SlayTheSpire2MGRMod.Telemetry;
+namespace MGRMod.Telemetry;
 
 internal sealed record MgrTelemetryIdentityInfo(
     string InstallId,

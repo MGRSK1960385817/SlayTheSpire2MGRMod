@@ -7,12 +7,12 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using SlayTheSpire2MGRMod.Characters;
-using SlayTheSpire2MGRMod.Powers;
+using MGRMod.Characters;
+using MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
-namespace SlayTheSpire2MGRMod.Potions;
+namespace MGRMod.Potions;
 
 [RegisterPotion(typeof(MgrPotionPool), StableEntryStem = "lozenge")]
 public sealed class Lozenge : MgrPotion

@@ -4,7 +4,7 @@ using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using STS2RitsuLib;
 
-namespace SlayTheSpire2MGRMod.Telemetry;
+namespace MGRMod.Telemetry;
 
 /// <summary>
 /// Rejects structurally impossible or wildly out-of-range run records before

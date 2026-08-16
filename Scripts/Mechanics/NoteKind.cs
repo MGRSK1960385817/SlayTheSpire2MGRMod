@@ -1,4 +1,4 @@
-namespace SlayTheSpire2MGRMod.Mechanics;
+namespace MGRMod.Mechanics;
 
 public enum NoteKind
 {

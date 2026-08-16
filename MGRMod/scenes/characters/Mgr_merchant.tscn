@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://MGRMod/images/characters/animations/idle/idle_001.png" id="1_character"]
+
+[node name="MgrCharacterMerchant" type="Node2D"]
+
+[node name="Visuals" type="Sprite2D" parent="."]
+self_modulate = Color(0.9, 0.9, 0.9, 1)
+position = Vector2(0, -121)
+scale = Vector2(0.34, 0.34)
+texture = ExtResource("1_character")

@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 
-namespace SlayTheSpire2MGRMod.Cards.Choices;
+namespace MGRMod.Cards.Choices;
 
 public interface INoteSlotChoice
 {
