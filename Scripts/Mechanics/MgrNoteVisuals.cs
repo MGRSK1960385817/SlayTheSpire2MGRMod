@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -148,6 +149,7 @@ public static class MgrNoteVisuals
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
+        private NPeekButton? _peekButton;
 
         public bool IsValid =>
             !_disposed &&
@@ -313,6 +315,8 @@ public static class MgrNoteVisuals
                 }
             }
 
+            EnsurePeekButtonSubscription();
+
             NCapstoneContainer? currentCapstone = NCapstoneContainer.Instance;
             if (!ReferenceEquals(_capstoneContainer, currentCapstone))
             {
@@ -350,13 +354,50 @@ public static class MgrNoteVisuals
             RefreshScreenVisibility();
         }
 
-        private void OnOverlayStackChanged() => RefreshScreenVisibility();
+        private void OnOverlayStackChanged() => EnsureScreenVisibilitySubscriptions();
 
         private void OnCapstoneChanged() => RefreshScreenVisibility();
 
         private void OnMapVisibilityChanged() => RefreshScreenVisibility();
 
         private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
+
+        private void OnPeekToggled(NPeekButton _) => RefreshScreenVisibility();
+
+        private void EnsurePeekButtonSubscription()
+        {
+            NPeekButton? currentPeekButton = null;
+            if (_overlayStack?.Peek() is Node overlayNode &&
+                GodotObject.IsInstanceValid(overlayNode))
+            {
+                currentPeekButton = FindPeekButton(overlayNode);
+            }
+
+            if (ReferenceEquals(_peekButton, currentPeekButton))
+                return;
+
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled -= OnPeekToggled;
+
+            _peekButton = currentPeekButton;
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled += OnPeekToggled;
+        }
+
+        private static NPeekButton? FindPeekButton(Node node)
+        {
+            if (node is NPeekButton peekButton)
+                return peekButton;
+
+            foreach (Node child in node.GetChildren())
+            {
+                NPeekButton? result = FindPeekButton(child);
+                if (result is not null)
+                    return result;
+            }
+
+            return null;
+        }
 
         private void RefreshScreenVisibility()
         {
@@ -373,7 +414,10 @@ public static class MgrNoteVisuals
             bool hasOverlay =
                 _overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack) &&
-                _overlayStack.ScreenCount > 0;
+                _overlayStack.ScreenCount > 0 &&
+                !(_peekButton is not null &&
+                  GodotObject.IsInstanceValid(_peekButton) &&
+                  _peekButton.IsPeeking);
             bool hasCapstone =
                 _capstoneContainer is not null &&
                 GodotObject.IsInstanceValid(_capstoneContainer) &&
@@ -472,9 +516,13 @@ public static class MgrNoteVisuals
                 _mapScreen.Closed -= OnMapVisibilityChanged;
             }
 
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled -= OnPeekToggled;
+
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
+            _peekButton = null;
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
         }

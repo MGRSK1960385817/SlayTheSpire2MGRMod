@@ -673,13 +673,15 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// </summary>
     private static void RefreshConditionalCardGlows(Player player)
     {
-        if (NPlayerHand.Instance is not { } hand)
-            return;
-
-        foreach (CardModel card in PileType.Hand.GetPile(player).Cards)
+        if (NPlayerHand.Instance is { } hand)
         {
-            if (hand.GetCardHolder(card) is NHandCardHolder holder)
-                holder.UpdateCard();
+            foreach (CardModel card in PileType.Hand.GetPile(player).Cards)
+            {
+                if (hand.GetCardHolder(card) is NHandCardHolder holder)
+                    holder.UpdateCard();
+            }
         }
+
+        MgrPerformanceVisuals.RefreshConditionalCardPreviews(player);
     }
 }

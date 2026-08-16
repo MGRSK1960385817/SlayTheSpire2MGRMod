@@ -15,6 +15,8 @@ namespace SlayTheSpire2MGRMod.Telemetry;
 /// </summary>
 public static class MgrTelemetry
 {
+    // MGR uses its own consent item and never requests RitsuLib's full
+    // RunHistory payload. Development builds do not migrate the old request ID.
     private const string CleanRunRequestId = "mgr_clean_run_metrics";
     private const string CleanRunEventName = "mgr_run_completed";
 
@@ -75,8 +77,18 @@ public static class MgrTelemetry
         try
         {
             ITelemetryClient? client = _client;
-            if (client is null || !client.IsEnabled(CleanRunRequestId))
+            if (client is null)
+            {
+                Entry.Logger.Info("MGR telemetry skipped: the RitsuLib telemetry client is unavailable");
                 return;
+            }
+
+            if (!client.IsEnabled(CleanRunRequestId))
+            {
+                Entry.Logger.Info(
+                    $"MGR telemetry skipped: the RitsuLib request '{CleanRunRequestId}' is not authorized");
+                return;
+            }
 
             if (!MgrTelemetryEligibility.ShouldUpload(evt, out string rejectionReason))
             {

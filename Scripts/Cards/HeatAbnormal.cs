@@ -1,8 +1,11 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.ValueProps;
 using SlayTheSpire2MGRMod.Characters;
@@ -14,6 +17,62 @@ namespace SlayTheSpire2MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "heat_abnormal")]
 public sealed class HeatAbnormal : MgrCard
 {
+    private sealed class PhraseStartDamageVar(decimal damage, ValueProp props)
+        : DamageVar(damage, props)
+    {
+        public override void UpdateCardPreview(
+            CardModel card,
+            CardPreviewMode previewMode,
+            Creature? target,
+            bool runGlobalHooks)
+        {
+            base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+            if (card is not HeatAbnormal heatAbnormal ||
+                !heatAbnormal.IsPhraseStartPreviewActive)
+            {
+                return;
+            }
+
+            // Preview the same new BaseValue that OnPlay will establish. Feed
+            // that prospective base through the native damage pipeline so
+            // Sharp is doubled with the card while Strength, Weak, Vigor and
+            // target modifiers are still applied afterward exactly once.
+            decimal prospectiveBase = BaseValue + heatAbnormal.GetIntrinsicDamage();
+            if (runGlobalHooks)
+            {
+                PreviewValue = Hook.ModifyDamage(
+                    card.Owner.RunState,
+                    card.CombatState,
+                    target,
+                    card.Owner.Creature,
+                    prospectiveBase,
+                    Props,
+                    card,
+                    cardPlay: null,
+                    ModifyDamageHookType.All,
+                    previewMode,
+                    out IEnumerable<AbstractModel> _);
+            }
+            else
+            {
+                EnchantmentModel? enchantment = card.Enchantment;
+                if (enchantment is not null)
+                {
+                    prospectiveBase += enchantment.EnchantDamageAdditive(
+                        prospectiveBase,
+                        Props);
+                    prospectiveBase *= enchantment.EnchantDamageMultiplicative(
+                        prospectiveBase,
+                        Props);
+                }
+
+                PreviewValue = prospectiveBase;
+            }
+
+            PreviewValue = Math.Max(PreviewValue, 0m);
+        }
+    }
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         MgrHoverTips.BaseDamage()
@@ -21,8 +80,8 @@ public sealed class HeatAbnormal : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(3m, ValueProp.Move),
-        new IntVar("Performance", 1m)
+        new PhraseStartDamageVar(2m, ValueProp.Move),
+        new IntVar("Performance", 2m)
     ];
 
     protected override MgrGoldGlowCondition GoldGlowConditions =>
@@ -91,8 +150,9 @@ public sealed class HeatAbnormal : MgrCard
         return damage;
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Performance"].UpgradeValueBy(1m);
-    }
+    private bool IsPhraseStartPreviewActive =>
+        CombatState is not null &&
+        IsPhraseStart;
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1m);
 }

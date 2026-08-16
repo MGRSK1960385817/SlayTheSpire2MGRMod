@@ -8,7 +8,8 @@ MGR 使用 RitsuLib 0.5.12 的授权、缓存、重试和 PostHog 发送能力�
 
 ## 授权与上传端点
 
-- 玩家必须在 RitsuLib 的遥测授权界面明确同意 `mgr_clean_run_metrics`。
+- 玩家必须在 RitsuLib 的遥测授权界面明确同意 MGR 独立的 `mgr_clean_run_metrics` 申请项。开发阶段不迁移或兼容旧的 `run_history` 授权记录。
+- MGR 不申请 RitsuLib 的 `run_history`，也不启用其完整 `RunHistory` 采集器；实际只上传下面列出的字段白名单负载 `mgr_run_completed`，因此不会由 MGR 额外产生 `run_history.completed`。
 - 同时尊重原版“上传游戏数据”开关；原版开关关闭时不上传。
 - 当前使用 PostHog US Cloud，RitsuLib 最终请求其 `/batch/` 接口。
 - 客户端只包含 PostHog 项目采集 Token，不包含个人密钥、管理密钥或读取权限密钥。

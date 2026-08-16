@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
@@ -170,6 +171,12 @@ public static class MgrPerformanceVisuals
             rack.SetStaffPerforming(isPerforming);
     }
 
+    internal static void RefreshConditionalCardPreviews(Player player)
+    {
+        if (Racks.TryGetValue(player, out PerformanceRack? rack) && rack.IsValid)
+            rack.RefreshCardPreviews();
+    }
+
     public static Task PlayExitAnimation(
         Player player,
         MgrPerformanceEntry entry,
@@ -276,11 +283,18 @@ public static class MgrPerformanceVisuals
         private readonly CanvasLayer _previewLayer;
         private readonly List<PerformanceCardView> _views = [];
         private MgrPerformanceFinisherVisual? _finisherVisual;
+        private bool _disposed;
         private NOverlayStack? _overlayStack;
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
+        private NPeekButton? _peekButton;
 
-        public bool IsValid => GodotObject.IsInstanceValid(_root) && _root.IsInsideTree();
+        public bool IsValid =>
+            !_disposed &&
+            GodotObject.IsInstanceValid(_root) &&
+            _root.IsInsideTree() &&
+            GodotObject.IsInstanceValid(_previewLayer) &&
+            _previewLayer.IsInsideTree();
 
         public PerformanceRack(Node parent)
         {
@@ -383,6 +397,8 @@ public static class MgrPerformanceVisuals
                 }
             }
 
+            EnsurePeekButtonSubscription();
+
             NCapstoneContainer? currentCapstone = NCapstoneContainer.Instance;
             if (!ReferenceEquals(_capstoneContainer, currentCapstone))
             {
@@ -420,7 +436,7 @@ public static class MgrPerformanceVisuals
             RefreshScreenVisibility();
         }
 
-        private void OnOverlayStackChanged() => RefreshScreenVisibility();
+        private void OnOverlayStackChanged() => EnsureScreenVisibilitySubscriptions();
 
         private void OnCapstoneChanged() => RefreshScreenVisibility();
 
@@ -428,12 +444,61 @@ public static class MgrPerformanceVisuals
 
         private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
 
+        private void OnPeekToggled(NPeekButton _) => RefreshScreenVisibility();
+
+        private void EnsurePeekButtonSubscription()
+        {
+            NPeekButton? currentPeekButton = null;
+            if (_overlayStack?.Peek() is Node overlayNode &&
+                GodotObject.IsInstanceValid(overlayNode))
+            {
+                currentPeekButton = FindPeekButton(overlayNode);
+            }
+
+            if (ReferenceEquals(_peekButton, currentPeekButton))
+                return;
+
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled -= OnPeekToggled;
+
+            _peekButton = currentPeekButton;
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled += OnPeekToggled;
+        }
+
+        private static NPeekButton? FindPeekButton(Node node)
+        {
+            if (node is NPeekButton peekButton)
+                return peekButton;
+
+            foreach (Node child in node.GetChildren())
+            {
+                NPeekButton? result = FindPeekButton(child);
+                if (result is not null)
+                    return result;
+            }
+
+            return null;
+        }
+
         private void RefreshScreenVisibility()
         {
+            // Quick SL destroys the old combat room without the normal
+            // combat-end cleanup. Detach a rack whose scene nodes have already
+            // been freed before a screen-context event can touch them.
+            if (!IsValid)
+            {
+                Dispose();
+                return;
+            }
+
             bool hasOverlay =
                 _overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack) &&
-                _overlayStack.ScreenCount > 0;
+                _overlayStack.ScreenCount > 0 &&
+                !(_peekButton is not null &&
+                  GodotObject.IsInstanceValid(_peekButton) &&
+                  _peekButton.IsPeeking);
             bool hasCapstone =
                 _capstoneContainer is not null &&
                 GodotObject.IsInstanceValid(_capstoneContainer) &&
@@ -518,6 +583,12 @@ public static class MgrPerformanceVisuals
             _staff.SetPerforming(isPerforming);
 
         public void PulseStaff() => _staff.Pulse();
+
+        public void RefreshCardPreviews()
+        {
+            foreach (PerformanceCardView view in _views)
+                view.Refresh();
+        }
 
         public void PulseModifiedEntries(IReadOnlyList<MgrPerformanceEntry> entries)
         {
@@ -859,6 +930,10 @@ public static class MgrPerformanceVisuals
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             DisposeFinisherVisual();
             ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
             if (_overlayStack is not null &&
@@ -879,10 +954,18 @@ public static class MgrPerformanceVisuals
                 _mapScreen.Closed -= OnMapVisibilityChanged;
             }
 
+            if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
+                _peekButton.Toggled -= OnPeekToggled;
+
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
-            ClearViews();
+            _peekButton = null;
+            if (GodotObject.IsInstanceValid(_root))
+                ClearViews();
+            else
+                _views.Clear();
+
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
             if (GodotObject.IsInstanceValid(_previewLayer))

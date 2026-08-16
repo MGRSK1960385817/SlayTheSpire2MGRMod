@@ -27,7 +27,7 @@ public sealed class Lullaby : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(10m, ValueProp.Move),
+        new BlockVar(11m, ValueProp.Move),
         new PowerVar<WeakPower>(2m)
     ];
 
@@ -54,7 +54,7 @@ public sealed class Lullaby : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(4m);
+        DynamicVars.Block.UpgradeValueBy(3m);
         DynamicVars.Weak.UpgradeValueBy(1m);
     }
 }
