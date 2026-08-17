@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "即兴",
   "MGR_MOD_CARD_IMPROVISE.description": "造成{Damage:diff()}点伤害。\n触发最右侧的[gold]演奏[/gold]牌。",
   "MGR_MOD_CARD_GAZE.title": "注视",
-  "MGR_MOD_CARD_GAZE.description": "造成{Damage:diff()}点伤害。\n目标每有一种负面状态，获得{CalculationExtra:diff()}点[gold]格挡[/gold]。{InCombat:\n（获得{CalculatedBlock:diff()}点[gold]格挡[/gold]。）|}",
+  "MGR_MOD_CARD_GAZE.description": "造成{Damage:diff()}点伤害。\n目标每有一种负面状态，抽{Cards:diff()}张牌。{InCombat:\n（抽{TotalCards:diff()}张牌。）|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "甜蜜魔法",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "将{Cards:diff()}张[gold]手牌[/gold]转化为音符。\n如果这些音符各不相同，获得{FortePower:diff()}层[gold]强音[/gold]。",
   "MGR_MOD_CARD_DONUT_HOLE.title": "甜甜圈洞",

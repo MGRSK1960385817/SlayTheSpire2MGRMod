@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "Improvisation",
   "MGR_MOD_CARD_IMPROVISE.description": "Infligez {Damage:diff()} dégâts.\nDéclenchez la carte en [gold]interprétation[/gold] la plus à droite.",
   "MGR_MOD_CARD_GAZE.title": "Regard",
-  "MGR_MOD_CARD_GAZE.description": "Infligez {Damage:diff()} dégâts.\nGagnez {CalculationExtra:diff()} d'[gold]Armure[/gold] par malus de la cible.{InCombat:\n({CalculatedBlock:diff()} d'[gold]Armure[/gold].)|}",
+  "MGR_MOD_CARD_GAZE.description": "Infligez {Damage:diff()} dégâts.\nPiochez {Cards:diff()} cartes par malus distinct de la cible.{InCombat:\n(Piochez {TotalCards:diff()} cartes.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Douce magie",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Transformez {Cards:diff()} cartes de votre [gold]Main[/gold] en notes.\nSi elles sont toutes différentes, gagnez {FortePower:diff()} [gold]Forte[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Trou de donut",

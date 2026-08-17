@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "Импровизация",
   "MGR_MOD_CARD_IMPROVISE.description": "Наносит {Damage:diff()} урона.\nАктивирует крайнюю справа карту [gold]исполнения[/gold].",
   "MGR_MOD_CARD_GAZE.title": "Взгляд",
-  "MGR_MOD_CARD_GAZE.description": "Наносит {Damage:diff()} урона.\nЗа каждый отрицательный эффект цели дает {CalculationExtra:diff()} [gold]защиты[/gold].{InCombat:\n(Даст {CalculatedBlock:diff()} [gold]защиты[/gold].)|}",
+  "MGR_MOD_CARD_GAZE.description": "Наносит {Damage:diff()} урона.\nЗа каждый уникальный отрицательный эффект цели вы добираете карт: {Cards:diff()}.{InCombat:\n(Всего добираете карт: {TotalCards:diff()}.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Sweet Magic",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Превращает карты в [gold]руке[/gold] в ноты. Количество: {Cards:diff()}.\nЕсли все эти ноты различаются, дает {FortePower:diff()} [gold]форте[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Donut Hole",

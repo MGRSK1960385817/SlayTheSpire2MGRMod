@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "Improviso",
   "MGR_MOD_CARD_IMPROVISE.description": "Cause {Damage:diff()} de dano.\nAtive a carta de [gold]Apresentação[/gold] mais à direita.",
   "MGR_MOD_CARD_GAZE.title": "Olhar",
-  "MGR_MOD_CARD_GAZE.description": "Cause {Damage:diff()} de dano.\nPara cada efeito negativo no alvo, receba {CalculationExtra:diff()} de [gold]Proteção[/gold].{InCombat:\n(Receba {CalculatedBlock:diff()} de [gold]Proteção[/gold].)|}",
+  "MGR_MOD_CARD_GAZE.description": "Cause {Damage:diff()} de dano.\nCompre {Cards:diff()} cartas para cada efeito negativo diferente no alvo.{InCombat:\n(Compre {TotalCards:diff()} cartas.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Magia doce",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Transforme {Cards:diff()} cartas da sua [gold]Mão[/gold] em Notas.\nSe todas essas Notas forem diferentes, receba {FortePower:diff()} de [gold]Forte[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Buraco de rosquinha",

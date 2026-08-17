@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "즉흥",
   "MGR_MOD_CARD_IMPROVISE.description": "피해를 {Damage:diff()} 줍니다.\n가장 오른쪽 [gold]연주[/gold] 카드를 발동합니다.",
   "MGR_MOD_CARD_GAZE.title": "응시",
-  "MGR_MOD_CARD_GAZE.description": "피해를 {Damage:diff()} 줍니다.\n대상의 해로운 효과 종류마다 [gold]방어도[/gold]를 {CalculationExtra:diff()} 얻습니다.{InCombat:\n([gold]방어도[/gold] {CalculatedBlock:diff()} 획득.)|}",
+  "MGR_MOD_CARD_GAZE.description": "피해를 {Damage:diff()} 줍니다.\n대상의 해로운 효과 종류마다 카드를 {Cards:diff()}장 뽑습니다.{InCombat:\n(카드를 {TotalCards:diff()}장 뽑습니다.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "스위트 매직",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "[gold]손[/gold]의 카드 {Cards:diff()}장을 음표로 변환합니다.\n음표가 모두 다르면 [gold]포르테[/gold]를 {FortePower:diff()} 얻습니다.",
   "MGR_MOD_CARD_DONUT_HOLE.title": "도넛 홀",

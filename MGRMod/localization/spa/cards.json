@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "Improvisación",
   "MGR_MOD_CARD_IMPROVISE.description": "Inflige {Damage:diff()} de daño.\nActiva la carta de [gold]Interpretación[/gold] situada más a la derecha.",
   "MGR_MOD_CARD_GAZE.title": "Mirada",
-  "MGR_MOD_CARD_GAZE.description": "Inflige {Damage:diff()} de daño.\nPor cada estado negativo distinto del objetivo, gana {CalculationExtra:diff()} de [gold]Bloqueo[/gold].{InCombat:\n(Gana {CalculatedBlock:diff()} de [gold]Bloqueo[/gold].)|}",
+  "MGR_MOD_CARD_GAZE.description": "Inflige {Damage:diff()} de daño.\nRoba {Cards:diff()} cartas por cada estado negativo distinto del objetivo.{InCombat:\n(Roba {TotalCards:diff()} cartas.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Dulce magia",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Transforma {Cards:diff()} cartas de tu [gold]Mano[/gold] en Notas.\nSi todas esas Notas son distintas, gana {FortePower:diff()} de [gold]Forte[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Agujero de dónut",

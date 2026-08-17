@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -15,14 +14,13 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "gaze")]
 public sealed class Gaze : MgrCard
 {
-    public override bool GainsBlock => true;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
+        new DamageVar(7m, ValueProp.Move),
+        new CardsVar(1),
         new CalculationBaseVar(0m),
-        new CalculationExtraVar(3m),
-        new DebuffConditionalBlockVar(ValueProp.Move).WithMultiplier(
+        new CalculationExtraVar(1m),
+        new CalculatedVar("TotalCards").WithMultiplier(
             static (_, target) => CountDistinctDebuffs(target))
     ];
 
@@ -46,16 +44,11 @@ public sealed class Gaze : MgrCard
             .WithHitFx(VfxCmd.gazePath)
             .Execute(choiceContext);
 
-        decimal blockPerDebuff = DynamicVars.CalculationExtra.BaseValue;
-        for (int index = 0; index < debuffCount; index++)
-        {
-            await CreatureCmd.GainBlock(
-                Owner.Creature,
-                blockPerDebuff,
-                DynamicVars.CalculatedBlock.Props,
-                cardPlay,
-                fast: index > 0);
-        }
+        if (debuffCount > 0)
+            await CardPileCmd.Draw(
+                choiceContext,
+                DynamicVars.Cards.BaseValue * debuffCount,
+                Owner);
     }
 
     protected override void OnUpgrade() =>
@@ -69,50 +62,4 @@ public sealed class Gaze : MgrCard
             .Select(power => power.Id)
             .Distinct()
             .Count() ?? 0;
-
-    private sealed class DebuffConditionalBlockVar(ValueProp props)
-        : CalculatedBlockVar(props)
-    {
-        public override void UpdateCardPreview(
-            CardModel card,
-            CardPreviewMode previewMode,
-            Creature? target,
-            bool runGlobalHooks)
-        {
-            int debuffCount = CountDistinctDebuffs(target);
-            if (debuffCount == 0)
-            {
-                EnchantedValue = 0m;
-                PreviewValue = 0m;
-                return;
-            }
-
-            decimal blockPerDebuff = GetExtraVar().BaseValue;
-            decimal enchantedBlockPerDebuff = blockPerDebuff;
-            if (card.Enchantment is { } enchantment)
-            {
-                enchantedBlockPerDebuff +=
-                    enchantment.EnchantBlockAdditive(enchantedBlockPerDebuff);
-                enchantedBlockPerDebuff *=
-                    enchantment.EnchantBlockMultiplicative(enchantedBlockPerDebuff);
-            }
-
-            EnchantedValue = enchantedBlockPerDebuff * debuffCount;
-            if (!runGlobalHooks || card.CombatState is not { } combatState)
-            {
-                PreviewValue = EnchantedValue;
-                return;
-            }
-
-            decimal modifiedBlockPerDebuff = Hook.ModifyBlock(
-                combatState,
-                card.Owner.Creature,
-                blockPerDebuff,
-                Props,
-                card,
-                cardPlay: null,
-                out _);
-            PreviewValue = modifiedBlockPerDebuff * debuffCount;
-        }
-    }
 }

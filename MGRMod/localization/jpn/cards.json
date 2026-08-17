@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "即興",
   "MGR_MOD_CARD_IMPROVISE.description": "{Damage:diff()}ダメージを与える。\n右端の[gold]演奏[/gold]カードを発動する。",
   "MGR_MOD_CARD_GAZE.title": "眼差し",
-  "MGR_MOD_CARD_GAZE.description": "{Damage:diff()}ダメージを与える。\n対象のデバフ1種類につき、{CalculationExtra:diff()}[gold]ブロック[/gold]を得る。{InCombat:\n（{CalculatedBlock:diff()}[gold]ブロック[/gold]を得る。）|}",
+  "MGR_MOD_CARD_GAZE.description": "{Damage:diff()}ダメージを与える。\n対象のデバフ1種類につき、カードを{Cards:diff()}枚引く。{InCombat:\n（カードを{TotalCards:diff()}枚引く。）|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "スイートマジック",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "[gold]手札[/gold]{Cards:diff()}枚を音符に変換する。\n音符がすべて異なる場合、[gold]フォルテ[/gold]{FortePower:diff()}を得る。",
   "MGR_MOD_CARD_DONUT_HOLE.title": "ドーナツホール",

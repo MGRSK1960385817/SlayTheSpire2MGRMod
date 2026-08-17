@@ -187,7 +187,7 @@
   "MGR_MOD_CARD_IMPROVISE.title": "Improvise",
   "MGR_MOD_CARD_IMPROVISE.description": "Deal {Damage:diff()} damage.\nTrigger the rightmost [gold]Performance[/gold] card.",
   "MGR_MOD_CARD_GAZE.title": "Gaze",
-  "MGR_MOD_CARD_GAZE.description": "Deal {Damage:diff()} damage.\nGain {CalculationExtra:diff()} [gold]Block[/gold] for each unique debuff on that enemy.{InCombat:\n(Gain {CalculatedBlock:diff()} [gold]Block[/gold].)|}",
+  "MGR_MOD_CARD_GAZE.description": "Deal {Damage:diff()} damage.\nDraw {Cards:diff()} cards for each unique debuff on that enemy.{InCombat:\n(Draw {TotalCards:diff()} cards.)|}",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Sweet Magic",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Transform {Cards:diff()} cards in your [gold]Hand[/gold] into Notes.\nIf those Notes are all different, gain {FortePower:diff()} [gold]Forte[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Donut Hole",
