@@ -3,10 +3,12 @@ using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.TestSupport;
@@ -119,6 +121,95 @@ public static class MgrAbilityVfx
     }
 
     /// <summary>
+    /// Presents an Electric Angel generation before the real card enters the
+    /// hand. Turn-start hand insertion can otherwise complete before the hand
+    /// UI has a readable native fly-in, making the card appear instantly.
+    /// </summary>
+    public static async Task PlayElectricAngelCardGeneration(CardModel card)
+    {
+        if (TestMode.IsOn ||
+            NCombatRoom.Instance is not { } room ||
+            room.GetCreatureNode(card.Owner.Creature) is not { } creatureNode)
+        {
+            return;
+        }
+
+        NCard? preview = NCard.Create(card, ModelVisibility.Visible);
+        if (preview is null)
+            return;
+
+        Control visualRoot = room.Ui.MessyCardPreviewContainer;
+        visualRoot.AddChildSafely(preview);
+        preview.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
+        preview.MouseFilter = Control.MouseFilterEnum.Ignore;
+        preview.ZIndex = 340;
+
+        Vector2 center = room.GetViewportRect().Size * 0.5f;
+        Vector2 revealPosition = center - NCard.defaultSize * 0.38f;
+        Vector2 sourcePosition = creatureNode.VfxSpawnPosition -
+            NCard.defaultSize * 0.10f;
+        Vector2 handPosition = PileType.Hand.GetTargetPosition(preview);
+        preview.GlobalPosition = sourcePosition;
+        preview.Scale = Vector2.One * 0.10f;
+        preview.Rotation = -0.10f;
+        preview.Modulate = new Color(0.45f, 0.90f, 1f, 0f);
+
+        Tween reveal = preview.CreateTween().SetParallel();
+        reveal.TweenProperty(
+                preview,
+                "global_position",
+                revealPosition,
+                0.24f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        reveal.TweenProperty(
+                preview,
+                "scale",
+                Vector2.One * 0.76f,
+                0.24f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Back);
+        reveal.TweenProperty(preview, "rotation", 0f, 0.20f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        reveal.TweenProperty(preview, "modulate", Colors.White, 0.15f);
+        await TweenHelper.AwaitFinished(reveal, preview);
+
+        if (!GodotObject.IsInstanceValid(preview))
+            return;
+
+        await Cmd.Wait(0.24f);
+        if (!GodotObject.IsInstanceValid(preview))
+            return;
+
+        Tween enterHand = preview.CreateTween().SetParallel();
+        enterHand.TweenProperty(
+                preview,
+                "global_position",
+                handPosition,
+                0.28f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+        enterHand.TweenProperty(
+                preview,
+                "scale",
+                Vector2.One * 0.30f,
+                0.28f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Back);
+        enterHand.TweenProperty(
+                preview,
+                "modulate",
+                new Color(0.55f, 0.92f, 1f, 0.12f),
+                0.20f)
+            .SetDelay(0.08f);
+        await TweenHelper.AwaitFinished(enterHand, preview);
+
+        if (GodotObject.IsInstanceValid(preview))
+            preview.QueueFreeSafely();
+    }
+
+    /// <summary>
     /// Daybreak Frontline first gathers every affected card into the middle,
     /// then passes them through Tower 2's full Fiend Fire-style exhaust
     /// dissolve. Hand targets contribute their real visible NCard; cards from
@@ -149,6 +240,13 @@ public static class MgrAbilityVfx
             if (node is null)
                 continue;
 
+            Vector2 queuedCardOrigin = default;
+            bool usesQueuedCardOrigin = !usesRealHandNode &&
+                MgrPerformanceVisuals.TryTakeQueuedCardPresentation(
+                    card.Owner,
+                    card,
+                    out queuedCardOrigin);
+
             if (!usesRealHandNode)
                 visualRoot.AddChildSafely(node);
             node.UpdateVisuals(
@@ -158,13 +256,19 @@ public static class MgrAbilityVfx
             node.ZIndex = 120 + index;
             if (!usesRealHandNode)
             {
-                node.GlobalPosition = GetDaybreakCardOrigin(
-                    card,
-                    node,
-                    center,
-                    index);
-                node.Scale = Vector2.One * 0.22f;
-                node.Modulate = new Color(1f, 1f, 1f, 0.18f);
+                node.GlobalPosition = usesQueuedCardOrigin
+                    ? queuedCardOrigin
+                    : GetDaybreakCardOrigin(card, node, center, index);
+                node.Scale = usesQueuedCardOrigin
+                    ? MgrVisualTuning.Performances.MiniatureScale
+                    : Vector2.One * 0.22f;
+                node.Modulate = usesQueuedCardOrigin
+                    ? new Color(
+                        MgrVisualTuning.Performances.RackCardBrightness,
+                        MgrVisualTuning.Performances.RackCardBrightness,
+                        MgrVisualTuning.Performances.RackCardBrightness,
+                        MgrVisualTuning.Performances.RackCardOpacity)
+                    : new Color(1f, 1f, 1f, 0.18f);
             }
             else
             {

@@ -189,6 +189,23 @@ public static class MgrPerformanceVisuals
         return rack.PlayExitAnimation(entry, destinationPile, durationScale);
     }
 
+    /// <summary>
+    /// Transfers the visible presentation of a queued card to an external VFX.
+    /// The caller receives the card's exact viewport position while the rack
+    /// copy and its hover interaction are hidden until gameplay removes it.
+    /// </summary>
+    internal static bool TryTakeQueuedCardPresentation(
+        Player player,
+        CardModel card,
+        out Vector2 viewportCenter)
+    {
+        viewportCenter = default;
+        if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
+            return false;
+
+        return rack.TryTakeQueuedCardPresentation(card, out viewportCenter);
+    }
+
     public static async Task BeginFinisher(
         Player player,
         CardModel sourceCard,
@@ -712,6 +729,20 @@ public static class MgrPerformanceVisuals
                 durationScale);
         }
 
+        public bool TryTakeQueuedCardPresentation(
+            CardModel card,
+            out Vector2 viewportCenter)
+        {
+            viewportCenter = default;
+            PerformanceCardView? view = _views.FirstOrDefault(
+                candidate => ReferenceEquals(candidate.Entry.Card, card));
+            if (view is null)
+                return false;
+
+            viewportCenter = view.TakeForExternalAnimation();
+            return true;
+        }
+
         public void QueuePlayedCardAnimation(
             MgrPerformanceEntry entry,
             float durationScale)
@@ -1134,6 +1165,19 @@ public static class MgrPerformanceVisuals
 
         public void SetPresentationVisible(bool visible) =>
             _anchor.Visible = visible;
+
+        public Vector2 TakeForExternalAnimation()
+        {
+            Vector2 viewportCenter = ViewportCenter;
+            HideHoverPreview();
+            _pulseTween?.Kill();
+            _pulseTween = null;
+            SetHoveredPresentation(false);
+            _hoverHitbox.MouseFilter = Control.MouseFilterEnum.Ignore;
+            _hoverHitbox.Visible = false;
+            _anchor.Visible = false;
+            return viewportCenter;
+        }
 
         public void SetLayer(int layer)
         {

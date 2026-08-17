@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -11,9 +12,24 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "east_of_timeline")]
 public sealed class EastOfTimeline : MgrCard
 {
+    private const int BaseNotes = 2;
+    private int _currentNotes = BaseNotes;
+
+    [SavedProperty]
+    public int CurrentNotes
+    {
+        get => _currentNotes;
+        private set
+        {
+            AssertMutable();
+            _currentNotes = Math.Max(BaseNotes, value);
+            DynamicVars["Notes"].BaseValue = _currentNotes;
+        }
+    }
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Notes", 2m),
+        new IntVar("Notes", CurrentNotes),
         new IntVar("PermanentIncrease", 1m)
     ];
 
@@ -56,10 +72,11 @@ public sealed class EastOfTimeline : MgrCard
             }
         }
 
+        int integerAmount = decimal.ToInt32(amount);
         foreach (CardModel target in targets)
         {
-            if (target.DynamicVars.TryGetValue("Notes", out var notesVar))
-                notesVar.BaseValue += amount;
+            if (target is EastOfTimeline timeline)
+                timeline.CurrentNotes += integerAmount;
         }
     }
 

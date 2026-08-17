@@ -1,6 +1,7 @@
 using System.Reflection;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
+using MGRMod.Characters;
 using STS2RitsuLib;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Patching.Core;
@@ -30,9 +31,10 @@ public partial class Entry
 
         // Godot scene scripts and RitsuLib content attributes use separate discovery paths.
         RitsuLibFramework.EnsureGodotScriptsRegistered(assembly, Logger);
+        MgrAudio.RegisterBank();
 
         _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
-        _runtimePatcher.RegisterPatch<MgrCharacterSelectSfxPatch>();
+        _runtimePatcher.RegisterPatch<MgrAudioVolumePatch>();
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformancePowerCardVfxPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();

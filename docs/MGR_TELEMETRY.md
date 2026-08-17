@@ -2,7 +2,7 @@
 
 ## 设计目标
 
-MGR 使用 RitsuLib 0.5.12 的授权、缓存、重试和 PostHog 发送能力，但不使用 RitsuLib 的内置 `RunHistory` 采集器。内置采集器会保留完整 `SerializableRun`；MGR 改为监听 `RunEndedEvent`，自行构造字段白名单。
+MGR 使用 RitsuLib 0.5.13 的授权、缓存、重试和 PostHog 发送能力，但不使用 RitsuLib 的内置 `RunHistory` 采集器。内置采集器会保留完整 `SerializableRun`；MGR 改为监听 `RunEndedEvent`，自行构造字段白名单。
 
 入口与过滤逻辑位于 `Scripts/Telemetry/MgrTelemetry.cs`，精简负载结构位于 `Scripts/Telemetry/MgrRunMetricsBuilder.cs`。
 

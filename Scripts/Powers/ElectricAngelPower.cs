@@ -57,10 +57,12 @@ public sealed class ElectricAngelPower : ModPowerTemplate
                 break;
 
             CardModel generated = combatState.CreateCard(canonical, player);
+            await MgrAbilityVfx.PlayElectricAngelCardGeneration(generated);
             await CardPileCmd.AddGeneratedCardToCombat(
                 generated,
                 PileType.Hand,
                 player);
+            await Cmd.Wait(0.08f);
         }
     }
 }

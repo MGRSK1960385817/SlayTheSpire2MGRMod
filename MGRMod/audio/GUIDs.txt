@@ -1,0 +1,14 @@
+{a1996123-298f-426c-8fa0-c55e7c6b27dd} bank:/MGR
+{5d95f0d5-57ba-451e-8d05-a41c9bc3813e} bank:/Master
+{c588d001-26c1-095c-0b4c-2ee26a3087a6} bank:/Master.strings
+{0684fe4d-66d7-41be-a5f0-466da530675d} bus:/
+{a080420e-7210-41ab-936a-d9a56e426f39} bus:/master
+{31a6a70e-1f02-4134-9316-869034f110cd} bus:/master/sfx
+{76c1a0ae-f631-4f0c-ab44-44f2af58ee6b} event:/MGR/sfx/Chord
+{13ac4814-ffa1-4b8c-82a0-77c908a8324d} event:/MGR/sfx/Glitch
+{6f62afbe-b2e8-4aa4-a4b2-61edd0608894} event:/MGR/sfx/MGR_charselect
+{3071107c-7bb6-4fb9-bc16-ff67a23ecd7a} event:/MGR/sfx/NoteChannel
+{ba553527-442e-44bb-8f48-313d7dda3ad7} event:/MGR/sfx/Writing
+{06cefc2c-7055-44b5-af2e-7652cd2414d6} parameter:/Progress
+{a36ba432-c5b1-44ff-b5e4-12f654cfa067} parameter:/sfx_duck
+{9fd4e212-6c2e-4b45-8a4b-942284c71171} parameter:/sfx_duck_big

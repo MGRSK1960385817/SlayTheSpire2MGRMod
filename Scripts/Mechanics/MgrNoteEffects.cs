@@ -14,6 +14,15 @@ namespace MGRMod.Mechanics;
 /// </summary>
 public static class MgrNoteEffects
 {
+    internal static int GetCurseHealingAmount(Player sourcePlayer, int baseAmount)
+    {
+        decimal nocturneBonus = Math.Max(
+            0m,
+            sourcePlayer.Creature.GetPowerAmount<StainedNocturnePower>());
+        decimal total = Math.Max(0, baseAmount) + nocturneBonus;
+        return (int)Math.Min(total, int.MaxValue);
+    }
+
     public static async Task TriggerChord(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -165,13 +174,9 @@ public static class MgrNoteEffects
                 return;
 
             case NoteKind.Curse:
-                int wardrobeBonus = sourcePlayer.Creature
-                    .GetPower<StainedNocturnePower>() is { Amount: > 0 } nocturne
-                    ? Math.Max(0, (int)nocturne.Amount)
-                    : 0;
                 await CreatureCmd.Heal(
                     targetPlayer.Creature,
-                    amount + wardrobeBonus,
+                    GetCurseHealingAmount(sourcePlayer, amount),
                     playAnim: !fastPresentation);
                 return;
 
@@ -348,10 +353,10 @@ public static class MgrNoteEffects
             {
                 // Curse notes deliberately ignore Forte, but Curse Wardrobe is
                 // a separate flat bonus and therefore applies afterward.
-                int wardrobeBonus = 0;
-                if (owner.GetPower<StainedNocturnePower>() is { Amount: > 0 } nocturne)
+                int healingAmount = GetCurseHealingAmount(player, amount);
+                if (healingAmount > amount &&
+                    owner.GetPower<StainedNocturnePower>() is { } nocturne)
                 {
-                    wardrobeBonus = Math.Max(0, (int)nocturne.Amount);
                     nocturne.Flash();
                     MgrAbilityVfx.SpawnCastBurst(
                         owner,
@@ -360,7 +365,7 @@ public static class MgrNoteEffects
                 }
                 await CreatureCmd.Heal(
                     owner,
-                    amount + wardrobeBonus,
+                    healingAmount,
                     playAnim: !fastPresentation);
 
                 return;

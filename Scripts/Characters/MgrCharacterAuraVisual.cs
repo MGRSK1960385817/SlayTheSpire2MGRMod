@@ -534,18 +534,35 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         float outerRadius = CanonWheelRadius * pulse;
         float rotation = _canonRotation;
 
-        Color deepHalo = new Color("513268");
-        deepHalo.A = alpha * (0.075f + _canonFlash * 0.12f);
-        DrawCircle(center, outerRadius * 1.04f, deepHalo);
-
-        Color outer = new Color("d7c0ff");
-        outer.A = alpha * (0.30f + _canonFlash * 0.55f);
-        DrawArc(center, outerRadius, 0f, Mathf.Tau, 96, outer, 2.1f + _canonFlash * 3.2f, true);
-
-        Color inner = new Color("87ddff");
-        inner.A = alpha * (0.20f + _canonFlash * 0.38f);
-        DrawArc(center, outerRadius * 0.72f, 0f, Mathf.Tau, 72, inner, 1.35f, true);
-        DrawArc(center, outerRadius * 0.45f, 0f, Mathf.Tau, 56, outer, 1.05f, true);
+        float rainbowPhase = Mathf.PosMod((float)_elapsed * 0.055f, 1f);
+        DrawRainbowArc(
+            center,
+            outerRadius * 1.01f,
+            rotation,
+            alpha * (0.10f + _canonFlash * 0.16f),
+            18f + _canonFlash * 7f,
+            rainbowPhase);
+        DrawRainbowArc(
+            center,
+            outerRadius,
+            rotation,
+            alpha * (0.34f + _canonFlash * 0.55f),
+            2.1f + _canonFlash * 3.2f,
+            rainbowPhase);
+        DrawRainbowArc(
+            center,
+            outerRadius * 0.72f,
+            -rotation * 0.7f,
+            alpha * (0.24f + _canonFlash * 0.38f),
+            1.35f,
+            rainbowPhase + 0.23f);
+        DrawRainbowArc(
+            center,
+            outerRadius * 0.45f,
+            rotation * 0.45f,
+            alpha * (0.25f + _canonFlash * 0.32f),
+            1.05f,
+            rainbowPhase + 0.47f);
 
         // Sixty ticks form a clock face; the twelve major ticks read clearly
         // during the accelerated one-turn rotation.
@@ -555,8 +572,11 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             bool major = index % 5 == 0;
             float length = major ? 13f : 6f;
             Vector2 direction = Vector2.FromAngle(angle);
-            Color tick = major ? outer : inner;
-            tick.A *= major ? 0.92f : 0.55f;
+            Color tick = Color.FromHsv(
+                Mathf.PosMod(rainbowPhase + index / 60f, 1f),
+                major ? 0.58f : 0.46f,
+                1f,
+                alpha * (major ? 0.78f : 0.38f));
             DrawLine(
                 center + direction * (outerRadius - length),
                 center + direction * outerRadius,
@@ -571,19 +591,54 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         {
             float angle = rotation + index * Mathf.Tau / 8f - MathF.PI * 0.5f;
             Vector2 moonCenter = center + Vector2.FromAngle(angle) * outerRadius * 0.83f;
-            DrawMoonPhase(moonCenter, 10.5f, index, alpha);
+            DrawMoonPhase(
+                moonCenter,
+                10.5f,
+                index,
+                alpha,
+                rainbowPhase + index / 8f);
         }
 
         // A pair of time hands remains readable while the surrounding lunar
         // dial turns, reinforcing “last turn replayed this turn”.
-        Color hand = new Color("fff0aa");
-        hand.A = alpha * (0.48f + _canonFlash * 0.40f);
+        Color hand = Color.FromHsv(
+            Mathf.PosMod(rainbowPhase + 0.12f, 1f),
+            0.42f,
+            1f,
+            alpha * (0.52f + _canonFlash * 0.40f));
         DrawLine(center, center + Vector2.FromAngle(rotation * 0.35f - 1.2f) * 61f, hand, 2.4f, true);
         DrawLine(center, center + Vector2.FromAngle(-rotation * 0.22f + 0.35f) * 39f, hand, 3.2f, true);
         DrawCircle(center, 5.5f, hand);
     }
 
-    private void DrawMoonPhase(Vector2 center, float radius, int phase, float alpha)
+    private void DrawRainbowArc(
+        Vector2 center,
+        float radius,
+        float rotation,
+        float alpha,
+        float width,
+        float hueOffset)
+    {
+        const int segmentCount = 36;
+        for (int index = 0; index < segmentCount; index++)
+        {
+            float start = rotation + index * Mathf.Tau / segmentCount;
+            float end = rotation + (index + 1.08f) * Mathf.Tau / segmentCount;
+            Color color = Color.FromHsv(
+                Mathf.PosMod(hueOffset + index / (float)segmentCount, 1f),
+                0.58f,
+                1f,
+                alpha);
+            DrawArc(center, radius, start, end, 3, color, width, true);
+        }
+    }
+
+    private void DrawMoonPhase(
+        Vector2 center,
+        float radius,
+        int phase,
+        float alpha,
+        float hue)
     {
         Color shadow = new Color("261b36");
         shadow.A = alpha * 0.82f;
@@ -597,8 +652,11 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         Vector2 lightCenter = center + Vector2.Right * direction * (radius - lightRadius) * 0.68f;
         DrawCircle(lightCenter, lightRadius, light);
 
-        Color rim = new Color("cfaeff");
-        rim.A = alpha * 0.34f;
+        Color rim = Color.FromHsv(
+            Mathf.PosMod(hue, 1f),
+            0.52f,
+            1f,
+            alpha * 0.42f);
         DrawArc(center, radius, 0f, Mathf.Tau, 20, rim, 1f, true);
     }
 

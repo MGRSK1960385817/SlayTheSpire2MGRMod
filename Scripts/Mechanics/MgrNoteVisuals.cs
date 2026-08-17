@@ -130,7 +130,7 @@ public static class MgrNoteVisuals
         if (!Racks.TryGetValue(player, out NoteRack? rack) || !rack.IsValid)
         {
             rack?.Dispose();
-            rack = new NoteRack(creatureNode);
+            rack = new NoteRack(player, creatureNode);
             rack.SetPerforming(PerformingStates.GetValueOrDefault(player));
             Racks[player] = rack;
         }
@@ -140,6 +140,7 @@ public static class MgrNoteVisuals
 
     private sealed class NoteRack : IDisposable
     {
+        private readonly Player _player;
         private readonly Node2D _root;
         private readonly List<NoteSlot> _slots = [];
         private readonly SemaphoreSlim _channelAnimationGate = new(1, 1);
@@ -156,8 +157,9 @@ public static class MgrNoteVisuals
             GodotObject.IsInstanceValid(_root) &&
             _root.IsInsideTree();
 
-        public NoteRack(Node parent)
+        public NoteRack(Player player, Node parent)
         {
+            _player = player;
             _root = new Node2D
             {
                 Name = "MgrNoteRack",
@@ -237,7 +239,10 @@ public static class MgrNoteVisuals
         {
             EnsureCapacity(capacity);
             for (int index = 0; index < _slots.Count; index++)
-                _slots[index].Show(index < notes.Count ? notes[index] : null, forte);
+                _slots[index].Show(
+                    index < notes.Count ? notes[index] : null,
+                    forte,
+                    _player);
         }
 
         private void EnsureCapacity(int capacity)
@@ -495,7 +500,7 @@ public static class MgrNoteVisuals
                 return;
 
             foreach (NoteSlot slot in _slots)
-                slot.Show(note: null, forte: 0);
+                slot.Show(note: null, forte: 0, _player);
         }
 
         public void Dispose()
@@ -607,7 +612,7 @@ public static class MgrNoteVisuals
         public void SetPerforming(bool isPerforming) =>
             _emptySlotOutline.SetPerforming(isPerforming);
 
-        public void Show(MgrNote? note, int forte)
+        public void Show(MgrNote? note, int forte, Player player)
         {
             if (note is null)
             {
@@ -628,7 +633,7 @@ public static class MgrNoteVisuals
                 PlayEmptySlotCollapseAnimation();
 
             if (_amountLabel is not null)
-                _amountLabel.Text = GetDisplayedAmount(note, forte).ToString();
+                _amountLabel.Text = GetDisplayedAmount(note, forte, player).ToString();
 
             RefreshHoverTip();
         }
@@ -935,13 +940,20 @@ public static class MgrNoteVisuals
             _displayedKind = note.Kind;
         }
 
-        private static int GetDisplayedAmount(MgrNote note, int forte)
+        private static int GetDisplayedAmount(
+            MgrNote note,
+            int forte,
+            Player player)
         {
             // Ghost and Omnia use a fixed visual marker. The displayed "1" is
             // intentionally independent from their compound/mechanical effects.
-            return note.Kind is NoteKind.Ghost or NoteKind.OmniaNote
-                ? 1
-                : note.GetEffectAmount(forte);
+            if (note.Kind is NoteKind.Ghost or NoteKind.OmniaNote)
+                return 1;
+
+            int amount = note.GetEffectAmount(forte);
+            return note.Kind == NoteKind.Curse
+                ? MgrNoteEffects.GetCurseHealingAmount(player, amount)
+                : amount;
         }
 
         private void OnMouseEntered()

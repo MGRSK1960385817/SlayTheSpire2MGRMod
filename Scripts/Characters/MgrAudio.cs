@@ -1,49 +1,47 @@
+using MegaCrit.Sts2.Core.Commands;
 using STS2RitsuLib.Audio;
 
 namespace MGRMod.Characters;
 
 internal static class MgrAudio
 {
-    private const float CharacterSelectVolumeMultiplier = 0.8f;
+    // Linear gain applied to MGR events other than character selection.
+    internal const float EventVolumeGain = 2f;
+
+    // Linear gain applied only when MGR is selected on a character screen.
+    // This is independent from EventVolumeGain so the UI sound can be tuned
+    // without changing NoteChannel, Chord, Writing, or Glitch.
+    internal const float CharacterSelectVolumeGain = 5f;
+
     // Linear playback ratio for Writing.ogg while Imagine/Create owns its card
     // selection screen. Raise/lower this value to tune only that ambience.
-    internal const float ImagineCreateWritingLoopVolume = 0.30f;
+    internal const float ImagineCreateWritingLoopVolume = 2.5f;
     // Linear playback ratio for Glitch.ogg while Failure Girl owns its card
     // selection screen. Raise/lower this value to tune only that loop.
-    internal const float FlawedGirlGlitchLoopVolume = 0.30f;
+    internal const float FlawedGirlGlitchLoopVolume = 3f;
 
-    // Character profiles require an event-like identifier. Selection call sites route
-    // this private sentinel to the packed OGG through RitsuLib's resource backend.
-    internal const string CharacterSelectSfx = "mgr://audio/character_select";
-    internal const string CharacterSelectResource = $"{Entry.ResPath}/audio/MGR_charselect.ogg";
-    internal const string NoteChannelResource = $"{Entry.ResPath}/audio/NoteChannel.ogg";
-    internal const string ChordResource = $"{Entry.ResPath}/audio/Chord.ogg";
-    internal const string WritingResource = $"{Entry.ResPath}/audio/Writing.ogg";
-    internal const string GlitchResource = $"{Entry.ResPath}/audio/Glitch.ogg";
+    internal const string BankResource = $"{Entry.ResPath}/audio/MGR.bank";
+    internal const string GuidMappingsResource = $"{Entry.ResPath}/audio/GUIDs.txt";
 
-    internal static void PlayCharacterSelect(float volume = 1f)
+    internal const string CharacterSelectSfx = "event:/MGR/sfx/MGR_charselect";
+    internal const string NoteChannelSfx = "event:/MGR/sfx/NoteChannel";
+    internal const string ChordSfx = "event:/MGR/sfx/Chord";
+    internal const string WritingSfx = "event:/MGR/sfx/Writing";
+    internal const string GlitchSfx = "event:/MGR/sfx/Glitch";
+
+    internal static void RegisterBank()
     {
-        float effectiveVolume = Math.Clamp(
-            volume * CharacterSelectVolumeMultiplier,
-            0f,
-            1f);
-        AudioPlayResult result = PlayResource(
-            CharacterSelectResource,
-            "MGR character select",
-            effectiveVolume,
-            AudioLifecycleScope.Screen);
-
-        if (!result.Succeeded)
-            GameFmod.Studio.PlayOneShot(
-                "event:/sfx/characters/silent/silent_select",
-                effectiveVolume);
+        FmodStudioDeferredBankRegistration.RegisterBank(BankResource);
+        FmodStudioDeferredBankRegistration.RegisterStudioGuidMappings(GuidMappingsResource);
+        Entry.Logger.Info(
+            $"Registered deferred MGR FMOD bank '{BankResource}' and GUID mappings '{GuidMappingsResource}'.");
     }
 
-    internal static void PlayNoteChannel(float volume = 0.2f) =>
-        PlayResource(NoteChannelResource, "MGR note channel", volume, AudioLifecycleScope.Combat);
+    internal static void PlayNoteChannel(float volume = 1.5f) =>
+        PlayEvent(NoteChannelSfx, volume);
 
-    internal static void PlayChord(float volume = 0.2f) =>
-        PlayResource(ChordResource, "MGR chord", volume, AudioLifecycleScope.Combat);
+    internal static void PlayChord(float volume = 1.6f) =>
+        PlayEvent(ChordSfx, volume);
 
     /// <summary>
     /// Starts the writing ambience used while Imagine/Create owns its grayscale
@@ -53,10 +51,11 @@ internal static class MgrAudio
     internal static IAudioHandle? BeginWritingLoop(
         float volume = ImagineCreateWritingLoopVolume)
     {
-        return BeginResourceLoop(
-            WritingResource,
+        float effectiveVolume = ApplyEventVolumeGain(WritingSfx, volume);
+        return BeginEventLoop(
+            WritingSfx,
             "MGR Imagine/Create writing loop",
-            volume);
+            effectiveVolume);
     }
 
     /// <summary>
@@ -66,54 +65,56 @@ internal static class MgrAudio
     internal static IAudioHandle? BeginGlitchLoop(
         float volume = FlawedGirlGlitchLoopVolume)
     {
-        return BeginResourceLoop(
-            GlitchResource,
+        float effectiveVolume = ApplyEventVolumeGain(GlitchSfx, volume);
+        return BeginEventLoop(
+            GlitchSfx,
             "MGR Failure Girl glitch loop",
-            volume);
+            effectiveVolume);
     }
 
-    private static IAudioHandle? BeginResourceLoop(
-        string resource,
+    internal static bool IsMgrEvent(string? eventPath) =>
+        eventPath?.StartsWith("event:/MGR/", StringComparison.Ordinal) == true;
+
+    internal static float GetEventVolumeGain(string eventPath) =>
+        string.Equals(eventPath, CharacterSelectSfx, StringComparison.Ordinal)
+            ? CharacterSelectVolumeGain
+            : EventVolumeGain;
+
+    internal static float ApplyEventVolumeGain(string eventPath, float volume) =>
+        Math.Max(0f, volume * GetEventVolumeGain(eventPath));
+
+    private static IAudioHandle? BeginEventLoop(
+        string eventPath,
         string debugName,
         float volume)
     {
         IAudioHandle? handle = GameFmod.Playback.PlayLoop(
-            AudioSource.StreamingResourceMusic(resource),
+            AudioSource.Event(eventPath),
             new AudioPlaybackOptions
             {
                 Volume = volume,
                 Scope = AudioLifecycleScope.Combat,
+                // The MGR Studio events do not define the vanilla convention's
+                // named "loop" parameter. Their timeline/instrument controls
+                // whether they repeat; the retained handle still stops them.
+                UsesLoopParameter = false,
                 AllowFadeOutOnStop = false,
                 DebugName = debugName
             });
 
         if (handle is null)
+        {
             Entry.Logger.Warn($"Could not start {debugName}.");
+        }
 
         return handle;
     }
 
-    private static AudioPlayResult PlayResource(
-        string resource,
-        string debugName,
-        float volume,
-        AudioLifecycleScope scope)
+    private static void PlayEvent(string eventPath, float volume)
     {
-        AudioPlayResult result = GameFmod.Playback.PlayOneShot(
-            AudioSource.ResourceFile(resource),
-            new AudioPlaybackOptions
-            {
-                Volume = volume,
-                Scope = scope,
-                DebugName = debugName
-            });
-
-        if (!result.Succeeded)
-        {
-            Entry.Logger.Warn(
-                $"Could not play {debugName} ({result.Status}: {result.Message}).");
-        }
-
-        return result;
+        // Follow the same public entry point used by the base game. RitsuLib's
+        // GUID mapping patch resolves this mod-bank event before the native
+        // strings bank is queried.
+        SfxCmd.Play(eventPath, volume);
     }
 }
