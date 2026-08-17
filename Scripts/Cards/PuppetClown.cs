@@ -1,11 +1,8 @@
-using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
@@ -16,8 +13,6 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "puppet_clown")]
 public sealed class PuppetClown : MgrCard
 {
-    private int _queuedHandIndex = -1;
-
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -36,13 +31,6 @@ public sealed class PuppetClown : MgrCard
     protected override bool ShouldGlowGoldInternal =>
         base.ShouldGlowGoldInternal ||
         CombatState is not null && GetNearestCurseInDrawPile() is not null;
-
-    public override Task OnEnqueuePlayVfx(Creature? target)
-    {
-        CardPile hand = PileType.Hand.GetPile(Owner);
-        _queuedHandIndex = hand.Cards.ToList().IndexOf(this);
-        return Task.CompletedTask;
-    }
 
     protected override async Task OnPlay(
         PlayerChoiceContext choiceContext,
@@ -104,25 +92,21 @@ public sealed class PuppetClown : MgrCard
             await CardPileCmd.Add(this, PileType.Draw, CardPilePosition.Bottom);
             if (Pile == drawPile)
                 ReinsertAt(drawPile, this, curseDrawIndex);
-            _queuedHandIndex = -1;
             return;
         }
 
-        int originalHandIndex = _queuedHandIndex;
-        _queuedHandIndex = -1;
-
         // This is the same native pile-transfer path used by Regent's Make It
         // So, producing the clear card-to-hand flight instead of a draw action.
+        // Do not restore the Curse to a hand index captured by
+        // OnEnqueuePlayVfx: that callback runs only on the client initiating
+        // the manual play, before PlayCardAction is synchronized. CardPileCmd
+        // must be the sole
+        // owner of the resulting hand order so every peer receives the same
+        // deterministic model state.
         await CardPileCmd.Add(curse, PileType.Hand);
         CardPile handPile = PileType.Hand.GetPile(Owner);
         if (curse.Pile != handPile)
             return;
-
-        if (originalHandIndex >= 0)
-        {
-            ReinsertAt(handPile, curse, originalHandIndex);
-            RepositionHandVisual(curse, originalHandIndex);
-        }
 
         // Move this played card into the exact draw-pile slot vacated by the
         // curse. The native Add call supplies the short pile-entry animation;
@@ -150,23 +134,5 @@ public sealed class PuppetClown : MgrCard
         int index = Math.Clamp(requestedIndex, 0, pile.Cards.Count);
         pile.AddInternal(card, index, silent: true);
         pile.InvokeContentsChanged();
-    }
-
-    private static void RepositionHandVisual(CardModel card, int requestedIndex)
-    {
-        NPlayerHand? hand = NPlayerHand.Instance;
-        var holder = hand?.GetCardHolder(card);
-        if (hand is null || holder is null ||
-            !ReferenceEquals(((Node)holder).GetParent(), hand.CardHolderContainer))
-        {
-            return;
-        }
-
-        int index = Math.Clamp(
-            requestedIndex,
-            0,
-            Math.Max(0, hand.CardHolderContainer.GetChildCount() - 1));
-        hand.CardHolderContainer.MoveChild(holder, index);
-        hand.ForceRefreshCardIndices();
     }
 }
