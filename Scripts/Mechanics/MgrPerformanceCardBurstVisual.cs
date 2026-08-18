@@ -23,7 +23,6 @@ internal sealed partial class MgrPerformanceCardBurstVisual : Node2D
 
     public override void _Ready()
     {
-        ZIndex = 32;
         Visible = false;
         SetProcess(false);
         for (int index = 0; index < _angleOffsets.Length; index++)

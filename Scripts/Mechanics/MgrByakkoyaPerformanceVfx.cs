@@ -36,7 +36,10 @@ public static class MgrByakkoyaPerformanceVfx
 
             var visual = new MgrByakkoyaFireflyVisual(player);
             Visuals[player] = visual;
-            room.CombatVfxContainer.AddChildSafely(visual);
+            Control performanceAmbientLayer =
+                MgrCombatUiLayers.GetPerformanceAmbientLayer(
+                    room.Ui.MessyCardPreviewContainer);
+            performanceAmbientLayer.AddChildSafely(visual);
             return;
         }
 
@@ -90,7 +93,6 @@ internal sealed partial class MgrByakkoyaFireflyVisual : Node2D
     public MgrByakkoyaFireflyVisual(Player player)
     {
         _player = player;
-        ZIndex = 18;
         SetProcess(true);
     }
 
@@ -152,15 +154,18 @@ internal sealed partial class MgrByakkoyaFireflyVisual : Node2D
             return;
 
         Vector2 characterCenter = creatureNode.VfxSpawnPosition;
+        Transform2D viewportToLocal =
+            GetGlobalTransformWithCanvas().AffineInverse();
         foreach (Firefly firefly in _fireflies)
         {
             float phase = firefly.Phase + _age * firefly.Speed;
             Vector2 drift = new(
                 MathF.Sin(phase * 0.83f) * (firefly.NearCharacter ? 18f : 28f),
                 MathF.Cos(phase * 1.17f) * (firefly.NearCharacter ? 13f : 22f));
-            Vector2 position = (firefly.NearCharacter
+            Vector2 viewportPosition = (firefly.NearCharacter
                 ? characterCenter + firefly.BasePosition
                 : firefly.BasePosition) + drift;
+            Vector2 position = viewportToLocal * viewportPosition;
             float pulse = 0.28f + 0.72f *
                 MathF.Pow(0.5f + 0.5f * MathF.Sin(
                     firefly.Phase + _age * firefly.PulseSpeed), 2f);

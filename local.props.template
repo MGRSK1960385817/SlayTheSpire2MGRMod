@@ -2,6 +2,9 @@
   <PropertyGroup>
     <Sts2Dir>PATH_TO_STEAM/steamapps/common/Slay the Spire 2</Sts2Dir>
     <Sts2DataDir>$(Sts2Dir)/data_sts2_windows_x86_64</Sts2DataDir>
+    <!-- Only used for an explicitly requested single-payload build with
+         BuildCrossVersionBundle=false. Normal builds use both saved archives. -->
+    <Sts2CompatTarget>0.111.0</Sts2CompatTarget>
     <GodotExe>PATH_TO_GODOT/Godot_v4.5.1-stable_mono_win64.exe</GodotExe>
   </PropertyGroup>
 </Project>

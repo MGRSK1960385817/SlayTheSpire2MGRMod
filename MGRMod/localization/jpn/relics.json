@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "戦闘開始時、[color=#c8c8c8]蒼白+[/color]1枚を[gold]手札[/gold]に加える。",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "陽の差さない塔では、花さえ青ざめる。",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "マグロ焼き",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "休憩所で鍛冶をするたび、最大HPの{Heal:diff()}%を回復する。",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "休憩所で鍛冶をするたび、HPを{Heal:diff()}回復する。",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "あんこ入り？それとも魚入り？",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "小さな天使",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "ターン開始時、引いたスキルが{SkillThreshold:diff()}枚未満なら、カードを{Cards:diff()}枚引く。",

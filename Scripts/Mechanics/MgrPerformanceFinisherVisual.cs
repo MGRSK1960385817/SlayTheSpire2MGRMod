@@ -20,7 +20,6 @@ internal sealed partial class MgrPerformanceFinisherVisual : Node2D
         Scale = Vector2.One * 0.62f;
         Modulate = new Color(1f, 1f, 1f, 0f);
         Rotation = -0.08f;
-        ZIndex = MgrVisualTuning.Performances.FinisherZIndex;
         QueueRedraw();
     }
 

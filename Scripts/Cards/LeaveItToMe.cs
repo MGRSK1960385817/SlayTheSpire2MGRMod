@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MGRMod.Characters;
+using MGRMod.Compatibility;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -49,7 +50,7 @@ public sealed class LeaveItToMe : MgrCard
 
         foreach (Player player in livingPlayers)
         {
-            await CardPileCmd.DrawWithoutBlockingOnOtherPlayers(
+            await MgrCrossVersionApi.DrawWithoutBlockingOnOtherPlayers(
                 choiceContext,
                 DynamicVars.Cards.IntValue,
                 player,

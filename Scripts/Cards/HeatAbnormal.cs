@@ -47,8 +47,13 @@ public sealed class HeatAbnormal : MgrCard
                     card.Owner.Creature,
                     prospectiveBase,
                     Props,
-                    card,
+                    card
+#if !STS2_V107
+                    ,
                     cardPlay: null,
+#else
+                    ,
+#endif
                     ModifyDamageHookType.All,
                     previewMode,
                     out IEnumerable<AbstractModel> _);

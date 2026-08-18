@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Models;
 using MGRMod.Characters;
+using MGRMod.Compatibility;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -47,13 +48,13 @@ public sealed class OfAllBeings : MgrCard
             .CardPlaysFinished
             .Where(entry =>
                 entry.HappenedThisTurn(CombatState) &&
-                entry.CardPlay.Player == targetPlayer)
+                entry.CardPlay.Card.Owner == targetPlayer)
             .Select(entry => entry.CardPlay.Card)
             .ToArray();
 
         foreach (CardModel source in cardsPlayedByTarget)
         {
-            CardModel copy = source.CreateCloneForPlayer(Owner);
+            CardModel copy = MgrCrossVersionApi.CreateCloneForPlayer(source, Owner);
             copy.AddKeyword(CardKeyword.Exhaust);
             await MgrPerformanceSystem.EnqueueGeneratedCard(Owner, copy);
         }

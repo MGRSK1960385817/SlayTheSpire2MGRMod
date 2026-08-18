@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MGRMod.Cards;
+using MGRMod.Compatibility;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
@@ -130,7 +131,7 @@ public sealed class CanonFormPower : ModPowerTemplate
 
                 await CardCmd.AutoPlay(
                     choiceContext,
-                    card.CreateDupe(player),
+                    MgrCrossVersionApi.CreateDupeForPlayer(card, player),
                     null);
             }
         }
@@ -170,7 +171,7 @@ public sealed class CanonFormPower : ModPowerTemplate
 
         CardModel[] cards = CombatManager.Instance.History.CardPlaysFinished
             .Where(entry =>
-                entry.CardPlay.Player == player &&
+                entry.CardPlay.Card.Owner == player &&
                 entry.HappenedLastPlayerTurn(player))
             .Select(entry => entry.CardPlay.Card)
             .TakeLast(cardCount)

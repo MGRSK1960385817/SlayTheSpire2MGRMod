@@ -151,6 +151,23 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
+#if STS2_V107
+    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+        CardModel card,
+        bool isAutoPlay,
+        ResourceInfo resources,
+        PileType pileType,
+        CardPilePosition position)
+    {
+        if (card.Owner.Character is MgrCharacter &&
+            MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, resources))
+        {
+            return (PileType.Play, CardPilePosition.Bottom);
+        }
+
+        return (pileType, position);
+    }
+#else
     public override CardLocation ModifyCardPlayResultLocation(
         CardModel card,
         bool isAutoPlay,
@@ -165,6 +182,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         return location;
     }
+#endif
 
     /// <summary>
     /// Unified entry point for card plays, discard-based generation and future card effects.

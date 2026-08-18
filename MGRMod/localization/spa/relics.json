@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "Al comienzo del combate, añade 1 [color=#c8c8c8]Pálida+[/color] a tu [gold]Mano[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "En una Torre sin luz del sol, hasta las flores palidecen.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Pastelito de atún",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Cada vez que Forjes en un Lugar de descanso, recupera un {Heal:diff()} % de tus PV máx.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Cada vez que Forjes en un Lugar de descanso, recupera {Heal:diff()} PV.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "¿Relleno de judía roja o de pescado?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Angelito",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "Al comienzo de tu turno, si robas menos de {SkillThreshold:diff()} Habilidades, roba {Cards:diff()} cartas.",

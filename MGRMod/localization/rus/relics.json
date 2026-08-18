@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "В начале боя добавляет 1 карту [color=#c8c8c8]«Бледность+»[/color] в [gold]руку[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "В Шпиле без солнца даже цветы побледнели.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Магурояки",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Восстанавливает {Heal:diff()}% от максимума ОЗ при ковке в месте отдыха.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Восполняет {Heal:diff()} ОЗ при ковке в лагере.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Начинка из адзуки или из тунца?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Маленький ангел",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "В начале хода, если вы добрали менее {SkillThreshold:diff()} Навыков, доберите карты: {Cards:diff()}.",

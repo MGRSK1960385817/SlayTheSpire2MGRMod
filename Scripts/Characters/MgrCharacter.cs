@@ -6,6 +6,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Characters;
 using STS2RitsuLib.Scaffolding.Godot;
 using STS2RitsuLib.Scaffolding.Visuals.StateMachine;
+using MGRMod.Settings;
 
 namespace MGRMod.Characters;
 
@@ -55,6 +56,12 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
         Node visualsRoot,
         CharacterModel character)
     {
+        // The scene already contains idle_001 as its static texture. Returning
+        // before the cue state machine is created prevents all per-frame image
+        // swaps when the local performance option is disabled.
+        if (!MgrVisualSettings.ShouldPlayCharacterAnimation)
+            return null;
+
         // Only an idle loop is available for now. StandardCue deliberately maps
         // missing combat cues back to idle, so attacks, casts, hits and death cannot
         // leave the character on a missing texture or a stalled animation state.

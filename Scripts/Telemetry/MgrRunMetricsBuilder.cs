@@ -34,6 +34,8 @@ internal static class MgrRunMetricsBuilder
         SerializablePlayer player = run.Players.Single();
         int floorReached = run.MapPointHistory.Sum(act => act.Count);
         long durationSeconds = MgrTelemetryEligibility.GetDurationSeconds(evt);
+        string modVersion = GetModVersion();
+        string gameVersion = ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? "unknown";
 
         JsonObject payload = new()
         {
@@ -43,8 +45,8 @@ internal static class MgrRunMetricsBuilder
             // Steam IDs exceed JavaScript's safe integer range. Keep the raw
             // decimal value as a string so PostHog cannot silently round it.
             ["steam_id"] = identity.SteamId,
-            ["mod_version"] = GetModVersion(),
-            ["game_version"] = ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? "unknown",
+            ["mod_version"] = modVersion,
+            ["game_version"] = gameVersion,
             ["victory"] = evt.IsVictory,
             ["game_mode"] = run.GameMode.ToString(),
             ["ascension"] = run.Ascension,
@@ -65,7 +67,8 @@ internal static class MgrRunMetricsBuilder
             ["event_id"] = eventId,
             ["install_id"] = identity.InstallId,
             ["steam_id"] = identity.SteamId,
-            ["mod_version"] = GetModVersion(),
+            ["mod_version"] = modVersion,
+            ["game_version"] = gameVersion,
             ["victory"] = evt.IsVictory,
             ["ascension"] = run.Ascension,
             ["floor_reached"] = floorReached,

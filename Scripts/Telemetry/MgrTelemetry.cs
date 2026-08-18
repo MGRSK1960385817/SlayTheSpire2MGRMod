@@ -65,8 +65,8 @@ public static class MgrTelemetry
                         CleanRunRequestId,
                         ModSettingsText.LocString(
                             "settings_ui",
-                            "MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY",
-                            "Send sanitized single-player MGR balance data."))
+                            "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS",
+                            "With your explicit consent, send your Steam ID and sanitized single-player MGR run data for balance analysis. No multiplayer runs, complete saves, nicknames, or logs are sent."))
                 ]
             });
 

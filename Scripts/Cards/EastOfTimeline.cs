@@ -84,4 +84,12 @@ public sealed class EastOfTimeline : MgrCard
     {
         DynamicVars["PermanentIncrease"].UpgradeValueBy(1m);
     }
+
+    protected override void AfterDowngraded()
+    {
+        // The base game replaces the entire DynamicVarSet with the canonical
+        // card's values before invoking this hook. Restore the separately
+        // serialized permanent growth without restoring the normal upgrade.
+        DynamicVars["Notes"].BaseValue = CurrentNotes;
+    }
 }

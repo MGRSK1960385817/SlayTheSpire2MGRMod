@@ -123,14 +123,18 @@ public static class MgrNoteVisuals
         if (capacity < 1)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(player.Creature);
-        if (creatureNode is null)
+        NCombatRoom? room = NCombatRoom.Instance;
+        var creatureNode = room?.GetCreatureNode(player.Creature);
+        Control? nativePresentationParent = room?.Ui.MessyCardPreviewContainer;
+        if (creatureNode is null || nativePresentationParent is null)
             return null;
+
+        Control noteLayer = MgrCombatUiLayers.GetNoteLayer(nativePresentationParent);
 
         if (!Racks.TryGetValue(player, out NoteRack? rack) || !rack.IsValid)
         {
             rack?.Dispose();
-            rack = new NoteRack(player, creatureNode);
+            rack = new NoteRack(player, creatureNode, noteLayer);
             rack.SetPerforming(PerformingStates.GetValueOrDefault(player));
             Racks[player] = rack;
         }
@@ -141,7 +145,7 @@ public static class MgrNoteVisuals
     private sealed class NoteRack : IDisposable
     {
         private readonly Player _player;
-        private readonly Node2D _root;
+        private readonly MgrCombatUiFollowAnchor _root;
         private readonly List<NoteSlot> _slots = [];
         private readonly SemaphoreSlim _channelAnimationGate = new(1, 1);
         private Tween? _clearTween;
@@ -151,22 +155,27 @@ public static class MgrNoteVisuals
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
         private NPeekButton? _peekButton;
+        private CanvasItem? _inspectCardScreen;
+        private CanvasItem? _inspectRelicScreen;
 
         public bool IsValid =>
             !_disposed &&
             GodotObject.IsInstanceValid(_root) &&
-            _root.IsInsideTree();
+            _root.IsInsideTree() &&
+            _root.HasValidTarget;
 
-        public NoteRack(Player player, Node parent)
+        public NoteRack(
+            Player player,
+            CanvasItem creatureAnchor,
+            Control noteLayer)
         {
             _player = player;
-            _root = new Node2D
+            _root = new MgrCombatUiFollowAnchor
             {
-                Name = "MgrNoteRack",
-                Position = MgrVisualTuning.Notes.RackOffset,
-                ZIndex = MgrVisualTuning.Notes.RackZIndex
+                Name = "MgrNoteRack"
             };
-            parent.AddChild(_root);
+            noteLayer.AddChild(_root);
+            _root.Initialize(creatureAnchor, MgrVisualTuning.Notes.RackOffset);
             ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
             EnsureScreenVisibilitySubscriptions();
         }
@@ -364,6 +373,7 @@ public static class MgrNoteVisuals
                 }
             }
 
+            EnsureInspectionVisibilitySubscriptions();
             RefreshScreenVisibility();
         }
 
@@ -373,9 +383,46 @@ public static class MgrNoteVisuals
 
         private void OnMapVisibilityChanged() => RefreshScreenVisibility();
 
-        private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
+        private void OnActiveScreenContextUpdated() =>
+            EnsureScreenVisibilitySubscriptions();
 
         private void OnPeekToggled(NPeekButton _) => RefreshScreenVisibility();
+
+        private void OnInspectionVisibilityChanged() => RefreshScreenVisibility();
+
+        private void EnsureInspectionVisibilitySubscriptions()
+        {
+            CanvasItem? currentCardScreen = NGame.Instance?.InspectCardScreen;
+            UpdateInspectionVisibilitySubscription(
+                ref _inspectCardScreen,
+                currentCardScreen);
+
+            CanvasItem? currentRelicScreen = NGame.Instance?.InspectRelicScreen;
+            UpdateInspectionVisibilitySubscription(
+                ref _inspectRelicScreen,
+                currentRelicScreen);
+        }
+
+        private void UpdateInspectionVisibilitySubscription(
+            ref CanvasItem? subscribedScreen,
+            CanvasItem? currentScreen)
+        {
+            if (ReferenceEquals(subscribedScreen, currentScreen))
+                return;
+
+            if (subscribedScreen is not null &&
+                GodotObject.IsInstanceValid(subscribedScreen))
+            {
+                subscribedScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
+            subscribedScreen = currentScreen;
+            if (subscribedScreen is not null &&
+                GodotObject.IsInstanceValid(subscribedScreen))
+            {
+                subscribedScreen.VisibilityChanged += OnInspectionVisibilityChanged;
+            }
+        }
 
         private void EnsurePeekButtonSubscription()
         {
@@ -439,12 +486,15 @@ public static class MgrNoteVisuals
                 _mapScreen is not null &&
                 GodotObject.IsInstanceValid(_mapScreen) &&
                 _mapScreen.IsOpen;
+            bool hasOpenCardInspection =
+                _inspectCardScreen is { Visible: true };
             bool hasOpenRelicInspection =
-                NGame.Instance?.InspectRelicScreen is { Visible: true };
+                _inspectRelicScreen is { Visible: true };
             bool shouldShow =
                 !hasOverlay &&
                 !hasCapstone &&
                 !hasOpenMap &&
+                !hasOpenCardInspection &&
                 !hasOpenRelicInspection;
 
             _root.Visible = shouldShow;
@@ -532,10 +582,24 @@ public static class MgrNoteVisuals
             if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
                 _peekButton.Toggled -= OnPeekToggled;
 
+            if (_inspectCardScreen is not null &&
+                GodotObject.IsInstanceValid(_inspectCardScreen))
+            {
+                _inspectCardScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
+            if (_inspectRelicScreen is not null &&
+                GodotObject.IsInstanceValid(_inspectRelicScreen))
+            {
+                _inspectRelicScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
             _peekButton = null;
+            _inspectCardScreen = null;
+            _inspectRelicScreen = null;
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
         }
@@ -567,6 +631,14 @@ public static class MgrNoteVisuals
             _anchor = new Node2D { Name = $"NoteSlot{index + 1}" };
             parent.AddChild(_anchor);
 
+            // Same-Z children draw in tree order. Keep the burst behind both the
+            // empty frame and filled artwork without sending it to a negative Z.
+            _burst = new MgrNoteBurstVisual
+            {
+                Name = "NoteGlowAndStars"
+            };
+            _anchor.AddChild(_burst);
+
             _emptySlotTransitionRoot = new Node2D
             {
                 Name = "EmptySlotTransition"
@@ -575,12 +647,6 @@ public static class MgrNoteVisuals
 
             _emptySlotOutline = CreateDashedEmptySlot(index);
             _emptySlotTransitionRoot.AddChild(_emptySlotOutline);
-
-            _burst = new MgrNoteBurstVisual
-            {
-                Name = "NoteGlowAndStars"
-            };
-            _anchor.AddChild(_burst);
 
             _entranceRoot = new Node2D { Name = "FilledNoteEntrance" };
             _anchor.AddChild(_entranceRoot);
@@ -596,8 +662,7 @@ public static class MgrNoteVisuals
                 Position = Vector2.One * -hoverRadius,
                 Size = Vector2.One * hoverRadius * 2f,
                 MouseFilter = Control.MouseFilterEnum.Stop,
-                MouseDefaultCursorShape = Control.CursorShape.PointingHand,
-                ZIndex = 20
+                MouseDefaultCursorShape = Control.CursorShape.PointingHand
             };
             _hoverBounds.MouseEntered += OnMouseEntered;
             _hoverBounds.MouseExited += OnMouseExited;
@@ -1007,12 +1072,8 @@ public static class MgrNoteVisuals
             if (hoverTipSet is null)
                 return;
 
-            // The Note rack deliberately has a raised combat Z index. Native
-            // hover tips otherwise inherit a lower canvas order and can appear
-            // behind the Note artwork. Make this popup absolute and topmost,
-            // matching the visual precedence of vanilla Orb hover tips.
-            hoverTipSet.ZAsRelative = false;
-            hoverTipSet.ZIndex = 4096;
+            // The rack now lives at Z=0 in the native combat UI branch. Let the
+            // original hover-tip host determine popup order and lifecycle.
             hoverTipSet.SetFollowOwner();
         }
 
@@ -1020,8 +1081,7 @@ public static class MgrNoteVisuals
         {
             var root = new MgrRotatingNoteSlotFrame
             {
-                Name = "EmptySlotDashedOutline",
-                ZIndex = -1
+                Name = "EmptySlotDashedOutline"
             };
             root.Initialize(slotIndex);
             Color color = MgrVisualTuning.Notes.EmptySlotBaseColor;

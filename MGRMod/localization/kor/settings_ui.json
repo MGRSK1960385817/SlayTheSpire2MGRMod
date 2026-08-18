@@ -1,4 +1,8 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "MGR 모드",
-  "MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY": "명시적으로 동의하면 MGR 모드 플레이 데이터를 전송합니다. 이 데이터는 제작자의 밸런스 및 게임 경험 개선에 사용됩니다."
+  "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "명시적으로 동의하면 밸런스 분석을 위해 MGR 싱글 플레이 데이터를 전송합니다. 멀티플레이 데이터, 전체 저장 파일, 플레이어 이름 및 로그는 전송하지 않습니다.",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "시각 성능",
+  "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "캐릭터 시각 효과",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "캐릭터 애니메이션 끄기",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "프레임 단위 캐릭터 애니메이션과 캐릭터 주변의 상시 효과를 함께 끕니다. 다음 전투 캐릭터 생성 시 적용됩니다."
 }

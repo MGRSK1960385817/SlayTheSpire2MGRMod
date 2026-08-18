@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "No início do combate, adicione 1 [color=#c8c8c8]Pálida+[/color] à sua [gold]Mão[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "Em um Pináculo sem luz do sol, até as flores empalidecem.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Bolinho de atum",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Sempre que você Forjar em um Local de Descanso, cure {Heal:diff()}% dos seus PV Máximos.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Sempre que você Forjar em um Local de Descanso, cure {Heal:diff()} PV.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Recheio de feijão-vermelho ou de peixe?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Anjinho",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "No início do turno, se você tiver comprado menos de {SkillThreshold:diff()} Técnicas, compre {Cards:diff()} cartas.",

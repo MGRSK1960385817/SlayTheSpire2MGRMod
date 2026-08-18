@@ -47,8 +47,13 @@ public sealed class FinalShot : MgrCard
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource,
+        CardModel? cardSource
+#if !STS2_V107
+        ,
         CardPlay? cardPlay)
+#else
+        )
+#endif
     {
         // Tower 2 applies additive damage hooks (Strength, etc.) before this
         // multiplicative stage. Keeping Ending here therefore doubles the

@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Mechanics;
+using MGRMod.Compatibility;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -44,7 +45,7 @@ public sealed class FrenzyPower : ModPowerTemplate
 
         Flash();
         MgrAbilityVfx.PlayOfferingBlood(Owner);
-        await CreatureCmd.Damage(
+        await MgrCrossVersionApi.Damage(
             choiceContext,
             Owner,
             2m,

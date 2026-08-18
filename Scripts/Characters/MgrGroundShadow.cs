@@ -1,4 +1,5 @@
 using Godot;
+using MGRMod.Settings;
 
 namespace MGRMod.Characters;
 
@@ -42,6 +43,13 @@ public sealed partial class MgrGroundShadow : Node2D
 
     public override void _Ready()
     {
+        if (!MgrVisualSettings.ShouldLoadCharacterEffects)
+        {
+            Visible = false;
+            SetProcess(false);
+            return;
+        }
+
         _outer = GetNode<Polygon2D>("Outer");
         _middle = GetNode<Polygon2D>("Middle");
         _core = GetNode<Polygon2D>("Core");

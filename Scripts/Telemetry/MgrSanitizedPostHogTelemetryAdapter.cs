@@ -20,6 +20,7 @@ internal sealed class MgrSanitizedPostHogTelemetryAdapter : ITelemetryAdapter
         "install_id",
         "steam_id",
         "mod_version",
+        "game_version",
         "victory",
         "ascension",
         "floor_reached",

@@ -254,14 +254,19 @@ public static class MgrPerformanceVisuals
 
     private static PerformanceRack? GetOrCreateRack(Player player)
     {
-        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(player.Creature);
-        if (creatureNode is null)
+        NCombatRoom? room = NCombatRoom.Instance;
+        var creatureNode = room?.GetCreatureNode(player.Creature);
+        Control? nativePresentationParent = room?.Ui.MessyCardPreviewContainer;
+        if (creatureNode is null || nativePresentationParent is null)
             return null;
+
+        Control performanceLayer =
+            MgrCombatUiLayers.GetPerformanceLayer(nativePresentationParent);
 
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
         {
             rack?.Dispose();
-            rack = new PerformanceRack(creatureNode);
+            rack = new PerformanceRack(creatureNode, performanceLayer);
             Racks[player] = rack;
         }
 
@@ -272,8 +277,8 @@ public static class MgrPerformanceVisuals
     /// Returns an MGR-owned temporary card to Tower 2's global NCard pool.
     /// The native pool reset restores position, scale and modulation, but does
     /// not restore CanvasItem ordering. Without this normalization, a later hand,
-    /// grid or reward card can inherit the performance preview's elevated layer
-    /// and render above an unrelated selection screen.
+    /// grid or reward card can inherit stale ordering from either native or mod
+    /// animations and render above an unrelated selection screen.
     /// </summary>
     private static void ReleaseTemporaryCard(NCard card)
     {
@@ -290,14 +295,36 @@ public static class MgrPerformanceVisuals
         card.QueueFreeSafely();
     }
 
+    /// <summary>
+    /// Converts a viewport point into the local coordinates expected by a
+    /// freely-positioned CanvasItem's parent. The old private CanvasLayer had an
+    /// identity transform; the native combat UI host does not promise one.
+    /// </summary>
+    private static Vector2 ViewportToParentLocal(
+        CanvasItem item,
+        Vector2 viewportPosition)
+    {
+        if (item.GetParent() is CanvasItem parentCanvasItem)
+        {
+            return parentCanvasItem
+                .GetGlobalTransformWithCanvas()
+                .AffineInverse() * viewportPosition;
+        }
+
+        return item.GetCanvasTransform().AffineInverse() * viewportPosition;
+    }
+
     private sealed class PerformanceRack : IDisposable
     {
         // Cards are intentionally larger than the old rack and overlap heavily,
         // like a row of playing cards. The exposed strip stays wide enough to
         // hover each entry even when the queue becomes long.
-        private readonly Node2D _root;
+        private readonly MgrCombatUiFollowAnchor _root;
         private readonly MgrPerformanceStaffVisual _staff;
-        private readonly CanvasLayer _previewLayer;
+        private readonly Node2D _cardHost;
+        private readonly Node2D _finisherImpactHost;
+        private readonly Node2D _finisherCardHost;
+        private readonly Control _interactionHost;
         private readonly List<PerformanceCardView> _views = [];
         private MgrPerformanceFinisherVisual? _finisherVisual;
         private bool _disposed;
@@ -305,23 +332,27 @@ public static class MgrPerformanceVisuals
         private NCapstoneContainer? _capstoneContainer;
         private NMapScreen? _mapScreen;
         private NPeekButton? _peekButton;
+        private CanvasItem? _inspectCardScreen;
+        private CanvasItem? _inspectRelicScreen;
 
         public bool IsValid =>
             !_disposed &&
             GodotObject.IsInstanceValid(_root) &&
             _root.IsInsideTree() &&
-            GodotObject.IsInstanceValid(_previewLayer) &&
-            _previewLayer.IsInsideTree();
+            _root.HasValidTarget &&
+            GodotObject.IsInstanceValid(_interactionHost) &&
+            _interactionHost.IsInsideTree();
 
-        public PerformanceRack(Node parent)
+        public PerformanceRack(CanvasItem creatureAnchor, Control performanceLayer)
         {
-            _root = new Node2D
+            _root = new MgrCombatUiFollowAnchor
             {
-                Name = "MgrPerformanceRack",
-                Position = MgrVisualTuning.Performances.RackOffset,
-                ZIndex = MgrVisualTuning.Performances.RackZIndex
+                Name = "MgrPerformanceRack"
             };
-            parent.AddChild(_root);
+            performanceLayer.AddChild(_root);
+            _root.Initialize(
+                creatureAnchor,
+                MgrVisualTuning.Performances.RackOffset);
 
             _staff = new MgrPerformanceStaffVisual
             {
@@ -330,15 +361,25 @@ public static class MgrPerformanceVisuals
             _root.AddChild(_staff);
             _staff.SetActive(false);
 
-            // CardPreviewContainer owns a layout script that moves every child
-            // back to the screen centre. A private canvas layer lets the rack
-            // keep hover previews beside the mouse and above combat UI.
-            _previewLayer = new CanvasLayer
+            // These empty hosts establish the complete queue draw order without
+            // raising any CanvasItem above the native UI: staff, queued cards,
+            // finisher impacts, then the finisher silhouette.
+            _cardHost = new Node2D { Name = "PerformanceCards" };
+            _root.AddChild(_cardHost);
+            _finisherImpactHost = new Node2D { Name = "FinisherImpacts" };
+            _root.AddChild(_finisherImpactHost);
+            _finisherCardHost = new Node2D { Name = "FinisherCard" };
+            _root.AddChild(_finisherCardHost);
+
+            // CardPreviewContainer owns a layout script that recentres children.
+            // MessyCardPreviewContainer is the native free-position combat UI
+            // host, so hit proxies and temporary cards can use tree order at Z=0.
+            _interactionHost = new Control
             {
-                Name = "MgrPerformancePreviewLayer",
-                Layer = 90
+                Name = "MgrPerformanceInteractionHost",
+                MouseFilter = Control.MouseFilterEnum.Ignore
             };
-            parent.AddChild(_previewLayer);
+            performanceLayer.AddChild(_interactionHost);
 
             ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
             EnsureScreenVisibilitySubscriptions();
@@ -378,21 +419,69 @@ public static class MgrPerformanceVisuals
                 float x = rightEdge - index * spacing;
                 PerformanceCardView? view = FindView(entries[index]);
                 view ??= new PerformanceCardView(
-                    _root,
-                    _previewLayer,
-                    entries[index]);
+                    _cardHost,
+                    _interactionHost,
+                    entries[index],
+                    OnViewOrderingChanged);
                 view.Refresh();
                 view.SetPosition(new Vector2(
                     x,
                     MgrVisualTuning.Performances.CardOffsetY));
-                // The earliest card is the rightmost and visually sits above
-                // later cards where their bodies overlap.
-                view.SetLayer(entries.Count - index);
                 orderedViews.Add(view);
             }
 
             _views.Clear();
             _views.AddRange(orderedViews);
+            SyncQueueTreeOrder();
+        }
+
+        /// <summary>
+        /// Synchronizes both visible cards and their screen-space hit proxies.
+        /// Moving the newest queue entry first and the earliest entry last makes
+        /// index zero cover later cards wherever the miniatures overlap.
+        /// </summary>
+        private void SyncQueueTreeOrder(PerformanceCardView? promotedView = null)
+        {
+            if (_disposed)
+                return;
+
+            for (int index = _views.Count - 1; index >= 0; index--)
+            {
+                PerformanceCardView view = _views[index];
+                MoveChildToEnd(_cardHost, view.Anchor);
+                MoveChildToEnd(_interactionHost, view.HoverHitbox);
+            }
+
+            // A queue refresh may happen while a card is still hovered or flying
+            // out. Reapply those transient promotions after the mechanical order.
+            foreach (PerformanceCardView view in _views.Where(
+                         view => view.RequiresFrontOrdering &&
+                                 !ReferenceEquals(view, promotedView)))
+            {
+                MoveChildToEnd(_cardHost, view.Anchor);
+                MoveChildToEnd(_interactionHost, view.HoverHitbox);
+            }
+
+            if (promotedView is not null && _views.Contains(promotedView))
+            {
+                MoveChildToEnd(_cardHost, promotedView.Anchor);
+                MoveChildToEnd(_interactionHost, promotedView.HoverHitbox);
+            }
+        }
+
+        private void OnViewOrderingChanged(PerformanceCardView? promotedView) =>
+            SyncQueueTreeOrder(promotedView);
+
+        private static void MoveChildToEnd(Node expectedParent, Node child)
+        {
+            if (!GodotObject.IsInstanceValid(expectedParent) ||
+                !GodotObject.IsInstanceValid(child) ||
+                !ReferenceEquals(child.GetParent(), expectedParent))
+            {
+                return;
+            }
+
+            expectedParent.MoveChild(child, expectedParent.GetChildCount() - 1);
         }
 
         private void EnsureScreenVisibilitySubscriptions()
@@ -450,6 +539,7 @@ public static class MgrPerformanceVisuals
                 }
             }
 
+            EnsureInspectionVisibilitySubscriptions();
             RefreshScreenVisibility();
         }
 
@@ -459,9 +549,46 @@ public static class MgrPerformanceVisuals
 
         private void OnMapVisibilityChanged() => RefreshScreenVisibility();
 
-        private void OnActiveScreenContextUpdated() => RefreshScreenVisibility();
+        private void OnActiveScreenContextUpdated() =>
+            EnsureScreenVisibilitySubscriptions();
 
         private void OnPeekToggled(NPeekButton _) => RefreshScreenVisibility();
+
+        private void OnInspectionVisibilityChanged() => RefreshScreenVisibility();
+
+        private void EnsureInspectionVisibilitySubscriptions()
+        {
+            CanvasItem? currentCardScreen = NGame.Instance?.InspectCardScreen;
+            UpdateInspectionVisibilitySubscription(
+                ref _inspectCardScreen,
+                currentCardScreen);
+
+            CanvasItem? currentRelicScreen = NGame.Instance?.InspectRelicScreen;
+            UpdateInspectionVisibilitySubscription(
+                ref _inspectRelicScreen,
+                currentRelicScreen);
+        }
+
+        private void UpdateInspectionVisibilitySubscription(
+            ref CanvasItem? subscribedScreen,
+            CanvasItem? currentScreen)
+        {
+            if (ReferenceEquals(subscribedScreen, currentScreen))
+                return;
+
+            if (subscribedScreen is not null &&
+                GodotObject.IsInstanceValid(subscribedScreen))
+            {
+                subscribedScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
+            subscribedScreen = currentScreen;
+            if (subscribedScreen is not null &&
+                GodotObject.IsInstanceValid(subscribedScreen))
+            {
+                subscribedScreen.VisibilityChanged += OnInspectionVisibilityChanged;
+            }
+        }
 
         private void EnsurePeekButtonSubscription()
         {
@@ -524,19 +651,22 @@ public static class MgrPerformanceVisuals
                 _mapScreen is not null &&
                 GodotObject.IsInstanceValid(_mapScreen) &&
                 _mapScreen.IsOpen;
+            bool hasOpenCardInspection =
+                _inspectCardScreen is { Visible: true };
             bool hasOpenRelicInspection =
-                NGame.Instance?.InspectRelicScreen is { Visible: true };
+                _inspectRelicScreen is { Visible: true };
             bool shouldShow =
                 !hasOverlay &&
                 !hasCapstone &&
                 !hasOpenMap &&
+                !hasOpenCardInspection &&
                 !hasOpenRelicInspection;
 
-            // The rack belongs to the combat field, not to any full-screen or
-            // capstone UI. Hide both its world-space presentation and its private
-            // hover-preview canvas together so neither can leak above those screens.
+            // The rack belongs to combat UI, not to any full-screen or capstone
+            // screen. Hide both its persistent presentation and its interaction
+            // host together so neither remains interactive behind those screens.
             _root.Visible = shouldShow;
-            _previewLayer.Visible = shouldShow;
+            _interactionHost.Visible = shouldShow;
             if (!shouldShow)
             {
                 foreach (PerformanceCardView view in _views)
@@ -627,7 +757,7 @@ public static class MgrPerformanceVisuals
             {
                 Name = "MaguroDashFinisher"
             };
-            _root.AddChild(visual);
+            _finisherCardHost.AddChild(visual);
             visual.Initialize(
                 sourceCard.Portrait,
                 new Vector2(
@@ -659,10 +789,9 @@ public static class MgrPerformanceVisuals
             {
                 Name = $"MaguroDashImpact_{strikeIndex}",
                 Position = targetPosition,
-                ZIndex = MgrVisualTuning.Performances.FinisherZIndex - 1,
                 FreeWhenFinished = true
             };
-            _root.AddChild(burst);
+            _finisherImpactHost.AddChild(burst);
             burst.Burst();
         }
 
@@ -775,10 +904,14 @@ public static class MgrPerformanceVisuals
             {
                 preview.Name = "GeneratedPerformancePreview";
                 preview.MouseFilter = Control.MouseFilterEnum.Ignore;
-                preview.ZIndex = 320;
-                _previewLayer.AddChild(preview);
+                preview.ZIndex = 0;
+                preview.ZAsRelative = true;
+                preview.ShowBehindParent = false;
+                _interactionHost.AddChild(preview);
                 preview.PivotOffset = Vector2.Zero;
-                preview.Position = _root.GetViewport().GetVisibleRect().GetCenter();
+                preview.Position = ViewportToParentLocal(
+                    preview,
+                    _root.GetViewport().GetVisibleRect().GetCenter());
                 preview.Scale = Vector2.One * 0.72f;
                 preview.Modulate = Colors.White;
                 preview.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
@@ -793,10 +926,12 @@ public static class MgrPerformanceVisuals
                     return;
 
                 Tween flight = preview.CreateTween().SetParallel();
+                Vector2 destinationInPreviewParent =
+                    ViewportToParentLocal(preview, destination.ViewportCenter);
                 flight.TweenProperty(
                         preview,
                         "position",
-                        destination.ViewportCenter,
+                        destinationInPreviewParent,
                         MgrVisualTuning.Performances.EnterQueueSeconds)
                     .SetEase(Tween.EaseType.InOut)
                     .SetTrans(Tween.TransitionType.Cubic);
@@ -857,7 +992,11 @@ public static class MgrPerformanceVisuals
 
             playedCard.PlayPileTween?.Kill();
             playedCard.MouseFilter = Control.MouseFilterEnum.Ignore;
-            playedCard.ZIndex = 250;
+            playedCard.ZIndex = 0;
+            playedCard.ZAsRelative = true;
+            playedCard.ShowBehindParent = false;
+            if (playedCard.GetParent() is { } playedCardParent)
+                MoveChildToEnd(playedCardParent, playedCard);
 
             Vector2 finalScale = PerformanceCardView.MiniatureScale;
             Vector2 destinationInCardCanvas =
@@ -949,7 +1088,7 @@ public static class MgrPerformanceVisuals
             GodotObject.IsInstanceValid(candidate) &&
             ReferenceEquals(candidate.Model, card) &&
             !_root.IsAncestorOf(candidate) &&
-            !_previewLayer.IsAncestorOf(candidate);
+            !_interactionHost.IsAncestorOf(candidate);
 
         private void ClearViews()
         {
@@ -988,10 +1127,24 @@ public static class MgrPerformanceVisuals
             if (_peekButton is not null && GodotObject.IsInstanceValid(_peekButton))
                 _peekButton.Toggled -= OnPeekToggled;
 
+            if (_inspectCardScreen is not null &&
+                GodotObject.IsInstanceValid(_inspectCardScreen))
+            {
+                _inspectCardScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
+            if (_inspectRelicScreen is not null &&
+                GodotObject.IsInstanceValid(_inspectRelicScreen))
+            {
+                _inspectRelicScreen.VisibilityChanged -= OnInspectionVisibilityChanged;
+            }
+
             _overlayStack = null;
             _capstoneContainer = null;
             _mapScreen = null;
             _peekButton = null;
+            _inspectCardScreen = null;
+            _inspectRelicScreen = null;
             if (GodotObject.IsInstanceValid(_root))
                 ClearViews();
             else
@@ -999,8 +1152,8 @@ public static class MgrPerformanceVisuals
 
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();
-            if (GodotObject.IsInstanceValid(_previewLayer))
-                _previewLayer.QueueFree();
+            if (GodotObject.IsInstanceValid(_interactionHost))
+                _interactionHost.QueueFree();
         }
     }
 
@@ -1025,13 +1178,18 @@ public static class MgrPerformanceVisuals
         private readonly MgrPerformanceCardBurstVisual _triggerBurst;
         private readonly MgrPerformanceIdleEdgeVisual _idleEdge;
         private readonly MgrPerformanceCounterVisual _remainingCounter;
+        private readonly Action<PerformanceCardView?> _orderingChanged;
         private Tween? _pulseTween;
         private NCard? _hoverPreview;
         private Tween? _hoverPreviewTween;
-        private int _baseLayer;
+        private bool _isHovered;
+        private bool _isExiting;
         private bool _isTriggering;
 
         public MgrPerformanceEntry Entry { get; }
+        public Node2D Anchor => _anchor;
+        public Control HoverHitbox => _hoverHitbox;
+        public bool RequiresFrontOrdering => _isHovered || _isExiting;
         public float LocalCenterX => _anchor.Position.X;
         public Vector2 ViewportCenter =>
             _cardBody.GetGlobalTransformWithCanvas() *
@@ -1040,10 +1198,12 @@ public static class MgrPerformanceVisuals
         public PerformanceCardView(
             Node parent,
             Node previewHost,
-            MgrPerformanceEntry entry)
+            MgrPerformanceEntry entry,
+            Action<PerformanceCardView?> orderingChanged)
         {
             Entry = entry;
             _previewHost = previewHost;
+            _orderingChanged = orderingChanged;
             _anchor = new Node2D { Name = $"Performance_{entry.Card.GetType().Name}" };
             parent.AddChild(_anchor);
 
@@ -1070,6 +1230,7 @@ public static class MgrPerformanceVisuals
             // older card that is supposed to cover it.
             _cardNode.ZIndex = 0;
             _cardNode.ZAsRelative = true;
+            _cardNode.ShowBehindParent = false;
             _cardNode.Modulate = new Color(
                 MgrVisualTuning.Performances.RackCardBrightness,
                 MgrVisualTuning.Performances.RackCardBrightness,
@@ -1094,7 +1255,7 @@ public static class MgrPerformanceVisuals
                 Color = new Color("fff0b8"),
                 Modulate = new Color(1f, 1f, 1f, 0f),
                 MouseFilter = Control.MouseFilterEnum.Ignore,
-                ZIndex = -1
+                ShowBehindParent = true
             };
             // Body is the actual visible CardContainer. Making every overlay a
             // child of it means internal NCard offsets/animation can no longer
@@ -1115,15 +1276,13 @@ public static class MgrPerformanceVisuals
                 Target = _cardBody,
                 TargetRect = VisibleCardRect,
                 MouseFilter = Control.MouseFilterEnum.Stop,
-                MouseDefaultCursorShape = Control.CursorShape.PointingHand,
-                ZIndex = 20
+                MouseDefaultCursorShape = Control.CursorShape.PointingHand
             };
             _hoverHitbox.MouseEntered += OnMouseEntered;
             _hoverHitbox.MouseExited += OnMouseExited;
             _hoverHitbox.GuiInput += OnHoverInput;
-            // Keep input in the high canvas layer as well. Creature controls and
-            // combat overlays can otherwise intercept GUI hover before a child
-            // Control under the creature node ever sees it.
+            // Keep input in the native combat UI branch. Creature controls can
+            // otherwise intercept a Control placed directly under the creature.
             _previewHost.AddChild(_hoverHitbox);
 
             _remainingCounter = new MgrPerformanceCounterVisual
@@ -1179,13 +1338,6 @@ public static class MgrPerformanceVisuals
             return viewportCenter;
         }
 
-        public void SetLayer(int layer)
-        {
-            _baseLayer = layer;
-            _anchor.ZIndex = layer;
-            _hoverHitbox.ZIndex = layer;
-        }
-
         public void SetTriggering(bool isTriggering)
         {
             _isTriggering = isTriggering;
@@ -1196,7 +1348,7 @@ public static class MgrPerformanceVisuals
                 ReconcileHoverPresentation();
         }
 
-        public void HidePreviewForOverlay() => HideHoverPreview();
+        public void HidePreviewForOverlay() => SetHoveredPresentation(false);
 
         public void PlayBonusPulse()
         {
@@ -1295,7 +1447,8 @@ public static class MgrPerformanceVisuals
             _pulseTween?.Kill();
             _pulseTween = null;
             _hoverHitbox.MouseFilter = Control.MouseFilterEnum.Ignore;
-            _anchor.ZIndex = 450;
+            _isExiting = true;
+            _orderingChanged(this);
 
             Vector2 destinationInRackCanvas =
                 _anchor.GetCanvasTransform().AffineInverse() *
@@ -1368,8 +1521,12 @@ public static class MgrPerformanceVisuals
         private void SetHoveredPresentation(bool isHovered)
         {
             isHovered &= !_isTriggering;
-            _anchor.ZIndex = isHovered ? 300 : _baseLayer;
-            _hoverHitbox.ZIndex = isHovered ? 300 : _baseLayer;
+            if (_isHovered != isHovered)
+            {
+                _isHovered = isHovered;
+                _orderingChanged(isHovered ? this : null);
+            }
+
             _cardNode.Scale = isHovered
                 ? MgrVisualTuning.Performances.HoveredMiniatureScale
                 : MiniatureScale;
@@ -1391,7 +1548,9 @@ public static class MgrPerformanceVisuals
 
             _hoverPreview.Name = "HoverPreview";
             _hoverPreview.MouseFilter = Control.MouseFilterEnum.Ignore;
-            _hoverPreview.ZIndex = 300;
+            _hoverPreview.ZIndex = 0;
+            _hoverPreview.ZAsRelative = true;
+            _hoverPreview.ShowBehindParent = false;
             _previewHost.AddChild(_hoverPreview);
             _hoverPreview.PivotOffset = Vector2.Zero;
             _hoverPreview.Scale = new Vector2(0.5f, 0.5f);
@@ -1432,7 +1591,9 @@ public static class MgrPerformanceVisuals
                 desiredCenter.Y,
                 viewportRect.Position.Y + halfSize.Y + 8f,
                 viewportRect.End.Y - halfSize.Y - 8f);
-            _hoverPreview.Position = desiredCenter;
+            _hoverPreview.Position = ViewportToParentLocal(
+                _hoverPreview,
+                desiredCenter);
         }
 
         private void PositionHoverHitbox()

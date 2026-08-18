@@ -28,7 +28,12 @@ public sealed class WatchingUMarkPower : ModPowerTemplate
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource,
+        CardModel? cardSource
+#if !STS2_V107
+        ,
         CardPlay? cardPlay) =>
+#else
+        ) =>
+#endif
         ReferenceEquals(target, Owner) ? Amount : 0m;
 }

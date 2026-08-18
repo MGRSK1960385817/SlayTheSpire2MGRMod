@@ -6,6 +6,7 @@ using STS2RitsuLib;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Patching.Core;
 using MGRMod.Patches;
+using MGRMod.Settings;
 using MGRMod.Telemetry;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
@@ -31,6 +32,7 @@ public partial class Entry
 
         // Godot scene scripts and RitsuLib content attributes use separate discovery paths.
         RitsuLibFramework.EnsureGodotScriptsRegistered(assembly, Logger);
+        MgrVisualSettings.Register();
         MgrAudio.RegisterBank();
 
         _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
@@ -38,8 +40,6 @@ public partial class Entry
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformancePowerCardVfxPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
-        _runtimePatcher.RegisterPatch<MgrHoverTipLayerPatch>();
-        _runtimePatcher.RegisterPatch<MgrPotionPopupLayerPatch>();
         _runtimePatcher.RegisterPatch<MgrManimaniTargetPreviewPatch>();
         _runtimePatcher.RegisterPatch<MgrCrossCharacterCombatCardPoolPatch>();
         _runtimePatcher.RegisterPatch<MgrCrossCharacterRewardCardPoolPatch>();

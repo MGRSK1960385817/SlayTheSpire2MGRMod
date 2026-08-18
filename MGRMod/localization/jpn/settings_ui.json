@@ -1,4 +1,8 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "MGR Mod",
-  "MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY": "明示的な同意後、MGR Modのプレイデータを送信し、バランス調整とゲーム体験の改善に役立てます。"
+  "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "明示的な同意後、バランス分析のためにMGRのシングルプレイデータを送信します。マルチプレイデータ、完全なセーブデータ、プレイヤー名、ログは送信しません。",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "描画パフォーマンス",
+  "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "キャラクター表示",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "キャラクターアニメーションを無効化",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "キャラクターのフレームアニメーションと周囲の常駐エフェクトを同時に無効化します。次に戦闘キャラクターが生成されたときに反映されます。"
 }

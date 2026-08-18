@@ -15,20 +15,35 @@
 
     <GodotExportPreset>Windows Desktop</GodotExportPreset>
     <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+    <BuildCrossVersionBundle Condition="'$(BuildCrossVersionBundle)' == '' and '$(DesignTimeBuild)' != 'true'">true</BuildCrossVersionBundle>
+    <BuildCrossVersionBundle Condition="'$(BuildCrossVersionBundle)' == ''">false</BuildCrossVersionBundle>
+    <V107Sts2DataDir Condition="'$(V107Sts2DataDir)' == ''">$(MSBuildProjectDirectory)\..\.tools\sts2_v107.1_original_refs</V107Sts2DataDir>
+    <V111Sts2DataDir Condition="'$(V111Sts2DataDir)' == ''">$(MSBuildProjectDirectory)\..\.tools\sts2_v111.0_original_refs</V111Sts2DataDir>
     <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
-    <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
-    <ModPckPath>$(ModOutputDir)$(MSBuildProjectName).pck</ModPckPath>
+    <!-- The outer build is the v0.111 payload. The post-build bundler performs
+         isolated v0.111 and v0.107 builds against the archived references. -->
+    <Sts2DataDir Condition="'$(BuildCrossVersionBundle)' == 'true'">$(V111Sts2DataDir)</Sts2DataDir>
     <!-- RitsuLib is installed through Steam Workshop. Keep the NuGet package
          as a compile-time dependency without creating a duplicate local mod. -->
     <RitsuLibAutoCopy>false</RitsuLibAutoCopy>
     <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
     <RunPckExport Condition="'$(RunPckExport)' == '' and '$(DesignTimeBuild)' != 'true'">true</RunPckExport>
     <RunPckExport Condition="'$(RunPckExport)' == ''">false</RunPckExport>
+    <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)</ModOutputDir>
+    <CrossVersionBundleOutputDir Condition="'$(CrossVersionBundleOutputDir)' == '' and '$(CopyModOnBuild)' != 'false'">$(ModOutputDir)</CrossVersionBundleOutputDir>
+    <CrossVersionBundleOutputDir Condition="'$(CrossVersionBundleOutputDir)' == ''">$(MSBuildProjectDirectory)\.artifacts\MGRMod-cross-version</CrossVersionBundleOutputDir>
+    <ModPckPath>$(CrossVersionBundleOutputDir)\$(MSBuildProjectName).pck</ModPckPath>
+    <Sts2CompatTarget Condition="'$(Sts2CompatTarget)' == ''">0.111.0</Sts2CompatTarget>
+    <Sts2CompatTarget Condition="'$(BuildCrossVersionBundle)' == 'true'">0.111.0</Sts2CompatTarget>
+    <DefineConstants Condition="'$(Sts2CompatTarget)' == '0.107.1'">$(DefineConstants);STS2_V107</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" />
-    <PackageReference Include="STS2.RitsuLib" Version="0.5.13" />
+    <PackageReference Include="STS2.RitsuLib" Version="0.5.13"
+                      Condition="'$(Sts2CompatTarget)' != '0.107.1'" />
+    <PackageReference Include="STS2.RitsuLib.Compat.0.107.1" Version="0.5.13"
+                      Condition="'$(Sts2CompatTarget)' == '0.107.1'" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,9 +57,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;docs/**;DataAnalysis/**;MGRMod/**" />
-    <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;docs/**;DataAnalysis/**;MGRMod/**" />
-    <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**" />
+    <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;docs/**;DataAnalysis/**;Loader/**;MGRMod/**" />
+    <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;docs/**;DataAnalysis/**;Loader/**;MGRMod/**" />
+    <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**;Loader/bin/**;Loader/obj/**" />
     <AdditionalFiles Include="MGRMod/localization/**/*.json" />
     <None Include="MGRMod/**" />
     <None Include="MGRMod.json" />
@@ -57,7 +72,8 @@
     <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll. Copy local.props.template to local.props and set Sts2Dir." />
   </Target>
 
-  <Target Name="CopyMod" AfterTargets="Build" Condition="'$(CopyModOnBuild)' != 'false'">
+  <Target Name="CopyMod" AfterTargets="Build"
+          Condition="'$(CopyModOnBuild)' != 'false' and '$(BuildCrossVersionBundle)' != 'true'">
     <MakeDir Directories="$(ModOutputDir)" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\$(MSBuildProjectName).json" DestinationFolder="$(ModOutputDir)" />
@@ -71,8 +87,21 @@
          process exit code decide whether this build step failed instead of
          allowing MSBuild's text parser to convert a successful export to -1. -->
     <Exec WorkingDirectory="$(MSBuildProjectDirectory)"
-          Command="&quot;$(GodotExe)&quot; --headless --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(GodotExportPreset)&quot; &quot;$(ModPckPath)&quot;"
+          Command="&quot;$(GodotExe)&quot; --headless --quiet --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(GodotExportPreset)&quot; &quot;$(ModPckPath)&quot;"
           EnvironmentVariables="STS2_SKIP_PCK_EXPORT=1"
           IgnoreStandardErrorWarningFormat="true" />
+  </Target>
+
+  <Target Name="CreateCrossVersionBundle"
+          AfterTargets="Build"
+          DependsOnTargets="ExportPCK"
+          Condition="'$(BuildCrossVersionBundle)' == 'true' and '$(DesignTimeBuild)' != 'true'">
+    <Error Condition="!Exists('$(V107Sts2DataDir)\sts2.dll')"
+           Text="Could not find the archived v0.107.1 sts2.dll at $(V107Sts2DataDir)." />
+    <Error Condition="!Exists('$(V111Sts2DataDir)\sts2.dll')"
+           Text="Could not find the archived v0.111.0 sts2.dll at $(V111Sts2DataDir)." />
+    <Error Condition="!Exists('$(ModPckPath)')"
+           Text="Could not find MGRMod.pck at $(ModPckPath). Enable PCK export or provide an existing pack." />
+    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildProjectDirectory)\tools\Build-MgrVariantBundle.ps1&quot; -V107DataDir &quot;$(V107Sts2DataDir)&quot; -V111DataDir &quot;$(V111Sts2DataDir)&quot; -PckPath &quot;$(ModPckPath)&quot; -OutputDir &quot;$(CrossVersionBundleOutputDir)&quot; -Configuration $(Configuration)" />
   </Target>
 </Project>

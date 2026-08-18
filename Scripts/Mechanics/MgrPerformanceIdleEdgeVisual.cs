@@ -19,7 +19,6 @@ internal sealed partial class MgrPerformanceIdleEdgeVisual : Node2D
         float unscaledMargin =
             MgrVisualTuning.Performances.IdleEdgeMargin / _displayScale;
         _cardRect = cardRect.Grow(unscaledMargin);
-        ZIndex = 18;
         SetProcess(true);
     }
 

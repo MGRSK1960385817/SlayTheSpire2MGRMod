@@ -4,9 +4,9 @@ namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Screen-space hitbox that mirrors a card living under the combat creature
-/// canvas. The proxy itself belongs to the rack's high CanvasLayer, so it must
-/// convert all four real card corners into that layer instead of copying the
-/// card's canvas-local GlobalPosition.
+/// canvas. The proxy belongs to the native combat UI's free-position container,
+/// so it converts all four real card corners into its parent's local space
+/// instead of assuming that either canvas has a viewport-origin transform.
 /// </summary>
 public partial class MgrPerformanceHoverProxy : Control
 {
@@ -33,8 +33,15 @@ public partial class MgrPerformanceHoverProxy : Control
         if (!Visible)
             return;
 
+        if (GetParent() is not CanvasItem proxyParent)
+        {
+            Visible = false;
+            return;
+        }
+
         Transform2D targetToViewport = Target.GetGlobalTransformWithCanvas();
-        Transform2D viewportToProxyCanvas = GetCanvasTransform().AffineInverse();
+        Transform2D viewportToProxyParent =
+            proxyParent.GetGlobalTransformWithCanvas().AffineInverse();
         Rect2 targetRect = TargetRect.HasArea()
             ? TargetRect
             : new Rect2(Vector2.Zero, Target.Size);
@@ -46,7 +53,7 @@ public partial class MgrPerformanceHoverProxy : Control
             new Vector2(targetRect.Position.X, targetRect.End.Y)
         ];
 
-        Vector2 first = viewportToProxyCanvas * (targetToViewport * corners[0]);
+        Vector2 first = viewportToProxyParent * (targetToViewport * corners[0]);
         float minX = first.X;
         float maxX = first.X;
         float minY = first.Y;
@@ -54,7 +61,7 @@ public partial class MgrPerformanceHoverProxy : Control
 
         for (int index = 1; index < corners.Length; index++)
         {
-            Vector2 point = viewportToProxyCanvas *
+            Vector2 point = viewportToProxyParent *
                 (targetToViewport * corners[index]);
             minX = MathF.Min(minX, point.X);
             maxX = MathF.Max(maxX, point.X);

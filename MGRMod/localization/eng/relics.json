@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "At the start of combat, add 1 [color=#c8c8c8]Pale+[/color] to your [gold]Hand[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "In a Spire without sunlight, even flowers turn pale.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Maguroyaki",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Whenever you Smith at a Rest Site, heal {Heal:diff()}% of your Max HP.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Whenever you Smith at a Rest Site, heal {Heal:diff()} HP.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Is the filling sweet bean paste, or tuna?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Little Angel",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "At the start of your turn, if you drew fewer than {SkillThreshold:diff()} Skill cards, draw {Cards:diff()} cards.",

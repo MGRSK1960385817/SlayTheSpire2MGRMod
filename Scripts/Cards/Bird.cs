@@ -73,8 +73,13 @@ public sealed class Bird : MgrCard
             Owner.Creature,
             DynamicVars.Damage.BaseValue,
             ValueProp.Move,
-            this,
+            this
+#if !STS2_V107
+            ,
             cardPlay,
+#else
+            ,
+#endif
             ModifyDamageHookType.All,
             CardPreviewMode.None,
             out IEnumerable<AbstractModel> _);

@@ -75,8 +75,13 @@ public sealed class MaguroAssault : MgrCard
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource,
+        CardModel? cardSource
+#if !STS2_V107
+        ,
         CardPlay? cardPlay)
+#else
+        )
+#endif
     {
         // Chord scaling remains part of the card's ordinary damage formula.
         // Ending is a late multiplier so Strength, enchantments and other

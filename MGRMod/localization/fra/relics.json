@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "Au début du combat, ajoutez 1 [color=#c8c8c8]Pâleur+[/color] à votre [gold]Main[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "Dans une Tour sans soleil, même les fleurs pâlissent.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Gâteau au thon",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Lorsque vous Forgez sur un site de repos, récupérez {Heal:diff()}% de vos PV max.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Chaque fois que vous Forgez à un Site de repos, récupérez {Heal:diff()} PV.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Fourré aux haricots rouges ou au thon ?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Petit ange",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "Au début du tour, si vous avez pioché moins de {SkillThreshold:diff()} Compétences, piochez {Cards:diff()} cartes.",

@@ -11,7 +11,7 @@ namespace MGRMod.Relics;
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "journey_with_me")]
 public sealed class JourneyWithMe : ModRelicTemplate
 {
-    public override RelicRarity Rarity => RelicRarity.Ancient;
+    public override RelicRarity Rarity => RelicRarity.Starter;
 
     public override RelicAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/relics/JourneyWithMe.png",

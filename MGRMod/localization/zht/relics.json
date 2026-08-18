@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "戰鬥開始時，將 1 張[color=#c8c8c8]蒼白+[/color]置入[gold]手牌[/gold]。",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "在沒有陽光的塔裡，連花也變得蒼白。",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "鮪魚燒",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "每當你在休息處鍛造時，恢復最大生命的 {Heal:diff()}%。",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "每當你在休息處鍛造時，恢復 {Heal:diff()} 點生命。",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "紅豆餡還是魚肉餡？",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "小天使",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "回合開始時，若你抽到的技能牌少於 {SkillThreshold:diff()} 張，抽 {Cards:diff()} 張牌。",

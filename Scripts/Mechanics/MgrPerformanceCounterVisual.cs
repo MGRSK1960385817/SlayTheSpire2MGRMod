@@ -35,7 +35,6 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
                 MgrVisualTuning.Performances.RemainingCounterTopGap -
                 MgrVisualTuning.Performances.RemainingCounterSize.Y * 0.5f);
         Position = _homePosition;
-        ZIndex = MgrVisualTuning.Performances.RemainingCounterZIndex;
 
         _label.Text = _displayedRemaining.ToString();
         _label.Position = -MgrVisualTuning.Performances.RemainingCounterSize * 0.5f;

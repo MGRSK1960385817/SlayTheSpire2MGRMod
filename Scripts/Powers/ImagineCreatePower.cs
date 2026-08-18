@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Afflictions;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -179,6 +180,8 @@ public sealed class ImagineCreatePower : ModPowerTemplate
         CardModel option = (original.CombatState ??
             throw new InvalidOperationException("Type choices require a combat card."))
             .CloneCard(original);
+        if (option.Affliction is Tainted)
+            CardCmd.ClearAffliction(option);
         MgrCardTypeOverrideState.Set(option, type);
         return option;
     }

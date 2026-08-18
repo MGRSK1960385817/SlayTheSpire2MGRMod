@@ -5,13 +5,15 @@ namespace MGRMod.Characters;
 
 internal static class MgrAudio
 {
-    // Linear gain applied to MGR events other than character selection.
-    internal const float EventVolumeGain = 2f;
+    // Shared linear gain for every MGR event except character selection.
+    internal const float EventVolumeGain = 1.8f;
 
     // Linear gain applied only when MGR is selected on a character screen.
     // This is independent from EventVolumeGain so the UI sound can be tuned
     // without changing NoteChannel, Chord, Writing, or Glitch.
-    internal const float CharacterSelectVolumeGain = 5f;
+    // Player feedback on the real v0.107.1 client showed that only the
+    // character-select event needed an additional ~4.1 dB over its old value.
+    internal const float CharacterSelectVolumeGain = 8f;
 
     // Linear playback ratio for Writing.ogg while Imagine/Create owns its card
     // selection screen. Raise/lower this value to tune only that ambience.

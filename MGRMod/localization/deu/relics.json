@@ -27,7 +27,7 @@
   "MGR_MOD_RELIC_PALE_FLOWER.description": "Nimm zu Beginn jedes Kampfes 1 [color=#c8c8c8]Bleiche+[/color] auf deine [gold]Hand[/gold].",
   "MGR_MOD_RELIC_PALE_FLOWER.flavor": "In einem Spire ohne Sonnenlicht werden selbst Blumen bleich.",
   "MGR_MOD_RELIC_MAGUROYAKI.title": "Thunfischküchlein",
-  "MGR_MOD_RELIC_MAGUROYAKI.description": "Heile immer, wenn du an einer Raststätte schmiedest, {Heal:diff()}% deiner max. TP.",
+  "MGR_MOD_RELIC_MAGUROYAKI.description": "Heile jedes Mal {Heal:diff()} TP, wenn du an einem Lagerfeuer schmiedest.",
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Mit roter Bohnenpaste oder mit Fischfüllung?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Kleiner Engel",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "Ziehe zu Beginn deines Zuges {Cards:diff()} Karten, falls du weniger als {SkillThreshold:diff()} Fertigkeitskarten gezogen hast.",

@@ -11,9 +11,9 @@ namespace MGRMod.Relics;
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "maguroyaki")]
 public sealed class Maguroyaki : ModRelicTemplate
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new HealVar(15m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new HealVar(12m)];
 
-    public override RelicRarity Rarity => RelicRarity.Shop;
+    public override RelicRarity Rarity => RelicRarity.Uncommon;
 
     public override RelicAssetProfile AssetProfile => new(
         IconPath: $"{Entry.ResPath}/images/relics/Maguroyaki.png",
@@ -26,7 +26,6 @@ public sealed class Maguroyaki : ModRelicTemplate
             return;
 
         Flash();
-        decimal amount = player.Creature.MaxHp * (DynamicVars.Heal.BaseValue / 100m);
-        await CreatureCmd.Heal(player.Creature, amount);
+        await CreatureCmd.Heal(player.Creature, DynamicVars.Heal.BaseValue);
     }
 }

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Powers;
+using MGRMod.Compatibility;
 using MGRMod.Relics;
 using MGRMod.Telemetry;
 
@@ -257,7 +258,7 @@ public static class MgrNoteEffects
                 // is not attributed to the card that completed the chord.
                 using (MgrRunTelemetryAccumulator.BeginNoteDamage())
                 {
-                    await CreatureCmd.Damage(
+                    await MgrCrossVersionApi.Damage(
                         choiceContext,
                         target,
                         amount,

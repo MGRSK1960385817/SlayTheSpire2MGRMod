@@ -1,4 +1,5 @@
 using Godot;
+using System.Reflection;
 using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -10,7 +11,6 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.TestSupport;
 using MGRMod.Cards;
 
@@ -316,22 +316,83 @@ public static class MgrAbilityVfx
             if (index > 0)
                 await Cmd.Wait(DaybreakExhaustStaggerSeconds);
 
-            NCardExhaustVfx? exhaustVfx = NCardExhaustVfx.Create(node);
-            if (exhaustVfx is null)
-            {
-                node.QueueFreeSafely();
-                continue;
-            }
-
-            // Native Fiend Fire uses the ordinary 0.4-second dissolve. Only
-            // these private preview instances are slowed down for readability.
-            exhaustVfx._exhaustDuration = DaybreakExhaustSeconds;
-            room.Ui.AddChildSafely(exhaustVfx);
-            NDebugAudioManager.Instance?.Play("card_exhaust.mp3");
-            exhaustAnimations.Add(exhaustVfx.PlayAnimation());
+            exhaustAnimations.Add(PlayCardExhaustAnimation(room, node));
         }
 
         await Task.WhenAll(exhaustAnimations);
+    }
+
+    private static async Task PlayCardExhaustAnimation(
+        NCombatRoom room,
+        NCard node)
+    {
+        // NCardExhaustVfx was introduced after v0.107. Resolve it dynamically
+        // so newer builds retain the native dissolve while the official build
+        // can use the equivalent lightweight fallback below.
+        Type? exhaustVfxType = typeof(NCard).Assembly.GetType(
+            "MegaCrit.Sts2.Core.Nodes.Vfx.Cards.NCardExhaustVfx");
+        MethodInfo? createMethod = exhaustVfxType?.GetMethod(
+            "Create",
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            [typeof(NCard)],
+            modifiers: null);
+        object? exhaustVfx = createMethod?.Invoke(null, [node]);
+        if (exhaustVfx is Node exhaustNode)
+        {
+            exhaustVfxType?.GetField(
+                    "_exhaustDuration",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                ?.SetValue(exhaustVfx, DaybreakExhaustSeconds);
+            MethodInfo? playMethod = exhaustVfxType?.GetMethod(
+                "PlayAnimation",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                binder: null,
+                Type.EmptyTypes,
+                modifiers: null);
+            if (playMethod is not null)
+            {
+                room.Ui.AddChildSafely(exhaustNode);
+                if (playMethod.Invoke(exhaustVfx, null) is Task animation)
+                {
+                    NDebugAudioManager.Instance?.Play("card_exhaust.mp3");
+                    await animation;
+                    return;
+                }
+            }
+
+            exhaustNode.QueueFreeSafely();
+            return;
+        }
+
+        if (!GodotObject.IsInstanceValid(node))
+            return;
+
+        NDebugAudioManager.Instance?.Play("card_exhaust.mp3");
+        Tween fallback = node.CreateTween().SetParallel();
+        fallback.TweenProperty(
+                node,
+                "scale",
+                Vector2.One * 0.08f,
+                DaybreakExhaustSeconds)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Back);
+        fallback.TweenProperty(
+                node,
+                "rotation",
+                node.Rotation + 0.28f,
+                DaybreakExhaustSeconds)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+        fallback.TweenProperty(
+                node,
+                "modulate",
+                new Color(0.78f, 0.38f, 0.24f, 0f),
+                DaybreakExhaustSeconds * 0.86f)
+            .SetDelay(DaybreakExhaustSeconds * 0.14f);
+        await TweenHelper.AwaitFinished(fallback, node);
+        if (GodotObject.IsInstanceValid(node))
+            node.QueueFreeSafely();
     }
 
     /// <summary>

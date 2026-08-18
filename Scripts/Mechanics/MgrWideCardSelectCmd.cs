@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -9,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
+using MGRMod.Compatibility;
 
 namespace MGRMod.Mechanics;
 
@@ -31,7 +33,7 @@ internal static class MgrWideCardSelectCmd
         if (cards.Count == 0)
             return null;
 
-        CardSelectCmd.UndoEndTurnIfNecessary(player);
+        UndoEndTurnIfNecessary(player);
         if (CardSelectCmd.Selector is { } selector)
         {
             return (await selector.GetSelectedCards(cards, 1, 1))
@@ -40,7 +42,8 @@ internal static class MgrWideCardSelectCmd
 
         var synchronizer = RunManager.Instance.PlayerChoiceSynchronizer;
         uint choiceId = synchronizer.ReserveChoiceId(player);
-        await context.SignalPlayerChoiceBegun(
+        await MgrCrossVersionApi.SignalPlayerChoiceBegun(
+            context,
             player,
             PlayerChoiceOptions.CancelPlayCardActions);
 
@@ -49,7 +52,7 @@ internal static class MgrWideCardSelectCmd
         {
             if (CardSelectCmd.ShouldSelectLocalCard(player))
             {
-                if (CardSelectCmd.LocalSelector is { } localSelector)
+                if (MgrCrossVersionApi.GetLocalCardSelector() is { } localSelector)
                 {
                     result = (await localSelector.GetSelectedCards(cards, 1, 1))
                         .FirstOrDefault();
@@ -110,5 +113,14 @@ internal static class MgrWideCardSelectCmd
         }
 
         return null;
+    }
+
+    private static void UndoEndTurnIfNecessary(Player player)
+    {
+        if (CombatManager.Instance.IsPlayerReadyToEndTurn(player) &&
+            player.Creature.CombatState is { CurrentSide: CombatSide.Player })
+        {
+            CombatManager.Instance.UndoReadyToEndTurn(player);
+        }
     }
 }

@@ -165,11 +165,19 @@ public abstract class MgrCard(
     /// with combat without exposing it to draw/discard/exhaust effects. The last
     /// automatic play is released to Tower 2's normal result-pile routing.
     /// </summary>
+#if STS2_V107
+    protected override PileType GetResultPileTypeForCardPlay() =>
+        MgrPerformanceSystem.IsPerformanceCard(this) &&
+        !MgrPerformanceSystem.IsCompletingPerformance(this)
+            ? PileType.Play
+            : base.GetResultPileTypeForCardPlay();
+#else
     protected override CardLocation GetResultLocationForCardPlay() =>
         MgrPerformanceSystem.IsPerformanceCard(this) &&
         !MgrPerformanceSystem.IsCompletingPerformance(this)
             ? new CardLocation(Owner, PileType.Play, CardPilePosition.Bottom)
             : base.GetResultLocationForCardPlay();
+#endif
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: $"{Entry.ResPath}/images/cards/{GetType().Name}.png");

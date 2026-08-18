@@ -33,7 +33,6 @@ public static class MgrVisualTuning
         public static readonly Color FilledNoteTint =
             new(0.95f, 0.95f, 0.95f, 0.95f);
 
-        public const int RackZIndex = 50;
         public const float DesiredSlotSpacing = 96f;
         public const float MaximumRackWidth = 480f;
         public const float SlotRadius = 30f;
@@ -158,8 +157,6 @@ public static class MgrVisualTuning
         public static readonly Color StaffFlashColor = new("fff2b8");
         public static readonly Color PerformanceAccentColor = new("fff2b8");
 
-        public const int RackZIndex = 55;
-        public const int StaffZIndex = -20;
         // Remaining Performance turns use a small floating beat marker above
         // the card rather than a purple badge on its lower-right corner.
         public static readonly Vector2 RemainingCounterSize = new(48f, 30f);
@@ -167,7 +164,6 @@ public static class MgrVisualTuning
             new(1f, 0.96f, 0.8f, 0.96f);
         public static readonly Color RemainingCounterOutlineColor =
             new(0.4f, 0.32f, 0.40f, 0.96f);
-        public const int RemainingCounterZIndex = 34;
         public const int RemainingCounterFontSize = 23;
         public const int RemainingCounterOutlineSize = 4;
         public const float RemainingCounterTopGap = 4f;
@@ -215,7 +211,6 @@ public static class MgrVisualTuning
         // Maguro Dash uses a presentation-only card silhouette to cut through
         // the rack. It never enters the gameplay queue and therefore cannot
         // affect Performance counters or result-pile routing.
-        public const int FinisherZIndex = 420;
         public static readonly Vector2 FinisherCardSize = new(78f, 108f);
         public const float FinisherEntryDistance = 128f;
         public const double FinisherEntranceSeconds = 0.11;

@@ -1,4 +1,8 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "Mod da MGR",
-  "MGR_MOD_SETTINGS_UI_TELEMETRY_RUN_HISTORY": "Após o seu consentimento explícito, envia dados de partidas gerados ao usar o mod da MGR para ajudar o autor a equilibrar os valores e melhorar a experiência de jogo."
+  "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "Com seu consentimento explícito, envia dados de partidas solo da MGR para análise de balanceamento. Partidas multijogador, salvamentos completos, nomes de jogadores e registros não são enviados.",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Desempenho visual",
+  "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "Visual do personagem",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "Desativar animação do personagem",
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Desativa tanto a animação quadro a quadro do personagem quanto os efeitos persistentes ao redor dele. Entra em vigor na próxima vez que o personagem for criado em combate."
 }

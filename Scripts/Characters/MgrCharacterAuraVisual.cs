@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MGRMod.Mechanics;
 using MGRMod.Powers;
+using MGRMod.Settings;
 
 namespace MGRMod.Characters;
 
@@ -141,6 +142,13 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
 
     public override void _Ready()
     {
+        if (!MgrVisualSettings.ShouldLoadCharacterEffects)
+        {
+            Visible = false;
+            SetProcess(false);
+            return;
+        }
+
         _random.Randomize();
         RandomizeSatelliteOrbit();
         TryResolvePlayer();
@@ -388,10 +396,10 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
             Name = $"MgrAfterimage_{kind}_{index}",
             Centered = _characterVisual.Centered,
             TextureFilter = _characterVisual.TextureFilter,
-            // Scene order is now explicit: aura=1, afterimage=2, character=3.
-            // This keeps the copy behind MGR without inheriting the old
-            // negative aura layer that buried it under the room background.
-            ZIndex = 1,
+            // Keep every persistent character visual at the default combat Z.
+            // The scene-tree order (aura children before the later Visuals
+            // sibling) places this copy behind MGR without allowing it to
+            // overdraw card-selection and inspection UI at global Z 0.
             Visible = false
         };
         AddChild(sprite);

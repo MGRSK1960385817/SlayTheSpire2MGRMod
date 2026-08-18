@@ -49,7 +49,6 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
     public override void _Ready()
     {
         Position = MgrVisualTuning.Performances.StaffOffset;
-        ZIndex = MgrVisualTuning.Performances.StaffZIndex;
         CreateMarkerClip();
         CreatePlayhead();
         ResetSpawnTimer();
@@ -451,8 +450,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
     {
         _markerClip = new MgrPerformanceStaffMarkerClipVisual
         {
-            Name = "StaffMarkerClip",
-            ZIndex = 1
+            Name = "StaffMarkerClip"
         };
         _markerClip.Initialize(DrawMarkers);
         AddChild(_markerClip);
@@ -867,8 +865,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
         _playheadRoot = new Node2D
         {
             Name = "CurrentPerformancePlayhead",
-            Visible = false,
-            ZIndex = 8
+            Visible = false
         };
         AddChild(_playheadRoot);
 

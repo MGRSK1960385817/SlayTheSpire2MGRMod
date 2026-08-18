@@ -49,7 +49,6 @@ internal sealed partial class MgrNoteBurstVisual : Node2D
 
     public override void _Ready()
     {
-        ZIndex = -3;
         Visible = false;
         SetProcess(false);
         for (int index = 0; index < _angleOffsets.Length; index++)
