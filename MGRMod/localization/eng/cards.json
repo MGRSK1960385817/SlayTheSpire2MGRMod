@@ -169,7 +169,7 @@
   "MGR_MOD_CARD_SIXTH_SENSE.title": "The Sixth Sense",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "At the start of your turn, draw {Cards:diff()} additional cards.\nDiscard those that do not cost {RequiredCost:diff()}{energyPrefix:energyIcons(1)}.",
   "MGR_MOD_CARD_CANON_FORM.title": "Canon Form",
-  "MGR_MOD_CARD_CANON_FORM.description": "At the end of your turn, play a copy of the last card you played last turn.\nStarting next turn.",
+  "MGR_MOD_CARD_CANON_FORM.description": "At the end of your turn, play a copy of the last card you played last turn.\nTakes effect starting next turn.",
   "MGR_MOD_CARD_BIRD.title": "「 Bird 」",
   "MGR_MOD_CARD_BIRD.description": "Deal {Damage:diff()} damage.\nGenerate random [gold]BasicNote[/gold] equal to half the damage.{InCombat:\n(Generate {CalculatedNotes:diff()}.)|}",
   "MGR_MOD_CARD_HYAKKI_YAGYO.title": "Hyakki Yagyo",

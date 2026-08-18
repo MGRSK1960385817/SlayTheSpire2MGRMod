@@ -168,7 +168,7 @@
   "MGR_MOD_CARD_CHAOS_MAGIC.description": "Когда карта завершает [gold]исполнение[/gold], добавляет случайную карту [gold]исполнения[/gold] в [gold]руку[/gold].",
   "MGR_MOD_CARD_SIXTH_SENSE.title": "Шестое чувство",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "В начале хода вы добираете карт: {Cards:diff()}.\nСбрасываете среди них карты с ценой не {RequiredCost:diff()}{energyPrefix:energyIcons(1)}.",
-  "MGR_MOD_CARD_CANON_FORM.title": "Форма канона",
+  "MGR_MOD_CARD_CANON_FORM.title": "Облик канона",
   "MGR_MOD_CARD_CANON_FORM.description": "В конце хода разыгрывает копию последней карты, сыгранной вами в прошлом ходу.\nНачинает действовать со следующего хода.",
   "MGR_MOD_CARD_BIRD.title": "「 Птица 」",
   "MGR_MOD_CARD_BIRD.description": "Наносит {Damage:diff()} урона.\nСоздает случайных [gold]базовых нот[/gold] в количестве половины урона.{InCombat:\n(Создаст нот: {CalculatedNotes:diff()}.)|}",

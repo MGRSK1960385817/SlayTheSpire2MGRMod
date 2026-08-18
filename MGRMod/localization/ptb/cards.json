@@ -169,7 +169,7 @@
   "MGR_MOD_CARD_SIXTH_SENSE.title": "O Sexto Sentido",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "No início do turno, compre {Cards:diff()} cartas.\nDescarte entre elas as cartas cujo custo não seja {RequiredCost:diff()}{energyPrefix:energyIcons(1)}.",
   "MGR_MOD_CARD_CANON_FORM.title": "Forma de Cânone",
-  "MGR_MOD_CARD_CANON_FORM.description": "No final do seu turno, jogue uma cópia da última carta que você jogou no turno anterior.\nComeça a funcionar no próximo turno.",
+  "MGR_MOD_CARD_CANON_FORM.description": "No final do seu turno, jogue uma cópia da última carta que você jogou no turno anterior.\nEntra em vigor no próximo turno.",
   "MGR_MOD_CARD_BIRD.title": "「 Pássaro 」",
   "MGR_MOD_CARD_BIRD.description": "Cause {Damage:diff()} de dano.\nGere aleatoriamente uma quantidade de [gold]Notas Básicas[/gold] igual à metade do dano.{InCombat:\n(Gere {CalculatedNotes:diff()}.)|}",
   "MGR_MOD_CARD_HYAKKI_YAGYO.title": "Procissão Noturna dos Cem Demônios",

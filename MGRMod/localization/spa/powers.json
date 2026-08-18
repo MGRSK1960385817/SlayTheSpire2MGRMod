@@ -54,7 +54,7 @@
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.description": "Al comienzo de tu turno, roba [blue]2[/blue] cartas adicionales.\nDescarta las que no cuesten [blue]1[/blue] {energyPrefix:energyIcons(1)}.",
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.smartDescription": "Al comienzo de tu turno, roba [blue]2[/blue] cartas adicionales por cada acumulación de Sexto sentido.\nDescarta las que no cuesten [blue]1[/blue] {energyPrefix:energyIcons(1)}.",
   "MGR_MOD_POWER_CANON_FORM_POWER.title": "Forma de canon",
-  "MGR_MOD_POWER_CANON_FORM_POWER.description": "A partir del próximo turno, al final de tu turno, juega copias de las últimas [blue]{Amount}[/blue] cartas que jugaste el turno anterior.{HasCards:\nSiguiente: {Cards}|}",
+  "MGR_MOD_POWER_CANON_FORM_POWER.description": "A partir del próximo turno, al final de tu turno, juega copias de las últimas [blue]{Amount}[/blue] cartas que jugaste el turno anterior.{HasCards:\nPróximas cartas: {Cards}|}",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.title": "Ángel eléctrico",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.description": "Al comienzo de tu turno, añade una carta aleatoria de coste 1 {energyPrefix:energyIcons(1)} a tu [gold]Mano[/gold].",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.smartDescription": "Al comienzo de tu turno, añade [blue]{Amount}[/blue] cartas aleatorias de coste 1 {energyPrefix:energyIcons(1)} a tu [gold]Mano[/gold].",

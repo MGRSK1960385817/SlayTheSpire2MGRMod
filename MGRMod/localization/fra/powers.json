@@ -53,7 +53,7 @@
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.title": "Sixième sens",
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.description": "Au début de votre tour, piochez [blue]2[/blue] cartes supplémentaires.\nDéfaussez celles qui ne coûtent pas [blue]1[/blue]{energyPrefix:energyIcons(1)}.",
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.smartDescription": "Au début de votre tour, piochez [blue]2[/blue] cartes supplémentaires par Sixième sens.\nDéfaussez celles qui ne coûtent pas [blue]1[/blue]{energyPrefix:energyIcons(1)}.",
-  "MGR_MOD_POWER_CANON_FORM_POWER.title": "Forme canonique",
+  "MGR_MOD_POWER_CANON_FORM_POWER.title": "Forme en canon",
   "MGR_MOD_POWER_CANON_FORM_POWER.description": "Dès le prochain tour, à la fin de votre tour, jouez des copies des [blue]{Amount}[/blue] dernières cartes jouées au tour précédent.{HasCards:\nProchaines cartes : {Cards}|}",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.title": "Ange électrique",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.description": "Au début de votre tour, ajoutez une carte aléatoire coûtant 1{energyPrefix:energyIcons(1)} à votre [gold]Main[/gold].",

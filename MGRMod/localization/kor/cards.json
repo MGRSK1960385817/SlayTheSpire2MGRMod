@@ -168,7 +168,7 @@
   "MGR_MOD_CARD_CHAOS_MAGIC.description": "[gold]연주[/gold] 카드의 연주가 끝날 때마다, 무작위 [gold]연주[/gold] 카드를 1장 [gold]손[/gold]으로 가져옵니다.",
   "MGR_MOD_CARD_SIXTH_SENSE.title": "제6감",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "턴 시작 시 카드를 {Cards:diff()}장 뽑고, 비용이 {RequiredCost:diff()}{energyPrefix:energyIcons(1)}이 아닌 카드를 버립니다.",
-  "MGR_MOD_CARD_CANON_FORM.title": "카논 형상",
+  "MGR_MOD_CARD_CANON_FORM.title": "카논의 형상",
   "MGR_MOD_CARD_CANON_FORM.description": "내 턴 종료 시 지난 턴에 마지막으로 사용한 카드의 복사본을 사용합니다.\n다음 턴부터 발동합니다.",
   "MGR_MOD_CARD_BIRD.title": "「 새 」",
   "MGR_MOD_CARD_BIRD.description": "피해를 {Damage:diff()} 줍니다.\n그 절반만큼 무작위 [gold]기본 음표[/gold]를 생성합니다.{InCombat:\n({CalculatedNotes:diff()}개 생성.)|}",

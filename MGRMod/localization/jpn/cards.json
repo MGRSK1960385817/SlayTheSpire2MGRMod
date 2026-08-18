@@ -168,7 +168,7 @@
   "MGR_MOD_CARD_CHAOS_MAGIC.description": "[gold]演奏[/gold]カードの演奏が終了するたび、ランダムな[gold]演奏[/gold]カード1枚を[gold]手札[/gold]に加える。",
   "MGR_MOD_CARD_SIXTH_SENSE.title": "第六感",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "ターン開始時、カードを{Cards:diff()}枚引く。\nコストが{RequiredCost:diff()}{energyPrefix:energyIcons(1)}でないカードを捨てる。",
-  "MGR_MOD_CARD_CANON_FORM.title": "カノン形態",
+  "MGR_MOD_CARD_CANON_FORM.title": "カノン化",
   "MGR_MOD_CARD_CANON_FORM.description": "ターン終了時、前のターンに最後にプレイしたカードのコピーをプレイする。\n次のターンから発動する。",
   "MGR_MOD_CARD_BIRD.title": "「 鳥 」",
   "MGR_MOD_CARD_BIRD.description": "{Damage:diff()}ダメージを与える。\nダメージの半分の数のランダムな[gold]基本音符[/gold]を生成する。{InCombat:\n（{CalculatedNotes:diff()}個生成。）|}",

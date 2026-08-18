@@ -168,7 +168,7 @@
   "MGR_MOD_CARD_CHAOS_MAGIC.description": "Lorsqu'une carte termine son [gold]interprétation[/gold], ajoutez une carte d'[gold]interprétation[/gold] aléatoire à votre [gold]Main[/gold].",
   "MGR_MOD_CARD_SIXTH_SENSE.title": "Sixième sens",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "Au début du tour, piochez {Cards:diff()} cartes.\nDéfaussez celles qui ne coûtent pas {RequiredCost:diff()}{energyPrefix:energyIcons(1)}.",
-  "MGR_MOD_CARD_CANON_FORM.title": "Forme canonique",
+  "MGR_MOD_CARD_CANON_FORM.title": "Forme en canon",
   "MGR_MOD_CARD_CANON_FORM.description": "À la fin de votre tour, jouez une copie de la dernière carte jouée au tour précédent.\nPrend effet au prochain tour.",
   "MGR_MOD_CARD_BIRD.title": "「 Oiseau 」",
   "MGR_MOD_CARD_BIRD.description": "Infligez {Damage:diff()} dégâts.\nGénérez aléatoirement autant de [gold]notes de base[/gold] que la moitié des dégâts.{InCombat:\n({CalculatedNotes:diff()} générées.)|}",

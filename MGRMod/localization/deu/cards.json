@@ -169,7 +169,7 @@
   "MGR_MOD_CARD_SIXTH_SENSE.title": "Der sechste Sinn",
   "MGR_MOD_CARD_SIXTH_SENSE.description": "Ziehe zu Beginn deines Zuges {Cards:diff()} Karten.\nWirf davon alle ab, die nicht {RequiredCost:diff()}{energyPrefix:energyIcons(1)} kosten.",
   "MGR_MOD_CARD_CANON_FORM.title": "Kanonform",
-  "MGR_MOD_CARD_CANON_FORM.description": "Spiele am Ende deines Zuges eine Kopie der letzten Karte, die du im vorigen Zug gespielt hast.\nBeginnt im nächsten Zug.",
+  "MGR_MOD_CARD_CANON_FORM.description": "Spiele am Ende deines Zuges eine Kopie der letzten Karte, die du im vorigen Zug gespielt hast.\nWirkt ab dem nächsten Zug.",
   "MGR_MOD_CARD_BIRD.title": "「 Vogel 」",
   "MGR_MOD_CARD_BIRD.description": "Füge {Damage:diff()} Schaden zu.\nErzeuge halb so viele zufällige [gold]Grundnoten[/gold], wie Schaden verursacht wurde.{InCombat:\n({CalculatedNotes:diff()} werden erzeugt.)|}",
   "MGR_MOD_CARD_HYAKKI_YAGYO.title": "Nachtparade der hundert Dämonen",

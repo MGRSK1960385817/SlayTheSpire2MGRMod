@@ -53,7 +53,7 @@
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.title": "Шестое чувство",
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.description": "В начале хода вы добираете еще [blue]2[/blue] карты.\nСбрасываете среди них карты с ценой не [blue]1[/blue]{energyPrefix:energyIcons(1)}.",
   "MGR_MOD_POWER_SIXTH_SENSE_POWER.smartDescription": "В начале хода за каждое Шестое чувство вы добираете еще [blue]2[/blue] карты.\nСбрасываете среди них карты с ценой не [blue]1[/blue]{energyPrefix:energyIcons(1)}.",
-  "MGR_MOD_POWER_CANON_FORM_POWER.title": "Форма канона",
+  "MGR_MOD_POWER_CANON_FORM_POWER.title": "Облик канона",
   "MGR_MOD_POWER_CANON_FORM_POWER.description": "Со следующего хода в конце хода разыгрывает копии последних [blue]{Amount}[/blue] карт, разыгранных вами в прошлом ходу.{HasCards:\nСледующие карты: {Cards}|}",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.title": "Электрический ангел",
   "MGR_MOD_POWER_ELECTRIC_ANGEL_POWER.description": "В начале хода добавляет случайную карту с ценой 1{energyPrefix:energyIcons(1)} в [gold]руку[/gold].",
