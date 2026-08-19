@@ -13,8 +13,7 @@ public sealed class MgrCombatState
     public int StarryNotesGeneratedThisCombat { get; private set; }
     public int StarryNotesGeneratedThisTurn { get; private set; }
     public int NotesGeneratedThisTurn { get; private set; }
-    public int ChordsResolvedThisCombat { get; private set; }
-    public int ChordsResolvedThisTurn { get; private set; }
+    public int ChordTriggersThisCombat { get; private set; }
     public int ChordTriggersThisTurn { get; private set; }
     public int Forte { get; private set; }
     public int UnusedEnergyLastTurn { get; private set; }
@@ -66,8 +65,6 @@ public sealed class MgrCombatState
     {
         PhraseResolution resolution = Phrase.Resolve();
         LastResolution = resolution;
-        ChordsResolvedThisCombat++;
-        ChordsResolvedThisTurn++;
         return resolution;
     }
 
@@ -106,6 +103,7 @@ public sealed class MgrCombatState
     public int RecordChordTrigger()
     {
         int previous = ChordTriggersThisTurn;
+        ChordTriggersThisCombat++;
         ChordTriggersThisTurn++;
         return previous;
     }
@@ -114,7 +112,6 @@ public sealed class MgrCombatState
     {
         StarryNotesGeneratedThisTurn = 0;
         NotesGeneratedThisTurn = 0;
-        ChordsResolvedThisTurn = 0;
         ChordTriggersThisTurn = 0;
     }
 }

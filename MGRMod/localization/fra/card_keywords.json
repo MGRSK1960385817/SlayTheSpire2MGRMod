@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "Interprétation",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "Est jouée au début de plusieurs tours suivants.",
   "MGR_MOD_KEYWORD_STARRY.title": "Étoilée",
-  "MGR_MOD_KEYWORD_STARRY.description": "Jouer cette carte génère une note étoilée qui, une fois activée, donne [img]res://MGRMod/images/characters/energy_text.png[/img].",
+  "MGR_MOD_KEYWORD_STARRY.description": "Génère une note étoilée au lieu de la note correspondant au type d'origine de la carte. Les notes étoilées donnent [img]res://MGRMod/images/characters/energy_text.png[/img].",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "Notes de base",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "Les notes d'Attaque, de Compétence, de Pouvoir, de Statut et de Malédiction correspondent aux cinq types de cartes de base.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "Note d'Attaque",

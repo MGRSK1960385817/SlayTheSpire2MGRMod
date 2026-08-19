@@ -24,7 +24,7 @@ public sealed class MaguroAssault : MgrCard
         new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>
                 card is MaguroAssault assault
-                    ? assault.NoteState.ChordsResolvedThisCombat
+                    ? assault.NoteState.ChordTriggersThisCombat
                     : 0m)
     ];
 

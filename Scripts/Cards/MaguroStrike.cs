@@ -13,7 +13,7 @@ namespace MGRMod.Cards;
 public sealed class MaguroStrike : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>
-        MgrGoldGlowCondition.ChordResolvedThisTurn;
+        MgrGoldGlowCondition.ChordTriggeredThisTurn;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -30,7 +30,7 @@ public sealed class MaguroStrike : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        bool chordWasAlreadyPlayed = NoteState.ChordsResolvedThisTurn > 0;
+        bool chordWasAlreadyPlayed = NoteState.ChordTriggersThisTurn > 0;
 
         int repetitions = chordWasAlreadyPlayed ? 2 : 1;
         for (int index = 0; index < repetitions; index++)

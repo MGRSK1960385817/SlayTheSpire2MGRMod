@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "演奏",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "以降の数ターンの開始時にプレイする。",
   "MGR_MOD_KEYWORD_STARRY.title": "星空",
-  "MGR_MOD_KEYWORD_STARRY.description": "プレイすると星空音符を生成する。発動時、[img]res://MGRMod/images/characters/energy_text.png[/img]を得る。",
+  "MGR_MOD_KEYWORD_STARRY.description": "元のカードタイプに対応する音符の代わりに、星空音符を生成する。星空音符は[img]res://MGRMod/images/characters/energy_text.png[/img]を与える。",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "基本音符",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "5つの基本カードタイプに対応する、アタック、スキル、パワー、ステータス、呪い音符。",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "アタック音符",

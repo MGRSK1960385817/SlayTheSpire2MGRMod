@@ -14,7 +14,7 @@ public sealed class MaguroReversal : MgrCard
 {
     public override bool GainsBlock => true;
     protected override MgrGoldGlowCondition GoldGlowConditions =>
-        MgrGoldGlowCondition.NoChordResolvedThisTurn;
+        MgrGoldGlowCondition.NoChordTriggeredThisTurn;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -29,7 +29,7 @@ public sealed class MaguroReversal : MgrCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        int repeats = NoteState.ChordsResolvedThisTurn == 0 ? 2 : 1;
+        int repeats = NoteState.ChordTriggersThisTurn == 0 ? 2 : 1;
         for (int index = 0; index < repeats; index++)
         {
             if (index > 0)

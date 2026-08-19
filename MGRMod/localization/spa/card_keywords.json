@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "Interpretación",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "Se juega al comienzo de cada uno de los próximos turnos.",
   "MGR_MOD_KEYWORD_STARRY.title": "Estelar",
-  "MGR_MOD_KEYWORD_STARRY.description": "Al jugar esta carta, genera una Nota estelar que, al activarse, otorga [img]res://MGRMod/images/characters/energy_text.png[/img].",
+  "MGR_MOD_KEYWORD_STARRY.description": "Genera una Nota estelar en lugar de la Nota correspondiente al tipo original de la carta. Las Notas estelares otorgan [img]res://MGRMod/images/characters/energy_text.png[/img].",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "Notas básicas",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "Notas de Ataque, Habilidad, Poder, Estado y Maldición, correspondientes a los cinco tipos de carta básicos.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "Nota de Ataque",

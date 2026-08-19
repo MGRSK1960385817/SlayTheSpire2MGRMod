@@ -55,7 +55,7 @@ public static class MgrNoteVisuals
         int forte,
         int enteringIndex,
         int notesGeneratedBefore,
-        int chordsResolvedBefore,
+        int chordTriggersBefore,
         bool clearAfterDelay)
     {
         NoteRack? rack = GetOrCreateRack(player, notes, capacity);
@@ -65,7 +65,7 @@ public static class MgrNoteVisuals
             forte,
             enteringIndex,
             notesGeneratedBefore,
-            chordsResolvedBefore,
+            chordTriggersBefore,
             clearAfterDelay) ?? Task.CompletedTask;
     }
 
@@ -200,7 +200,7 @@ public static class MgrNoteVisuals
             int forte,
             int enteringIndex,
             int notesGeneratedBefore,
-            int chordsResolvedBefore,
+            int chordTriggersBefore,
             bool clearAfterDelay)
         {
             EnsureScreenVisibilitySubscriptions();
@@ -232,7 +232,7 @@ public static class MgrNoteVisuals
                 {
                     foreach (NoteSlot slot in _slots)
                         slot.PlayChordTriggerAnimation();
-                    ScheduleClear(chordsResolvedBefore);
+                    ScheduleClear(chordTriggersBefore);
                 }
             }
             finally
@@ -516,10 +516,10 @@ public static class MgrNoteVisuals
             _clearTween = null;
         }
 
-        private void ScheduleClear(int chordsResolvedBefore)
+        private void ScheduleClear(int chordTriggersBefore)
         {
             _clearTween = _root.CreateTween();
-            _clearTween.TweenInterval(GetChordHoldSeconds(chordsResolvedBefore));
+            _clearTween.TweenInterval(GetChordHoldSeconds(chordTriggersBefore));
             _clearTween.TweenCallback(Callable.From(ShowEmptySlots));
         }
 
@@ -530,11 +530,11 @@ public static class MgrNoteVisuals
                 Math.Max(0, notesGeneratedBefore) *
                 MgrVisualTuning.Notes.NoteEntranceAccelerationPerNote);
 
-        private static double GetChordHoldSeconds(int chordsResolvedBefore) =>
+        private static double GetChordHoldSeconds(int chordTriggersBefore) =>
             Math.Max(
                 MgrVisualTuning.Notes.MinimumChordHoldSeconds,
                 MgrVisualTuning.Notes.FirstChordHoldSeconds -
-                Math.Max(0, chordsResolvedBefore) *
+                Math.Max(0, chordTriggersBefore) *
                 MgrVisualTuning.Notes.ChordHoldAccelerationPerChord);
 
         private static double GetRepeatedChordBeatSeconds(int chordTriggersBefore) =>

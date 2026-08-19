@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "Auftritt",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "Wird zu Beginn der nächsten Züge gespielt.",
   "MGR_MOD_KEYWORD_STARRY.title": "Sternenklar",
-  "MGR_MOD_KEYWORD_STARRY.description": "Wenn du diese Karte spielst, erzeuge eine Sternennote. Wird diese ausgelöst, erhältst du [img]res://MGRMod/images/characters/energy_text.png[/img].",
+  "MGR_MOD_KEYWORD_STARRY.description": "Erzeugt eine Sternennote anstelle der Note, die dem ursprünglichen Kartentyp entspricht. Sternennoten gewähren [img]res://MGRMod/images/characters/energy_text.png[/img].",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "Grundnoten",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "Angriffs-, Fertigkeits-, Macht-, Status- und Fluchnoten entsprechen den fünf Grundkartentypen.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "Angriffsnote",

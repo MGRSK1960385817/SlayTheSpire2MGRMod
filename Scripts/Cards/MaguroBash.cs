@@ -14,7 +14,7 @@ namespace MGRMod.Cards;
 public sealed class MaguroBash : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>
-        MgrGoldGlowCondition.ChordResolvedThisTurn;
+        MgrGoldGlowCondition.ChordTriggeredThisTurn;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -33,14 +33,14 @@ public sealed class MaguroBash : MgrCard
         modifiedCost = originalCost;
         if (!ReferenceEquals(card, this) ||
             !MgrCombatStateStore.TryGet(Owner, out MgrCombatState state) ||
-            state.ChordsResolvedThisTurn == 0)
+            state.ChordTriggersThisTurn == 0)
         {
             return false;
         }
 
         modifiedCost = Math.Max(
             0m,
-            originalCost - state.ChordsResolvedThisTurn);
+            originalCost - state.ChordTriggersThisTurn);
         return true;
     }
 

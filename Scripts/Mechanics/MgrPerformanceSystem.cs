@@ -106,6 +106,23 @@ public static class MgrPerformanceSystem
         return true;
     }
 
+    /// <summary>
+    /// Reconciles rack ownership after Tower 2 completes a native pile move.
+    /// A non-resolving queued card is valid only while its physical model stays
+    /// in Play. If an external card, relic, power, or other engine effect moves
+    /// that model elsewhere, the native destination wins and the rack entry is
+    /// detached. Resolving entries are protected by <see cref="DetachQueuedCard" />
+    /// so ordinary Performance result routing and in-place replacements remain
+    /// unchanged.
+    /// </summary>
+    public static bool ReconcileQueuedCardPile(CardModel card)
+    {
+        if (card.Pile?.Type == PileType.Play)
+            return false;
+
+        return DetachQueuedCard(card.Owner, card);
+    }
+
     public static bool ShouldHoldForResolvedPlay(
         CardModel card,
         ResourceInfo resources)

@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "연주",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "이후 몇 턴 동안 턴 시작 시 사용합니다.",
   "MGR_MOD_KEYWORD_STARRY.title": "별빛",
-  "MGR_MOD_KEYWORD_STARRY.description": "이 카드를 사용하면 별빛 음표를 생성하며, 발동 시 [img]res://MGRMod/images/characters/energy_text.png[/img]를 얻습니다.",
+  "MGR_MOD_KEYWORD_STARRY.description": "원래 카드 유형에 해당하는 음표 대신 별빛 음표를 생성합니다. 별빛 음표는 [img]res://MGRMod/images/characters/energy_text.png[/img]를 제공합니다.",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "기본 음표",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "다섯 기본 카드에 대응하는 공격, 스킬, 파워, 상태이상, 저주 음표입니다.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "공격 음표",

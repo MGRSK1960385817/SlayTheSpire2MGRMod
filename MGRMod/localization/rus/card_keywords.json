@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "Исполнение",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "Разыгрывается в начале нескольких следующих ходов.",
   "MGR_MOD_KEYWORD_STARRY.title": "Звездная",
-  "MGR_MOD_KEYWORD_STARRY.description": "При розыгрыше создает звездную ноту, которая дает [img]res://MGRMod/images/characters/energy_text.png[/img] при активации.",
+  "MGR_MOD_KEYWORD_STARRY.description": "Создает звездную ноту вместо ноты, соответствующей исходному типу карты. Звездная нота дает [img]res://MGRMod/images/characters/energy_text.png[/img].",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "Базовые ноты",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "Ноты Атаки, Навыка, Таланта, Статуса и Проклятия соответствуют пяти базовым типам карт.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "Нота Атаки",

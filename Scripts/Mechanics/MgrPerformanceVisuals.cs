@@ -274,28 +274,6 @@ public static class MgrPerformanceVisuals
     }
 
     /// <summary>
-    /// Returns an MGR-owned temporary card to Tower 2's global NCard pool.
-    /// The native pool reset restores position, scale and modulation, but does
-    /// not restore CanvasItem ordering. Without this normalization, a later hand,
-    /// grid or reward card can inherit stale ordering from either native or mod
-    /// animations and render above an unrelated selection screen.
-    /// </summary>
-    private static void ReleaseTemporaryCard(NCard card)
-    {
-        if (!GodotObject.IsInstanceValid(card))
-            return;
-
-        card.PlayPileTween?.Kill();
-        card.PlayPileTween = null;
-        card.ZIndex = 0;
-        card.ZAsRelative = true;
-        card.ShowBehindParent = false;
-        card.PivotOffset = Vector2.Zero;
-        card.MouseFilter = Control.MouseFilterEnum.Ignore;
-        card.QueueFreeSafely();
-    }
-
-    /// <summary>
     /// Converts a viewport point into the local coordinates expected by a
     /// freely-positioned CanvasItem's parent. The old private CanvasLayer had an
     /// identity transform; the native combat UI host does not promise one.
@@ -953,7 +931,7 @@ public static class MgrPerformanceVisuals
             {
                 destination.SetPresentationVisible(true);
                 if (GodotObject.IsInstanceValid(preview))
-                    ReleaseTemporaryCard(preview);
+                    MgrCardNodePoolSafety.ReleaseTemporaryCard(preview);
             }
         }
 
@@ -1045,7 +1023,7 @@ public static class MgrPerformanceVisuals
             tween.Chain().TweenCallback(Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(playedCard))
-                    ReleaseTemporaryCard(playedCard);
+                    MgrCardNodePoolSafety.ReleaseTemporaryCard(playedCard);
             }));
         }
 
@@ -1613,7 +1591,7 @@ public static class MgrPerformanceVisuals
             _hoverPreviewTween = null;
 
             if (GodotObject.IsInstanceValid(_hoverPreview))
-                ReleaseTemporaryCard(_hoverPreview);
+                MgrCardNodePoolSafety.ReleaseTemporaryCard(_hoverPreview);
 
             _hoverPreview = null;
         }
@@ -1640,7 +1618,7 @@ public static class MgrPerformanceVisuals
             DetachAndFreeDecoration(_idleEdge);
 
             if (GodotObject.IsInstanceValid(_cardNode))
-                ReleaseTemporaryCard(_cardNode);
+                MgrCardNodePoolSafety.ReleaseTemporaryCard(_cardNode);
 
             if (GodotObject.IsInstanceValid(_anchor))
                 _anchor.QueueFree();

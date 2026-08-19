@@ -14,8 +14,8 @@ public enum MgrGoldGlowCondition
     None = 0,
     PhraseStart = 1 << 0,
     PhraseEnd = 1 << 1,
-    ChordResolvedThisTurn = 1 << 2,
-    NoChordResolvedThisTurn = 1 << 3,
+    ChordTriggeredThisTurn = 1 << 2,
+    NoChordTriggeredThisTurn = 1 << 3,
     AtLeastTwoNotes = 1 << 4
 }
 
@@ -113,10 +113,10 @@ public abstract class MgrCard(
                 state.Phrase.IsStarting ||
                 conditions.HasFlag(MgrGoldGlowCondition.PhraseEnd) &&
                 state.Phrase.IsEnding ||
-                conditions.HasFlag(MgrGoldGlowCondition.ChordResolvedThisTurn) &&
-                state.ChordsResolvedThisTurn > 0 ||
-                conditions.HasFlag(MgrGoldGlowCondition.NoChordResolvedThisTurn) &&
-                state.ChordsResolvedThisTurn == 0 ||
+                conditions.HasFlag(MgrGoldGlowCondition.ChordTriggeredThisTurn) &&
+                state.ChordTriggersThisTurn > 0 ||
+                conditions.HasFlag(MgrGoldGlowCondition.NoChordTriggeredThisTurn) &&
+                state.ChordTriggersThisTurn == 0 ||
                 conditions.HasFlag(MgrGoldGlowCondition.AtLeastTwoNotes) &&
                 state.Phrase.Notes.Count >= 2;
         }

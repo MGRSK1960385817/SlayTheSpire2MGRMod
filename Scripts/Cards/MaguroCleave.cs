@@ -14,7 +14,7 @@ namespace MGRMod.Cards;
 public sealed class MaguroCleave : MgrCard
 {
     protected override MgrGoldGlowCondition GoldGlowConditions =>
-        MgrGoldGlowCondition.ChordResolvedThisTurn;
+        MgrGoldGlowCondition.ChordTriggeredThisTurn;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -23,7 +23,7 @@ public sealed class MaguroCleave : MgrCard
         new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>
                 card is MaguroCleave cleave
-                    ? cleave.NoteState.ChordsResolvedThisTurn
+                    ? cleave.NoteState.ChordTriggersThisTurn
                     : 0m)
     ];
 

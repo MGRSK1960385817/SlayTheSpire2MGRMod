@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "Performance",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "Played at the start of the next several turns.",
   "MGR_MOD_KEYWORD_STARRY.title": "Starry",
-  "MGR_MOD_KEYWORD_STARRY.description": "Playing this card generates a StarryNote, which grants [img]res://MGRMod/images/characters/energy_text.png[/img] when triggered.",
+  "MGR_MOD_KEYWORD_STARRY.description": "Generates a StarryNote instead of the Note matching the card's original type. A StarryNote grants [img]res://MGRMod/images/characters/energy_text.png[/img].",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "BasicNote",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "AttackNote, SkillNote, PowerNote, StatusNote, and CurseNote correspond to the five basic card types.",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "AttackNote",

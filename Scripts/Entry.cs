@@ -40,6 +40,7 @@ public partial class Entry
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformancePowerCardVfxPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
+        _runtimePatcher.RegisterPatch<MgrNCardPoolLayerResetPatch>();
         _runtimePatcher.RegisterPatch<MgrManimaniTargetPreviewPatch>();
         _runtimePatcher.RegisterPatch<MgrCrossCharacterCombatCardPoolPatch>();
         _runtimePatcher.RegisterPatch<MgrCrossCharacterRewardCardPoolPatch>();

@@ -8,7 +8,7 @@
   "MGR_MOD_KEYWORD_PERFORMANCE.title": "演奏",
   "MGR_MOD_KEYWORD_PERFORMANCE.description": "在接下來的數個回合開始時打出。",
   "MGR_MOD_KEYWORD_STARRY.title": "星空",
-  "MGR_MOD_KEYWORD_STARRY.description": "打出此牌會生成星空音符，觸發時獲得[img]res://MGRMod/images/characters/energy_text.png[/img]。",
+  "MGR_MOD_KEYWORD_STARRY.description": "生成星空音符而非原卡牌類型對應的音符。星空音符能給予[img]res://MGRMod/images/characters/energy_text.png[/img]。",
   "MGR_MOD_KEYWORD_BASIC_NOTES.title": "基礎音符",
   "MGR_MOD_KEYWORD_BASIC_NOTES.description": "攻擊、技能、能力、狀態和詛咒音符，對應五種基礎牌。",
   "MGR_MOD_KEYWORD_ATTACK_NOTE.title": "攻擊音符",

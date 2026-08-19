@@ -138,6 +138,7 @@ public static class MgrAbilityVfx
         if (preview is null)
             return;
 
+        MgrCardNodePoolSafety.NormalizeCanvasOrdering(preview);
         Control visualRoot = room.Ui.MessyCardPreviewContainer;
         visualRoot.AddChildSafely(preview);
         preview.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
@@ -205,8 +206,7 @@ public static class MgrAbilityVfx
             .SetDelay(0.08f);
         await TweenHelper.AwaitFinished(enterHand, preview);
 
-        if (GodotObject.IsInstanceValid(preview))
-            preview.QueueFreeSafely();
+        MgrCardNodePoolSafety.ReleaseTemporaryCard(preview);
     }
 
     /// <summary>
@@ -240,6 +240,7 @@ public static class MgrAbilityVfx
             if (node is null)
                 continue;
 
+            MgrCardNodePoolSafety.NormalizeCanvasOrdering(node);
             Vector2 queuedCardOrigin = default;
             bool usesQueuedCardOrigin = !usesRealHandNode &&
                 MgrPerformanceVisuals.TryTakeQueuedCardPresentation(
@@ -357,10 +358,15 @@ public static class MgrAbilityVfx
                 {
                     NDebugAudioManager.Instance?.Play("card_exhaust.mp3");
                     await animation;
+                    // The native VFX keeps the invisible card alive for a short
+                    // delayed free. Normalize it now so its later pool return
+                    // cannot preserve Daybreak's temporary high Z value.
+                    MgrCardNodePoolSafety.NormalizeCanvasOrdering(node);
                     return;
                 }
             }
 
+            MgrCardNodePoolSafety.NormalizeCanvasOrdering(node);
             exhaustNode.QueueFreeSafely();
             return;
         }
@@ -391,8 +397,7 @@ public static class MgrAbilityVfx
                 DaybreakExhaustSeconds * 0.86f)
             .SetDelay(DaybreakExhaustSeconds * 0.14f);
         await TweenHelper.AwaitFinished(fallback, node);
-        if (GodotObject.IsInstanceValid(node))
-            node.QueueFreeSafely();
+        MgrCardNodePoolSafety.ReleaseTemporaryCard(node);
     }
 
     /// <summary>

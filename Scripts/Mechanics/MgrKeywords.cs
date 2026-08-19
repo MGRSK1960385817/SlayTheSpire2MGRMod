@@ -101,8 +101,8 @@ public static class MgrKeywords
             kinds |= MgrKeywordKind.PhraseStart;
         if (glow.HasFlag(MgrGoldGlowCondition.PhraseEnd))
             kinds |= MgrKeywordKind.PhraseEnd;
-        if (glow.HasFlag(MgrGoldGlowCondition.ChordResolvedThisTurn) ||
-            glow.HasFlag(MgrGoldGlowCondition.NoChordResolvedThisTurn))
+        if (glow.HasFlag(MgrGoldGlowCondition.ChordTriggeredThisTurn) ||
+            glow.HasFlag(MgrGoldGlowCondition.NoChordTriggeredThisTurn))
         {
             kinds |= MgrKeywordKind.Chord;
         }

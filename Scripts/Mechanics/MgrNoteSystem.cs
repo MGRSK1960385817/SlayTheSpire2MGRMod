@@ -151,6 +151,19 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
+    public override Task AfterCardChangedPiles(
+        CardModel card,
+        PileType oldPileType,
+        AbstractModel? clonedBy)
+    {
+        // Performance entries own their physical card only while it remains in
+        // Play. Native effects such as Bolas returning itself to Hand keep their
+        // normal movement and presentation; the rack releases the same model
+        // after that move instead of auto-playing it again from its new pile.
+        MgrPerformanceSystem.ReconcileQueuedCardPile(card);
+        return Task.CompletedTask;
+    }
+
 #if STS2_V107
     public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
         CardModel card,
@@ -498,6 +511,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
         }
 
+        RefreshConditionalCardGlows(player);
+
         if (state.Phrase.Notes.Count > 0)
         {
             MgrNoteVisuals.Show(
@@ -662,14 +677,18 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrCombatState state = MgrCombatStateStore.For(player);
         MgrRunTelemetryAccumulator.RecordChordCompleted(player);
         int triggerCount = 1 + state.ConsumePendingChordTriggers();
-        if (player.GetRelic<Metronome>()?.TryDoubleCurrentChord() == true)
-            triggerCount++;
+        Metronome? metronome = player.GetRelic<Metronome>();
 
         int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
         {
             MgrRunTelemetryAccumulator.RecordChordEffectTrigger(player);
             int chordTriggersBefore = state.RecordChordTrigger();
+            // Every actual effect pass advances Metronome. Reaching the interval
+            // appends one more pass to this same loop, and that repeated pass
+            // advances the next Metronome cycle as well.
+            if (metronome?.TryDoubleCurrentChord() == true)
+                triggerCount++;
             player.Creature
                 .GetPower<UniverseOf88KeysPower>()?
                 .NotifyChordCounterChanged();
