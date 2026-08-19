@@ -56,12 +56,20 @@ public sealed class Bird : MgrCard
             .WithHitFx(null, null, "heavy_attack.mp3")
             .Execute(choiceContext);
 
+        if (MgrNoteSystem.ShouldStopNoteSequence(Owner))
+            return;
+
         // Keep the Note cascade visually downstream of the falling bird and
         // impact. Without this beat the first Note entrance starts on the same
         // frame as the damage, swallowing the card's signature landing.
         await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(this, 0.20f));
         for (int index = 0; index < notesToGenerate; index++)
+        {
+            if (MgrNoteSystem.ShouldStopNoteSequence(Owner))
+                break;
+
             await MgrNoteSystem.ChannelRandomBasicNote(choiceContext, Owner);
+        }
     }
 
     private int GetNotesToGenerate(Creature target, CardPlay cardPlay)

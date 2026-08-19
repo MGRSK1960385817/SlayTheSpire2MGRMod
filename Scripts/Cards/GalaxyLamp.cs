@@ -19,6 +19,13 @@ public sealed class GalaxyLamp : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
+        NoteKind[] noteKinds = NoteState.Phrase.Notes
+            .Select(static note => note.Kind)
+            .ToArray();
+        await MgrRegentStructureVfx.PlayGalaxyLampConversion(
+            this,
+            Owner.Creature,
+            noteKinds);
         int removedCount = MgrNoteSystem.RemoveAllNotes(Owner).Count;
         for (int index = 0; index < removedCount; index++)
             await ChannelNote(choiceContext, NoteKind.Starry);

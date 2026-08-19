@@ -153,7 +153,7 @@ PostHog 会依据网络请求自动补充 GeoIP。云端原始事件的 GeoIP �
 
 ## 下载到本地
 
-仓库提供 `DataAnalysis/Download-MgrTelemetry.ps1`。脚本通过 PostHog 官方 `POST /api/projects/:project_id/query/` 接口执行 HogQL，默认下载 `mgr_run_completed`，并将结果写入 `DataAnalysis/Data`。该数据目录被 Git 和 Godot 导出共同排除，避免把明文 Steam ID 意外提交或打进模组包。
+仓库提供 `DataAnalysis/Download-MgrTelemetry.ps1`。脚本通过 PostHog 官方 `POST /api/projects/:project_id/query/` 接口执行 HogQL，默认下载全部 `mgr_run_completed`，并将结果写入 `DataAnalysis/Data`。下载采用 `(timestamp, uuid)` 稳定游标、默认每页 1000 条，冻结本次快照的结束时间，并逐条写入 gzip 压缩 JSONL，因此内存不会随总局数增长。该数据目录被 Git 和 Godot 导出共同排除，避免把明文 Steam ID 意外提交或打进模组包。
 
 个人 API key 不得写入脚本或仓库。推荐仅为当前 PowerShell 进程设置环境变量：
 
@@ -171,6 +171,25 @@ Remove-Item Env:POSTHOG_PERSONAL_API_KEY
 ```
 
 脚本输出 JSON，不输出或保存 API key。个人 API key 继承账号权限，应使用最小读取权限并像密码一样保管。
+
+每次成功下载会生成两个文件：`.jsonl.gz` 是每行一局的压缩数据，`.manifest.json` 是不含明文身份明细的下载摘要、时间范围、页数、去重数、文件大小与 SHA-256。下载过程中只产生 `.partial` 临时文件；请求或写入失败时会删除临时文件，不把半份快照伪装成完整归档。`Test-MgrTelemetryData.ps1` 能流式读取新格式，也继续兼容开发期旧 `.json` 快照；低于要求结构版本的旧记录默认跳过，避免用新字段守恒规则误判旧负载，严格审计时可传入 `-FailOnLegacySchema`。
+
+## 云端规模与本地归档策略
+
+2026-08-19 的全量快照包含 813 条 `mgr_run_completed`，813 个 `event_id` 全部唯一；其中 schema 6 一条、schema 7 共 812 条。快照约 62.35 MiB，平均约 78.53 KiB/局。按当前负载大小线性估算，1 万局约 0.75 GiB、10 万局约 7.49 GiB、100 万局约 74.89 GiB；PowerShell 将整个结果读入内存再生成一个 JSON 的方式不适合长期扩展。
+
+PostHog 当前免费方案的 Product Analytics 配额为每月 100 万事件，额度每月重置；免费方案只有一个项目、数据保留一年，且不绑定信用卡时用量会被限制在免费额度内。MGR 当前每一局只发送一个 `mgr_run_completed`，因此几万或几十万**累计**对局不会单独触发费用；真正需要关注的是单个自然月是否超过 100 万局，以及一年保留期导致的旧数据过期。具体额度可能变化，应以 [PostHog 官方价格页](https://posthog.com/pricing) 为准。
+
+项目预计最终只有一万至数万局，因此采用“分页生成一份压缩全量快照”的中等规模方案：
+
+1. 默认每页 1000 条，以 `(timestamp, uuid)` 作为稳定游标；不使用可能因新事件插入而错页的 `OFFSET`。
+2. 每条记录在读取后立即清洗、按 `event_id` 去重并写入 `.jsonl.gz`，不会把整库放入 PowerShell 内存。没有 `event_id` 的早期异常记录才以 PostHog `uuid` 兜底去重。
+3. 默认 `MaxEvents=0` 表示下载全部；`-MaxEvents` 仅用于抽样，`-SinceUtc` 与 `-UntilUtc` 可用于时间范围导出。旧命令的 `-Limit` 作为 `-MaxEvents` 别名继续可用。
+4. 每次正式分析前重新下载一份全量压缩快照即可。以当前负载结构估算，即使达到数万局，压缩归档仍处于本地可管理范围，没有必要维护数据库、增量检查点、月度分区或 PostHog Batch Export。
+5. 至少每季度、以及发布重要版本前保留一份完整快照；免费项目只保留一年，因此不能只依赖线上历史。较旧的本地快照可在确认新快照和 SHA-256 清单完整后手动删除。
+6. Python/Pandas、Polars 与多数分析工具均可直接读取 gzip JSONL；若未来实际超过十万局，再把同一格式转换成 Parquet，而不是提前增加维护成本。
+
+2026-08-19 的新版脚本实测使用每页 200 条完成五页下载，取得 822 条唯一事件且无分页重复；压缩归档约 2.44 MiB，流式校验器能正常读取。按当前压缩比粗略线性估算，1 万局约 30 MiB、5 万局约 150 MiB；实际大小会随路线长度和负载字段变化。该结果表明当前实现相较旧版约 62 MiB 的缩进全量 JSON 显著减少磁盘占用，并已满足预期万级规模。
 
 ## 接口滥用与数据可信度
 

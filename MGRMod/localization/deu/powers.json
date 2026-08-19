@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Du erzeugst doppelt so viele Noten.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Du erzeugst doppelt so viele Noten.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Geistesmirage",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Machtnoten[/gold] gewähren [blue]3[/blue] [gold]Block[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Machtnoten[/gold] gewähren [blue]4[/blue] [gold]Block[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]Machtnoten[/gold] gewähren [blue]{Amount}[/blue] [gold]Block[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Vorübergehendes Forte",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Erhalte für diesen Zug [gold]Forte[/gold].",

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using MGRMod.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -20,13 +21,16 @@ public sealed class MindMirage : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        PowerCmd.Apply<MindMiragePower>(
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await MgrMindMirageWaveVfx.Play(this);
+        await PowerCmd.Apply<MindMiragePower>(
             choiceContext,
             Owner.Creature,
             DynamicVars["BlockPerNote"].BaseValue,
             Owner.Creature,
             this);
+    }
 
     protected override void OnUpgrade()
     {

@@ -2,7 +2,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using Godot;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
 using MGRMod.Powers;
@@ -27,8 +26,9 @@ public sealed class MeteorAftermath : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        MgrSignatureVfx.PlayWhirlwindWind(
-            new Color(0.66f, 0.38f, 1f, 0.76f));
+        await MgrRegentStructureVfx.PlayMeteorAftermath(
+            this,
+            Owner.Creature);
         await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner);
         int cardsToDraw = CardPile.MaxCardsInHand - Owner.PlayerCombatState!.Hand.Cards.Count;
         if (cardsToDraw > 0)

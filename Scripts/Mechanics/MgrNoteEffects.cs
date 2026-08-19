@@ -31,6 +31,9 @@ public static class MgrNoteEffects
         int forte,
         int chordTriggersBefore)
     {
+        if (MgrNoteSystem.ShouldStopNoteSequence(player))
+            return;
+
         // Standard commands deliberately spend time on hit/block/heal feedback.
         // Once a turn contains several chord passes, use their supported fast
         // presentation paths while preserving the same hooks and game state.
@@ -43,7 +46,7 @@ public static class MgrNoteEffects
 
         if (player.GetRelic<GuitarPick>() is { } guitarPick)
         {
-            guitarPick.Flash();
+            guitarPick.PulseLightly();
             await CreatureCmd.GainBlock(
                 player.Creature,
                 GuitarPick.BlockPerChord,
@@ -57,6 +60,9 @@ public static class MgrNoteEffects
 
         for (int noteIndex = 0; noteIndex < notes.Count; noteIndex++)
         {
+            if (MgrNoteSystem.ShouldStopNoteSequence(player))
+                break;
+
             MgrNote note = notes[noteIndex];
             // Samsara reacts to an actual Attack Note being consumed by this
             // Chord. Omnia reproduces the Attack Note's effect, but is not an
@@ -80,6 +86,9 @@ public static class MgrNoteEffects
                 forte,
                 fastPresentation);
 
+            if (MgrNoteSystem.ShouldStopNoteSequence(player))
+                break;
+
             // Give It to You shares beneficial Note effects with the chosen
             // teammate. Attack and Status Notes are global/offensive effects,
             // so sharing them means resolving their effect one additional time.
@@ -88,6 +97,9 @@ public static class MgrNoteEffects
                 .ToArray();
             foreach (GiveItToYouPower sharingPower in sharingPowers)
             {
+                if (MgrNoteSystem.ShouldStopNoteSequence(player))
+                    break;
+
                 if (!sharingPower.TryGetLivingTarget(out Player target))
                     continue;
 
@@ -112,6 +124,9 @@ public static class MgrNoteEffects
         int forte,
         bool fastPresentation)
     {
+        if (MgrNoteSystem.ShouldStopNoteSequence(sourcePlayer))
+            return;
+
         if (note.Kind == NoteKind.OmniaNote)
         {
             foreach (NoteKind kind in new[]
@@ -124,6 +139,9 @@ public static class MgrNoteEffects
                 NoteKind.Starry
             })
             {
+                if (MgrNoteSystem.ShouldStopNoteSequence(sourcePlayer))
+                    break;
+
                 await TriggerShared(
                     choiceContext,
                     sourcePlayer,
@@ -136,7 +154,10 @@ public static class MgrNoteEffects
         }
 
         int amount = note.GetEffectAmount(forte);
-        if (amount <= 0)
+        // Forte controls the Power Note's own draw amount, not independent
+        // effects that react to a Power Note resolving. Keep the Power branch
+        // alive at zero so Mind Mirage still grants its fixed Block.
+        if (amount <= 0 && note.Kind != NoteKind.Power)
             return;
 
         switch (note.Kind)
@@ -161,7 +182,8 @@ public static class MgrNoteEffects
                 return;
 
             case NoteKind.Power:
-                await CardPileCmd.Draw(choiceContext, amount, targetPlayer);
+                if (amount > 0)
+                    await CardPileCmd.Draw(choiceContext, amount, targetPlayer);
                 if (sourcePlayer.Creature.GetPower<MindMiragePower>() is
                     { Amount: > 0 } mindMirage)
                 {
@@ -209,6 +231,9 @@ public static class MgrNoteEffects
         int forte,
         bool fastPresentation = false)
     {
+        if (MgrNoteSystem.ShouldStopNoteSequence(player))
+            return;
+
         if (note.Kind == NoteKind.OmniaNote)
         {
             NoteKind[] componentKinds =
@@ -222,6 +247,9 @@ public static class MgrNoteEffects
             ];
             foreach (NoteKind kind in componentKinds)
             {
+                if (MgrNoteSystem.ShouldStopNoteSequence(player))
+                    break;
+
                 await Trigger(
                     choiceContext,
                     player,
@@ -233,7 +261,9 @@ public static class MgrNoteEffects
         }
 
         int amount = note.GetEffectAmount(forte);
-        if (amount <= 0)
+        // Mind Mirage is a flat reaction to the Power Note itself. It must not
+        // disappear when negative Forte reduces only the Note's draw to zero.
+        if (amount <= 0 && note.Kind != NoteKind.Power)
             return;
 
         var owner = player.Creature;
@@ -282,7 +312,8 @@ public static class MgrNoteEffects
             }
             case NoteKind.Power:
             {
-                await CardPileCmd.Draw(choiceContext, amount, player);
+                if (amount > 0)
+                    await CardPileCmd.Draw(choiceContext, amount, player);
                 if (owner.GetPower<MindMiragePower>() is { Amount: > 0 } mindMirage)
                 {
                     mindMirage.Flash();

@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Generate twice as many Notes.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Generate twice as many Notes.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Mind Mirage",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Each [gold]PowerNote[/gold] also grants [blue]3[/blue] [gold]Block[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Each [gold]PowerNote[/gold] also grants [blue]4[/blue] [gold]Block[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "Each [gold]PowerNote[/gold] also grants [blue]{Amount}[/blue] [gold]Block[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Temporary Forte",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Gain [gold]Forte[/gold] this turn.",

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace MGRMod.Cards;
@@ -25,8 +26,17 @@ public sealed class OdeToUltramarine : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.IsFirstInSeries)
+        {
+            MgrBlueCardVfx.SpawnUltramarineGuard(
+                Owner.Creature,
+                InitialPerformanceTurns);
+        }
+
+        return CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+    }
 
     protected override void OnUpgrade()
     {

@@ -30,6 +30,7 @@ public sealed class PrismaticPower : ModPowerTemplate
             Owner,
             MgrAbilityVfxStyle.Prism,
             0.74f);
+        MgrRegentStructureVfx.SpawnPrismaticDistortion(Owner);
         MgrSignatureVfx.SpawnRainbowStarRing(Owner);
         await PowerCmd.Apply<StrengthPower>(
             choiceContext,

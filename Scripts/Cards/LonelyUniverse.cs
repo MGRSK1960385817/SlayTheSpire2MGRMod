@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace MGRMod.Cards;
@@ -26,8 +27,16 @@ public sealed class LonelyUniverse : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.IsFirstInSeries &&
+            !MgrPerformanceSystem.IsResolvingPerformance(this))
+        {
+            MgrBlueCardVfx.SpawnLonelyUniverse(Owner.Creature);
+        }
+
+        return Task.CompletedTask;
+    }
 
     protected override void OnUpgrade() => RemoveKeyword(CardKeyword.Exhaust);
 }

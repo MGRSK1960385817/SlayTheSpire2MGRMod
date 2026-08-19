@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "생성하는 음표 수가 2배가 됩니다.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "생성하는 음표 수가 2배가 됩니다.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "심상신기루",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]파워 음표[/gold]로 [gold]방어도[/gold]를 [blue]3[/blue] 얻습니다.",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]파워 음표[/gold]로 [gold]방어도[/gold]를 [blue]4[/blue] 얻습니다.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]파워 음표[/gold]로 [gold]방어도[/gold]를 [blue]{Amount}[/blue] 얻습니다.",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "일시적 포르테",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "이번 턴 동안 [gold]포르테[/gold]를 얻습니다.",

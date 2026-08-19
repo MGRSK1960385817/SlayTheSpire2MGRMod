@@ -24,13 +24,22 @@ public sealed class WarmUp : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.IsFirstInSeries &&
+            !MgrPerformanceSystem.IsResolvingPerformance(this))
+        {
+            MgrBlueCardVfx.SpawnWarmUp(Owner.Creature, completed: false);
+        }
+
+        return Task.CompletedTask;
+    }
 
     public override async Task OnPerformanceFinished(
         PlayerChoiceContext choiceContext,
         PerformanceCompletionContext context)
     {
+        MgrBlueCardVfx.SpawnWarmUp(context.Player.Creature, completed: true);
         await PowerCmd.Apply<FortePower>(
             choiceContext,
             context.Player.Creature,

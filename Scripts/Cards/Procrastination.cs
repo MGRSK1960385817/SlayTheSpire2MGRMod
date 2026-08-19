@@ -25,8 +25,18 @@ public sealed class Procrastination : MgrCard
     {
     }
 
-    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.IsFirstInSeries &&
+            !MgrPerformanceSystem.IsResolvingPerformance(this))
+        {
+            MgrBlueCardVfx.SpawnProcrastination(
+                Owner.Creature,
+                completed: false);
+        }
+
+        return Task.CompletedTask;
+    }
 
     public override async Task OnPerformanceFinished(
         PlayerChoiceContext choiceContext,
@@ -40,6 +50,9 @@ public sealed class Procrastination : MgrCard
                 context.Player.RunState.Rng.CombatPotionGeneration,
                 [])
             .ToMutable();
+        MgrBlueCardVfx.SpawnProcrastination(
+            context.Player.Creature,
+            completed: true);
         await PotionCmd.TryToProcure(potion, context.Player);
     }
 

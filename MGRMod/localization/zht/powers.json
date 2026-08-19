@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "你生成的音符數量翻倍。",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "你生成的音符數量翻倍。",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "心象蜃氣樓",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]能力音符[/gold]也會讓你獲得 [blue]3[/blue] 點[gold]格擋[/gold]。",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]能力音符[/gold]也會讓你獲得 [blue]4[/blue] 點[gold]格擋[/gold]。",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]能力音符[/gold]也會讓你獲得 [blue]{Amount}[/blue] 點[gold]格擋[/gold]。",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "臨時強音",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "在本回合獲得[gold]強音[/gold]。",

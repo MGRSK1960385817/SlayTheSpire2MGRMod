@@ -37,5 +37,6 @@ public sealed class MgrRelicRewardPoolPatch : IPatchMethod
         // Add further MGR-only exclusions here, one Remove<T>() call per relic.
         grabBag.Remove<Orichalcum>();
         grabBag.Remove<Pocketwatch>();
+        grabBag.Remove<GamePiece>();
     }
 }

@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Dobre a quantidade de Notas que você gera.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Dobre a quantidade de Notas que você gera.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Miragem mental",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Notas de Poder[/gold] concedem [blue]3[/blue] de [gold]Proteção[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Notas de Poder[/gold] concedem [blue]4[/blue] de [gold]Proteção[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]Notas de Poder[/gold] concedem [blue]{Amount}[/blue] de [gold]Proteção[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Forte Temporário",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Receba [gold]Forte[/gold] neste turno.",

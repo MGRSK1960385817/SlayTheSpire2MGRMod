@@ -600,6 +600,29 @@ internal sealed partial class MgrFallingBirdVisual : Node2D
         float progress = Math.Clamp(_age / Lifetime, 0f, 1f);
         float eased = 1f - MathF.Pow(1f - progress, 3f);
         Vector2 position = new Vector2(-190f, -570f).Lerp(Vector2.Zero, eased);
+        if (progress < MgrVisualTuning.BirdVfx.PremonitionFraction)
+        {
+            float omenProgress = progress /
+                MgrVisualTuning.BirdVfx.PremonitionFraction;
+            float omenEnvelope = MathF.Sin(omenProgress * MathF.PI);
+            float targetRadius = Mathf.Lerp(82f, 38f, omenProgress);
+            DrawArc(
+                Vector2.Zero,
+                targetRadius,
+                0f,
+                Mathf.Tau,
+                48,
+                new Color(0.86f, 0.74f, 1f, omenEnvelope * 0.42f),
+                2.4f,
+                true);
+            DrawLine(
+                position + new Vector2(-72f, 30f),
+                position + new Vector2(72f, -30f),
+                new Color(1f, 0.90f, 0.64f, omenEnvelope * 0.34f),
+                3.2f,
+                true);
+        }
+
         float alpha = progress < 0.70f ? 0.78f : (1f - progress) / 0.30f * 0.78f;
         float wingBeat = MathF.Sin(progress * MathF.PI * 5f) * 10f;
         float size = 42f * _effectScale;

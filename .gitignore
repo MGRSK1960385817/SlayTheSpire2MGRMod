@@ -1,6 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+/.artifacts/
+*.pck
 
 # C# / IDE build products
 bin/

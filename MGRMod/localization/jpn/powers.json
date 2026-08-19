@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "生成する音符の数が2倍になる。",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "生成する音符の数が2倍になる。",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "心象蜃気楼",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]パワー音符[/gold]から[blue]3[/blue][gold]ブロック[/gold]を得る。",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]パワー音符[/gold]から[blue]4[/blue][gold]ブロック[/gold]を得る。",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]パワー音符[/gold]から[blue]{Amount}[/blue][gold]ブロック[/gold]を得る。",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "一時フォルテ",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "このターン、[gold]フォルテ[/gold]を得る。",

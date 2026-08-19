@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Vous générez deux fois plus de notes.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Vous générez deux fois plus de notes.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Mirage mental",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Les [gold]notes de Pouvoir[/gold] donnent aussi [blue]3[/blue] d'[gold]Armure[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Les [gold]notes de Pouvoir[/gold] donnent aussi [blue]4[/blue] d'[gold]Armure[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "Les [gold]notes de Pouvoir[/gold] donnent aussi [blue]{Amount}[/blue] d'[gold]Armure[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Forte temporaire",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Gagnez [gold]Forte[/gold] pour ce tour.",

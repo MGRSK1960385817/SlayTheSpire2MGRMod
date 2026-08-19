@@ -1,4 +1,6 @@
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MGRMod.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -10,11 +12,25 @@ namespace MGRMod.Relics;
 public sealed class Metronome : ModRelicTemplate
 {
     private const int ChordInterval = 7;
+    private bool _isActivating;
     private int _chordsTriggered;
 
     public override RelicRarity Rarity => RelicRarity.Uncommon;
     public override bool ShowCounter => true;
-    public override int DisplayAmount => ChordInterval - ChordsTriggered;
+    public override int DisplayAmount => IsActivating
+        ? ChordInterval
+        : ChordsTriggered;
+
+    private bool IsActivating
+    {
+        get => _isActivating;
+        set
+        {
+            AssertMutable();
+            _isActivating = value;
+            UpdateDisplay();
+        }
+    }
 
     [SavedProperty]
     public int ChordsTriggered
@@ -24,7 +40,7 @@ public sealed class Metronome : ModRelicTemplate
         {
             AssertMutable();
             _chordsTriggered = Math.Max(0, value) % ChordInterval;
-            InvokeDisplayAmountChanged();
+            UpdateDisplay();
         }
     }
 
@@ -39,9 +55,23 @@ public sealed class Metronome : ModRelicTemplate
         bool doubles = nextCount >= ChordInterval;
         ChordsTriggered = nextCount;
         if (doubles)
-        {
-            Flash();
-        }
+            TaskHelper.RunSafely(DoActivateVisuals());
         return doubles;
+    }
+
+    private void UpdateDisplay()
+    {
+        Status = !IsActivating && ChordsTriggered == ChordInterval - 1
+            ? RelicStatus.Active
+            : RelicStatus.Normal;
+        InvokeDisplayAmountChanged();
+    }
+
+    private async Task DoActivateVisuals()
+    {
+        IsActivating = true;
+        Flash();
+        await Cmd.Wait(1f);
+        IsActivating = false;
     }
 }

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace MGRMod.Cards;
@@ -40,6 +41,14 @@ public sealed class Masterful : MgrCard
         bool isStart = IsPhraseStart;
         bool isEnd = IsPhraseEnd;
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
+        if (cardPlay.IsFirstInSeries)
+        {
+            MgrBlueCardVfx.SpawnMasterfulBranches(
+                Owner.Creature,
+                isStart,
+                isEnd);
+        }
 
         if (isStart)
         {

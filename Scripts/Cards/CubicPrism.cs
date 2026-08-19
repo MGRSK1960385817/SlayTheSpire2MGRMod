@@ -40,6 +40,10 @@ public sealed class CubicPrism : MgrCard
             0.24f + MathF.Sqrt(damageAndHits) * 0.25f,
             0.32f,
             1.75f);
+        MgrRegentStructureVfx.SpawnCubicPrismRefraction(
+            Owner.Creature,
+            combatState.HittableEnemies,
+            beamScale);
         await MgrAttackVfx.PlaySweepingBeam(
             this,
             Owner.Creature,

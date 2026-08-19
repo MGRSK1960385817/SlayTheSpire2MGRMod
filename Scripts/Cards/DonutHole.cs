@@ -51,7 +51,16 @@ public sealed class DonutHole : MgrCard
     protected override async Task OnPlay(
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
-        => await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+    {
+        int performanceCards =
+            MgrPerformanceStateStore.TryGet(Owner, out MgrPerformanceState state)
+                ? state.Entries.Count
+                : 0;
+        if (cardPlay.IsFirstInSeries)
+            MgrBlueCardVfx.SpawnDonutGuard(Owner.Creature, performanceCards);
+
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+    }
 
     protected override void OnUpgrade() =>
         DynamicVars.Block.UpgradeValueBy(4m);

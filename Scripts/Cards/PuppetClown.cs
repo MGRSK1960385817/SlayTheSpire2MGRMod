@@ -64,6 +64,7 @@ public sealed class PuppetClown : MgrCard
             if (!MgrPerformanceSystem.QueueResolvingCardReplacement(this, curse))
                 return;
 
+            MgrBlueCardVfx.SpawnPuppetClownSwap(Owner.Creature);
             await CardPileCmd.Add(
                 curse,
                 PileType.Play,
@@ -85,6 +86,7 @@ public sealed class PuppetClown : MgrCard
             if (!MgrPerformanceSystem.QueuePlayedCardReplacement(this, curse))
                 return;
 
+            MgrBlueCardVfx.SpawnPuppetClownSwap(Owner.Creature);
             await CardPileCmd.Add(
                 curse,
                 PileType.Play,
@@ -103,6 +105,7 @@ public sealed class PuppetClown : MgrCard
         // must be the sole
         // owner of the resulting hand order so every peer receives the same
         // deterministic model state.
+        MgrBlueCardVfx.SpawnPuppetClownSwap(Owner.Creature);
         await CardPileCmd.Add(curse, PileType.Hand);
         CardPile handPile = PileType.Hand.GetPile(Owner);
         if (curse.Pile != handPile)

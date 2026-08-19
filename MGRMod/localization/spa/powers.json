@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Generas el doble de Notas.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Generas el doble de Notas.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Espejismo mental",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Las [gold]Notas de Poder[/gold] otorgan [blue]3[/blue] de [gold]Bloqueo[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "Las [gold]Notas de Poder[/gold] otorgan [blue]4[/blue] de [gold]Bloqueo[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "Las [gold]Notas de Poder[/gold] otorgan [blue]{Amount}[/blue] de [gold]Bloqueo[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Forte temporal",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Gana [gold]Forte[/gold] durante este turno.",

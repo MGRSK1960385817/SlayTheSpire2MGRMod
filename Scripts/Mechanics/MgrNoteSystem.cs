@@ -206,6 +206,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Player player,
         NoteKind kind)
     {
+        if (ShouldStopNoteSequence(player))
+            return false;
+
         if (kind == NoteKind.Attack &&
             player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
         {
@@ -213,9 +216,16 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
 
         int copies = player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ? 2 : 1;
+        bool generatedAny = false;
         for (int copy = 0; copy < copies; copy++)
+        {
+            if (ShouldStopNoteSequence(player))
+                break;
+
             await ChannelSingleNote(choiceContext, player, kind);
-        return true;
+            generatedAny = true;
+        }
+        return generatedAny;
     }
 
     /// <summary>
@@ -225,6 +235,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         PlayerChoiceContext choiceContext,
         Player player)
     {
+        // Do not advance combat-generation RNG for notes that are discarded
+        // because the encounter has already ended.
+        if (ShouldStopNoteSequence(player))
+            return Task.CompletedTask;
+
         bool suppressAttack =
             player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m;
         int totalWeight = RandomBasicNoteWeights
@@ -283,7 +298,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             chordTriggersBefore,
             clearAfterDelay: resolution is not null);
 
-        if (resolution is null)
+        if (resolution is null || ShouldStopNoteSequence(player))
             return;
 
         MgrAudio.PlayChord();
@@ -366,10 +381,17 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (snapshot.Length == 0)
             return 0;
 
+        int copied = 0;
         foreach (NoteKind kind in snapshot)
-            await ChannelNote(choiceContext, player, kind);
+        {
+            if (ShouldStopNoteSequence(player))
+                break;
 
-        return snapshot.Length;
+            await ChannelNote(choiceContext, player, kind);
+            copied++;
+        }
+
+        return copied;
     }
 
     /// <summary>
@@ -399,6 +421,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         {
             foreach (NoteKind kind in snapshot)
             {
+                if (ShouldStopNoteSequence(player))
+                    return copied;
+
                 if (await ChannelNote(choiceContext, player, kind))
                     copied++;
             }
@@ -495,6 +520,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         for (int index = 0; index < resolutions.Count; index++)
         {
+            if (ShouldStopNoteSequence(player))
+                break;
+
             PhraseResolution resolution = resolutions[index];
             int chordTriggersBefore = state.ChordTriggersThisTurn;
             bool isLastWithNoRemainder =
@@ -509,6 +537,9 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 clearAfterDelay: isLastWithNoRemainder,
                 chordAnimationIndex: chordTriggersBefore);
             await TriggerResolvedChord(choiceContext, player, resolution.Notes, state.Forte);
+
+            if (ShouldStopNoteSequence(player))
+                break;
         }
 
         RefreshConditionalCardGlows(player);
@@ -674,21 +705,32 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         IReadOnlyList<MgrNote> notes,
         int forte)
     {
+        if (ShouldStopNoteSequence(player))
+            return;
+
         MgrCombatState state = MgrCombatStateStore.For(player);
         MgrRunTelemetryAccumulator.RecordChordCompleted(player);
         int triggerCount = 1 + state.ConsumePendingChordTriggers();
+        int metronomeCountedTriggerCount = triggerCount;
         Metronome? metronome = player.GetRelic<Metronome>();
 
         int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
         {
+            if (ShouldStopNoteSequence(player))
+                break;
+
             MgrRunTelemetryAccumulator.RecordChordEffectTrigger(player);
             int chordTriggersBefore = state.RecordChordTrigger();
-            // Every actual effect pass advances Metronome. Reaching the interval
-            // appends one more pass to this same loop, and that repeated pass
-            // advances the next Metronome cycle as well.
-            if (metronome?.TryDoubleCurrentChord() == true)
+            // Base passes and repeats from external effects such as
+            // Cumulonimbus advance Metronome. The pass created by Metronome
+            // itself still counts for all Chord gameplay, but must not advance
+            // its own next cycle, matching Pen Nib and Nunchaku reset behavior.
+            if (index < metronomeCountedTriggerCount &&
+                metronome?.TryDoubleCurrentChord() == true)
+            {
                 triggerCount++;
+            }
             player.Creature
                 .GetPower<UniverseOf88KeysPower>()?
                 .NotifyChordCounterChanged();
@@ -710,10 +752,28 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 notes,
                 forte,
                 chordTriggersBefore);
+
+            if (ShouldStopNoteSequence(player))
+                break;
         }
 
         if (triggerCount > 1)
             MgrNoteVisuals.FinishRepeatedChordTrigger(player, lastTriggerBefore);
+    }
+
+    /// <summary>
+    /// Victory can become observable before the surrounding card command has
+    /// returned. Stop MGR's serialized Note pipeline at that boundary so a
+    /// lethal card or Attack Note cannot hold the victory flow open with Notes
+    /// and repeated Chords whose results are no longer needed.
+    /// </summary>
+    internal static bool ShouldStopNoteSequence(Player player)
+    {
+        if (player.Creature.IsDead || CombatManager.Instance.IsOverOrEnding)
+            return true;
+
+        return player.Creature.CombatState is { Enemies.Count: > 0 } combatState &&
+            combatState.Enemies.All(static enemy => enemy.IsDead);
     }
 
     /// <summary>

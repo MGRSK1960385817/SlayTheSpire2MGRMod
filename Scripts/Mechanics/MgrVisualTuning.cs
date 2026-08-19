@@ -340,6 +340,61 @@ public static class MgrVisualTuning
         public const int ZIndex = 190;
     }
 
+    public static class MindMirageVfx
+    {
+        // The wave crosses the whole viewport, but only this short opening beat
+        // is awaited. The remaining visual tail overlaps native Power apply UI.
+        public const float LifetimeSeconds = 1.12f;
+        public const float EntryBeatSeconds = 0.18f;
+        public const float DistortionStrength = 1f;
+    }
+
+    public static class PrismaticVfx
+    {
+        public const float RingLifetimeSeconds = 0.34f;
+        public const float DistortionStrength = 0.0055f;
+        public const float MaximumRadius = 0.19f;
+    }
+
+    public static class GalaxyLampVfx
+    {
+        public const float ConvergenceSeconds = 0.24f;
+        public const float LifetimeSeconds = 0.66f;
+        public const int ZIndex = 38;
+    }
+
+    public static class MeteorAftermathVfx
+    {
+        public const float ConvergenceSeconds = 0.18f;
+        public const float LifetimeSeconds = 0.68f;
+        public const int ShardCount = 26;
+        public const int ZIndex = 36;
+    }
+
+    public static class CubicPrismVfx
+    {
+        public const float RefractionLifetimeSeconds = 0.34f;
+        public const float RefractionWidth = 0.026f;
+        public const float RefractionStrength = 0.0035f;
+    }
+
+    public static class BirdVfx
+    {
+        // Fraction of the existing falling-bird lifetime used for its brief
+        // high-altitude path cue. No additional gameplay wait is introduced.
+        public const float PremonitionFraction = 0.34f;
+    }
+
+    public static class BlueCardVfx
+    {
+        // These cues are deliberately shorter and smaller than gold-card cast
+        // bursts. They clarify one mechanical branch without becoming a new
+        // blocking beat in Performance or Replay chains.
+        public const float StandardLifetimeSeconds = 0.62f;
+        public const float FinaleLifetimeSeconds = 0.78f;
+        public const int ZIndex = 42;
+    }
+
     public static class SpringStormVfx
     {
         public const float Opacity = 0.68f;

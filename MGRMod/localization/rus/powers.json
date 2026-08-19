@@ -18,7 +18,7 @@
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.description": "Вы создаете вдвое больше нот.",
   "MGR_MOD_POWER_DOUBLE_NOTES_POWER.smartDescription": "Вы создаете вдвое больше нот.",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.title": "Мираж сознания",
-  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Ноты Таланта[/gold] также дают [blue]3[/blue] [gold]защиты[/gold].",
+  "MGR_MOD_POWER_MIND_MIRAGE_POWER.description": "[gold]Ноты Таланта[/gold] также дают [blue]4[/blue] [gold]защиты[/gold].",
   "MGR_MOD_POWER_MIND_MIRAGE_POWER.smartDescription": "[gold]Ноты Таланта[/gold] также дают [blue]{Amount}[/blue] [gold]защиты[/gold].",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.title": "Временное форте",
   "MGR_MOD_POWER_TEMPORARY_FORTE_POWER.description": "Дает [gold]форте[/gold] в этом ходу.",
