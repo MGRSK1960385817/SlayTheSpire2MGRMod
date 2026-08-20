@@ -46,11 +46,12 @@ public sealed class SongOfSiren : MgrCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
+        await MgrSongOfSirenVfx.Play(this);
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        if (CombatState is null)
+        if (CombatState is not { } combatState)
             return;
 
-        foreach (var enemy in CombatState.HittableEnemies)
+        foreach (var enemy in combatState.HittableEnemies)
         {
             // The Siren wave belongs on its recipients. A previous player-side
             // flying slash and generic cast burst made the wave appear to fire
@@ -62,12 +63,12 @@ public sealed class SongOfSiren : MgrCard
         }
         await PowerCmd.Apply<StrengthPower>(
             choiceContext,
-            CombatState.HittableEnemies,
+            combatState.HittableEnemies,
             -DynamicVars["StrengthPower"].BaseValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
 }

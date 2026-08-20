@@ -111,6 +111,7 @@ public sealed class HeatAbnormal : MgrCard
             return;
 
         bool isStarting = IsPhraseStart;
+        decimal baseDamageBeforePlay = DynamicVars.Damage.BaseValue;
         if (isStarting)
         {
             MgrCombatCardMutationState.Increase(
@@ -120,6 +121,14 @@ public sealed class HeatAbnormal : MgrCard
         }
 
         decimal intrinsicDamage = GetIntrinsicDamage();
+        bool successfullyDoubled =
+            isStarting &&
+            DynamicVars.Damage.BaseValue > baseDamageBeforePlay;
+        if (successfullyDoubled)
+        {
+            await MgrHeatAbnormalVfx.Play(this, intrinsicDamage);
+        }
+
         float vfxScale = MgrAttackVfx.ScaleByDamage(
             intrinsicDamage,
             referenceDamage: 3m,

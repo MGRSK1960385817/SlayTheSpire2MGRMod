@@ -35,6 +35,7 @@ public sealed class LightSong : MgrCard
         if (!cardPlay.IsAutoPlay)
             _performanceX = ResolveEnergyXValue();
 
+        using IDisposable lightSongVfx = MgrLightSongVfx.Begin(Owner);
         await MoveFromHandToDraw(choiceContext);
         await MoveFromDrawToDiscard(choiceContext);
         await MoveFromDiscardToHand(choiceContext);

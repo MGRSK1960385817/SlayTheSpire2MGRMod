@@ -25,8 +25,8 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "manimani")]
 public sealed class Manimani : MgrCard
 {
-    private const int BaseDamage = 10;
-    private const int UpgradedDamageBonus = 5;
+    private const int BaseDamage = 12;
+    private const int UpgradedDamageBonus = 4;
     private const string NormalPortraitPath =
         $"{Entry.ResPath}/images/cards/Manimani1.png";
     private const string FatalPortraitPath =

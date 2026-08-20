@@ -31,11 +31,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     // among every remaining kind when the total weight is recalculated.
     private static readonly (NoteKind Kind, int Weight)[] RandomBasicNoteWeights =
     [
-        (NoteKind.Attack, 36),
-        (NoteKind.Skill, 36),
-        (NoteKind.Status, 6),
-        (NoteKind.Power, 16),
-        (NoteKind.Curse, 6)
+        (NoteKind.Attack, 38),
+        (NoteKind.Skill, 38),
+        (NoteKind.Status, 5),
+        (NoteKind.Power, 15),
+        (NoteKind.Curse, 4)
     ];
 
     private readonly Dictionary<Player, CardModel> _lastPlayedCards = [];

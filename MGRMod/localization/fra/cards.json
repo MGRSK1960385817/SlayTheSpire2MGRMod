@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "Décoloration",
   "MGR_MOD_CARD_FADE.description": "Gagnez {Block:diff()} d'[gold]Armure[/gold].\nAjoutez 1 [color=#c8c8c8]Pâleur[/color] à votre [gold]Pioche[/gold].",
   "MGR_MOD_CARD_GUIDING_STARS.title": "Étoiles guides",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "Infligez {Damage:diff()} dégâts.\nAjoutez 1 carte [sine][color=#b96cff]étoilée[/color][/sine] aléatoire à la file d'[gold]interprétation[/gold].",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "Infligez {Damage:diff()} dégâts.\nAjoutez 1 carte [sine][color=#b96cff]étoilée[/color][/sine] aléatoire{IfUpgraded:show: [green]améliorée[/green]} à la file d'[gold]interprétation[/gold].",
   "MGR_MOD_CARD_STARFALL_SEA.title": "Mer d'étoiles filantes",
   "MGR_MOD_CARD_STARFALL_SEA.description": "Gagnez {Block:diff()} d'[gold]Armure[/gold].\nAu début du prochain tour, générez {Notes:diff()} [gold]notes étoilées[/gold].",
   "MGR_MOD_CARD_GHOST_RULE.title": "Règle du fantôme",

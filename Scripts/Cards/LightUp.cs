@@ -65,6 +65,7 @@ public sealed class LightUp : MgrCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(1m);
         DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 

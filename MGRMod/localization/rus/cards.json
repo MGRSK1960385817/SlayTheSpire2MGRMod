@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "Увядание",
   "MGR_MOD_CARD_FADE.description": "Дает {Block:diff()} [gold]защиты[/gold].\nДобавляет 1 [color=#c8c8c8]Бледность[/color] в [gold]стопку добора[/gold].",
   "MGR_MOD_CARD_GUIDING_STARS.title": "Путеводные звезды",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "Наносит {Damage:diff()} урона.\nДобавляет случайную [sine][color=#b96cff]звездную[/color][/sine] карту в [gold]очередь исполнения[/gold].",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "Наносит {Damage:diff()} урона.\nДобавляет случайную {IfUpgraded:show:[green]улучшенную[/green] }[sine][color=#b96cff]звездную[/color][/sine] карту в [gold]очередь исполнения[/gold].",
   "MGR_MOD_CARD_STARFALL_SEA.title": "Море звездопада",
   "MGR_MOD_CARD_STARFALL_SEA.description": "Дает {Block:diff()} [gold]защиты[/gold].\nВ начале следующего хода создает [gold]звездных нот[/gold]: {Notes:diff()}.",
   "MGR_MOD_CARD_GHOST_RULE.title": "Правило призрака",

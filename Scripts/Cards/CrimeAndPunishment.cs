@@ -16,7 +16,7 @@ public sealed class CrimeAndPunishment : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("HpLoss", 3m)
+        new IntVar("HpLoss", 4m)
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

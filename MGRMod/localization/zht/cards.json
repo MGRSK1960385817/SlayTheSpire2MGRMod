@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "褪色",
   "MGR_MOD_CARD_FADE.description": "獲得 {Block:diff()} 點[gold]格擋[/gold]。\n將 1 張[color=#c8c8c8]蒼白[/color]加入[gold]抽牌堆[/gold]。",
   "MGR_MOD_CARD_GUIDING_STARS.title": "星辰導引",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "造成 {Damage:diff()} 點傷害。\n將 1 張隨機[sine][color=#b96cff]星空[/color][/sine]牌加入[gold]演奏[/gold]佇列。",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "造成 {Damage:diff()} 點傷害。\n將 1 張隨機{IfUpgraded:show:[green]升級後的[/green]}[sine][color=#b96cff]星空[/color][/sine]牌加入[gold]演奏[/gold]佇列。",
   "MGR_MOD_CARD_STARFALL_SEA.title": "星降之海",
   "MGR_MOD_CARD_STARFALL_SEA.description": "獲得 {Block:diff()} 點[gold]格擋[/gold]。\n下個回合開始時，生成 {Notes:diff()} 個[gold]星空音符[/gold]。",
   "MGR_MOD_CARD_GHOST_RULE.title": "幽靈法則",

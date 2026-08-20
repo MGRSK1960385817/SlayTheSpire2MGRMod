@@ -32,6 +32,8 @@ public sealed class Regulus : MgrCard
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
+        await MgrRegulusVfx.PlayAuroraConvergence(this);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .WithHitCount(DynamicVars["Hits"].IntValue)
             .FromCard(this, cardPlay)

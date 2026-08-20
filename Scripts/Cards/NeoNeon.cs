@@ -15,7 +15,7 @@ public sealed class NeoNeon : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(3m, ValueProp.Move),
+        new DamageVar(1m, ValueProp.Move),
         new IntVar("Performance", 1m)
     ];
 

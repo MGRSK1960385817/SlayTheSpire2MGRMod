@@ -335,8 +335,8 @@ public static class MgrVisualTuning
     {
         // Number of falling stars scattered across the upper combat field for
         // each actually generated Starry Note.
-        public const int MinimumStarsPerNote = 5;
-        public const int MaximumStarsPerNote = 8;
+        public const int MinimumStarsPerNote = 8;
+        public const int MaximumStarsPerNote = 12;
         public const int ZIndex = 190;
     }
 
@@ -347,6 +347,45 @@ public static class MgrVisualTuning
         public const float LifetimeSeconds = 1.12f;
         public const float EntryBeatSeconds = 0.18f;
         public const float DistortionStrength = 1f;
+    }
+
+    public static class SongOfSirenVfx
+    {
+        // The wave keeps its full tail, but gameplay resumes once the opening
+        // crest is established. Performance replay compresses both values with
+        // the same sequence scale without delaying the safe queue handoff.
+        public const float LifetimeSeconds = 0.70f;
+        public const float ImpactBeatSeconds = 0.20f;
+        public const float DistortionStrength = 0.0032f;
+        public const float TintStrength = 0.14f;
+    }
+
+    public static class HeatAbnormalVfx
+    {
+        // Damage begins once the rising front is close to the top edge. The
+        // brief tail then overlaps the existing enemy fire impacts.
+        public const float LifetimeSeconds = 0.94f;
+        public const float ImpactBeatSeconds = 0.72f;
+        public const decimal ReferenceDamage = 4m;
+        public const float MinimumIntensity = 0.72f;
+        public const float IntensityGrowthPerDoubling = 0.20f;
+        public const float MaximumIntensity = 1.34f;
+        public const float DistortionStrength = 0.0062f;
+    }
+
+    public static class HyakkiYagyoVfx
+    {
+        // Damage begins at ImpactBeatSeconds. The remaining backdrop lifetime
+        // overlaps the target impacts so the attack does not acquire a second
+        // blocking wait after the anticipation has paid off.
+        public const float PreludeLifetimeSeconds = 0.78f;
+        public const float ImpactBeatSeconds = 0.36f;
+        public const float MaximumDarkness = 0.40f;
+        public const float DistortionStrength = 0.0038f;
+        public const float ImpactLifetimeSeconds = 0.68f;
+        public const float ImpactGroupLifetimeSeconds = 1.25f;
+        public const float MaximumRippleRadius = 116f;
+        public const int ImpactZIndex = 205;
     }
 
     public static class PrismaticVfx
@@ -393,6 +432,42 @@ public static class MgrVisualTuning
         public const float StandardLifetimeSeconds = 0.62f;
         public const float FinaleLifetimeSeconds = 0.78f;
         public const int ZIndex = 42;
+    }
+
+    public static class LightSongVfx
+    {
+        // Positive CanvasItem rotation is clockwise in Godot's Y-down screen
+        // coordinates. The host is ordered before GlobalUi.Overlays, so keep
+        // local Z neutral and let vanilla choice screens draw above the rays.
+        public const int BeamCount = 8;
+        public const float RotationRadiansPerSecond = 0.48f;
+        public const float PacketSpeed = 0.34f;
+        public const float BeamLengthScale = 1.35f;
+        public const float NearHalfWidth = 5.5f;
+        public const float FarHalfWidth = 62f;
+        public const float BaseBeamAlpha = 0.070f;
+        public const float EntryBurstSeconds = 0.56f;
+        public const float FadeOutSeconds = 0.34f;
+        public const int ZIndex = 0;
+    }
+
+    public static class RegulusVfx
+    {
+        // The aurora ribbons finish converging before the volley begins. A
+        // short residual fade overlaps the first hits without delaying damage
+        // a second time; Performance playback compresses only this prelude.
+        public const float ConvergenceSeconds = 0.68f;
+        public const float FadeSeconds = 0.20f;
+        public const float LifetimeSeconds = ConvergenceSeconds + FadeSeconds;
+        public const int StrandCount = 9;
+        public const int SegmentsPerStrand = 20;
+        public const float TrailProgressLength = 0.48f;
+        public const float RainbowShiftPerSecond = 0.18f;
+        public const float GlowWidth = 10.5f;
+        public const float CoreWidth = 2.1f;
+        public const float GlowAlpha = 0.14f;
+        public const float CoreAlpha = 0.82f;
+        public const int ZIndex = 184;
     }
 
     public static class SpringStormVfx

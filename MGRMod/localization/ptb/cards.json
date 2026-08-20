@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "Desbotar",
   "MGR_MOD_CARD_FADE.description": "Receba {Block:diff()} de [gold]Proteção[/gold].\nAdicione 1 [color=#c8c8c8]Pálida[/color] à sua [gold]Pilha de Compra[/gold].",
   "MGR_MOD_CARD_GUIDING_STARS.title": "Estrelas-Guia",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "Cause {Damage:diff()} de dano.\nAdicione 1 carta [sine][color=#b96cff]Estelar[/color][/sine] aleatória à fila de [gold]Apresentação[/gold].",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "Cause {Damage:diff()} de dano.\nAdicione 1 carta [sine][color=#b96cff]Estelar[/color][/sine] aleatória{IfUpgraded:show: [green]Aprimorada[/green]} à fila de [gold]Apresentação[/gold].",
   "MGR_MOD_CARD_STARFALL_SEA.title": "Mar da Chuva de Estrelas",
   "MGR_MOD_CARD_STARFALL_SEA.description": "Receba {Block:diff()} de [gold]Proteção[/gold].\nNo início do próximo turno, gere {Notes:diff()} [gold]Notas Estelares[/gold].",
   "MGR_MOD_CARD_GHOST_RULE.title": "Lei fantasma",

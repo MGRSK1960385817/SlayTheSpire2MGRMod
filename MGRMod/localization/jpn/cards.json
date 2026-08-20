@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "色褪せ",
   "MGR_MOD_CARD_FADE.description": "{Block:diff()}[gold]ブロック[/gold]を得る。\n[color=#c8c8c8]蒼白[/color]1枚を[gold]山札[/gold]に加える。",
   "MGR_MOD_CARD_GUIDING_STARS.title": "星の導き",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "{Damage:diff()}ダメージを与える。\nランダムな[sine][color=#b96cff]星空[/color][/sine]カード1枚を[gold]演奏[/gold]キューに加える。",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "{Damage:diff()}ダメージを与える。\nランダムな{IfUpgraded:show:[green]アップグレード[/green]済みの}[sine][color=#b96cff]星空[/color][/sine]カード1枚を[gold]演奏[/gold]キューに加える。",
   "MGR_MOD_CARD_STARFALL_SEA.title": "星降る海",
   "MGR_MOD_CARD_STARFALL_SEA.description": "{Block:diff()}[gold]ブロック[/gold]を得る。\n次のターン開始時、[gold]星空音符[/gold]を{Notes:diff()}個生成する。",
   "MGR_MOD_CARD_GHOST_RULE.title": "ゴーストルール",

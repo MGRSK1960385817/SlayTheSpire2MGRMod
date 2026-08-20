@@ -36,10 +36,13 @@ public sealed class HyakkiYagyo : MgrCard
             return;
 
         int enemiesHit = combatState.HittableEnemies.Count;
+        if (enemiesHit > 0)
+            await MgrHyakkiYagyoVfx.PlayPrelude(this);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
-            .WithHitVfxNode(target => MgrAttackVfx.CreateFireBurst(
+            .WithHitVfxNode(target => MgrHyakkiYagyoVfx.CreateImpact(
                 target,
                 MgrAttackVfx.CurseBlackFlame,
                 1.16f))

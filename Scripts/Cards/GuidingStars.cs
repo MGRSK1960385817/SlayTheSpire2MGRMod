@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
@@ -62,6 +63,8 @@ public sealed class GuidingStars : MgrCard
             return;
 
         CardModel generated = combatState.CreateCard(canonical, Owner);
+        if (IsUpgraded)
+            CardCmd.Upgrade(generated, CardPreviewStyle.None);
         await MgrPerformanceSystem.EnqueueGeneratedCard(
             Owner,
             generated,
@@ -70,7 +73,7 @@ public sealed class GuidingStars : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 
     private CardModel? PickWeightedStarryCard(IReadOnlyList<CardModel> candidates)

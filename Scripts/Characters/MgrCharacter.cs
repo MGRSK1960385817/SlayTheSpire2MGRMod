@@ -49,6 +49,16 @@ public sealed class MgrCharacter : ModCharacterTemplate<MgrCardPool, MgrRelicPoo
 
     protected override NCreatureVisuals? TryCreateCreatureVisuals()
     {
+        return CreateStaticCreatureVisuals();
+    }
+
+    /// <summary>
+    /// Creates the same non-Spine visual root without relying on a caller's
+    /// character fallback path. The Fake Merchant event needs this because its
+    /// base-game setup assumes every temporary character visual is Spine-backed.
+    /// </summary>
+    internal static NCreatureVisuals? CreateStaticCreatureVisuals()
+    {
         return RitsuGodotNodeFactories.CreateFromScenePath<NCreatureVisuals>(CharacterScenePath);
     }
 

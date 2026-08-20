@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "Fade",
   "MGR_MOD_CARD_FADE.description": "Gain {Block:diff()} [gold]Block[/gold].\nAdd 1 [color=#c8c8c8]Pale[/color] to your [gold]Draw Pile[/gold].",
   "MGR_MOD_CARD_GUIDING_STARS.title": "Guiding Stars",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "Deal {Damage:diff()} damage.\nAdd 1 random [sine][color=#b96cff]Starry[/color][/sine] card directly to the [gold]Performance[/gold] queue.",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "Deal {Damage:diff()} damage.\nAdd 1 random {IfUpgraded:show:[green]Upgraded[/green] }[sine][color=#b96cff]Starry[/color][/sine] card directly to the [gold]Performance[/gold] queue.",
   "MGR_MOD_CARD_STARFALL_SEA.title": "Starfall Sea",
   "MGR_MOD_CARD_STARFALL_SEA.description": "Gain {Block:diff()} [gold]Block[/gold].\nAt the start of your next turn, generate {Notes:diff()} [gold]StarryNote[/gold].",
   "MGR_MOD_CARD_GHOST_RULE.title": "Ghost Rule",

@@ -154,7 +154,7 @@
   "MGR_MOD_CARD_FADE.title": "Verblassen",
   "MGR_MOD_CARD_FADE.description": "Erhalte {Block:diff()} [gold]Block[/gold].\nNimm 1 [color=#c8c8c8]Bleich[/color] in deinen [gold]Nachziehstapel[/gold].",
   "MGR_MOD_CARD_GUIDING_STARS.title": "Sternenführung",
-  "MGR_MOD_CARD_GUIDING_STARS.description": "Füge {Damage:diff()} Schaden zu.\nNimm 1 zufällige [sine][color=#b96cff]Sternenklare[/color][/sine] Karte in die [gold]Auftrittsreihe[/gold].",
+  "MGR_MOD_CARD_GUIDING_STARS.description": "Füge {Damage:diff()} Schaden zu.\nNimm 1 zufällige {IfUpgraded:show:[green]Verbesserte[/green] }[sine][color=#b96cff]Sternenklare[/color][/sine] Karte in die [gold]Auftrittsreihe[/gold].",
   "MGR_MOD_CARD_STARFALL_SEA.title": "Meer der Sternschnuppen",
   "MGR_MOD_CARD_STARFALL_SEA.description": "Erhalte {Block:diff()} [gold]Block[/gold].\nErzeuge zu Beginn des nächsten Zuges {Notes:diff()} [gold]Sternennoten[/gold].",
   "MGR_MOD_CARD_GHOST_RULE.title": "Geisterregel",
