@@ -52,7 +52,7 @@ public sealed class ElectricAngelPower : ModPowerTemplate
             CardModel? canonical = MgrWeightedCardRandom.PickOne(
                 candidates,
                 player.RunState.Rng.CombatCardGeneration,
-                MgrCardWeightProfile.Uniform);
+                MgrCardWeightProfile.ElectricAngel);
             if (canonical is null)
                 break;
 

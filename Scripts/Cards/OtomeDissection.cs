@@ -42,7 +42,6 @@ public sealed class OtomeDissection : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(1m);
         AddKeyword(CardKeyword.Retain);
     }
 }

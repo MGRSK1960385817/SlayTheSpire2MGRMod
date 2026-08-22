@@ -29,5 +29,5 @@ public sealed class Omnia : MgrCard
         Task.CompletedTask;
 
     protected override void OnUpgrade() =>
-        DynamicVars["Performance"].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
 }

@@ -32,10 +32,10 @@ public sealed class CubicPrism : MgrCard
         if (!cardPlay.IsAutoPlay)
             _performanceX = ResolveEnergyXValue();
 
-        if (_performanceX <= 0 || combatState.HittableEnemies.Count == 0)
+        int damageAndHits = checked(_performanceX + (IsUpgraded ? 1 : 0));
+        if (damageAndHits <= 0 || combatState.HittableEnemies.Count == 0)
             return;
 
-        int damageAndHits = checked(_performanceX + (IsUpgraded ? 1 : 0));
         float beamScale = Math.Clamp(
             0.24f + MathF.Sqrt(damageAndHits) * 0.25f,
             0.32f,

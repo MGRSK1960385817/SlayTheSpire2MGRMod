@@ -9,6 +9,7 @@
 - 十种语言标题分别保存于 `MGRWorkshop/titles/<Steam API 语言代码>.txt`；准确对照和当前标题见该目录的 `README.md`。
 - 标题为单行纯文本，不使用 BBCode；简介使用 Steam Workshop 支持的 BBCode。
 - Steam 标题最多使用 128 个 UTF-8 字节，简介必须低于 8000 个 UTF-8 字节；保存或上传前必须按字节而不是字符数检查。
+- 十种语言角色介绍中，“作者曾制作过一代 MGRMod”这一条的 `MGRMod` 文本固定使用 `[url=https://steamcommunity.com/sharedfiles/filedetails/?l=norwegian&id=3024027467]MGRMod[/url]`；只链接该介绍文本，不修改设置名称中的 `MGRMod`。
 
 ## 二、十种语言与文件对照
 

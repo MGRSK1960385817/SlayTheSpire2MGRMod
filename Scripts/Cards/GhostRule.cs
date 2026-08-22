@@ -42,7 +42,12 @@ public sealed class GhostRule : MgrCard
                 new LocString(
                     "cards",
                     "MGR_MOD_CARD_GHOST_RULE.selectionScreenPrompt"),
-                DynamicVars.Cards.IntValue))).ToArray();
+                0,
+                DynamicVars.Cards.IntValue)
+            {
+                Cancelable = true,
+                RequireManualConfirmation = true
+            })).ToArray();
 
         if (selected.Length > 0)
         {

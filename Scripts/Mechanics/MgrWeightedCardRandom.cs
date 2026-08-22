@@ -11,7 +11,8 @@ public enum MgrCardWeightProfile
 {
     Uniform,
     Standard,
-    GentleCompensation
+    GentleCompensation,
+    ElectricAngel
 }
 
 /// <summary>
@@ -82,6 +83,17 @@ public static class MgrWeightedCardRandom
     {
         if (profile == MgrCardWeightProfile.Uniform)
             return 1;
+
+        if (profile == MgrCardWeightProfile.ElectricAngel)
+        {
+            // Relative per-card weights: Common 1.0, Uncommon 0.8, Rare 0.6.
+            return card.Rarity switch
+            {
+                CardRarity.Rare => 3,
+                CardRarity.Uncommon => 4,
+                _ => 5
+            };
+        }
 
         if (profile == MgrCardWeightProfile.GentleCompensation)
         {

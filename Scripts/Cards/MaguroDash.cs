@@ -15,8 +15,7 @@ public sealed class MaguroDash : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move),
-        new CardsVar(1),
+        new DamageVar(8m, ValueProp.Move),
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
         new CalculatedVar("TotalHits").WithMultiplier(
@@ -36,15 +35,15 @@ public sealed class MaguroDash : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await AttackAllAndDraw(choiceContext, cardPlay);
+        await AttackAll(choiceContext, cardPlay);
         await MgrPerformanceSystem.EndAllPerformancesWithFinisher(
             choiceContext,
             Owner,
             this,
-            _ => AttackAllAndDraw(choiceContext, cardPlay));
+            _ => AttackAll(choiceContext, cardPlay));
     }
 
-    private async Task AttackAllAndDraw(
+    private async Task AttackAll(
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
@@ -60,11 +59,7 @@ public sealed class MaguroDash : MgrCard
                 1.05f))
             .WithHitFx(null, null, "slash_attack.mp3")
             .Execute(choiceContext);
-        await CardPileCmd.Draw(
-            choiceContext,
-            DynamicVars.Cards.BaseValue,
-            Owner);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
 }

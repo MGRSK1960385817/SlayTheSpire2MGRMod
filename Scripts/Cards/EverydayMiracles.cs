@@ -47,7 +47,6 @@ public sealed class EverydayMiracles : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
-        DynamicVars["TailPerformanceBonus"].UpgradeValueBy(1m);
+        DynamicVars.Cards.UpgradeValueBy(2m);
     }
 }
