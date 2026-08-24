@@ -1,8 +1,11 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "MGR Mod",
   "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "With your explicit consent, sends MGR single-player run data for balance analysis. Multiplayer runs, complete saves, player names, and logs are not sent.",
-  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Visual Performance",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "MGR Settings",
   "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "Character Visuals",
   "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "Disable character animation",
-  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Disables both frame-by-frame character animation and persistent effects around the character. Takes effect the next time the combat character is created."
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Disables both frame-by-frame character animation and persistent effects around the character. Takes effect the next time the combat character is created.",
+  "MGR_MOD_SETTINGS_UI_AUDIO_SECTION_TITLE": "Note Audio",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS": "Disable note audio",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS_DESCRIPTION": "Mutes sounds played when Notes are generated and Chords trigger. This option is off by default and must be enabled manually."
 }

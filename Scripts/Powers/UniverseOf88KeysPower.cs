@@ -80,7 +80,10 @@ public sealed class UniverseOf88KeysPower : ModPowerTemplate
         Flash();
         Creature[] enemies = combatState.HittableEnemies.ToArray();
         int noteCount = (int)Math.Ceiling(damage / 2m);
-        await MgrAbilityVfx.PlayUniverseOf88Keys(enemies, noteCount);
+        await MgrAbilityVfx.PlayUniverseOf88Keys(
+            Owner.Player,
+            enemies,
+            noteCount);
         foreach (Creature enemy in enemies)
         {
             await MgrCrossVersionApi.Damage(

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
@@ -155,31 +156,36 @@ public static class MgrAbilityVfx
         preview.Rotation = -0.10f;
         preview.Modulate = new Color(0.45f, 0.90f, 1f, 0f);
 
+        float durationScale = MgrVisualTiming.GetAnimationDurationScale(card.Owner);
         Tween reveal = preview.CreateTween().SetParallel();
         reveal.TweenProperty(
                 preview,
                 "global_position",
                 revealPosition,
-                0.24f)
+                0.24f * durationScale)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
         reveal.TweenProperty(
                 preview,
                 "scale",
                 Vector2.One * 0.76f,
-                0.24f)
+                0.24f * durationScale)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
-        reveal.TweenProperty(preview, "rotation", 0f, 0.20f)
+        reveal.TweenProperty(preview, "rotation", 0f, 0.20f * durationScale)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
-        reveal.TweenProperty(preview, "modulate", Colors.White, 0.15f);
+        reveal.TweenProperty(
+            preview,
+            "modulate",
+            Colors.White,
+            0.15f * durationScale);
         await TweenHelper.AwaitFinished(reveal, preview);
 
         if (!GodotObject.IsInstanceValid(preview))
             return;
 
-        await Cmd.Wait(0.24f);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(card.Owner, 0.24f));
         if (!GodotObject.IsInstanceValid(preview))
             return;
 
@@ -188,22 +194,22 @@ public static class MgrAbilityVfx
                 preview,
                 "global_position",
                 handPosition,
-                0.28f)
+                0.28f * durationScale)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Cubic);
         enterHand.TweenProperty(
                 preview,
                 "scale",
                 Vector2.One * 0.30f,
-                0.28f)
+                0.28f * durationScale)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Back);
         enterHand.TweenProperty(
                 preview,
                 "modulate",
                 new Color(0.55f, 0.92f, 1f, 0.12f),
-                0.20f)
-            .SetDelay(0.08f);
+                0.20f * durationScale)
+            .SetDelay(0.08f * durationScale);
         await TweenHelper.AwaitFinished(enterHand, preview);
 
         MgrCardNodePoolSafety.ReleaseTemporaryCard(preview);
@@ -226,6 +232,8 @@ public static class MgrAbilityVfx
             return;
         }
 
+        Player player = cards[0].Owner;
+        float durationScale = MgrVisualTiming.GetAnimationDurationScale(player);
         Control visualRoot = room.Ui.MessyCardPreviewContainer;
         Vector2 center = room.GetViewportRect().Size * 0.5f;
         List<NCard> cardNodes = [];
@@ -285,27 +293,29 @@ public static class MgrAbilityVfx
                     node,
                     "global_position",
                     GetDaybreakCardPosition(center, index, visibleCount),
-                    DaybreakGatherSeconds)
+                    DaybreakGatherSeconds * durationScale)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Cubic);
             gather.TweenProperty(
                     node,
                     "scale",
                     Vector2.One * 0.72f,
-                    DaybreakGatherSeconds)
+                    DaybreakGatherSeconds * durationScale)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
             gather.TweenProperty(
                 node,
                 "modulate",
                 Colors.White,
-                DaybreakGatherSeconds * 0.82f);
+                DaybreakGatherSeconds * 0.82f * durationScale);
         }
 
         if (cardNodes.Count == 0)
             return;
 
-        await Cmd.Wait(DaybreakGatherSeconds + DaybreakHoldSeconds);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+            player,
+            DaybreakGatherSeconds + DaybreakHoldSeconds));
 
         List<Task> exhaustAnimations = [];
         for (int index = 0; index < cardNodes.Count; index++)
@@ -315,9 +325,14 @@ public static class MgrAbilityVfx
                 continue;
 
             if (index > 0)
-                await Cmd.Wait(DaybreakExhaustStaggerSeconds);
+                await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+                    player,
+                    DaybreakExhaustStaggerSeconds));
 
-            exhaustAnimations.Add(PlayCardExhaustAnimation(room, node));
+            exhaustAnimations.Add(PlayCardExhaustAnimation(
+                room,
+                node,
+                durationScale));
         }
 
         await Task.WhenAll(exhaustAnimations);
@@ -325,8 +340,11 @@ public static class MgrAbilityVfx
 
     private static async Task PlayCardExhaustAnimation(
         NCombatRoom room,
-        NCard node)
+        NCard node,
+        float durationScale)
     {
+        float exhaustSeconds = DaybreakExhaustSeconds *
+            Math.Clamp(durationScale, 0.1f, 1f);
         // NCardExhaustVfx was introduced after v0.107. Resolve it dynamically
         // so newer builds retain the native dissolve while the official build
         // can use the equivalent lightweight fallback below.
@@ -344,7 +362,7 @@ public static class MgrAbilityVfx
             exhaustVfxType?.GetField(
                     "_exhaustDuration",
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                ?.SetValue(exhaustVfx, DaybreakExhaustSeconds);
+                ?.SetValue(exhaustVfx, exhaustSeconds);
             MethodInfo? playMethod = exhaustVfxType?.GetMethod(
                 "PlayAnimation",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
@@ -380,22 +398,22 @@ public static class MgrAbilityVfx
                 node,
                 "scale",
                 Vector2.One * 0.08f,
-                DaybreakExhaustSeconds)
+                exhaustSeconds)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Back);
         fallback.TweenProperty(
                 node,
                 "rotation",
                 node.Rotation + 0.28f,
-                DaybreakExhaustSeconds)
+                exhaustSeconds)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Cubic);
         fallback.TweenProperty(
                 node,
                 "modulate",
                 new Color(0.78f, 0.38f, 0.24f, 0f),
-                DaybreakExhaustSeconds * 0.86f)
-            .SetDelay(DaybreakExhaustSeconds * 0.14f);
+                exhaustSeconds * 0.86f)
+            .SetDelay(exhaustSeconds * 0.14f);
         await TweenHelper.AwaitFinished(fallback, node);
         MgrCardNodePoolSafety.ReleaseTemporaryCard(node);
     }
@@ -466,6 +484,7 @@ public static class MgrAbilityVfx
     /// the short shared anticipation, so multiple enemies do not serialize VFX.
     /// </summary>
     public static async Task PlayUniverseOf88Keys(
+        Player? player,
         IReadOnlyList<Creature> targets,
         int noteCount)
     {
@@ -494,7 +513,10 @@ public static class MgrAbilityVfx
         if (visuals.Count == 0)
             return;
 
-        await Cmd.Wait(0.22f);
+        float anticipationSeconds = player is null
+            ? 0.22f
+            : MgrVisualTiming.ScaleBlockingVisualWait(player, 0.22f);
+        await Cmd.Wait(anticipationSeconds);
         foreach (MgrUniverseNoteBurstVisual visual in visuals)
         {
             if (GodotObject.IsInstanceValid(visual))

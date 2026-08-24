@@ -62,7 +62,7 @@ public sealed class ElectricAngelPower : ModPowerTemplate
                 generated,
                 PileType.Hand,
                 player);
-            await Cmd.Wait(0.08f);
+            await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(player, 0.08f));
         }
     }
 }

@@ -58,7 +58,7 @@ public sealed class PaleDread : MgrCard
             paleCards,
             PileType.Hand,
             Owner);
-        await Cmd.Wait(0.1f);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(Owner, 0.1f));
 
         await MgrCurseUtils.AddRandomCurseToCombat(
             Owner,

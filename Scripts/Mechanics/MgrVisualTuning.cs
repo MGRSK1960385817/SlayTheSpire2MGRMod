@@ -9,6 +9,15 @@ namespace MGRMod.Mechanics;
 /// </summary>
 public static class MgrVisualTuning
 {
+    public static class Multiplayer
+    {
+        // Multiplayer action queues wait for every client's presentation to
+        // finish. MgrVisualTiming divides presentation duration by the current
+        // run's player count so 2/3/4-player rooms use 1/2, 1/3 and 1/4 pacing.
+        // This is the single-player baseline minimum and is divided the same way.
+        public const double MinimumBlockingVisualWaitSeconds = 0.03;
+    }
+
     public static class Notes
     {
         public static readonly Vector2 RackOffset = new(0f, -350f);

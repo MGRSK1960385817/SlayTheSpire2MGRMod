@@ -49,7 +49,7 @@ public sealed class LivingDream : MgrCard
                 card,
                 PileType.Hand,
                 Owner);
-            await Cmd.Wait(0.1f);
+            await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(Owner, 0.1f));
         }
     }
 

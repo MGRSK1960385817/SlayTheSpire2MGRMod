@@ -16,6 +16,65 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+
+function Set-ExactChildName {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ParentDirectory,
+
+        [Parameter(Mandatory)]
+        [string]$ExpectedName,
+
+        [Parameter(Mandatory)]
+        [ValidateSet('File', 'Directory')]
+        [string]$EntryType
+    )
+
+    if (-not (Test-Path -LiteralPath $ParentDirectory -PathType Container)) {
+        return $false
+    }
+
+    $matches = @(
+        Get-ChildItem -LiteralPath $ParentDirectory -Force |
+            Where-Object {
+                $_.Name.Equals(
+                    $ExpectedName,
+                    [System.StringComparison]::OrdinalIgnoreCase) -and
+                (($EntryType -eq 'Directory' -and $_.PSIsContainer) -or
+                 ($EntryType -eq 'File' -and -not $_.PSIsContainer))
+            }
+    )
+    if ($matches.Count -eq 0) {
+        return $false
+    }
+    if ($matches.Count -ne 1) {
+        throw "Multiple case-insensitive matches for $ExpectedName in $ParentDirectory."
+    }
+
+    $entry = $matches[0]
+    if ($entry.Name -ceq $ExpectedName) {
+        return $true
+    }
+
+    # A direct case-only rename is not reliable on case-insensitive Windows
+    # filesystems. Move through a unique sibling name so the directory entry
+    # is recreated with the exact release spelling.
+    $temporaryName = ".mgr-case-$([Guid]::NewGuid().ToString('N'))"
+    $temporaryPath = Join-Path $ParentDirectory $temporaryName
+    $expectedPath = Join-Path $ParentDirectory $ExpectedName
+    Move-Item -LiteralPath $entry.FullName -Destination $temporaryPath
+    try {
+        Move-Item -LiteralPath $temporaryPath -Destination $expectedPath
+    }
+    catch {
+        if (Test-Path -LiteralPath $temporaryPath) {
+            Move-Item -LiteralPath $temporaryPath -Destination $entry.FullName
+        }
+        throw
+    }
+    return $true
+}
+
 if ([string]::IsNullOrWhiteSpace($OutputDir)) {
     $OutputDir = Join-Path $repoRoot '.artifacts\MGRMod-cross-version'
 }
@@ -27,6 +86,15 @@ $outputRoot = [System.IO.Path]::GetFullPath($OutputDir)
 $v107Dir = [System.IO.Path]::GetFullPath($V107DataDir)
 $v111Dir = [System.IO.Path]::GetFullPath($V111DataDir)
 $pckFullPath = [System.IO.Path]::GetFullPath($PckPath)
+
+$outputParent = Split-Path -Parent $outputRoot
+$outputLeaf = Split-Path -Leaf $outputRoot
+[void](Set-ExactChildName $outputParent $outputLeaf 'Directory')
+
+$pckParent = Split-Path -Parent $pckFullPath
+$pckLeaf = Split-Path -Leaf $pckFullPath
+[void](Set-ExactChildName $pckParent $pckLeaf 'File')
+
 foreach ($dataDir in @($v107Dir, $v111Dir)) {
     if (-not (Test-Path -LiteralPath (Join-Path $dataDir 'sts2.dll'))) {
         throw "Missing sts2.dll in compatibility reference directory: $dataDir"
@@ -112,6 +180,23 @@ $manifestJson = $variantManifest | ConvertTo-Json -Depth 4
     (Join-Path $outputRoot 'mgrmod-variants.manifest'),
     $manifestJson + [Environment]::NewLine,
     [System.Text.UTF8Encoding]::new($false))
+
+# Copying over an older local installation on Windows preserves the existing
+# directory-entry casing. Normalize every case-sensitive release path after
+# writing so a later ZIP cannot inherit stale mgrmod/MGRMod variants.
+foreach ($entry in @(
+    @($outputRoot, 'MGRMod.dll', 'File'),
+    @($outputRoot, 'MGRMod.json', 'File'),
+    @($outputRoot, 'MGRMod.pck', 'File'),
+    @($outputRoot, 'mgrmod-variants.manifest', 'File'),
+    @($outputRoot, 'lib', 'Directory'),
+    @((Join-Path $outputRoot 'lib\0.107.1'), 'MGRMod.dll', 'File'),
+    @((Join-Path $outputRoot 'lib\0.111.0'), 'MGRMod.dll', 'File')
+)) {
+    if (-not (Set-ExactChildName $entry[0] $entry[1] $entry[2])) {
+        throw "Missing release entry after bundle build: $($entry[0])\$($entry[1])"
+    }
+}
 
 $loaderIdentity = [System.Reflection.AssemblyName]::GetAssemblyName(
     (Join-Path $outputRoot 'MGRMod.dll')).Name

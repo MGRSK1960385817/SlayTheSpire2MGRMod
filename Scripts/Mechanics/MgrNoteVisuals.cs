@@ -225,7 +225,9 @@ public static class MgrNoteVisuals
                             ? MgrVisualTuning.Notes.OmniaNoteEntranceSeconds
                             : GetNoteEntranceSeconds(notesGeneratedBefore);
                     await _slots[enteringIndex].PlayEntranceAnimation(
-                        entranceSeconds);
+                        MgrVisualTiming.ScaleVisualDuration(
+                            _player,
+                            entranceSeconds));
                 }
 
                 if (clearAfterDelay && IsValid)
@@ -305,7 +307,9 @@ public static class MgrNoteVisuals
                 slot.PlayChordTriggerAnimation(emphasized: true);
 
             Tween beat = _root.CreateTween();
-            beat.TweenInterval(GetRepeatedChordBeatSeconds(chordTriggersBefore));
+            beat.TweenInterval(MgrVisualTiming.ScaleVisualDuration(
+                _player,
+                GetRepeatedChordBeatSeconds(chordTriggersBefore)));
             await TweenHelper.AwaitFinished(beat, _root);
         }
 
@@ -519,7 +523,9 @@ public static class MgrNoteVisuals
         private void ScheduleClear(int chordTriggersBefore)
         {
             _clearTween = _root.CreateTween();
-            _clearTween.TweenInterval(GetChordHoldSeconds(chordTriggersBefore));
+            _clearTween.TweenInterval(MgrVisualTiming.ScaleVisualDuration(
+                _player,
+                GetChordHoldSeconds(chordTriggersBefore)));
             _clearTween.TweenCallback(Callable.From(ShowEmptySlots));
         }
 

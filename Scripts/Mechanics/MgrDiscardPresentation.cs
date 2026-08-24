@@ -46,7 +46,9 @@ public static class MgrDiscardPresentation
 
                 // Let the newly drawn cards settle and the red flash become
                 // unmistakable before the native parallel discard begins.
-                await Cmd.Wait(ReadablePauseSeconds);
+                await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+                    discardCards[0].Owner,
+                    ReadablePauseSeconds));
             }
             finally
             {

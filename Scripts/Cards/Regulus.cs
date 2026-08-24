@@ -48,7 +48,7 @@ public sealed class Regulus : MgrCard
                 // Regulus is a volley of generated notes rather than a blunt
                 // strike: keep its visual impact, but sound every hit with the
                 // same packed channeling cue used by note generation.
-                MgrAudio.PlayNoteChannel();
+                MgrAudio.PlayNoteChannelCue();
                 return MgrAttackVfx.CreateStarryImpact(
                     target,
                     MgrAttackVfx.StarGold,

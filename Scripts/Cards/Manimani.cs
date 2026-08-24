@@ -125,7 +125,7 @@ public sealed class Manimani : MgrCard
         // Fatal target. Ordinary plays skip the image sequence but retain the
         // target-local impact below.
         if (fatalConditionSatisfied)
-            await MgrManimaniVfx.PlayPrelude(fatalConditionSatisfied);
+            await MgrManimaniVfx.PlayPrelude(Owner, fatalConditionSatisfied);
         MgrManimaniVfx.SpawnImpact(target, fatalConditionSatisfied);
 
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue)

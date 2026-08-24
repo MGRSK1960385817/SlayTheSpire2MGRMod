@@ -46,7 +46,7 @@ public sealed class Fade : MgrCard
             PileType.Draw,
             Owner);
         CardCmd.PreviewCardPileAdd(result, 1.2f);
-        await Cmd.Wait(0.35f);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(Owner, 0.35f));
     }
 
     protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);

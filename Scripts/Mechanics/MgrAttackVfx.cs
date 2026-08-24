@@ -188,7 +188,12 @@ public static class MgrAttackVfx
         if (anticipation is not null)
         {
             room.CombatVfxContainer.AddChildSafely(anticipation);
-            await Cmd.Wait(NGrandFinaleVfx.totalAnticipationDuration);
+            float anticipationSeconds = performer.Player is { } player
+                ? MgrVisualTiming.ScaleBlockingVisualWait(
+                    player,
+                    NGrandFinaleVfx.totalAnticipationDuration)
+                : NGrandFinaleVfx.totalAnticipationDuration;
+            await Cmd.Wait(anticipationSeconds);
         }
 
         foreach (Creature target in targets.Where(target => target.IsAlive))

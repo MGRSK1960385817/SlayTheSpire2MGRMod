@@ -170,13 +170,14 @@ public static class MgrPerformanceSystem
             }
 
             return MathF.Max(
-                (float)MgrVisualTuning.Performances.MinimumPerformanceVfxWaitSeconds,
+                (float)MgrVisualTuning.Performances.MinimumPerformanceVfxWaitSeconds *
+                    MgrVisualTiming.GetAnimationDurationScale(card.Owner),
                 normalSeconds *
                 MgrVisualTuning.Performances.PerformanceVfxWaitMultiplier *
                 sequenceScale);
         }
 
-        return normalSeconds;
+        return MgrVisualTiming.ScaleBlockingVisualWait(card.Owner, normalSeconds);
     }
 
     public static bool IsResolvingPerformance(CardModel card) =>
@@ -403,7 +404,9 @@ public static class MgrPerformanceSystem
                 if (!state.Entries.Contains(entry) || ResolvingEntries.Contains(entry))
                     continue;
 
-                float durationScale = GetSequentialAnimationDurationScale(animationIndex);
+                float durationScale = GetSequentialAnimationDurationScale(
+                    player,
+                    animationIndex);
                 await MgrPerformanceVisuals.PlayTriggerAnimation(
                     player,
                     entry,
@@ -730,7 +733,9 @@ public static class MgrPerformanceSystem
                 if (!state.Entries.Contains(entry) || ResolvingEntries.Contains(entry))
                     continue;
 
-                float durationScale = GetSequentialAnimationDurationScale(animationIndex);
+                float durationScale = GetSequentialAnimationDurationScale(
+                    player,
+                    animationIndex);
                 bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
                 bool willExhaust = !isOrdinaryPower &&
                     (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
@@ -878,7 +883,10 @@ public static class MgrPerformanceSystem
         ActivePassDepths[player] = depth - 1;
     }
 
-    private static float GetSequentialAnimationDurationScale(int animationIndex) =>
+    private static float GetSequentialAnimationDurationScale(
+        Player player,
+        int animationIndex) =>
+        MgrVisualTiming.GetAnimationDurationScale(player) *
         MathF.Max(
             MgrVisualTuning.Performances.MinimumSequentialTriggerDurationScale,
             MathF.Pow(

@@ -22,6 +22,10 @@ lib/<正式版>/MGRMod.dll            # 正式版原生 payload，程序集身�
 lib/<最新测试版>/MGRMod.dll        # 测试版原生 payload，程序集身份 MGRMod
 ```
 
+上述名称的大小写属于发布协议的一部分。两个目标版本的原版加载器都会根据清单 `id = MGRMod` 精确拼接 `MGRMod.dll` 与 `MGRMod.pck`；在Linux等大小写敏感环境中，`mgrmod.pck` 不能替代 `MGRMod.pck`。顶层本地ZIP统一使用 `MGRMod/` 根目录。`mgrmod-variants.manifest` 与 `lib/` 则是启动器既定的小写名称，不应改成大写。
+
+Windows会把仅大小写不同的路径视为同一路径，并在覆盖旧文件时保留原目录项拼写。`Build-MgrVariantBundle.ps1` 因此会在写入后通过临时中间名强制归一化顶层目录、PCK、DLL、JSON、manifest、`lib` 与两份payload的实际名称；工坊准备脚本和本地ZIP脚本使用大小写敏感的六文件清单检查，防止旧的 `mods/mgrmod/mgrmod.pck` 再次混入发布包。
+
 启动器从游戏根目录的 `release_info.json` 读取版本，在清单中选择不高于宿主版本的最高目标，校验 SHA-256 后把 payload 载入同一个 `AssemblyLoadContext`，关联回 MGR 的 Mod 记录并调用 `MGRMod.Entry.Initialize()`。
 
 启动器和 payload 使用不同程序集身份，避免顶层 `MGRMod.dll` 与真实主体发生同名装载冲突。资源 PCK 由两个 payload 共享；只有游戏 API、RitsuLib ABI 或版本特有行为需要进入 DLL 分支。
@@ -110,6 +114,16 @@ dotnet build MGRMod.csproj -c Release `
 `Sts2CompatTarget` 必须与 `Sts2DataDir` 属于同一个游戏版本。若 v0.111 DLL 配上 `0.107.1`，编译器会错误启用 `STS2_V107`，旧版伤害 Hook、卡牌结算去向等 override 会集中报 `CS0115`；这不是五处源码同时损坏，而是目标与引用不匹配。
 
 底层工作仍由 `tools/Build-MgrVariantBundle.ps1` 完成；`MGRMod.csproj` 已把它接入默认构建。`MGRWorkshop/Prepare-Workshop.ps1` 也改为只调用一次普通双版本构建，然后检查发布目录和哈希，不再重复构建 payload。准备脚本只刷新本地发布目录，不会联系 Steam。
+
+需要制作供手动安装的本地ZIP时，必须从干净的双版本bundle生成，不得直接压缩可能保留旧大小写的游戏 `mods` 目录：
+
+```powershell
+pwsh -NoProfile -File tools/Package-MgrLocalZip.ps1 `
+  -BundleDir ".artifacts/MGRMod-cross-version" `
+  -OutputZip "<输出目录>/MGRMod.zip"
+```
+
+脚本会在独立临时目录中创建 `MGRMod/` 根目录，只复制六个规定文件，并在替换旧ZIP前检查内部入口的精确大小写。输出ZIP不包含日志、构建缓存、源码或其他文件，也不会联系Steam。
 
 ## 六、游戏更新后的滚动流程
 

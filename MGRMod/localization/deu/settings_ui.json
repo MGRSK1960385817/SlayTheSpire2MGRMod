@@ -1,8 +1,11 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "MGR-Mod",
   "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "Sendet nach deiner ausdrücklichen Zustimmung Daten aus MGR-Einzelspielerläufen zur Balanceanalyse. Mehrspielerläufe, vollständige Spielstände, Spielernamen und Protokolle werden nicht gesendet.",
-  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Grafikleistung",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "MGR-Einstellungen",
   "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "Charakterdarstellung",
   "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "Charakteranimation deaktivieren",
-  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Deaktiviert sowohl die Einzelbildanimation des Charakters als auch dauerhafte Effekte um ihn herum. Wird beim nächsten Erstellen des Charakters im Kampf wirksam."
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Deaktiviert sowohl die Einzelbildanimation des Charakters als auch dauerhafte Effekte um ihn herum. Wird beim nächsten Erstellen des Charakters im Kampf wirksam.",
+  "MGR_MOD_SETTINGS_UI_AUDIO_SECTION_TITLE": "Notenklänge",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS": "Notenklänge deaktivieren",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS_DESCRIPTION": "Schaltet die Klänge beim Erzeugen von Noten und Auslösen von Akkorden stumm. Diese Option ist standardmäßig aus und muss manuell aktiviert werden."
 }

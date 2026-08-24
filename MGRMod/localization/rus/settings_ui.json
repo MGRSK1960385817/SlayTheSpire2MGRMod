@@ -1,8 +1,11 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "Мод MGR",
   "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "С вашего явного согласия отправляет данные одиночных забегов MGR для анализа баланса. Сетевые забеги, полные сохранения, имена игроков и журналы не отправляются.",
-  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Производительность графики",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Настройки MGR",
   "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "Отображение персонажа",
   "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "Отключить анимацию персонажа",
-  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Одновременно отключает покадровую анимацию персонажа и постоянные эффекты вокруг него. Применяется при следующем создании персонажа в бою."
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Одновременно отключает покадровую анимацию персонажа и постоянные эффекты вокруг него. Применяется при следующем создании персонажа в бою.",
+  "MGR_MOD_SETTINGS_UI_AUDIO_SECTION_TITLE": "Звуки нот",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS": "Отключить звуки нот",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS_DESCRIPTION": "Заглушает звуки при создании нот и срабатывании аккордов. По умолчанию эта настройка выключена; её нужно включить вручную."
 }

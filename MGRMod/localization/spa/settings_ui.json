@@ -1,8 +1,11 @@
 {
   "MGR_MOD_SETTINGS_UI_TELEMETRY_MOD_NAME": "Mod MGR",
   "MGR_MOD_SETTINGS_UI_TELEMETRY_CLEAN_RUN_METRICS": "Con tu consentimiento explícito, envía datos de partidas MGR en solitario para analizar el equilibrio. No se envían partidas multijugador, partidas guardadas completas, nombres de jugadores ni registros.",
-  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Rendimiento visual",
+  "MGR_MOD_SETTINGS_UI_VISUAL_PAGE_TITLE": "Ajustes de MGR",
   "MGR_MOD_SETTINGS_UI_VISUAL_SECTION_TITLE": "Efectos visuales del personaje",
   "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION": "Desactivar la animación del personaje",
-  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Desactiva tanto la animación fotograma a fotograma del personaje como los efectos persistentes a su alrededor. Se aplicará la próxima vez que se cree el personaje en combate."
+  "MGR_MOD_SETTINGS_UI_DISABLE_CHARACTER_ANIMATION_DESCRIPTION": "Desactiva tanto la animación fotograma a fotograma del personaje como los efectos persistentes a su alrededor. Se aplicará la próxima vez que se cree el personaje en combate.",
+  "MGR_MOD_SETTINGS_UI_AUDIO_SECTION_TITLE": "Sonidos de notas",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS": "Desactivar sonidos de notas",
+  "MGR_MOD_SETTINGS_UI_DISABLE_NOTE_SOUNDS_DESCRIPTION": "Silencia los sonidos al generar notas y activar acordes. Esta opción está desactivada de forma predeterminada y debe activarse manualmente."
 }

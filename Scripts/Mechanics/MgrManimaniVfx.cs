@@ -2,6 +2,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -40,7 +41,9 @@ public static class MgrManimaniVfx
         MgrVisualTuning.ManimaniVfx.Frame4Seconds
     ];
 
-    public static async Task PlayPrelude(bool fatalConditionSatisfied)
+    public static async Task PlayPrelude(
+        Player player,
+        bool fatalConditionSatisfied)
     {
         if (!fatalConditionSatisfied ||
             TestMode.IsOn ||
@@ -70,7 +73,9 @@ public static class MgrManimaniVfx
             }
 
             backdrop.ShowFrame(frame);
-            await Cmd.Wait(PreludeDurations[frame]);
+            await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+                player,
+                PreludeDurations[frame]));
         }
 
         if (!GodotObject.IsInstanceValid(backdrop) ||
@@ -117,7 +122,7 @@ public static class MgrManimaniVfx
         }
         else
         {
-            MgrAudio.PlayNoteChannel(
+            MgrAudio.PlayNoteChannelCue(
                 MgrVisualTuning.ManimaniVfx.ImpactNoteSoundVolume);
         }
 

@@ -23,28 +23,33 @@ internal sealed partial class MgrPerformanceFinisherVisual : Node2D
         QueueRedraw();
     }
 
-    public async Task PlayEntrance()
+    public async Task PlayEntrance(float durationScale)
     {
         if (!GodotObject.IsInstanceValid(this) || !IsInsideTree())
             return;
 
+        double seconds = MgrVisualTuning.Performances.FinisherEntranceSeconds *
+            Math.Clamp(durationScale, 0.1f, 1f);
         Tween tween = CreateTween().SetParallel();
         tween.TweenProperty(
                 this,
                 "scale",
                 Vector2.One,
-                MgrVisualTuning.Performances.FinisherEntranceSeconds)
+                seconds)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
         tween.TweenProperty(
             this,
             "modulate",
             new Color(1f, 1f, 1f, 0.94f),
-            MgrVisualTuning.Performances.FinisherEntranceSeconds);
+            seconds);
         await TweenHelper.AwaitFinished(tween, this);
     }
 
-    public async Task Strike(Vector2 targetPosition, int strikeIndex)
+    public async Task Strike(
+        Vector2 targetPosition,
+        int strikeIndex,
+        float durationScale)
     {
         if (!GodotObject.IsInstanceValid(this) || !IsInsideTree())
             return;
@@ -52,7 +57,8 @@ internal sealed partial class MgrPerformanceFinisherVisual : Node2D
         double seconds = Math.Max(
             MgrVisualTuning.Performances.FinisherMinimumStepSeconds,
             MgrVisualTuning.Performances.FinisherFirstStepSeconds -
-            strikeIndex * MgrVisualTuning.Performances.FinisherStepAccelerationSeconds);
+            strikeIndex * MgrVisualTuning.Performances.FinisherStepAccelerationSeconds) *
+            Math.Clamp(durationScale, 0.1f, 1f);
         _trailStrength = 1f;
         QueueRedraw();
 
@@ -81,31 +87,33 @@ internal sealed partial class MgrPerformanceFinisherVisual : Node2D
         QueueRedraw();
     }
 
-    public async Task PlayExit()
+    public async Task PlayExit(float durationScale)
     {
         if (!GodotObject.IsInstanceValid(this) || !IsInsideTree())
             return;
 
         _trailStrength = 1f;
         QueueRedraw();
+        double seconds = MgrVisualTuning.Performances.FinisherExitSeconds *
+            Math.Clamp(durationScale, 0.1f, 1f);
         Tween tween = CreateTween().SetParallel();
         tween.TweenProperty(
                 this,
                 "position:x",
                 Position.X - MgrVisualTuning.Performances.FinisherExitDistance,
-                MgrVisualTuning.Performances.FinisherExitSeconds)
+                seconds)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Cubic);
         tween.TweenProperty(
             this,
             "scale",
             Vector2.One * 0.58f,
-            MgrVisualTuning.Performances.FinisherExitSeconds);
+            seconds);
         tween.TweenProperty(
             this,
             "modulate",
             new Color(1f, 1f, 1f, 0f),
-            MgrVisualTuning.Performances.FinisherExitSeconds);
+            seconds);
         await TweenHelper.AwaitFinished(tween, this);
     }
 

@@ -106,7 +106,7 @@ public static class MgrCurseUtils
         {
             // Blade Dance-style generated hand card: use only the native hand
             // fly-in and its short cadence, without a centre-screen preview.
-            await Cmd.Wait(0.1f);
+            await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(player, 0.1f));
         }
         else
         {
@@ -116,7 +116,9 @@ public static class MgrCurseUtils
             CardCmd.PreviewCardPileAdd(
                 result,
                 Math.Max(0.05f, pilePreviewDuration));
-            await Cmd.Wait(Math.Max(0f, pilePreviewWait));
+            await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+                player,
+                Math.Max(0f, pilePreviewWait)));
         }
 
         return curse;

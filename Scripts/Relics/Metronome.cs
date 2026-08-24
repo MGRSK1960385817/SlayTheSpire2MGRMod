@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -71,7 +72,7 @@ public sealed class Metronome : ModRelicTemplate
     {
         IsActivating = true;
         Flash();
-        await Cmd.Wait(1f);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(Owner, 1f));
         IsActivating = false;
     }
 }

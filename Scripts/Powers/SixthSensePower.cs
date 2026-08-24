@@ -38,7 +38,9 @@ public sealed class SixthSensePower : ModPowerTemplate
         // AfterPlayerTurnStart runs after Tower 2's ordinary hand draw. Leave
         // a short visual beat so the starting hand settles before this power's
         // additional cards enter it.
-        await Cmd.Wait(PostHandDrawPauseSeconds);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+            player,
+            PostHandDrawPauseSeconds));
 
         // PowerModel.Flash is Tower 2's native triggered-power presentation:
         // besides flashing the power bar entry, it raises this power's BigIcon

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Rooms;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -41,7 +42,9 @@ public sealed class GuitarPick : ModRelicTemplate
 
     private async Task EndLightPulse(int version)
     {
-        await Cmd.Wait(LightPulseSeconds);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
+            Owner,
+            LightPulseSeconds));
         if (_lightPulseVersion == version)
             Status = RelicStatus.Normal;
     }

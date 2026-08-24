@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -283,7 +284,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             MgrStarryNoteVfx.Spawn(player);
         RefreshConditionalCardGlows(player);
 
-        MgrAudio.PlayNoteChannel();
+        MgrAudio.PlayGeneratedNote();
 
         // Like the Defect's OrbQueue/NOrbManager split, state owns the notes and
         // this adapter mirrors them into persistent Godot nodes. Awaiting the
@@ -772,8 +773,16 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         if (player.Creature.IsDead || CombatManager.Instance.IsOverOrEnding)
             return true;
 
-        return player.Creature.CombatState is { Enemies.Count: > 0 } combatState &&
-            combatState.Enemies.All(static enemy => enemy.IsDead);
+        if (player.Creature.CombatState is not { Enemies.Count: > 0 } combatState)
+            return false;
+
+        // Match CombatManager's own victory predicate instead of treating
+        // IsDead as final. Test Subject and other revival mechanics remain dead
+        // and untargetable briefly, but vote through ShouldStopCombatFromEnding
+        // to keep the encounter active until their revive state resolves.
+        bool hasLivingPrimaryEnemy = combatState.Enemies.Any(
+            static enemy => enemy is not null && enemy.IsAlive && enemy.IsPrimaryEnemy);
+        return !hasLivingPrimaryEnemy && !Hook.ShouldStopCombatFromEnding(combatState);
     }
 
     /// <summary>

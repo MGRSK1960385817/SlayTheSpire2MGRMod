@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
+using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -57,7 +58,7 @@ public sealed class ParanoiaGirl : MgrCard
             doubt,
             PileType.Hand,
             Owner);
-        await Cmd.Wait(0.1f);
+        await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(Owner, 0.1f));
     }
 
     protected override void OnUpgrade()

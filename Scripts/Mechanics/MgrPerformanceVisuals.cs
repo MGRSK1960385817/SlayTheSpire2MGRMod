@@ -76,7 +76,9 @@ public static class MgrPerformanceVisuals
                     QueueEntryAnimation(
                         player,
                         entry,
-                        GetEntryAnimationDurationScale(queuedBeforeThisTurn));
+                        GetEntryAnimationDurationScale(
+                            player,
+                            queuedBeforeThisTurn));
                 }
             }
             catch (Exception exception)
@@ -119,7 +121,9 @@ public static class MgrPerformanceVisuals
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.PlayGeneratedEntryAnimation(entry);
+        return rack.PlayGeneratedEntryAnimation(
+            entry,
+            MgrVisualTiming.GetAnimationDurationScale(player));
     }
 
     /// <summary>
@@ -135,8 +139,10 @@ public static class MgrPerformanceVisuals
             rack.PulseModifiedEntries(entries);
     }
 
-    private static float GetEntryAnimationDurationScale(int queuedBeforeThisTurn) =>
-        MathF.Max(
+    private static float GetEntryAnimationDurationScale(
+        Player player,
+        int queuedBeforeThisTurn) =>
+        MgrVisualTiming.GetAnimationDurationScale(player) * MathF.Max(
             MgrVisualTuning.Performances.MinimumEntryAnimationDurationScale,
             1f - Math.Max(0, queuedBeforeThisTurn) *
                 MgrVisualTuning.Performances.EntryAnimationAccelerationPerCard);
@@ -216,7 +222,9 @@ public static class MgrPerformanceVisuals
             return;
 
         Show(player, entries);
-        await rack.BeginFinisher(sourceCard);
+        await rack.BeginFinisher(
+            sourceCard,
+            MgrVisualTiming.GetAnimationDurationScale(player));
     }
 
     public static Task PlayFinisherStrike(
@@ -227,7 +235,10 @@ public static class MgrPerformanceVisuals
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.PlayFinisherStrike(entry, strikeIndex);
+        return rack.PlayFinisherStrike(
+            entry,
+            strikeIndex,
+            MgrVisualTiming.GetAnimationDurationScale(player));
     }
 
     public static Task CompleteFinisher(Player player, bool animate)
@@ -235,7 +246,9 @@ public static class MgrPerformanceVisuals
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.CompleteFinisher(animate);
+        return rack.CompleteFinisher(
+            animate,
+            MgrVisualTiming.GetAnimationDurationScale(player));
     }
 
     public static void ClearAll()
@@ -724,7 +737,7 @@ public static class MgrPerformanceVisuals
                 _staff.Pulse();
         }
 
-        public async Task BeginFinisher(CardModel sourceCard)
+        public async Task BeginFinisher(CardModel sourceCard, float durationScale)
         {
             DisposeFinisherVisual();
             if (_views.Count == 0)
@@ -742,12 +755,13 @@ public static class MgrPerformanceVisuals
                     rightmostX + MgrVisualTuning.Performances.FinisherEntryDistance,
                     MgrVisualTuning.Performances.CardOffsetY));
             _finisherVisual = visual;
-            await visual.PlayEntrance();
+            await visual.PlayEntrance(durationScale);
         }
 
         public async Task PlayFinisherStrike(
             MgrPerformanceEntry entry,
-            int strikeIndex)
+            int strikeIndex,
+            float durationScale)
         {
             PerformanceCardView? target = FindView(entry);
             if (target is null ||
@@ -760,7 +774,10 @@ public static class MgrPerformanceVisuals
             Vector2 targetPosition = new(
                 target.LocalCenterX,
                 MgrVisualTuning.Performances.CardOffsetY);
-            await _finisherVisual.Strike(targetPosition, strikeIndex);
+            await _finisherVisual.Strike(
+                targetPosition,
+                strikeIndex,
+                durationScale);
             _staff.Pulse();
 
             var burst = new MgrPerformanceCardBurstVisual
@@ -773,7 +790,7 @@ public static class MgrPerformanceVisuals
             burst.Burst();
         }
 
-        public async Task CompleteFinisher(bool animate)
+        public async Task CompleteFinisher(bool animate, float durationScale)
         {
             if (_finisherVisual is null ||
                 !GodotObject.IsInstanceValid(_finisherVisual))
@@ -785,7 +802,7 @@ public static class MgrPerformanceVisuals
             MgrPerformanceFinisherVisual visual = _finisherVisual;
             _finisherVisual = null;
             if (animate)
-                await visual.PlayExit();
+                await visual.PlayExit(durationScale);
             if (GodotObject.IsInstanceValid(visual))
                 visual.QueueFree();
         }
@@ -867,7 +884,9 @@ public static class MgrPerformanceVisuals
                     durationScale));
         }
 
-        public async Task PlayGeneratedEntryAnimation(MgrPerformanceEntry entry)
+        public async Task PlayGeneratedEntryAnimation(
+            MgrPerformanceEntry entry,
+            float durationScale)
         {
             PerformanceCardView? destination = FindView(entry);
             if (destination is null || !_root.IsInsideTree())
@@ -894,11 +913,16 @@ public static class MgrPerformanceVisuals
                 preview.Modulate = Colors.White;
                 preview.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
 
+                float clampedDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
                 Tween reveal = preview.CreateTween();
-                reveal.TweenProperty(preview, "scale", Vector2.One * 0.90f, 0.13)
+                reveal.TweenProperty(
+                        preview,
+                        "scale",
+                        Vector2.One * 0.90f,
+                        0.13 * clampedDurationScale)
                     .SetEase(Tween.EaseType.Out)
                     .SetTrans(Tween.TransitionType.Back);
-                reveal.TweenInterval(0.28);
+                reveal.TweenInterval(0.28 * clampedDurationScale);
                 await preview.ToSignal(reveal, Tween.SignalName.Finished);
                 if (!GodotObject.IsInstanceValid(preview))
                     return;
@@ -910,21 +934,24 @@ public static class MgrPerformanceVisuals
                         preview,
                         "position",
                         destinationInPreviewParent,
-                        MgrVisualTuning.Performances.EnterQueueSeconds)
+                        MgrVisualTuning.Performances.EnterQueueSeconds *
+                            clampedDurationScale)
                     .SetEase(Tween.EaseType.InOut)
                     .SetTrans(Tween.TransitionType.Cubic);
                 flight.TweenProperty(
                         preview,
                         "scale",
                         PerformanceCardView.MiniatureScale,
-                        MgrVisualTuning.Performances.EnterQueueSeconds)
+                        MgrVisualTuning.Performances.EnterQueueSeconds *
+                            clampedDurationScale)
                     .SetEase(Tween.EaseType.In)
                     .SetTrans(Tween.TransitionType.Back);
                 flight.TweenProperty(
                     preview,
                     "modulate",
                     new Color(1f, 1f, 1f, 0.12f),
-                    MgrVisualTuning.Performances.EnterQueueSeconds);
+                    MgrVisualTuning.Performances.EnterQueueSeconds *
+                        clampedDurationScale);
                 await preview.ToSignal(flight, Tween.SignalName.Finished);
             }
             finally
