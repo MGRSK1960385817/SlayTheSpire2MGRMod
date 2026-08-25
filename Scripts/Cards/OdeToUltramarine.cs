@@ -41,6 +41,6 @@ public sealed class OdeToUltramarine : MgrCard
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(1m);
-        DynamicVars["Performance"].UpgradeValueBy(3m);
+        DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 }

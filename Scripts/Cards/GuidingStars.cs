@@ -19,7 +19,7 @@ public sealed class GuidingStars : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move)
+        new DamageVar(8m, ValueProp.Move)
     ];
 
     public GuidingStars() : base(

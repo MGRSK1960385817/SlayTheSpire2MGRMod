@@ -23,9 +23,9 @@ public sealed class SongOfSiren : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move),
+        new BlockVar(7m, ValueProp.Move),
         new PowerVar<StrengthPower>(1m),
-        new IntVar("Performance", 2m)
+        new IntVar("Performance", 1m)
     ];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
@@ -70,5 +70,5 @@ public sealed class SongOfSiren : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars["Performance"].UpgradeValueBy(1m);
 }

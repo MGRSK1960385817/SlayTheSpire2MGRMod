@@ -1,5 +1,4 @@
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -770,19 +769,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     /// </summary>
     internal static bool ShouldStopNoteSequence(Player player)
     {
-        if (player.Creature.IsDead || CombatManager.Instance.IsOverOrEnding)
-            return true;
-
-        if (player.Creature.CombatState is not { Enemies.Count: > 0 } combatState)
-            return false;
-
-        // Match CombatManager's own victory predicate instead of treating
-        // IsDead as final. Test Subject and other revival mechanics remain dead
-        // and untargetable briefly, but vote through ShouldStopCombatFromEnding
-        // to keep the encounter active until their revive state resolves.
-        bool hasLivingPrimaryEnemy = combatState.Enemies.Any(
-            static enemy => enemy is not null && enemy.IsAlive && enemy.IsPrimaryEnemy);
-        return !hasLivingPrimaryEnemy && !Hook.ShouldStopCombatFromEnding(combatState);
+        // IsOverOrEnding already owns Tower 2's complete combat-end predicate,
+        // including revival votes. Do not enumerate those votes a second time
+        // from inside AfterCardPlayed: the card pipeline only needs the final
+        // answer and must not maintain a competing view of encounter lifetime.
+        return player.Creature.IsDead || CombatManager.Instance.IsOverOrEnding;
     }
 
     /// <summary>

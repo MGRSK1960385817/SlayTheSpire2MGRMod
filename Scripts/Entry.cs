@@ -52,6 +52,7 @@ public partial class Entry
         _runtimePatcher.RegisterPatch<MgrOrobasCharacterListPatch>();
         _runtimePatcher.RegisterPatch<MgrKaleidoscopeCardPoolScopePatch>();
         _runtimePatcher.RegisterPatch<MgrScopedCharacterCardPoolsPatch>();
+        _runtimePatcher.RegisterPatch<MgrTestSubjectCombatEndPatch>();
         if (!RitsuLibFramework.ApplyRequiredPatcher(
                 _runtimePatcher,
                 () => IsModActive = false,

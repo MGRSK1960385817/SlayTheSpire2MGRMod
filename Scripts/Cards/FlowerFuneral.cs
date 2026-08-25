@@ -14,7 +14,7 @@ public sealed class FlowerFuneral : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move)
+        new DamageVar(5m, ValueProp.Move)
     ];
 
     public FlowerFuneral() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -40,6 +40,6 @@ public sealed class FlowerFuneral : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }
