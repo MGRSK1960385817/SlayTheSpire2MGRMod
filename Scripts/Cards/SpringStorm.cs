@@ -44,6 +44,6 @@ public sealed class SpringStorm : MgrCard
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Retain);
+        DynamicVars["FortePower"].UpgradeValueBy(1m);
     }
 }

@@ -50,7 +50,7 @@ public static class MgrNoteCardFactory
             : MgrWeightedCardRandom.PickOne(
                 candidates,
                 player.RunState.Rng.CombatCardGeneration,
-                MgrCardWeightProfile.Uniform);
+                MgrCardWeightProfile.LivingDream);
         if (canonical is null)
             return null;
 

@@ -15,7 +15,7 @@ public sealed class MeteorShower : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(3m, ValueProp.Move),
+        new DamageVar(2m, ValueProp.Move),
         new IntVar("Hits", 6m)
     ];
 
