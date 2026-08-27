@@ -49,6 +49,14 @@ public sealed class MgrPerformanceEntry
         RemainingPerformanceTurns = checked(RemainingPerformanceTurns + amount);
     }
 
+    public void AddRemainingPerformanceTurns(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        RemainingPerformanceTurns = checked(RemainingPerformanceTurns + amount);
+    }
+
     /// <summary>
     /// Creates a new physical card entry in the same queue slot. Counters are
     /// deliberately initialized from the incoming card's assigned value and

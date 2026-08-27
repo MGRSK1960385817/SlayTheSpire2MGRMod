@@ -740,7 +740,11 @@ public static class MgrPerformanceSystem
                 bool willExhaust = !isOrdinaryPower &&
                     (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
                      entry.Card.ExhaustOnNextPlay);
-                bool isFinalPerformance = entry.RemainingPerformanceTurns <= 1;
+                int selfExtension = entry.Card is MgrCard performanceCard
+                    ? Math.Max(0, performanceCard.GetCurrentAutoPlayPerformanceExtension())
+                    : 0;
+                bool isFinalPerformance =
+                    entry.RemainingPerformanceTurns <= 1 && selfExtension == 0;
 
                 await MgrPerformanceVisuals.PlayTriggerAnimation(
                     player,
@@ -788,6 +792,11 @@ public static class MgrPerformanceSystem
                     continue;
                 }
 
+                // Self-extension is committed only after the real autoplay has
+                // completed successfully. It is applied before consuming this
+                // trigger, so 2 + 1 - 1 remains 2. The preview above also keeps a
+                // one-turn entry in Play instead of routing it out prematurely.
+                entry.AddRemainingPerformanceTurns(selfExtension);
                 entry.ConsumeOnePerformance();
                 bool combatEnded = ShouldStopPerformanceSequence(player);
 

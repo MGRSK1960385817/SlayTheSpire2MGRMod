@@ -85,6 +85,14 @@ public abstract class MgrCard(
         MgrPerformanceSystem.GetInitialPerformanceTurns(this);
 
     /// <summary>
+    /// Returns the number of remaining Performance turns this card will grant to
+    /// its own live queue entry during the current automatic play. The scheduler
+    /// previews this value before result-pile routing, then applies it only after
+    /// the card play succeeds.
+    /// </summary>
+    internal virtual int GetCurrentAutoPlayPerformanceExtension() => 0;
+
+    /// <summary>
     /// Declares the combat condition that makes this card stronger and should
     /// therefore use Tower 2's native gold hand-card glow. Multiple flags use
     /// OR semantics: the card glows when any declared bonus is currently active.

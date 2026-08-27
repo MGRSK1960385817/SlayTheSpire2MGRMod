@@ -21,6 +21,11 @@ public sealed class EverydayMiracles : MgrCard
     public override int InitialPerformanceTurns =>
         DynamicVars["Performance"].IntValue;
 
+    internal override int GetCurrentAutoPlayPerformanceExtension() =>
+        IsPhraseEnd
+            ? DynamicVars["TailPerformanceBonus"].IntValue
+            : 0;
+
     protected override MgrGoldGlowCondition GoldGlowConditions =>
         MgrGoldGlowCondition.PhraseStart |
         MgrGoldGlowCondition.PhraseEnd;
