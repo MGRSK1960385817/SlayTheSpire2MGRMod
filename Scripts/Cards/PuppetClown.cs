@@ -17,7 +17,7 @@ public sealed class PuppetClown : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4m, ValueProp.Move)
+        new BlockVar(5m, ValueProp.Move)
     ];
 
     public PuppetClown() : base(

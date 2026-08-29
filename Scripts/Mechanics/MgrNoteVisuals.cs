@@ -529,12 +529,24 @@ public static class MgrNoteVisuals
             _clearTween.TweenCallback(Callable.From(ShowEmptySlots));
         }
 
-        private static double GetNoteEntranceSeconds(int notesGeneratedBefore) =>
-            Math.Max(
+        private static double GetNoteEntranceSeconds(int notesGeneratedBefore)
+        {
+            int generatedNotes = Math.Max(0, notesGeneratedBefore);
+            int initialAccelerationNotes = Math.Min(
+                generatedNotes,
+                MgrVisualTuning.Notes.InitialNoteEntranceAccelerationCount);
+            int lateAccelerationNotes = Math.Max(
+                0,
+                generatedNotes -
+                    MgrVisualTuning.Notes.InitialNoteEntranceAccelerationCount);
+            return Math.Max(
                 MgrVisualTuning.Notes.MinimumNoteEntranceSeconds,
                 MgrVisualTuning.Notes.FirstNoteEntranceSeconds -
-                Math.Max(0, notesGeneratedBefore) *
-                MgrVisualTuning.Notes.NoteEntranceAccelerationPerNote);
+                initialAccelerationNotes *
+                    MgrVisualTuning.Notes.NoteEntranceAccelerationPerNote -
+                lateAccelerationNotes *
+                    MgrVisualTuning.Notes.LateNoteEntranceAccelerationPerNote);
+        }
 
         private static double GetChordHoldSeconds(int chordTriggersBefore) =>
             Math.Max(

@@ -20,7 +20,7 @@ public sealed class DonutHole : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(12m, ValueProp.Move)
+        new BlockVar(13m, ValueProp.Move)
     ];
 
     public DonutHole() : base(

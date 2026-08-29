@@ -30,7 +30,21 @@ public sealed class ByakkoyaGirl : MgrCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
+        IEnumerable<CardModel> drawnCards = await CardPileCmd.Draw(
+            choiceContext,
+            DynamicVars.Cards.BaseValue,
+            Owner);
+
+        // Let the native draw presentation settle before selecting and
+        // exhausting the lowest-cost hand card. The hand snapshot deliberately
+        // remains after this visual-only beat, so the chosen candidate still
+        // comes from the latest authoritative pile state.
+        if (drawnCards.Any())
+        {
+            await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
+                this,
+                MgrVisualTuning.ByakkoyaGirl.DrawToExhaustPauseSeconds));
+        }
 
         List<CardModel> hand = PileType.Hand.GetPile(Owner).Cards.ToList();
         if (hand.Count == 0)
@@ -62,6 +76,6 @@ public sealed class ByakkoyaGirl : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

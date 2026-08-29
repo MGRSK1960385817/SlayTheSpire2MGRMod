@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-18",
+  "lastUpdated": "2026-08-29",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌、遗物与药水；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -122,7 +122,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "2费，造成12点伤害；尾音时伤害翻倍；升级后基础伤害增加至17。"
+      "summary": "2费，造成14点伤害；尾音时伤害翻倍；升级后基础伤害增加至18。"
     },
     {
       "codeName": "Encore",
@@ -210,7 +210,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Uncommon",
-      "summary": "1费能力，演奏2；演奏结束时获得1层强音；升级后演奏降为1。"
+      "summary": "1费能力，演奏2；演奏结束时获得1点强音；升级后演奏降为1。"
     },
     {
       "codeName": "OtomeDissection",
@@ -274,7 +274,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "2费白卡攻击，演奏2（升级后3）；造成4（5）点伤害1次；起音时，本场战斗中的伤害次数增加1。"
+      "summary": "2费白卡攻击，演奏2（升级后3）；造成5点伤害1次；起音时，本场战斗中的伤害次数增加1。"
     },
     {
       "codeName": "LongDream",
@@ -290,7 +290,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "1费技能，演奏2（升级后3）；先抽1张牌，再随机将1张费用最低的手牌转化为音符；诅咒与状态同费时优先诅咒；消耗。"
+      "summary": "1费（升级后0费）技能，演奏2；先抽1张牌，再随机将1张费用最低的手牌转化为音符；诅咒与状态同费时优先诅咒；消耗。"
     },
     {
       "codeName": "EverydayMiracles",
@@ -322,7 +322,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "1费金卡能力；失去99层强音，此后生成双倍音符；升级后费用降为0。"
+      "summary": "1费金卡能力；失去99点强音，此后生成双倍音符；升级后费用降为0。"
     },
     {
       "codeName": "RainbowScale",
@@ -370,7 +370,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费白卡技能，消耗；本回合获得1（2）层强音；升级后不再获得保留。"
+      "summary": "0费白卡技能，消耗；本回合获得1（2）点强音；升级后不再获得保留。"
     },
     {
       "codeName": "MeteorShower",
@@ -402,7 +402,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Uncommon",
-      "summary": "2费；造成8伤害并获得8格挡；若本回合无和弦则效果执行两次；升级后：伤害与格挡增加至10。"
+      "summary": "2费；造成8伤害并获得8格挡；若本回合无和弦则效果执行两次；升级后：伤害与格挡增加至11。"
     },
     {
       "codeName": "Masterful",
@@ -562,7 +562,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费，造成5（8）点伤害并选择升级1张手牌；起音时改为升级所有手牌。"
+      "summary": "1费，造成6（9）点伤害并选择升级1张手牌；起音时改为升级所有手牌。"
     },
     {
       "codeName": "Omnia",
@@ -594,7 +594,7 @@
       "status": 1,
       "type": "Power",
       "rarity": "Rare",
-      "summary": "1费；每回合开始时失去4点生命并获得1层强音；升级后生命损失降为3点。"
+      "summary": "1费；每回合开始时失去4点生命并获得1点强音；升级后生命损失降为3点。"
     },
     {
       "codeName": "Fade",
@@ -709,12 +709,12 @@
       "summary": "1费白卡攻击；造成6（9）点伤害，然后立即结算最右侧演奏牌的一次演奏。"
     },
     {
-      "codeName": "Gaze",
-      "name": "注视",
+      "codeName": "MelodicStrike",
+      "name": "旋律打击",
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "1费白卡攻击；造成6（7）点伤害；目标每有一种不同负面状态，获得3（4）点格挡；战斗中实时显示总格挡。"
+      "summary": "1费白卡攻击，打击；演奏1，造成2（4）点伤害，并在本回合获得1点强音。"
     },
     {
       "codeName": "SweetMagic",
@@ -722,7 +722,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "2费蓝卡技能，消耗；将3张手牌转化为音符，若三种音符各不相同则获得1层强音；升级后费用降为1。"
+      "summary": "2费蓝卡技能，消耗；将3张手牌转化为音符，若三种音符各不相同则获得1点强音；升级后费用降为1。"
     },
     {
       "codeName": "DonutHole",
@@ -730,7 +730,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费蓝卡技能；获得12（15）点格挡；每有一张进行中的演奏牌，本牌耗能增加1。名称与图片暂定。"
+      "summary": "0费蓝卡技能；获得13（17）点格挡；每有一张进行中的演奏牌，本牌耗能增加1。名称与图片暂定。"
     },
     {
       "codeName": "PuppetClown",
@@ -738,7 +738,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Uncommon",
-      "summary": "0费蓝卡技能；获得4点格挡，与抽牌堆中最先会被抽到的诅咒牌交换位置；升级后获得保留。"
+      "summary": "0费蓝卡技能；获得5点格挡，与抽牌堆中最先会被抽到的诅咒牌交换位置；升级后获得保留。"
     },
     {
       "codeName": "Samsara",
@@ -822,7 +822,7 @@
       "name": "Fumo",
       "status": 1,
       "rarity": "Rare",
-      "summary": "战斗开始时，获得 1 层强音。"
+      "summary": "战斗开始时，获得1点强音。"
     },
     {
       "codeName": "YourStage",
@@ -894,7 +894,7 @@
       "name": "润喉糖",
       "status": 1,
       "rarity": "Uncommon",
-      "summary": "仅属于MGR药水池；获得1层强音；图片为images/potion/Lozenge.png。"
+      "summary": "仅属于MGR药水池；获得1点强音；图片为images/potion/Lozenge.png。"
     },
     {
       "codeName": "SoulOfStage",

@@ -18,8 +18,8 @@ public sealed class MaguroReversal : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move),
-        new BlockVar(8m, ValueProp.Move)
+        new DamageVar(9m, ValueProp.Move),
+        new BlockVar(9m, ValueProp.Move)
     ];
 
     public MaguroReversal() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -59,7 +59,7 @@ public sealed class MaguroReversal : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

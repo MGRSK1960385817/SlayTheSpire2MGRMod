@@ -38,5 +38,6 @@ public sealed class MgrRelicRewardPoolPatch : IPatchMethod
         grabBag.Remove<Orichalcum>();
         grabBag.Remove<Pocketwatch>();
         grabBag.Remove<GamePiece>();
+        grabBag.Remove<Girya>();
     }
 }

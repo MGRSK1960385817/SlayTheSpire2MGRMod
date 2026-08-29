@@ -19,7 +19,7 @@ public sealed class FinalShot : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(13m, ValueProp.Move)
+        new DamageVar(14m, ValueProp.Move)
     ];
 
     public FinalShot() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)

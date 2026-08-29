@@ -34,7 +34,7 @@ public sealed class LightUp : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(4m, ValueProp.Move),
+        new DamageVar(5m, ValueProp.Move),
         new PhraseStartHitsVar(1m),
         new IntVar("Performance", 2m)
     ];
@@ -65,7 +65,6 @@ public sealed class LightUp : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
         DynamicVars["Performance"].UpgradeValueBy(1m);
     }
 

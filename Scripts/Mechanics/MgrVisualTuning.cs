@@ -75,12 +75,14 @@ public static class MgrVisualTuning
         // Repeated note/chord activity in one turn accelerates presentation, but
         // both paths retain a visible minimum duration.
         public const double FirstNoteEntranceSeconds = 0.28;
-        public const double MinimumNoteEntranceSeconds = 0.10;
+        public const double MinimumNoteEntranceSeconds = 0.03;
         // Omnia holds its played card in the native centre presentation until
         // this awaited entrance beat completes. Keep it visible but brief so
         // the card can proceed into the Performance rack promptly.
         public const double OmniaNoteEntranceSeconds = 0.04;
         public const double NoteEntranceAccelerationPerNote = 0.018;
+        public const int InitialNoteEntranceAccelerationCount = 10;
+        public const double LateNoteEntranceAccelerationPerNote = 0.01;
         public const double FirstChordHoldSeconds = 0.42;
         public const double MinimumChordHoldSeconds = 0.12;
         public const double ChordHoldAccelerationPerChord = 0.075;
@@ -441,6 +443,13 @@ public static class MgrVisualTuning
         public const float StandardLifetimeSeconds = 0.62f;
         public const float FinaleLifetimeSeconds = 0.78f;
         public const int ZIndex = 42;
+    }
+
+    public static class ByakkoyaGirl
+    {
+        // Readability beat after the native draw has completed and before the
+        // random lowest-cost hand card starts its Exhaust presentation.
+        public const float DrawToExhaustPauseSeconds = 1.0f;
     }
 
     public static class LightSongVfx

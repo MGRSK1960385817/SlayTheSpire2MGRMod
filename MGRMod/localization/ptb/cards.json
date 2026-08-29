@@ -1,5 +1,5 @@
 {
-  "MGR_MOD_CARD_MGR_STRIKE.title": "Ataque",
+  "MGR_MOD_CARD_MGR_STRIKE.title": "Golpe",
   "MGR_MOD_CARD_MGR_STRIKE.description": "Cause {Damage:diff()} de dano.",
   "MGR_MOD_CARD_MGR_DEFEND.title": "Defesa",
   "MGR_MOD_CARD_MGR_DEFEND.description": "Receba {Block:diff()} de [gold]Proteção[/gold].",
@@ -186,8 +186,8 @@
   "MGR_MOD_CARD_MANIMANI.description": "{FatalPreview:[font_size=48][color=#b30f24][shake rate=24 level=10][b]T R O V Ã O[/b][/shake][/color][/font_size]|Cause {Damage:diff()} de dano.\nEm [gold]Letal[/gold], adicione [color=#b30f24][shake]permanentemente[/shake][/color] a esta carta o dano que esse inimigo causou a você neste combate.}",
   "MGR_MOD_CARD_IMPROVISE.title": "Improviso",
   "MGR_MOD_CARD_IMPROVISE.description": "Cause {Damage:diff()} de dano.\nAtive a carta de [gold]Apresentação[/gold] mais à direita.",
-  "MGR_MOD_CARD_GAZE.title": "Olhar",
-  "MGR_MOD_CARD_GAZE.description": "Cause {Damage:diff()} de dano.\nPara cada efeito negativo no alvo, receba {CalculationExtra:diff()} de [gold]Proteção[/gold].{InCombat:\n(Receba {CalculatedBlock:diff()} de [gold]Proteção[/gold].)|}",
+  "MGR_MOD_CARD_MELODIC_STRIKE.title": "Golpe Melódico",
+  "MGR_MOD_CARD_MELODIC_STRIKE.description": "[gold]Apresentação[/gold] {Performance:diff()}.\nCause {Damage:diff()} de dano.\nReceba {FortePower:diff()} de [gold]Forte[/gold] neste turno.",
   "MGR_MOD_CARD_SWEET_MAGIC.title": "Magia doce",
   "MGR_MOD_CARD_SWEET_MAGIC.description": "Transforme {Cards:diff()} cartas da sua [gold]Mão[/gold] em Notas.\nSe todas essas Notas forem diferentes, receba {FortePower:diff()} de [gold]Forte[/gold].",
   "MGR_MOD_CARD_DONUT_HOLE.title": "Buraco de rosquinha",
