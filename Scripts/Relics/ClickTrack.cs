@@ -9,8 +9,8 @@ using STS2RitsuLib.Scaffolding.Content;
 
 namespace MGRMod.Relics;
 
-[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "metronome")]
-public sealed class Metronome : ModRelicTemplate
+[RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "click_track")]
+public sealed class ClickTrack : ModRelicTemplate
 {
     private const int ChordInterval = 7;
     private bool _isActivating;
@@ -46,9 +46,9 @@ public sealed class Metronome : ModRelicTemplate
     }
 
     public override RelicAssetProfile AssetProfile => new(
-        IconPath: $"{Entry.ResPath}/images/relics/Metronome.png",
-        IconOutlinePath: $"{Entry.ResPath}/images/relics/Metronome_outline.png",
-        BigIconPath: $"{Entry.ResPath}/images/relics/Metronome.png");
+        IconPath: $"{Entry.ResPath}/images/relics/ClickTrack.png",
+        IconOutlinePath: $"{Entry.ResPath}/images/relics/ClickTrack_outline.png",
+        BigIconPath: $"{Entry.ResPath}/images/relics/ClickTrack.png");
 
     public bool TryDoubleCurrentChord()
     {

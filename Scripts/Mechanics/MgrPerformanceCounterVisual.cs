@@ -24,6 +24,7 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
     private float _triggerDurationScale = 1f;
     private bool _triggerActive;
     private bool _changedDuringTrigger;
+    private bool _awaitingTriggerCommit;
 
     public void Initialize(int remaining, float visibleCardHeight)
     {
@@ -144,21 +145,30 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
 
     public void Refresh(int remaining)
     {
-        if (_triggerActive)
+        // Gameplay intentionally commits the real remaining count only after
+        // AutoPlay succeeds. Keep the trigger preview stable in that interval:
+        // card/glow refreshes must not restore the old model value for a frame.
+        if (_triggerActive || _awaitingTriggerCommit)
             return;
 
         SetDisplayedRemaining(remaining);
     }
 
-    public void PlayTrigger(bool consumesRemaining, float durationScale)
+    public void PlayTrigger(int displayedRemainingAfterTrigger, float durationScale)
     {
-        _targetRemaining = consumesRemaining
-            ? Math.Max(0, _displayedRemaining - 1)
-            : _displayedRemaining;
+        _targetRemaining = Math.Max(0, displayedRemainingAfterTrigger);
         _triggerDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
         _triggerElapsed = 0f;
         _triggerActive = true;
         _changedDuringTrigger = false;
+        _awaitingTriggerCommit = true;
+    }
+
+    public void CommitTrigger(int remaining)
+    {
+        _targetRemaining = Math.Max(0, remaining);
+        _awaitingTriggerCommit = false;
+        SetDisplayedRemaining(_targetRemaining);
     }
 
     private void SetDisplayedRemaining(int remaining)

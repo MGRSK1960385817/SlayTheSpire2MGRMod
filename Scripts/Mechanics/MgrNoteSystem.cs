@@ -711,8 +711,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         MgrCombatState state = MgrCombatStateStore.For(player);
         MgrRunTelemetryAccumulator.RecordChordCompleted(player);
         int triggerCount = 1 + state.ConsumePendingChordTriggers();
-        int metronomeCountedTriggerCount = triggerCount;
-        Metronome? metronome = player.GetRelic<Metronome>();
+        int clickTrackCountedTriggerCount = triggerCount;
+        ClickTrack? clickTrack = player.GetRelic<ClickTrack>();
 
         int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
@@ -723,11 +723,11 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             MgrRunTelemetryAccumulator.RecordChordEffectTrigger(player);
             int chordTriggersBefore = state.RecordChordTrigger();
             // Base passes and repeats from external effects such as
-            // Cumulonimbus advance Metronome. The pass created by Metronome
+            // Cumulonimbus advance Click Track. The pass created by Click Track
             // itself still counts for all Chord gameplay, but must not advance
             // its own next cycle, matching Pen Nib and Nunchaku reset behavior.
-            if (index < metronomeCountedTriggerCount &&
-                metronome?.TryDoubleCurrentChord() == true)
+            if (index < clickTrackCountedTriggerCount &&
+                clickTrack?.TryDoubleCurrentChord() == true)
             {
                 triggerCount++;
             }

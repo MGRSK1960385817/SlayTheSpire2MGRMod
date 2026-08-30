@@ -19,9 +19,6 @@ public sealed class GhostRule : MgrCard
         new CardsVar(2)
     ];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
-
     public GhostRule() : base(
         0,
         CardType.Skill,
@@ -63,6 +60,5 @@ public sealed class GhostRule : MgrCard
     protected override void OnUpgrade()
     {
         DynamicVars.Cards.UpgradeValueBy(1m);
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

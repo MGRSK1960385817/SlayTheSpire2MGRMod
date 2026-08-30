@@ -150,13 +150,24 @@ public static class MgrPerformanceVisuals
     public static Task PlayTriggerAnimation(
         Player player,
         MgrPerformanceEntry entry,
-        bool consumesRemaining,
+        int displayedRemainingAfterTrigger,
         float durationScale)
     {
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
             return Task.CompletedTask;
 
-        return rack.PlayTriggerAnimation(entry, consumesRemaining, durationScale);
+        return rack.PlayTriggerAnimation(
+            entry,
+            displayedRemainingAfterTrigger,
+            durationScale);
+    }
+
+    public static void CommitTriggerRemaining(
+        Player player,
+        MgrPerformanceEntry entry)
+    {
+        if (Racks.TryGetValue(player, out PerformanceRack? rack) && rack.IsValid)
+            rack.CommitTriggerRemaining(entry);
     }
 
     public static Task PlayTriggerCompletionAnimation(
@@ -694,7 +705,7 @@ public static class MgrPerformanceVisuals
 
         public async Task PlayTriggerAnimation(
             MgrPerformanceEntry entry,
-            bool consumesRemaining,
+            int displayedRemainingAfterTrigger,
             float durationScale)
         {
             PerformanceCardView? view = FindView(entry);
@@ -706,8 +717,13 @@ public static class MgrPerformanceVisuals
                 view.LocalCenterX - MgrVisualTuning.Performances.StaffOffset.X,
                 durationScale);
             _staff.Pulse();
-            await view.PlayTriggerAnimation(consumesRemaining, durationScale);
+            await view.PlayTriggerAnimation(
+                displayedRemainingAfterTrigger,
+                durationScale);
         }
+
+        public void CommitTriggerRemaining(MgrPerformanceEntry entry) =>
+            FindView(entry)?.CommitTriggerRemaining();
 
         public async Task PlayTriggerCompletionAnimation(
             MgrPerformanceEntry entry,
@@ -1387,7 +1403,7 @@ public static class MgrPerformanceVisuals
         }
 
         public async Task PlayTriggerAnimation(
-            bool consumesRemaining,
+            int displayedRemainingAfterTrigger,
             float durationScale)
         {
             if (!GodotObject.IsInstanceValid(_anchor) || !_anchor.IsInsideTree())
@@ -1400,7 +1416,9 @@ public static class MgrPerformanceVisuals
             _triggerGlow.Modulate = new Color(1f, 1f, 1f, 0f);
             _triggerBurst.Burst();
             float clampedDurationScale = Math.Clamp(durationScale, 0.1f, 1f);
-            _remainingCounter.PlayTrigger(consumesRemaining, clampedDurationScale);
+            _remainingCounter.PlayTrigger(
+                displayedRemainingAfterTrigger,
+                clampedDurationScale);
             double growSeconds =
                 MgrVisualTuning.Performances.TriggerGrowSeconds *
                 clampedDurationScale;
@@ -1439,6 +1457,9 @@ public static class MgrPerformanceVisuals
             if (completed && ReferenceEquals(_pulseTween, tween))
                 _pulseTween = null;
         }
+
+        public void CommitTriggerRemaining() =>
+            _remainingCounter.CommitTrigger(Entry.RemainingPerformanceTurns);
 
         public async Task PlayExitAnimation(
             Vector2 destinationInViewport,

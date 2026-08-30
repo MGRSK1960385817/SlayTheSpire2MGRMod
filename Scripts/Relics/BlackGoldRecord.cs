@@ -12,7 +12,7 @@ namespace MGRMod.Relics;
 [RegisterRelic(typeof(MgrRelicPool), StableEntryStem = "black_gold_record")]
 public sealed class BlackGoldRecord : ModRelicTemplate
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new GoldVar(3)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new GoldVar(4)];
 
     public override RelicRarity Rarity => RelicRarity.Shop;
 

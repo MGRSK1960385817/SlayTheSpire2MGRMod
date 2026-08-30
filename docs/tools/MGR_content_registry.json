@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-29",
+  "lastUpdated": "2026-08-30",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌、遗物与药水；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -35,8 +35,8 @@
     "activeRelics": {
       "Starter": 2,
       "Common": 2,
-      "Uncommon": 2,
-      "Rare": 4,
+      "Uncommon": 3,
+      "Rare": 3,
       "Shop": 1,
       "Ancient": 0,
       "total": 11
@@ -626,7 +626,7 @@
       "status": 1,
       "type": "Skill",
       "rarity": "Common",
-      "summary": "0费白卡技能；将弃牌堆中至多2张牌放到抽牌堆顶，并将1张随机诅咒加入弃牌堆，消耗；升级后上限提高至3张并移除消耗。"
+      "summary": "0费白卡技能；将弃牌堆中至多2张牌放到抽牌堆顶，并将1张随机诅咒加入弃牌堆；升级后选择上限提高至3张。"
     },
     {
       "codeName": "SongOfSiren",
@@ -839,8 +839,8 @@
       "summary": "战斗开始生成2个攻击音符；获得后每累计失去5点生命，额外生成1个，任何来源均计入；单人第41层、多人第38层起不再出现。"
     },
     {
-      "codeName": "Metronome",
-      "name": "节拍器",
+      "codeName": "ClickTrack",
+      "name": "“咔哒咔哒”",
       "status": 1,
       "rarity": "Uncommon",
       "summary": "每第7次和弦触发两次；计数像双截棍、钢笔尖一样跨越战斗保留。"
@@ -850,7 +850,7 @@
       "name": "黑金唱片",
       "status": 1,
       "rarity": "Shop",
-      "summary": "每当一张演奏牌结束时，获得3金币；单人第41层、多人第38层起不再出现。"
+      "summary": "每当一张演奏牌结束时，获得4金币；单人第41层、多人第38层起不再出现。"
     },
     {
       "codeName": "GuitarPick",
@@ -870,7 +870,7 @@
       "codeName": "Maguroyaki",
       "name": "鮪鱼烧",
       "status": 1,
-      "rarity": "Rare",
+      "rarity": "Uncommon",
       "summary": "每当你在休息处锻造时，回复12点生命。"
     },
     {

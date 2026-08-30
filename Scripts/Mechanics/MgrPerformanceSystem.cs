@@ -410,19 +410,28 @@ public static class MgrPerformanceSystem
                 await MgrPerformanceVisuals.PlayTriggerAnimation(
                     player,
                     entry,
-                    consumesRemaining: false,
+                    displayedRemainingAfterTrigger:
+                        entry.RemainingPerformanceTurns,
                     durationScale: durationScale);
                 ResolvingEntries.Add(entry);
                 ActiveVfxWaitScales[entry] = durationScale;
+                bool autoPlayCompleted = false;
                 try
                 {
                     MgrRunTelemetryAccumulator.RecordPerformanceTrigger(player);
                     await AutoPlayPerformanceCard(choiceContext, entry.Card);
+                    autoPlayCompleted = true;
                 }
                 finally
                 {
                     ActiveVfxWaitScales.Remove(entry);
                     ResolvingEntries.Remove(entry);
+                    if (!autoPlayCompleted)
+                    {
+                        MgrPerformanceVisuals.CommitTriggerRemaining(
+                            player,
+                            entry);
+                    }
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
                         entry,
@@ -437,6 +446,8 @@ public static class MgrPerformanceSystem
                     animationIndex++;
                     continue;
                 }
+
+                MgrPerformanceVisuals.CommitTriggerRemaining(player, entry);
 
                 // AutoPlay returns only after the card and its queued effects have
                 // resolved. Re-check the engine's combat-ending flag here so a
@@ -749,7 +760,9 @@ public static class MgrPerformanceSystem
                 await MgrPerformanceVisuals.PlayTriggerAnimation(
                     player,
                     entry,
-                    consumesRemaining: true,
+                    displayedRemainingAfterTrigger: Math.Max(
+                        0,
+                        entry.RemainingPerformanceTurns + selfExtension - 1),
                     durationScale: durationScale);
 
                 // This is a real card play. It therefore runs every standard hook,
@@ -761,16 +774,24 @@ public static class MgrPerformanceSystem
 
                 ResolvingEntries.Add(entry);
                 ActiveVfxWaitScales[entry] = durationScale;
+                bool autoPlayCompleted = false;
                 try
                 {
                     MgrRunTelemetryAccumulator.RecordPerformanceTrigger(player);
                     await AutoPlayPerformanceCard(choiceContext, entry.Card);
+                    autoPlayCompleted = true;
                 }
                 finally
                 {
                     ActiveVfxWaitScales.Remove(entry);
                     ResolvingEntries.Remove(entry);
                     CompletingCards.Remove(entry.Card);
+                    if (!autoPlayCompleted)
+                    {
+                        MgrPerformanceVisuals.CommitTriggerRemaining(
+                            player,
+                            entry);
+                    }
                     await MgrPerformanceVisuals.PlayTriggerCompletionAnimation(
                         player,
                         entry,
@@ -798,6 +819,7 @@ public static class MgrPerformanceSystem
                 // one-turn entry in Play instead of routing it out prematurely.
                 entry.AddRemainingPerformanceTurns(selfExtension);
                 entry.ConsumeOnePerformance();
+                MgrPerformanceVisuals.CommitTriggerRemaining(player, entry);
                 bool combatEnded = ShouldStopPerformanceSequence(player);
 
                 if (entry.RemainingPerformanceTurns > 0)
