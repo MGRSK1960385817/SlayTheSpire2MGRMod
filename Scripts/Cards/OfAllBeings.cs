@@ -22,7 +22,6 @@ public sealed class OfAllBeings : MgrCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat(
         [
-            CardKeyword.Retain,
             CardKeyword.Exhaust
         ]);
 
@@ -62,5 +61,5 @@ public sealed class OfAllBeings : MgrCard
         PlayerCmd.EndTurn(Owner, canBackOut: false);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }

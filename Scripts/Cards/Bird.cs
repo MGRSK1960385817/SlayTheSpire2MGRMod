@@ -17,7 +17,7 @@ public sealed class Bird : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(22m, ValueProp.Move),
+        new DamageVar(21m, ValueProp.Move),
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
         new CalculatedVar("CalculatedNotes").WithMultiplier(
@@ -95,5 +95,5 @@ public sealed class Bird : MgrCard
     }
 
     protected override void OnUpgrade() =>
-        DynamicVars.Damage.UpgradeValueBy(6m);
+        DynamicVars.Damage.UpgradeValueBy(5m);
 }
