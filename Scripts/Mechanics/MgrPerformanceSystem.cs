@@ -70,6 +70,22 @@ public static class MgrPerformanceSystem
     public static bool IsPerformanceCard(CardModel card) =>
         GetInitialPerformanceTurns(card) > 0;
 
+    internal static bool IsQueued(CardModel card)
+    {
+        // Card Library, compendium, and other out-of-combat screens render the
+        // immutable canonical model. CardModel.Owner asserts mutability before
+        // returning, so it must never be read for those presentation models.
+        if (!card.IsMutable)
+            return false;
+
+        // Mutable reward/preview copies can also exist briefly without an
+        // owner. They cannot belong to a combat-only Performance state.
+        Player? owner = card.Owner;
+        return owner is not null &&
+            MgrPerformanceStateStore.TryGet(owner, out MgrPerformanceState state) &&
+            state.Contains(card);
+    }
+
     /// <summary>
     /// Returns the physical cards currently held by the Performance rack in
     /// their normal right-to-left resolution order. This lets effects whose

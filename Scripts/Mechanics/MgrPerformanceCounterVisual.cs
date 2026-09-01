@@ -53,42 +53,42 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
             "outline_size",
             MgrVisualTuning.Performances.RemainingCounterOutlineSize);
         AddChild(_label);
-        SetProcess(true);
+        QueueRedraw();
+        SetProcess(false);
     }
 
     public override void _Process(double delta)
     {
+        if (!_triggerActive)
+        {
+            SetProcess(false);
+            return;
+        }
+
         float elapsedDelta = (float)delta;
 
-        float triggerProgress = 0f;
-        if (_triggerActive)
+        _triggerElapsed += elapsedDelta;
+        float duration = GetTriggerDuration();
+        float triggerProgress = Math.Clamp(_triggerElapsed / duration, 0f, 1f);
+        if (!_changedDuringTrigger &&
+            triggerProgress >= MgrVisualTuning.Performances.RemainingCounterChangeFraction)
         {
-            _triggerElapsed += elapsedDelta;
-            float duration = GetTriggerDuration();
-            triggerProgress = Math.Clamp(_triggerElapsed / duration, 0f, 1f);
-            if (!_changedDuringTrigger &&
-                triggerProgress >= MgrVisualTuning.Performances.RemainingCounterChangeFraction)
-            {
-                _changedDuringTrigger = true;
-                SetDisplayedRemaining(_targetRemaining);
-            }
-
-            if (triggerProgress >= 1f)
-            {
-                _triggerActive = false;
-                triggerProgress = 0f;
-                Scale = Vector2.One;
-            }
+            _changedDuringTrigger = true;
+            SetDisplayedRemaining(_targetRemaining);
         }
 
         Position = _homePosition;
-
-        if (_triggerActive)
+        if (triggerProgress >= 1f)
         {
-            float pulse = MathF.Sin(triggerProgress * MathF.PI);
-            Scale = Vector2.One * (1f + pulse * 0.24f);
+            _triggerActive = false;
+            Scale = Vector2.One;
+            QueueRedraw();
+            SetProcess(false);
+            return;
         }
 
+        float pulse = MathF.Sin(triggerProgress * MathF.PI);
+        Scale = Vector2.One * (1f + pulse * 0.24f);
         QueueRedraw();
     }
 
@@ -162,6 +162,8 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
         _triggerActive = true;
         _changedDuringTrigger = false;
         _awaitingTriggerCommit = true;
+        SetProcess(true);
+        QueueRedraw();
     }
 
     public void CommitTrigger(int remaining)
@@ -173,8 +175,13 @@ internal sealed partial class MgrPerformanceCounterVisual : Node2D
 
     private void SetDisplayedRemaining(int remaining)
     {
-        _displayedRemaining = Math.Max(0, remaining);
+        int displayedRemaining = Math.Max(0, remaining);
+        if (_displayedRemaining == displayedRemaining)
+            return;
+
+        _displayedRemaining = displayedRemaining;
         _label.Text = _displayedRemaining.ToString();
+        QueueRedraw();
     }
 
     private float GetTriggerDuration() => MathF.Max(

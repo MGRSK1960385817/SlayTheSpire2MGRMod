@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "Universe of 88 Keys",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "At the end of your turn, deal {UniverseOf88KeysPower:diff()} damage to ALL enemies.\nDeal 2 less damage per [gold]Chord[/gold] triggered this turn.",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "Prism Cube",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Perform[/gold] X.\n{IfUpgraded:show:Deal X+1 damage to ALL enemies X+1 times.|Deal X damage to ALL enemies X times.}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Perform[/gold] X.\n{IfUpgraded:show:Deal {CubicPrismUpgradedDamage} damage to ALL enemies {CubicPrismUpgradedHits} times.|Deal {CubicPrismBaseDamage} damage to ALL enemies {CubicPrismBaseHits} times.}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]Perform[/gold] X+[blue]{Times}[/blue].",
   "MGR_MOD_CARD_OMNIA.title": "Omnia",
   "MGR_MOD_CARD_OMNIA.description": "[gold]Perform[/gold] {Performance:diff()}.\n[rainbow freq=0.3 sat=0.8 val=1]Omnia[/rainbow].",

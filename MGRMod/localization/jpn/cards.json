@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "八十八鍵の宇宙",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "ターン終了時、すべての敵に{UniverseOf88KeysPower:diff()}ダメージを与える。\nこのターンに[gold]和音[/gold]が発動するたび、ダメージが2減少する。",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "プリズムキューブ",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]演奏[/gold]X。\n{IfUpgraded:show:すべての敵にX+1ダメージをX+1回与える。|すべての敵にXダメージをX回与える。}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]演奏[/gold]X。\n{IfUpgraded:show:すべての敵に{CubicPrismUpgradedDamage}ダメージを{CubicPrismUpgradedHits}回与える。|すべての敵に{CubicPrismBaseDamage}ダメージを{CubicPrismBaseHits}回与える。}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]演奏[/gold]X+[blue]{Times}[/blue]。",
   "MGR_MOD_CARD_OMNIA.title": "森羅万象",
   "MGR_MOD_CARD_OMNIA.description": "[gold]演奏[/gold]{Performance:diff()}。\n[rainbow freq=0.3 sat=0.8 val=1]万象[/rainbow]。",

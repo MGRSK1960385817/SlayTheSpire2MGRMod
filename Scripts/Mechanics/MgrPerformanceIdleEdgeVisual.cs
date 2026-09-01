@@ -19,7 +19,8 @@ internal sealed partial class MgrPerformanceIdleEdgeVisual : Node2D
         float unscaledMargin =
             MgrVisualTuning.Performances.IdleEdgeMargin / _displayScale;
         _cardRect = cardRect.Grow(unscaledMargin);
-        SetProcess(true);
+        QueueRedraw();
+        SetProcess(false);
     }
 
     public override void _Process(double delta)
@@ -28,6 +29,13 @@ internal sealed partial class MgrPerformanceIdleEdgeVisual : Node2D
             _strength,
             _targetStrength,
             Math.Clamp((float)delta * 9f, 0f, 1f));
+
+        if (MathF.Abs(_strength - _targetStrength) <= 0.002f)
+        {
+            _strength = _targetStrength;
+            SetProcess(false);
+        }
+
         QueueRedraw();
     }
 
@@ -56,6 +64,15 @@ internal sealed partial class MgrPerformanceIdleEdgeVisual : Node2D
         // The dedicated trigger burst owns the foreground while a card plays.
         // Keeping a trace rather than switching off avoids a visual hard cut.
         _targetStrength = isTriggering ? 0.18f : 1f;
+        if (MathF.Abs(_strength - _targetStrength) <= 0.002f)
+        {
+            _strength = _targetStrength;
+            QueueRedraw();
+            SetProcess(false);
+            return;
+        }
+
+        SetProcess(true);
     }
 
     private void DrawCornerBrackets(Color color, float width)

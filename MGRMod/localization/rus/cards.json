@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "Вселенная 88 клавиш",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "Наносит {UniverseOf88KeysPower:diff()} урона ВСЕМ врагам в конце хода.\nКаждый сыгранный в этом ходу [gold]аккорд[/gold] уменьшает урон на 2.",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "Кубическая призма",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Исполнение[/gold] X.\n{IfUpgraded:show:Наносит X+1 урона ВСЕМ врагам X+1 раз.|Наносит X урона ВСЕМ врагам X раз.}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Исполнение[/gold] X.\n{IfUpgraded:show:Наносит {CubicPrismUpgradedDamage} урона ВСЕМ врагам {CubicPrismUpgradedHits} раз.|Наносит {CubicPrismBaseDamage} урона ВСЕМ врагам {CubicPrismBaseHits} раз.}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]Исполнение[/gold] X+[blue]{Times}[/blue].",
   "MGR_MOD_CARD_OMNIA.title": "Все сущее",
   "MGR_MOD_CARD_OMNIA.description": "[gold]Исполнение[/gold] {Performance:diff()}.\n[rainbow freq=0.3 sat=0.8 val=1]Все сущее[/rainbow].",

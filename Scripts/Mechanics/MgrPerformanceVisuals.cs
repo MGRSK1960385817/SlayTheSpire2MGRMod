@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.UI;
@@ -327,7 +328,10 @@ public static class MgrPerformanceVisuals
         private readonly Node2D _finisherImpactHost;
         private readonly Node2D _finisherCardHost;
         private readonly Control _interactionHost;
+        private readonly CombatStateTracker _combatStateTracker;
         private readonly List<PerformanceCardView> _views = [];
+        private readonly Dictionary<MgrPerformanceEntry, PerformanceCardView> _viewsByEntry =
+            new(ReferenceEqualityComparer.Instance);
         private MgrPerformanceFinisherVisual? _finisherVisual;
         private bool _disposed;
         private NOverlayStack? _overlayStack;
@@ -383,8 +387,24 @@ public static class MgrPerformanceVisuals
             };
             performanceLayer.AddChild(_interactionHost);
 
+            _combatStateTracker = CombatManager.Instance.StateTracker;
+            _combatStateTracker.CombatStateChanged += OnCombatStateChanged;
             ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
             EnsureScreenVisibilitySubscriptions();
+        }
+
+        private void OnCombatStateChanged(CombatState _)
+        {
+            // Mirror the native hand's dynamic-number refresh. Quick SL can
+            // invalidate the old rack before normal combat cleanup, so detach
+            // safely instead of touching freed card nodes.
+            if (!IsValid)
+            {
+                Dispose();
+                return;
+            }
+
+            RefreshCardPreviews();
         }
 
         public void Show(
@@ -398,13 +418,22 @@ public static class MgrPerformanceVisuals
             _staff.SetPerformanceCardsPlayedThisCombat(
                 performanceCardsPlayedThisCombat);
 
-            foreach (PerformanceCardView stale in _views
-                         .Where(view => !entries.Any(
-                             entry => ReferenceEquals(entry, view.Entry)))
-                         .ToArray())
+            var desiredEntries = new HashSet<MgrPerformanceEntry>(
+                entries,
+                ReferenceEqualityComparer.Instance);
+            // Remove stale views from both authoritative collections before
+            // disposing them. Disposal can synchronously affect hover/order
+            // presentation, so no callback may observe a released view still
+            // present in the mechanical ordering list.
+            for (int index = _views.Count - 1; index >= 0; index--)
             {
+                PerformanceCardView stale = _views[index];
+                if (desiredEntries.Contains(stale.Entry))
+                    continue;
+
+                _views.RemoveAt(index);
+                _viewsByEntry.Remove(stale.Entry);
                 stale.Dispose();
-                _views.Remove(stale);
             }
 
             bool isFilled =
@@ -419,12 +448,17 @@ public static class MgrPerformanceVisuals
             {
                 // The first entry is the rightmost; newer entries extend left.
                 float x = rightEdge - index * spacing;
-                PerformanceCardView? view = FindView(entries[index]);
-                view ??= new PerformanceCardView(
-                    _cardHost,
-                    _interactionHost,
-                    entries[index],
-                    OnViewOrderingChanged);
+                MgrPerformanceEntry entry = entries[index];
+                if (!_viewsByEntry.TryGetValue(entry, out PerformanceCardView? view))
+                {
+                    view = new PerformanceCardView(
+                        _cardHost,
+                        _interactionHost,
+                        entry,
+                        OnViewOrderingChanged);
+                    _viewsByEntry.Add(entry, view);
+                }
+
                 view.Refresh();
                 view.SetPosition(new Vector2(
                     x,
@@ -1071,7 +1105,7 @@ public static class MgrPerformanceVisuals
         }
 
         private PerformanceCardView? FindView(MgrPerformanceEntry entry) =>
-            _views.FirstOrDefault(view => ReferenceEquals(view.Entry, entry));
+            _viewsByEntry.GetValueOrDefault(entry);
 
         private NCard? FindPlayedCardNode(CardModel card)
         {
@@ -1117,6 +1151,7 @@ public static class MgrPerformanceVisuals
                 view.Dispose();
 
             _views.Clear();
+            _viewsByEntry.Clear();
         }
 
         public void Dispose()
@@ -1126,6 +1161,7 @@ public static class MgrPerformanceVisuals
 
             _disposed = true;
             DisposeFinisherVisual();
+            _combatStateTracker.CombatStateChanged -= OnCombatStateChanged;
             ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
             if (_overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack))
@@ -1169,7 +1205,10 @@ public static class MgrPerformanceVisuals
             if (GodotObject.IsInstanceValid(_root))
                 ClearViews();
             else
+            {
                 _views.Clear();
+                _viewsByEntry.Clear();
+            }
 
             if (GodotObject.IsInstanceValid(_root))
                 _root.QueueFree();

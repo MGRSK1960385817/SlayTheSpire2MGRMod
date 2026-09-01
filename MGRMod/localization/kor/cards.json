@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "88건반의 우주",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "내 턴 종료 시 모든 적에게 피해를 {UniverseOf88KeysPower:diff()} 줍니다.\n이번 턴에 [gold]화음[/gold]을 발동할 때마다 피해가 2 감소합니다.",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "프리즘 큐브",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]연주[/gold]X.\n{IfUpgraded:show:모든 적에게 피해를 X+1씩 X+1번 줍니다.|모든 적에게 피해를 X씩 X번 줍니다.}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]연주[/gold]X.\n{IfUpgraded:show:모든 적에게 피해를 {CubicPrismUpgradedDamage}씩 {CubicPrismUpgradedHits}번 줍니다.|모든 적에게 피해를 {CubicPrismBaseDamage}씩 {CubicPrismBaseHits}번 줍니다.}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]연주[/gold]X+[blue]{Times}[/blue].",
   "MGR_MOD_CARD_OMNIA.title": "삼라만상",
   "MGR_MOD_CARD_OMNIA.description": "[gold]연주[/gold]{Performance:diff()}.\n[rainbow freq=0.3 sat=0.8 val=1]만상[/rainbow].",

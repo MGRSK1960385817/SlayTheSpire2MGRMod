@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "八十八键的宇宙",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "在你的回合结束时，对所有敌人造成{UniverseOf88KeysPower:diff()}点伤害。\n本回合每触发一次[gold]和弦[/gold]，伤害减少2点。",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "立方棱镜",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]演奏[/gold]X。\n{IfUpgraded:show:对所有敌人造成X+1点伤害X+1次。|对所有敌人造成X点伤害X次。}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]演奏[/gold]X。\n{IfUpgraded:show:对所有敌人造成{CubicPrismUpgradedDamage}点伤害{CubicPrismUpgradedHits}次。|对所有敌人造成{CubicPrismBaseDamage}点伤害{CubicPrismBaseHits}次。}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]演奏[/gold]X+[blue]{Times}[/blue]。",
   "MGR_MOD_CARD_OMNIA.title": "森罗万象",
   "MGR_MOD_CARD_OMNIA.description": "[gold]演奏[/gold]{Performance:diff()}。\n[rainbow freq=0.3 sat=0.8 val=1]万象[/rainbow]。",

@@ -96,6 +96,9 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             }
         }
 
+        if (__instance is CubicPrism { IsMutable: true } cubicPrism)
+            FormatLockedCubicPrismPerformance(cubicPrism, ref __result);
+
         // Identity mechanics share the first line. Native MGR Performance cards
         // already print their value in the body, so Starry joins that line; a
         // combat-added Performance value is prepended here instead.
@@ -171,6 +174,36 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                     string.Empty,
                     StringComparison.Ordinal).Trim())
                 .Where(line => !string.IsNullOrWhiteSpace(line)));
+    }
+
+    private static void FormatLockedCubicPrismPerformance(
+        CubicPrism card,
+        ref string description)
+    {
+        if (!MgrPerformanceSystem.IsQueued(card))
+            return;
+
+        string lockedX = card.LockedPerformanceX.ToString(
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        // Damage and hit count are separate localized variables now: Damage
+        // follows the native preview hooks while Hits remains locked. Only the
+        // first identity line still contains a literal X for Performance.
+        int firstLineBreak = description.IndexOf('\n');
+        if (firstLineBreak < 0)
+        {
+            description = description.Replace(
+                "X",
+                lockedX,
+                StringComparison.Ordinal);
+            return;
+        }
+
+        string firstLine = description[..firstLineBreak].Replace(
+            "X",
+            lockedX,
+            StringComparison.Ordinal);
+        description = firstLine + description[firstLineBreak..];
     }
 
     private static void CompactStarryRetainLine(

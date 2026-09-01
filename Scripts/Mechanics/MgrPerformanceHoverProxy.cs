@@ -10,6 +10,11 @@ namespace MGRMod.Mechanics;
 /// </summary>
 public partial class MgrPerformanceHoverProxy : Control
 {
+    private Transform2D _lastTargetToViewport;
+    private Transform2D _lastProxyParentToViewport;
+    private Rect2 _lastTargetRect;
+    private bool _hasCachedGeometry;
+
     public Control? Target { get; set; }
     public Rect2 TargetRect { get; set; }
 
@@ -25,26 +30,46 @@ public partial class MgrPerformanceHoverProxy : Control
             !Target.IsInsideTree() ||
             !IsInsideTree())
         {
-            Visible = false;
+            SetVisibleIfChanged(false);
+            _hasCachedGeometry = false;
             return;
         }
 
-        Visible = Target.IsVisibleInTree();
-        if (!Visible)
+        bool targetVisible = Target.IsVisibleInTree();
+        SetVisibleIfChanged(targetVisible);
+        if (!targetVisible)
+        {
+            _hasCachedGeometry = false;
             return;
+        }
 
         if (GetParent() is not CanvasItem proxyParent)
         {
-            Visible = false;
+            SetVisibleIfChanged(false);
+            _hasCachedGeometry = false;
             return;
         }
 
         Transform2D targetToViewport = Target.GetGlobalTransformWithCanvas();
-        Transform2D viewportToProxyParent =
-            proxyParent.GetGlobalTransformWithCanvas().AffineInverse();
+        Transform2D proxyParentToViewport =
+            proxyParent.GetGlobalTransformWithCanvas();
         Rect2 targetRect = TargetRect.HasArea()
             ? TargetRect
             : new Rect2(Vector2.Zero, Target.Size);
+        if (_hasCachedGeometry &&
+            targetToViewport == _lastTargetToViewport &&
+            proxyParentToViewport == _lastProxyParentToViewport &&
+            targetRect == _lastTargetRect)
+        {
+            return;
+        }
+
+        _lastTargetToViewport = targetToViewport;
+        _lastProxyParentToViewport = proxyParentToViewport;
+        _lastTargetRect = targetRect;
+        _hasCachedGeometry = true;
+
+        Transform2D viewportToProxyParent = proxyParentToViewport.AffineInverse();
         Vector2[] corners =
         [
             targetRect.Position,
@@ -69,7 +94,17 @@ public partial class MgrPerformanceHoverProxy : Control
             maxY = MathF.Max(maxY, point.Y);
         }
 
-        Position = new Vector2(minX, minY);
-        Size = new Vector2(maxX - minX, maxY - minY);
+        Vector2 position = new(minX, minY);
+        Vector2 size = new(maxX - minX, maxY - minY);
+        if (Position != position)
+            Position = position;
+        if (Size != size)
+            Size = size;
+    }
+
+    private void SetVisibleIfChanged(bool visible)
+    {
+        if (Visible != visible)
+            Visible = visible;
     }
 }

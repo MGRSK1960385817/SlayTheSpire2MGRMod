@@ -121,7 +121,7 @@
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.title": "Universo de 88 teclas",
   "MGR_MOD_CARD_UNIVERSE_OF_88_KEYS.description": "No final do seu turno, cause {UniverseOf88KeysPower:diff()} de dano a TODOS os inimigos.\nO dano é reduzido em 2 para cada [gold]Acorde[/gold] ativado neste turno.",
   "MGR_MOD_CARD_CUBIC_PRISM.title": "Prisma cúbico",
-  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Apresentação[/gold] X.\n{IfUpgraded:show:Cause X+1 de dano a TODOS os inimigos X+1 vezes.|Cause X de dano a TODOS os inimigos X vezes.}",
+  "MGR_MOD_CARD_CUBIC_PRISM.description": "[gold]Apresentação[/gold] X.\n{IfUpgraded:show:Cause {CubicPrismUpgradedDamage} de dano a TODOS os inimigos {CubicPrismUpgradedHits} vezes.|Cause {CubicPrismBaseDamage} de dano a TODOS os inimigos {CubicPrismBaseHits} vezes.}",
   "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS": "[gold]Apresentação[/gold] X+[blue]{Times}[/blue].",
   "MGR_MOD_CARD_OMNIA.title": "Todas as coisas",
   "MGR_MOD_CARD_OMNIA.description": "[gold]Apresentação[/gold] {Performance:diff()}.\n[rainbow freq=0.3 sat=0.8 val=1]Tudo[/rainbow].",
