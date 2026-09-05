@@ -630,28 +630,45 @@ internal sealed partial class MgrFallingBirdVisual : Node2D
         Color rim = new(0.86f, 0.74f, 1f, alpha * 0.82f);
 
         DrawSetTransform(position, progress * 0.12f, Vector2.One);
+
+        Vector2 leftTip = new(-size * 1.35f, wingBeat);
+        Vector2 leftShoulder = new(-size * 0.28f, -size * 0.18f);
+        Vector2 leftFlank = new(-size * 0.38f, size * 0.36f);
+        Vector2 head = new(0f, -size * 0.30f);
+        Vector2 rightShoulder = new(size * 0.28f, -size * 0.18f);
+        Vector2 rightTip = new(size * 1.35f, wingBeat);
+        Vector2 rightFlank = new(size * 0.38f, size * 0.36f);
+        Vector2 tail = new(0f, size * 0.52f);
+
+        // The former eight-point outline folded its two center notches across
+        // each other, so Godot rejected the self-intersecting polygon every
+        // frame. Keep the same span and wing beat, but fill three individually
+        // convex pieces whose winding cannot change during the animation.
+        DrawPolygon(
+            [leftTip, leftShoulder, leftFlank],
+            [shadow, shadow, shadow]);
         DrawPolygon(
             [
-                new Vector2(-size * 1.35f, wingBeat),
-                new Vector2(-size * 0.28f, -size * 0.18f),
-                new Vector2(0f, size * 0.24f),
-                new Vector2(size * 0.28f, -size * 0.18f),
-                new Vector2(size * 1.35f, wingBeat),
-                new Vector2(size * 0.38f, size * 0.36f),
-                new Vector2(0f, size * 0.18f),
-                new Vector2(-size * 0.38f, size * 0.36f)
+                head,
+                rightShoulder,
+                rightFlank,
+                tail,
+                leftFlank,
+                leftShoulder
             ],
-            new Color[] { shadow, shadow, shadow, shadow, shadow, shadow, shadow, shadow });
+            [shadow, shadow, shadow, shadow, shadow, shadow]);
+        DrawPolygon(
+            [rightShoulder, rightTip, rightFlank],
+            [shadow, shadow, shadow]);
         DrawPolyline(
-            [
-                new Vector2(-size * 1.35f, wingBeat),
-                new Vector2(-size * 0.28f, -size * 0.18f),
-                new Vector2(0f, size * 0.24f),
-                new Vector2(size * 0.28f, -size * 0.18f),
-                new Vector2(size * 1.35f, wingBeat)
-            ],
+            [leftTip, leftShoulder, head, rightShoulder, rightTip],
             rim,
             2.4f,
+            true);
+        DrawPolyline(
+            [leftTip, leftFlank, tail, rightFlank, rightTip],
+            rim with { A = rim.A * 0.58f },
+            1.6f,
             true);
         DrawSetTransform(Vector2.Zero);
     }

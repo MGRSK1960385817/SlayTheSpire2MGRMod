@@ -100,9 +100,9 @@ public static class MgrWeightedCardRandom
         {
             // Living Dream normally keeps same-note candidates equiprobable,
             // but Regulus's self-returning Exhaust/Ethereal copy can form an
-            // unusually strong loop. Give it one third the per-card weight without
+            // unusually strong loop. Give it one quarter the per-card weight without
             // changing the distribution among every other candidate.
-            return card is Regulus ? 1 : 3;
+            return card is Regulus ? 1 : 4;
         }
 
         if (profile == MgrCardWeightProfile.GentleCompensation)

@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -152,19 +153,55 @@ public sealed class CanonFormPower : ModPowerTemplate
     {
         if (!IsMutable || !CombatManager.Instance.IsInProgress ||
             Owner is not { Player: { } player } ||
+            Owner.CombatState is not { } combatState ||
             player.PlayerCombatState is not { } playerCombatState)
         {
             return [];
         }
 
-        return GetOrderedReplayCards(
+        int currentTurn = playerCombatState.TurnNumber;
+        int activeStacks = GetActiveStackCount(currentTurn);
+        if (activeStacks > 0)
+            return GetOrderedReplayCards(player, activeStacks);
+
+        // On the turn Canon Form is first played, every stack is pending and
+        // there is no replay at this turn's end. Its next real replay happens
+        // at the end of the following turn and uses cards played now, so show
+        // those cards immediately instead of leaving the preview empty.
+        if (PendingStacks <= 0 || PendingActivationTurn != currentTurn + 1)
+            return [];
+
+        return GetOrderedReplayCardsThisTurn(
             player,
-            GetActiveStackCount(playerCombatState.TurnNumber));
+            combatState,
+            PendingStacks);
     }
 
     private static CardModel[] GetOrderedReplayCards(
         Player player,
         int cardCount)
+    {
+        return GetOrderedReplayCards(
+            player,
+            cardCount,
+            entry => entry.HappenedLastPlayerTurn(player));
+    }
+
+    private static CardModel[] GetOrderedReplayCardsThisTurn(
+        Player player,
+        ICombatState combatState,
+        int cardCount)
+    {
+        return GetOrderedReplayCards(
+            player,
+            cardCount,
+            entry => entry.HappenedThisTurn(combatState));
+    }
+
+    private static CardModel[] GetOrderedReplayCards(
+        Player player,
+        int cardCount,
+        Func<CardPlayFinishedEntry, bool> happenedInRelevantTurn)
     {
         if (cardCount <= 0)
             return [];
@@ -172,7 +209,7 @@ public sealed class CanonFormPower : ModPowerTemplate
         CardModel[] cards = CombatManager.Instance.History.CardPlaysFinished
             .Where(entry =>
                 entry.CardPlay.Card.Owner == player &&
-                entry.HappenedLastPlayerTurn(player))
+                happenedInRelevantTurn(entry))
             .Select(entry => entry.CardPlay.Card)
             .TakeLast(cardCount)
             .ToArray();

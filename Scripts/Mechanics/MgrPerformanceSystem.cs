@@ -579,12 +579,24 @@ public static class MgrPerformanceSystem
                         ended);
                 }
 
-                bool isOrdinaryPower = entry.Card.Type == CardType.Power && !entry.Card.IsDupe;
+                bool isDupe = entry.Card.IsDupe;
+                bool isOrdinaryPower = entry.Card.Type == CardType.Power && !isDupe;
                 bool willExhaust = !isOrdinaryPower &&
                     (entry.Card.Keywords.Contains(CardKeyword.Exhaust) ||
                      entry.Card.ExhaustOnNextPlay);
 
-                if (isOrdinaryPower)
+                // Tower 2's CreateDupe deliberately removes Exhaust and relies
+                // on IsDupe result routing to remove the temporary card from
+                // combat. A duplicated Performance card can remain in our rack,
+                // so forced completion must preserve that native precedence;
+                // otherwise finishers such as Maguro Dash leak it into Discard.
+                if (isDupe)
+                {
+                    await CardPileCmd.RemoveFromCombat(
+                        entry.Card,
+                        skipVisuals: true);
+                }
+                else if (isOrdinaryPower)
                 {
                     entry.Card.RemoveFromState();
                 }
