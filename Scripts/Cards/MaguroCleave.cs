@@ -18,8 +18,8 @@ public sealed class MaguroCleave : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(6m),
-        new ExtraDamageVar(3m),
+        new CalculationBaseVar(5m),
+        new ExtraDamageVar(4m),
         new CalculatedDamageVar(ValueProp.Move)
             .WithMultiplier(static (card, _) =>
                 card is MaguroCleave cleave
@@ -60,6 +60,7 @@ public sealed class MaguroCleave : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.CalculationBase.UpgradeValueBy(3m);
+        DynamicVars.CalculationBase.UpgradeValueBy(1m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 }

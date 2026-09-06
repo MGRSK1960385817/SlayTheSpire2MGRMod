@@ -51,6 +51,6 @@ public sealed class LongDream : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(1m);
+        DynamicVars["StrengthLoss"].UpgradeValueBy(2m);
     }
 }

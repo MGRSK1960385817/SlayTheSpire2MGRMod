@@ -209,7 +209,7 @@ public static class MgrVisualTuning
         public const double TriggerGrowSeconds = 0.12;
         public const double TriggerSettleSeconds = 0.15;
         public const float SequentialTriggerDurationMultiplierPerCard = 0.90f;
-        public const float MinimumSequentialTriggerDurationScale = 0.60f;
+        public const float MinimumSequentialTriggerDurationScale = 0.25f;
         // Only explicit cinematic anticipation waits are shortened while a card
         // is being auto-played from the Performance rack. Gameplay commands are
         // still awaited in full and therefore remain strictly ordered.
