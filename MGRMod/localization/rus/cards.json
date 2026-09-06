@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "DAYBREAK FRONTLINE",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Исполнение[/gold] {Performance:diff()}.\nПосле [gold]исполнения[/gold] превращает все [gold]Статусы[/gold] и [gold]Проклятия[/gold] [gold]в бою[/gold] в ноты.",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Граффити кучевых облаков",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Вы добираете карт: {Cards:diff()}.\n[gold]Конец[/gold]: этот [gold]аккорд[/gold] срабатывает дважды.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Вы добираете карт: {Cards:diff()}.\nВаш следующий [gold]аккорд[/gold] срабатывает дважды.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Звездная.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Зажечь сцену",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Исполнение[/gold] {Performance:diff()}.\nНаносит {Damage:diff()} урона. Ударов: {Hits:diff()}.\n[gold]Начало[/gold]: до конца боя число ударов увеличивается на 1.",

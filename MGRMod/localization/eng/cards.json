@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "DAYBREAK FRONTLINE",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Perform[/gold] {Performance:diff()}.\nWhen [gold]Performance[/gold] ends, transform all [gold]Status[/gold] and [gold]Curse[/gold] cards [gold]In Combat[/gold] into Notes.",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Cumulonimbus Graffiti",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Draw {Cards:diff()} cards.\n[gold]Ending[/gold]: This [gold]Chord[/gold] triggers twice.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Draw {Cards:diff()} cards.\nYour next [gold]Chord[/gold] triggers twice.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Starry.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Light Up the Stage",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Perform[/gold] {Performance:diff()}.\nDeal {Damage:diff()} damage {Hits:diff()} times.\n[gold]Starting[/gold]: Increase this card's hits by 1 this combat.",

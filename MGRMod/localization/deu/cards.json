@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "Morgenfront",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Auftritt[/gold] {Performance:diff()}.\nWandle am Ende des [gold]Auftritts[/gold] alle [gold]Status-Karten[/gold] und [gold]Flüche[/gold] [gold]im Kampf[/gold] in Noten um.",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Gewitterwolken-Graffiti",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Ziehe {Cards:diff()} Karten.\n[gold]Nachklang[/gold]: Löse diesen [gold]Akkord[/gold] zweimal aus.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Ziehe {Cards:diff()} Karten.\nDein nächster [gold]Akkord[/gold] wird zweimal ausgelöst.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Sternenklar.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Bühne erleuchten",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Auftritt[/gold] {Performance:diff()}.\nFüge {Hits:diff()} Mal {Damage:diff()} Schaden zu.\n[gold]Auftakt[/gold]: Erhöhe die Trefferzahl für diesen Kampf um 1.",

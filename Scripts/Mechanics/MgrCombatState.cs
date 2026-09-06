@@ -17,7 +17,6 @@ public sealed class MgrCombatState
     public int ChordTriggersThisTurn { get; private set; }
     public int Forte { get; private set; }
     public int UnusedEnergyLastTurn { get; private set; }
-    public int PendingAdditionalChordTriggers { get; private set; }
     public PhraseResolution? LastResolution { get; private set; }
 
     /// <summary>
@@ -76,24 +75,6 @@ public sealed class MgrCombatState
     public void SetUnusedEnergyLastTurn(decimal amount)
     {
         UnusedEnergyLastTurn = Math.Max(0, (int)amount);
-    }
-
-    /// <summary>
-    /// Adds one-shot repeats to the next completed chord. This is primarily used
-    /// by Ending cards: their effect is armed during OnPlay, then consumed when
-    /// the automatic note generated for that card resolves the current chord.
-    /// </summary>
-    public void AddPendingChordTriggers(int amount)
-    {
-        if (amount > 0)
-            PendingAdditionalChordTriggers += amount;
-    }
-
-    public int ConsumePendingChordTriggers()
-    {
-        int amount = PendingAdditionalChordTriggers;
-        PendingAdditionalChordTriggers = 0;
-        return amount;
     }
 
     /// <summary>

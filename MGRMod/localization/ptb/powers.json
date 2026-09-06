@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "As cartas jogadas por outros jogadores também geram Notas para você.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "É com Você!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "Neste turno, compartilhe os efeitos dos seus [gold]Acordes[/gold] com outro jogador.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "Neste turno, [blue]{TargetPlayer}[/blue] também recebe os efeitos dos seus [gold]Acordes[/gold]."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "Neste turno, [blue]{TargetPlayer}[/blue] também recebe os efeitos dos seus [gold]Acordes[/gold].",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "Grafite de cumulonimbus",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "Seu próximo [gold]Acorde[/gold] é ativado uma vez a mais.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "Seus próximos [blue]{Amount}[/blue] [gold]Acordes[/gold] são ativados uma vez a mais cada."
 }

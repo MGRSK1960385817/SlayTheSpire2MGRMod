@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "黎明前线",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]演奏[/gold]{Performance:diff()}。\n[gold]演奏[/gold]结束时，将[gold]对局中[/gold]所有[gold]状态[/gold]与[gold]诅咒[/gold]转化为音符。",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "积雨云涂鸦",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "抽{Cards:diff()}张牌。\n[gold]尾音[/gold]：本次[gold]和弦[/gold]触发两次。",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "抽{Cards:diff()}张牌。\n下个[gold]和弦[/gold]会触发两次。",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "星空。",
   "MGR_MOD_CARD_LIGHT_UP.title": "点亮舞台",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]演奏[/gold]{Performance:diff()}。\n造成{Damage:diff()}点伤害{Hits:diff()}次。\n[gold]起音[/gold]：在本场战斗中，将伤害次数增加1。",

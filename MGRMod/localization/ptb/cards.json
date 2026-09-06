@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "Frente da alvorada",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Apresentação[/gold] {Performance:diff()}.\nQuando a [gold]Apresentação[/gold] terminar, transforme em Notas todas as cartas de [gold]Condição[/gold] e [gold]Maldição[/gold] [gold]Em Combate[/gold].",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Grafite de cumulonimbus",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Compre {Cards:diff()} cartas.\n[gold]Fecho[/gold]: Este [gold]Acorde[/gold] é ativado duas vezes.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Compre {Cards:diff()} cartas.\nSeu próximo [gold]Acorde[/gold] é ativado duas vezes.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Estelar.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Ilumine o Palco",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Apresentação[/gold] {Performance:diff()}.\nCause {Damage:diff()} de dano {Hits:diff()} vezes.\n[gold]Entrada[/gold]: Aumente o número de acertos em 1 neste combate.",

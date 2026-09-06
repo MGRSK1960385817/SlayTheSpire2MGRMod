@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "Frente del alba",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Interpretación[/gold] {Performance:diff()}.\nCuando termine la [gold]Interpretación[/gold], transforma en Notas todas las cartas de [gold]Estado[/gold] y [gold]Maldición[/gold] [gold]En combate[/gold].",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Grafiti cumulonimbo",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Roba {Cards:diff()} cartas.\n[gold]Cierre[/gold]: Este [gold]Acorde[/gold] se activa dos veces.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Roba {Cards:diff()} cartas.\nTu próximo [gold]Acorde[/gold] se activa dos veces.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Estelar.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Ilumina el escenario",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Interpretación[/gold] {Performance:diff()}.\nInflige {Damage:diff()} de daño {Hits:diff()} veces.\n[gold]Entrada[/gold]: Aumenta en 1 el número de golpes durante este combate.",

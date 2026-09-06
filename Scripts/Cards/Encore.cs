@@ -30,7 +30,7 @@ public sealed class Encore : MgrCard
             .Targeting(cardPlay.Target)
             .WithHitFx(VfxCmd.slashPath)
             .Execute(choiceContext);
-        MgrPerformanceSystem.AddPerformancesToRightmostQueuedCards(
+        MgrPerformanceSystem.AddRemainingPerformancesToRightmostQueuedCards(
             Owner,
             DynamicVars.Cards.IntValue,
             1);

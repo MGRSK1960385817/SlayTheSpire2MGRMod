@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "Auch von Mitspielern gespielte Karten erzeugen für dich Noten.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "Ich überlass es dir!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "Teile für diesen Zug deine [gold]Akkordeffekte[/gold] mit einem Mitspieler.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "In diesem Zug erhält auch [blue]{TargetPlayer}[/blue] deine [gold]Akkordeffekte[/gold]."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "In diesem Zug erhält auch [blue]{TargetPlayer}[/blue] deine [gold]Akkordeffekte[/gold].",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "Gewitterwolken-Graffiti",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "Dein nächster [gold]Akkord[/gold] wird ein zusätzliches Mal ausgelöst.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "Deine nächsten [blue]{Amount}[/blue] [gold]Akkorde[/gold] werden jeweils ein zusätzliches Mal ausgelöst."
 }

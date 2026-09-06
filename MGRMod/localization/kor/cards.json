@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "DAYBREAK FRONTLINE",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]연주[/gold]{Performance:diff()}.\n[gold]연주[/gold]가 끝날 때, [gold]전투 중[/gold]인 모든 [gold]상태이상[/gold]과 [gold]저주[/gold]를 음표로 변환합니다.",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "적란운 그래피티",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "카드를 {Cards:diff()}장 뽑습니다.\n[gold]끝[/gold]: 이번 [gold]화음[/gold]이 두 번 발동합니다.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "카드를 {Cards:diff()}장 뽑습니다.\n다음 [gold]화음[/gold]이 두 번 발동합니다.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "별빛.",
   "MGR_MOD_CARD_LIGHT_UP.title": "무대를 밝혀라",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]연주[/gold]{Performance:diff()}.\n피해를 {Damage:diff()}씩 {Hits:diff()}번 줍니다.\n[gold]시작[/gold]: 이번 전투 동안 공격 횟수가 1 증가합니다.",

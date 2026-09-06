@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "Las cartas que jueguen otros jugadores también generan Notas para ti.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "¡Te lo dejo!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "Durante este turno, comparte los efectos de tus [gold]Acordes[/gold] con otro jugador.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "Durante este turno, [blue]{TargetPlayer}[/blue] también recibe los efectos de tus [gold]Acordes[/gold]."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "Durante este turno, [blue]{TargetPlayer}[/blue] también recibe los efectos de tus [gold]Acordes[/gold].",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "Grafiti cumulonimbo",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "Tu próximo [gold]Acorde[/gold] se activa una vez adicional.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "Tus próximos [blue]{Amount}[/blue] [gold]Acordes[/gold] se activan una vez adicional cada uno."
 }

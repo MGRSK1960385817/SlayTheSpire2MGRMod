@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "Карты других игроков также создают для вас ноты.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "Полагаюсь на тебя!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "В этом ходу делится эффектами ваших [gold]аккордов[/gold] с другим игроком.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "В этом ходу [blue]{TargetPlayer}[/blue] также получает эффекты ваших [gold]аккордов[/gold]."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "В этом ходу [blue]{TargetPlayer}[/blue] также получает эффекты ваших [gold]аккордов[/gold].",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "Граффити кучевых облаков",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "Ваш следующий [gold]аккорд[/gold] срабатывает ещё раз.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "Следующие [gold]аккорды[/gold] срабатывают ещё раз. Осталось: [blue]{Amount}[/blue]."
 }

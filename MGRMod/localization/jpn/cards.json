@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "DAYBREAK FRONTLINE",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]演奏[/gold]{Performance:diff()}。\n[gold]演奏[/gold]終了時、[gold]戦闘中[/gold]のすべての[gold]ステータス[/gold]と[gold]呪い[/gold]を音符に変換する。",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "積乱雲グラフィティ",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "カードを{Cards:diff()}枚引く。\n[gold]終了[/gold]：この[gold]和音[/gold]が2回発動する。",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "カードを{Cards:diff()}枚引く。\n次の[gold]和音[/gold]が2回発動する。",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "星空。",
   "MGR_MOD_CARD_LIGHT_UP.title": "ステージを照らせ",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]演奏[/gold]{Performance:diff()}。\n{Damage:diff()}ダメージを{Hits:diff()}回与える。\n[gold]開始[/gold]：この戦闘中、攻撃回数が1増加する。",

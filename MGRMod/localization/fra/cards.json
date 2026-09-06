@@ -57,7 +57,7 @@
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.title": "Front de l’aube",
   "MGR_MOD_CARD_DAYBREAK_FRONTLINE.description": "[gold]Interprétation[/gold] {Performance:diff()}.\nÀ la fin de l'[gold]interprétation[/gold], transformez tous les [gold]Statuts[/gold] et [gold]Malédictions[/gold] [gold]en combat[/gold] en notes.",
   "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.title": "Graffiti de cumulonimbus",
-  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Piochez {Cards:diff()} cartes.\n[gold]Fin[/gold] : cet [gold]accord[/gold] se déclenche deux fois.",
+  "MGR_MOD_CARD_CUMULONIMBUS_GRAFFITI.description": "Piochez {Cards:diff()} cartes.\nVotre prochain [gold]accord[/gold] se déclenche deux fois.",
   "MGR_MOD_CARD_STARRY_TYPE_LINE": "Étoilée.",
   "MGR_MOD_CARD_LIGHT_UP.title": "Illuminer la scène",
   "MGR_MOD_CARD_LIGHT_UP.description": "[gold]Interprétation[/gold] {Performance:diff()}.\nInfligez {Damage:diff()} dégâts {Hits:diff()} fois.\n[gold]Début[/gold] : augmente de 1 le nombre de coups pour ce combat.",

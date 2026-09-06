@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "Cards played by other players also generate Notes for you.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "Give It to You!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "This turn, share your [gold]Chord[/gold] effects with another player.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "This turn, [blue]{TargetPlayer}[/blue] also receives your [gold]Chord[/gold] effects."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "This turn, [blue]{TargetPlayer}[/blue] also receives your [gold]Chord[/gold] effects.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "Cumulonimbus Graffiti",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "Your next [gold]Chord[/gold] triggers 1 additional time.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "Your next [blue]{Amount}[/blue] [gold]Chords[/gold] each trigger 1 additional time."
 }

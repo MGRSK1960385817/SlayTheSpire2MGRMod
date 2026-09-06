@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "다른 플레이어가 사용한 카드도 내 음표를 생성합니다.",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "너에게 맡길게!",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "이번 턴 동안 내 [gold]화음[/gold] 효과를 다른 플레이어와 공유합니다.",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "이번 턴 동안 [blue]{TargetPlayer}[/blue]도 내 [gold]화음[/gold] 효과를 얻습니다."
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "이번 턴 동안 [blue]{TargetPlayer}[/blue]도 내 [gold]화음[/gold] 효과를 얻습니다.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "적란운 그래피티",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "다음 [gold]화음[/gold]이 한 번 추가로 발동합니다.",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "다음 [blue]{Amount}[/blue]회의 [gold]화음[/gold]이 각각 한 번 추가로 발동합니다."
 }

@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "其他玩家打出的牌也会为你生成音符。",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "交给你了！",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "本回合中，将你的[gold]和弦[/gold]效果分享给另一名玩家。",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "本回合中，你的[gold]和弦[/gold]效果也会由[blue]{TargetPlayer}[/blue]获得。"
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "本回合中，你的[gold]和弦[/gold]效果也会由[blue]{TargetPlayer}[/blue]获得。",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "积雨云涂鸦",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "你的下个[gold]和弦[/gold]会额外触发一次。",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "你接下来的[blue]{Amount}[/blue]个[gold]和弦[/gold]各会额外触发一次。"
 }

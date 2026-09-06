@@ -68,5 +68,8 @@
   "MGR_MOD_POWER_PROBABLITY_HILL_POWER.description": "他のプレイヤーがプレイしたカードからも音符を生成する。",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.title": "君に任せた！",
   "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.description": "このターン、[gold]和音[/gold]の効果を他のプレイヤー1人と共有する。",
-  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "このターン、[gold]和音[/gold]の効果を[blue]{TargetPlayer}[/blue]も得る。"
+  "MGR_MOD_POWER_GIVE_IT_TO_YOU_POWER.smartDescription": "このターン、[gold]和音[/gold]の効果を[blue]{TargetPlayer}[/blue]も得る。",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.title": "積乱雲グラフィティ",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.description": "次の[gold]和音[/gold]が追加で1回発動する。",
+  "MGR_MOD_POWER_CUMULONIMBUS_GRAFFITI_POWER.smartDescription": "次の[blue]{Amount}[/blue]回の[gold]和音[/gold]がそれぞれ追加で1回発動する。"
 }

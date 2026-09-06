@@ -278,7 +278,12 @@ public static class MgrPerformanceSystem
         return state.Entries.Count;
     }
 
-    public static int AddPerformancesToRightmostQueuedCards(
+    /// <summary>
+    /// Extends only the current queue entries. Unlike effects such as Resonate,
+    /// this does not mutate the card's printed Performance value or the entry's
+    /// initial count, so replaying the physical card starts from its own value.
+    /// </summary>
+    public static int AddRemainingPerformancesToRightmostQueuedCards(
         Player player,
         int cardCount,
         int amount)
@@ -291,10 +296,7 @@ public static class MgrPerformanceSystem
 
         MgrPerformanceEntry[] targets = state.Entries.Take(cardCount).ToArray();
         foreach (MgrPerformanceEntry entry in targets)
-        {
-            MgrPerformanceModifierState.Grant(entry.Card, amount);
-            entry.AddPerformanceTurns(amount);
-        }
+            entry.AddRemainingPerformanceTurns(amount);
 
         if (targets.Length > 0)
         {

@@ -710,7 +710,18 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         MgrCombatState state = MgrCombatStateStore.For(player);
         MgrRunTelemetryAccumulator.RecordChordCompleted(player);
-        int triggerCount = 1 + state.ConsumePendingChordTriggers();
+        int triggerCount = 1;
+        if (player.Creature.GetPower<CumulonimbusGraffitiPower>() is
+            { Amount: > 0 } cumulonimbus)
+        {
+            cumulonimbus.Flash();
+            MgrAbilityVfx.SpawnCastBurst(
+                player.Creature,
+                MgrAbilityVfxStyle.Cloud,
+                0.76f);
+            await PowerCmd.Decrement(cumulonimbus);
+            triggerCount++;
+        }
         int clickTrackCountedTriggerCount = triggerCount;
         ClickTrack? clickTrack = player.GetRelic<ClickTrack>();
 
