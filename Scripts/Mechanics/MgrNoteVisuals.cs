@@ -1,6 +1,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
@@ -10,6 +11,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
+using MGRMod.Powers;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -176,8 +178,43 @@ public static class MgrNoteVisuals
             };
             noteLayer.AddChild(_root);
             _root.Initialize(creatureAnchor, MgrVisualTuning.Notes.RackOffset);
+            _player.Creature.PowerApplied += OnPowerAppliedOrRemoved;
+            _player.Creature.PowerIncreased += OnPowerIncreased;
+            _player.Creature.PowerDecreased += OnPowerDecreased;
+            _player.Creature.PowerRemoved += OnPowerAppliedOrRemoved;
             ActiveScreenContext.Instance.Updated += OnActiveScreenContextUpdated;
             EnsureScreenVisibilitySubscriptions();
+        }
+
+        private void OnPowerAppliedOrRemoved(PowerModel power)
+        {
+            if (power is FortePower)
+                RefreshForteAmounts();
+        }
+
+        private void OnPowerIncreased(PowerModel power, int _, bool __)
+        {
+            if (power is FortePower)
+                RefreshForteAmounts();
+        }
+
+        private void OnPowerDecreased(PowerModel power, bool _)
+        {
+            if (power is FortePower)
+                RefreshForteAmounts();
+        }
+
+        private void RefreshForteAmounts()
+        {
+            if (!IsValid)
+            {
+                Dispose();
+                return;
+            }
+
+            int forte = _player.Creature.GetPowerAmount<FortePower>();
+            foreach (NoteSlot slot in _slots)
+                slot.RefreshDisplayedAmount(forte, _player);
         }
 
         public void Show(
@@ -578,6 +615,10 @@ public static class MgrNoteVisuals
 
             _disposed = true;
             CancelScheduledClear();
+            _player.Creature.PowerApplied -= OnPowerAppliedOrRemoved;
+            _player.Creature.PowerIncreased -= OnPowerIncreased;
+            _player.Creature.PowerDecreased -= OnPowerDecreased;
+            _player.Creature.PowerRemoved -= OnPowerAppliedOrRemoved;
             ActiveScreenContext.Instance.Updated -= OnActiveScreenContextUpdated;
             if (_overlayStack is not null &&
                 GodotObject.IsInstanceValid(_overlayStack))
@@ -636,6 +677,7 @@ public static class MgrNoteVisuals
         private readonly Control _hoverBounds;
 
         private NoteKind? _displayedKind;
+        private MgrNote? _displayedNote;
         private Color _noteColor = Colors.White;
         private Label? _amountLabel;
         private Tween? _entranceTween;
@@ -716,9 +758,23 @@ public static class MgrNoteVisuals
                 PlayEmptySlotCollapseAnimation();
 
             if (_amountLabel is not null)
-                _amountLabel.Text = GetDisplayedAmount(note, forte, player).ToString();
+            {
+                _displayedNote = note;
+                RefreshDisplayedAmount(forte, player);
+            }
 
             RefreshHoverTip();
+        }
+
+        public void RefreshDisplayedAmount(int forte, Player player)
+        {
+            if (_displayedNote is null || _amountLabel is null)
+                return;
+
+            _amountLabel.Text = GetDisplayedAmount(
+                _displayedNote,
+                forte,
+                player).ToString();
         }
 
         public async Task PlayEntranceAnimation(double totalSeconds)
@@ -1259,6 +1315,7 @@ public static class MgrNoteVisuals
             _chordTween?.Kill();
             _chordTween = null;
             _displayedKind = null;
+            _displayedNote = null;
             _amountLabel = null;
             _entranceRoot.Position = Vector2.Zero;
             _entranceRoot.Scale = Vector2.One;
