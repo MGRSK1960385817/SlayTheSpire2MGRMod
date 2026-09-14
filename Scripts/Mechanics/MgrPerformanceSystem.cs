@@ -630,7 +630,8 @@ public static class MgrPerformanceSystem
                 if (player.Creature.GetPower<ChaosMagicPower>() is { } chaosMagic)
                     await chaosMagic.OnPerformanceEnded(player);
 
-                if (player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
+                if (player.GetRelic<BlackGoldRecord>() is
+                    { IsMelted: false } blackGoldRecord)
                     await blackGoldRecord.OnPerformanceEnded(player);
 
                 await MgrPerformanceVisuals.PlayExitAnimation(
@@ -706,7 +707,7 @@ public static class MgrPerformanceSystem
         int bonusPerformances = 0;
         if (!replacedAfterPlay &&
             !cardPlay.IsAutoPlay &&
-            card.Owner.GetRelic<YourStage>() is { } miniStage &&
+            card.Owner.GetRelic<YourStage>() is { IsMelted: false } miniStage &&
             miniStage.TryGrantPerformanceBonus())
         {
             bonusPerformances = 1;
@@ -885,7 +886,9 @@ public static class MgrPerformanceSystem
                     await chaosMagic.OnPerformanceEnded(player);
                 }
 
-                if (!combatEnded && player.GetRelic<BlackGoldRecord>() is { } blackGoldRecord)
+                if (!combatEnded &&
+                    player.GetRelic<BlackGoldRecord>() is
+                        { IsMelted: false } blackGoldRecord)
                     await blackGoldRecord.OnPerformanceEnded(player);
 
                 // The final autoplay has already used the engine's normal result

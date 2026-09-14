@@ -26,6 +26,9 @@ public sealed class BlackGoldRecord : ModRelicTemplate
 
     public async Task OnPerformanceEnded(Player player)
     {
+        if (IsMelted)
+            return;
+
         Flash();
         await PlayerCmd.GainGold(DynamicVars.Gold.BaseValue, player);
     }

@@ -73,6 +73,12 @@ flowchart TB
 - 开发阶段不兼容旧测试存档；正式发布后再冻结注册主键。
 - 卡牌描述遵循 `CARD_DESCRIPTION_STYLE_GUIDE.md`。
 
+### 遗物与蜡质失效
+
+- 由原版战斗 Hook 分发器调用的遗物覆写会自动排除 `IsMelted` 实例；普通遗物效果优先放在遗物自身 Hook 中实现。
+- 音符、和弦、演奏等统一系统若必须通过 `Player.GetRelic<T>()` 直接调用遗物能力，必须显式要求 `IsMelted == false`；该查询会返回仍留在遗物栏中的已熔化蜡质遗物，不能把“能查到”视为“仍可生效”。
+- 遗物内部的延迟表现、计数刷新和战斗收尾不得把已熔化遗物的 `RelicStatus.Disabled` 改回 `Normal` 或 `Active`。
+
 ## 五、定位顺序
 
 1. **无法启动或构建失败**：清单、RitsuLib 版本、`Entry.cs`、编译日志。

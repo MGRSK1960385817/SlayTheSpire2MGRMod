@@ -44,7 +44,10 @@ public static class MgrNoteEffects
             chordTriggersBefore >=
             MgrVisualTuning.Notes.FastChordCommandThreshold;
 
-        if (player.GetRelic<GuitarPick>() is { } guitarPick)
+        // This effect is resolved by the global Note system instead of the
+        // relic hook dispatcher. Player.GetRelic<T>() still returns wax relics
+        // after Toy Box melts them, so mirror the dispatcher's IsMelted filter.
+        if (player.GetRelic<GuitarPick>() is { IsMelted: false } guitarPick)
         {
             guitarPick.PulseLightly();
             await CreatureCmd.GainBlock(

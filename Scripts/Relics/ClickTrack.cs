@@ -52,6 +52,9 @@ public sealed class ClickTrack : ModRelicTemplate
 
     public bool TryDoubleCurrentChord()
     {
+        if (IsMelted)
+            return false;
+
         int nextCount = ChordsTriggered + 1;
         bool doubles = nextCount >= ChordInterval;
         ChordsTriggered = nextCount;
@@ -62,6 +65,13 @@ public sealed class ClickTrack : ModRelicTemplate
 
     private void UpdateDisplay()
     {
+        if (IsMelted)
+        {
+            Status = RelicStatus.Disabled;
+            InvokeDisplayAmountChanged();
+            return;
+        }
+
         Status = !IsActivating && ChordsTriggered == ChordInterval - 1
             ? RelicStatus.Active
             : RelicStatus.Normal;

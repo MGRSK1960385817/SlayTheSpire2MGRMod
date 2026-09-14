@@ -39,13 +39,15 @@ public sealed class YourStage : ModRelicTemplate
     public override Task AfterCombatEnd(CombatRoom _)
     {
         _grantedBonusThisTurn = false;
-        Status = RelicStatus.Normal;
+        Status = IsMelted
+            ? RelicStatus.Disabled
+            : RelicStatus.Normal;
         return Task.CompletedTask;
     }
 
     public bool TryGrantPerformanceBonus()
     {
-        if (_grantedBonusThisTurn)
+        if (IsMelted || _grantedBonusThisTurn)
             return false;
 
         SetGrantedBonusThisTurn(true);
@@ -57,6 +59,12 @@ public sealed class YourStage : ModRelicTemplate
     {
         AssertMutable();
         _grantedBonusThisTurn = granted;
+        if (IsMelted)
+        {
+            Status = RelicStatus.Disabled;
+            return;
+        }
+
         Status = granted ? RelicStatus.Normal : RelicStatus.Active;
     }
 }

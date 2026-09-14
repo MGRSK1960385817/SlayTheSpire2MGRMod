@@ -27,6 +27,9 @@ public sealed class GuitarPick : ModRelicTemplate
 
     public void PulseLightly()
     {
+        if (IsMelted)
+            return;
+
         AssertMutable();
         int version = ++_lightPulseVersion;
         Status = RelicStatus.Active;
@@ -36,7 +39,9 @@ public sealed class GuitarPick : ModRelicTemplate
     public override Task AfterCombatEnd(CombatRoom _)
     {
         _lightPulseVersion++;
-        Status = RelicStatus.Normal;
+        Status = IsMelted
+            ? RelicStatus.Disabled
+            : RelicStatus.Normal;
         return Task.CompletedTask;
     }
 
@@ -45,7 +50,7 @@ public sealed class GuitarPick : ModRelicTemplate
         await Cmd.Wait(MgrVisualTiming.ScaleBlockingVisualWait(
             Owner,
             LightPulseSeconds));
-        if (_lightPulseVersion == version)
+        if (_lightPulseVersion == version && !IsMelted)
             Status = RelicStatus.Normal;
     }
 }

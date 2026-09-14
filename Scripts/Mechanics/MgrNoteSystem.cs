@@ -82,7 +82,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             if (player.Character is not MgrCharacter)
                 continue;
 
-            if (player.GetRelic<MgrFumo>() is { IsUsedUp: false } fumo)
+            if (player.GetRelic<MgrFumo>() is
+                { IsMelted: false, IsUsedUp: false } fumo)
             {
                 fumo.Flash();
                 await PowerCmd.Apply<FortePower>(
@@ -108,14 +109,15 @@ public sealed class MgrNoteSystem : HookedSingletonModel
                 MgrPerformanceStateStore.For(player);
             MgrPerformanceVisuals.Show(player, performanceState.Entries);
 
-            if (player.GetRelic<BookOfGrudges>() is { } plectrum)
+            if (player.GetRelic<BookOfGrudges>() is { IsMelted: false } plectrum)
             {
                 plectrum.Flash();
                 for (int index = 0; index < plectrum.CombatStartAttackNotes; index++)
                     await ChannelNote(choiceContext, player, NoteKind.Attack);
             }
 
-            if (player.GetRelic<MyFriend>() is not { IsUsedUp: false } relic)
+            if (player.GetRelic<MyFriend>() is not
+                { IsMelted: false, IsUsedUp: false } relic)
                 continue;
 
             relic.Flash();
@@ -723,7 +725,10 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             triggerCount++;
         }
         int clickTrackCountedTriggerCount = triggerCount;
-        ClickTrack? clickTrack = player.GetRelic<ClickTrack>();
+        ClickTrack? clickTrack = player.GetRelic<ClickTrack>() is
+            { IsMelted: false } activeClickTrack
+                ? activeClickTrack
+                : null;
 
         int lastTriggerBefore = state.ChordTriggersThisTurn;
         for (int index = 0; index < triggerCount; index++)
