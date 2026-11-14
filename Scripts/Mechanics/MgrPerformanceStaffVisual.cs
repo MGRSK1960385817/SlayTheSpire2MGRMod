@@ -1,6 +1,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MGRMod.Compatibility;
 
 namespace MGRMod.Mechanics;
 
@@ -623,7 +624,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             Colors.White,
             approachSeconds);
 
-        bool completed = await TweenHelper.AwaitFinished(tween, this);
+        bool completed = await MgrCrossVersionApi.AwaitTweenFinished(tween, this);
         if (completed && ReferenceEquals(_playheadTween, tween))
             _playheadTween = null;
     }
@@ -657,7 +658,7 @@ internal sealed partial class MgrPerformanceStaffVisual : Node2D
             new Color(1f, 1f, 1f, 0f),
             departureSeconds);
 
-        bool completed = await TweenHelper.AwaitFinished(tween, this);
+        bool completed = await MgrCrossVersionApi.AwaitTweenFinished(tween, this);
         if (completed && ReferenceEquals(_playheadTween, tween))
         {
             _playheadTween = null;

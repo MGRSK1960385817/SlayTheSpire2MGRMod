@@ -1,5 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.UI;
@@ -15,6 +16,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using MGRMod.Cards;
+using MGRMod.Compatibility;
 
 namespace MGRMod.Mechanics;
 
@@ -291,7 +293,7 @@ public static class MgrPerformanceVisuals
         if (!Racks.TryGetValue(player, out PerformanceRack? rack) || !rack.IsValid)
         {
             rack?.Dispose();
-            rack = new PerformanceRack(creatureNode, performanceLayer);
+            rack = new PerformanceRack(player, creatureNode, performanceLayer);
             Racks[player] = rack;
         }
 
@@ -322,6 +324,7 @@ public static class MgrPerformanceVisuals
         // Cards are intentionally larger than the old rack and overlap heavily,
         // like a row of playing cards. The exposed strip stays wide enough to
         // hover each entry even when the queue becomes long.
+        private readonly Player _player;
         private readonly MgrCombatUiFollowAnchor _root;
         private readonly MgrPerformanceStaffVisual _staff;
         private readonly Node2D _cardHost;
@@ -349,8 +352,12 @@ public static class MgrPerformanceVisuals
             GodotObject.IsInstanceValid(_interactionHost) &&
             _interactionHost.IsInsideTree();
 
-        public PerformanceRack(CanvasItem creatureAnchor, Control performanceLayer)
+        public PerformanceRack(
+            Player player,
+            CanvasItem creatureAnchor,
+            Control performanceLayer)
         {
+            _player = player;
             _root = new MgrCombatUiFollowAnchor
             {
                 Name = "MgrPerformanceRack"
@@ -692,6 +699,7 @@ public static class MgrPerformanceVisuals
             bool hasOpenRelicInspection =
                 _inspectRelicScreen is { Visible: true };
             bool shouldShow =
+                LocalContext.IsMe(_player) &&
                 !hasOverlay &&
                 !hasCapstone &&
                 !hasOpenMap &&
@@ -1492,7 +1500,7 @@ public static class MgrPerformanceVisuals
                 new Color(1f, 1f, 1f, 0f),
                 settleSeconds);
 
-            bool completed = await TweenHelper.AwaitFinished(tween, _anchor);
+            bool completed = await MgrCrossVersionApi.AwaitTweenFinished(tween, _anchor);
             if (completed && ReferenceEquals(_pulseTween, tween))
                 _pulseTween = null;
         }

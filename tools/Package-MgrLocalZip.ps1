@@ -22,7 +22,8 @@ $expectedFiles = @(
     'MGRMod.pck',
     'mgrmod-variants.manifest',
     'lib/0.107.1/MGRMod.dll',
-    'lib/0.111.0/MGRMod.dll'
+    'lib/0.111.0/MGRMod.dll',
+    'lib/0.113.0/MGRMod.dll'
 )
 
 if (-not (Test-Path -LiteralPath $bundleRoot -PathType Container)) {

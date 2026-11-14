@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Mechanics;
 using MGRMod.Compatibility;
@@ -28,7 +29,17 @@ public sealed class UniverseOf88KeysPower : ModPowerTemplate
             ? power.DisplayAmount
             : 0;
 
+#if STS2_V107 || STS2_V111
         protected override decimal GetBaseValueForIConvertible() => Value;
+#endif
+
+        public override void SetOwner(AbstractModel owner)
+        {
+            base.SetOwner(owner);
+            Refresh();
+        }
+
+        public void Refresh() => BaseValue = Value;
 
         public override string ToString() => Value.ToString();
     }
@@ -102,5 +113,9 @@ public sealed class UniverseOf88KeysPower : ModPowerTemplate
     /// counter lives outside PowerModel, so explicitly invalidate the native
     /// amount label whenever it changes or is reset.
     /// </summary>
-    public void NotifyChordCounterChanged() => InvokeDisplayAmountChanged();
+    public void NotifyChordCounterChanged()
+    {
+        ((CurrentDamageVar)DynamicVars["CurrentDamage"]).Refresh();
+        InvokeDisplayAmountChanged();
+    }
 }

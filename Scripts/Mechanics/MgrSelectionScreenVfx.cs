@@ -1,8 +1,10 @@
 using Godot;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.TestSupport;
 using MGRMod.Characters;
 using STS2RitsuLib.Audio;
@@ -11,8 +13,9 @@ namespace MGRMod.Mechanics;
 
 /// <summary>
 /// Full-screen filters whose lifetime is owned by an awaited player choice.
-/// Disposing the returned lease removes the filter, so cancellation, normal
-/// completion and exceptions cannot leave a screen effect behind.
+/// Disposing the returned lease removes the filter. The lease also observes
+/// combat end and its own scene-tree lifetime, because a player-choice task can
+/// remain suspended when combat ends before the local selection is submitted.
 /// </summary>
 public static class MgrSelectionScreenVfx
 {
@@ -88,15 +91,42 @@ public static class MgrSelectionScreenVfx
         return new FilterLease(filterRoot, audioLoop);
     }
 
-    private sealed class FilterLease(
-        Node filterRoot,
-        IAudioHandle? audioLoop) : IDisposable
+    private sealed class FilterLease : IDisposable
     {
-        private Node? _filterRoot = filterRoot;
-        private IAudioHandle? _audioLoop = audioLoop;
+        private readonly CombatManager _combatManager;
+        private Node? _filterRoot;
+        private IAudioHandle? _audioLoop;
+        private bool _disposed;
 
-        public void Dispose()
+        public FilterLease(Node filterRoot, IAudioHandle? audioLoop)
         {
+            _filterRoot = filterRoot;
+            _audioLoop = audioLoop;
+            _combatManager = CombatManager.Instance;
+            _combatManager.CombatEnded += OnCombatEnded;
+            filterRoot.TreeExiting += OnFilterRootTreeExiting;
+        }
+
+        public void Dispose() => Dispose(removeFilterRoot: true);
+
+        private void OnCombatEnded(CombatRoom _) => Dispose();
+
+        private void OnFilterRootTreeExiting() =>
+            Dispose(removeFilterRoot: false);
+
+        private void Dispose(bool removeFilterRoot)
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            _combatManager.CombatEnded -= OnCombatEnded;
+
+            Node? currentRoot = _filterRoot;
+            _filterRoot = null;
+            if (currentRoot is not null && GodotObject.IsInstanceValid(currentRoot))
+                currentRoot.TreeExiting -= OnFilterRootTreeExiting;
+
             if (_audioLoop is { } currentLoop)
             {
                 currentLoop.TryStop(allowFadeOut: false);
@@ -104,9 +134,12 @@ public static class MgrSelectionScreenVfx
             }
             _audioLoop = null;
 
-            if (_filterRoot is { } current && GodotObject.IsInstanceValid(current))
-                current.QueueFree();
-            _filterRoot = null;
+            if (removeFilterRoot &&
+                currentRoot is not null &&
+                GodotObject.IsInstanceValid(currentRoot))
+            {
+                currentRoot.QueueFree();
+            }
         }
     }
 

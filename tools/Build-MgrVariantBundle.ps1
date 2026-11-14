@@ -6,6 +6,12 @@ param(
     [Parameter(Mandatory)]
     [string]$V111DataDir,
 
+    [Parameter(Mandatory)]
+    [string]$V113DataDir,
+
+    [Parameter(Mandatory)]
+    [string]$RitsuLibReferenceRoot,
+
     [string]$PckPath,
 
     [string]$OutputDir,
@@ -16,6 +22,29 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+
+function Get-Sha256Hex {
+    param(
+        [Parameter(Mandatory)]
+        [string]$LiteralPath
+    )
+
+    $stream = [System.IO.File]::OpenRead(
+        [System.IO.Path]::GetFullPath($LiteralPath))
+    try {
+        $sha256 = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            return [System.BitConverter]::ToString(
+                $sha256.ComputeHash($stream)).Replace('-', '').ToLowerInvariant()
+        }
+        finally {
+            $sha256.Dispose()
+        }
+    }
+    finally {
+        $stream.Dispose()
+    }
+}
 
 function Set-ExactChildName {
     param(
@@ -85,6 +114,8 @@ if ([string]::IsNullOrWhiteSpace($PckPath)) {
 $outputRoot = [System.IO.Path]::GetFullPath($OutputDir)
 $v107Dir = [System.IO.Path]::GetFullPath($V107DataDir)
 $v111Dir = [System.IO.Path]::GetFullPath($V111DataDir)
+$v113Dir = [System.IO.Path]::GetFullPath($V113DataDir)
+$ritsuLibRoot = [System.IO.Path]::GetFullPath($RitsuLibReferenceRoot)
 $pckFullPath = [System.IO.Path]::GetFullPath($PckPath)
 
 $outputParent = Split-Path -Parent $outputRoot
@@ -95,9 +126,17 @@ $pckParent = Split-Path -Parent $pckFullPath
 $pckLeaf = Split-Path -Leaf $pckFullPath
 [void](Set-ExactChildName $pckParent $pckLeaf 'File')
 
-foreach ($dataDir in @($v107Dir, $v111Dir)) {
+foreach ($dataDir in @($v107Dir, $v111Dir, $v113Dir)) {
     if (-not (Test-Path -LiteralPath (Join-Path $dataDir 'sts2.dll'))) {
         throw "Missing sts2.dll in compatibility reference directory: $dataDir"
+    }
+}
+foreach ($compatTarget in @('0.107.1', '0.111.0', '0.113.0')) {
+    foreach ($assemblyName in @('STS2-RitsuLib.dll', 'STS2-RitsuLib.Runtime.dll')) {
+        $referencePath = Join-Path $ritsuLibRoot "compat\$compatTarget\$assemblyName"
+        if (-not (Test-Path -LiteralPath $referencePath)) {
+            throw "Missing RitsuLib 0.6.12 reference: $referencePath"
+        }
     }
 }
 if (-not (Test-Path -LiteralPath $pckFullPath)) {
@@ -107,6 +146,7 @@ if (-not (Test-Path -LiteralPath $pckFullPath)) {
 [void](New-Item -ItemType Directory -Path $outputRoot -Force)
 [void](New-Item -ItemType Directory -Path (Join-Path $outputRoot 'lib\0.107.1') -Force)
 [void](New-Item -ItemType Directory -Path (Join-Path $outputRoot 'lib\0.111.0') -Force)
+[void](New-Item -ItemType Directory -Path (Join-Path $outputRoot 'lib\0.113.0') -Force)
 
 function Build-Payload {
     param(
@@ -118,6 +158,7 @@ function Build-Payload {
         -c $Configuration `
         "/p:Sts2CompatTarget=$CompatTarget" `
         "/p:Sts2DataDir=$DataDir" `
+        "/p:RitsuLibReferenceRoot=$ritsuLibRoot" `
         /p:BuildCrossVersionBundle=false `
         /p:CopyModOnBuild=false `
         /p:RunPckExport=false | Out-Host
@@ -134,8 +175,9 @@ function Build-Payload {
     return $destination
 }
 
-# Build newest first so a v0.111 reference directory may safely point at a
-# preserved build cache without the v0.107 build overwriting it beforehand.
+# Build newest first so each payload is copied before the next isolated build
+# replaces Godot's shared temporary output.
+$payload113 = Build-Payload -CompatTarget '0.113.0' -DataDir $v113Dir
 $payload111 = Build-Payload -CompatTarget '0.111.0' -DataDir $v111Dir
 $payload107 = Build-Payload -CompatTarget '0.107.1' -DataDir $v107Dir
 
@@ -156,8 +198,9 @@ if (-not $pckFullPath.Equals(
     Copy-Item -LiteralPath $pckFullPath -Destination $pckDestination -Force
 }
 
-$hash107 = (Get-FileHash -LiteralPath $payload107 -Algorithm SHA256).Hash.ToLowerInvariant()
-$hash111 = (Get-FileHash -LiteralPath $payload111 -Algorithm SHA256).Hash.ToLowerInvariant()
+$hash107 = Get-Sha256Hex -LiteralPath $payload107
+$hash111 = Get-Sha256Hex -LiteralPath $payload111
+$hash113 = Get-Sha256Hex -LiteralPath $payload113
 $variantManifest = [ordered]@{
     schema = 1
     variants = @(
@@ -172,6 +215,12 @@ $variantManifest = [ordered]@{
             directory = 'lib/0.111.0'
             assembly = 'MGRMod.dll'
             sha256 = $hash111
+        },
+        [ordered]@{
+            compatTarget = '0.113.0'
+            directory = 'lib/0.113.0'
+            assembly = 'MGRMod.dll'
+            sha256 = $hash113
         }
     )
 }
@@ -191,7 +240,8 @@ foreach ($entry in @(
     @($outputRoot, 'mgrmod-variants.manifest', 'File'),
     @($outputRoot, 'lib', 'Directory'),
     @((Join-Path $outputRoot 'lib\0.107.1'), 'MGRMod.dll', 'File'),
-    @((Join-Path $outputRoot 'lib\0.111.0'), 'MGRMod.dll', 'File')
+    @((Join-Path $outputRoot 'lib\0.111.0'), 'MGRMod.dll', 'File'),
+    @((Join-Path $outputRoot 'lib\0.113.0'), 'MGRMod.dll', 'File')
 )) {
     if (-not (Set-ExactChildName $entry[0] $entry[1] $entry[2])) {
         throw "Missing release entry after bundle build: $($entry[0])\$($entry[1])"
@@ -202,13 +252,16 @@ $loaderIdentity = [System.Reflection.AssemblyName]::GetAssemblyName(
     (Join-Path $outputRoot 'MGRMod.dll')).Name
 $payload107Identity = [System.Reflection.AssemblyName]::GetAssemblyName($payload107).Name
 $payload111Identity = [System.Reflection.AssemblyName]::GetAssemblyName($payload111).Name
+$payload113Identity = [System.Reflection.AssemblyName]::GetAssemblyName($payload113).Name
 if ($loaderIdentity -ne 'MGRMod.Loader' -or
     $payload107Identity -ne 'MGRMod' -or
-    $payload111Identity -ne 'MGRMod') {
-    throw "Unexpected assembly identities: loader=$loaderIdentity, v107=$payload107Identity, v111=$payload111Identity"
+    $payload111Identity -ne 'MGRMod' -or
+    $payload113Identity -ne 'MGRMod') {
+    throw "Unexpected assembly identities: loader=$loaderIdentity, v107=$payload107Identity, v111=$payload111Identity, v113=$payload113Identity"
 }
 
 Write-Host "MGR cross-version bundle prepared: $outputRoot"
 Write-Host "  Loader:  MGRMod.Loader"
 Write-Host "  v0.107:  $hash107"
 Write-Host "  v0.111:  $hash111"
+Write-Host "  v0.113:  $hash113"

@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
@@ -11,6 +12,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
+using MGRMod.Compatibility;
 using MGRMod.Powers;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -532,6 +534,7 @@ public static class MgrNoteVisuals
             bool hasOpenRelicInspection =
                 _inspectRelicScreen is { Visible: true };
             bool shouldShow =
+                LocalContext.IsMe(_player) &&
                 !hasOverlay &&
                 !hasCapstone &&
                 !hasOpenMap &&
@@ -835,7 +838,7 @@ public static class MgrNoteVisuals
                 .SetEase(Tween.EaseType.InOut)
                 .SetTrans(Tween.TransitionType.Cubic);
 
-            bool completed = await TweenHelper.AwaitFinished(tween, _anchor);
+            bool completed = await MgrCrossVersionApi.AwaitTweenFinished(tween, _anchor);
             if (completed && ReferenceEquals(_entranceTween, tween))
                 _entranceTween = null;
         }

@@ -10,7 +10,7 @@ namespace MGRMod.Mechanics;
 /// </summary>
 internal static class MgrHoverTips
 {
-    private const string SupplementalIdPrefix = "MGR_MOD_SUPPLEMENTAL_HOVER_TIP:";
+    private const string SupplementalKeyPrefix = "MGR_MOD_HOVER_TIP_";
     private const string CardsInCombatKey =
         "MGR_MOD_HOVER_TIP_CARDS_IN_COMBAT";
     private const string BaseDamageKey =
@@ -20,25 +20,16 @@ internal static class MgrHoverTips
 
     public static IHoverTip CardsInCombat() => new HoverTip(
         new LocString("static_hover_tips", $"{CardsInCombatKey}.title"),
-        new LocString("static_hover_tips", $"{CardsInCombatKey}.description"))
-    {
-        Id = $"{SupplementalIdPrefix}{CardsInCombatKey}"
-    };
+        new LocString("static_hover_tips", $"{CardsInCombatKey}.description"));
 
     public static IHoverTip BaseDamage() => new HoverTip(
         new LocString("static_hover_tips", $"{BaseDamageKey}.title"),
-        new LocString("static_hover_tips", $"{BaseDamageKey}.description"))
-    {
-        Id = $"{SupplementalIdPrefix}{BaseDamageKey}"
-    };
+        new LocString("static_hover_tips", $"{BaseDamageKey}.description"));
 
     public static IHoverTip TransformIntoNote() => new HoverTip(
         new LocString("static_hover_tips", $"{TransformIntoNoteKey}.title"),
-        new LocString("static_hover_tips", $"{TransformIntoNoteKey}.description"))
-    {
-        Id = $"{SupplementalIdPrefix}{TransformIntoNoteKey}"
-    };
+        new LocString("static_hover_tips", $"{TransformIntoNoteKey}.description"));
 
     internal static bool IsSupplemental(IHoverTip hoverTip) =>
-        hoverTip.Id.StartsWith(SupplementalIdPrefix, StringComparison.Ordinal);
+        hoverTip.Id.Contains(SupplementalKeyPrefix, StringComparison.Ordinal);
 }

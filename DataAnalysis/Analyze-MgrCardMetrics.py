@@ -30,6 +30,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--minimum-win-sample", type=int, default=20)
     parser.add_argument("--minimum-offers", type=int, default=30)
     parser.add_argument("--top", type=int, default=15)
+    parser.add_argument("--since-utc", help="Include events at or after this ISO-8601 time")
+    parser.add_argument("--until-utc", help="Include events at or before this ISO-8601 time")
+    parser.add_argument("--mod-version", help="Include only this exact telemetry mod_version")
     return parser.parse_args()
 
 
@@ -148,6 +151,15 @@ def parse_timestamp(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def parse_utc_filter(value: str | None, label: str) -> datetime | None:
+    if value is None:
+        return None
+    parsed = parse_timestamp(value)
+    if parsed.tzinfo is None:
+        raise ValueError(f"{label} must include a UTC offset or Z suffix")
+    return parsed.astimezone(timezone.utc)
+
+
 def validate_payload(payload: dict[str, Any]) -> list[str]:
     """Mirror the card-relevant consistency rules used by the PS validator."""
     issues: list[str] = []
@@ -192,6 +204,10 @@ def main() -> None:
     output_dir = (args.output_dir or repo_root / "DataAnalysis/Reports").resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     catalog = load_card_catalog(repo_root)
+    since_utc = parse_utc_filter(args.since_utc, "--since-utc")
+    until_utc = parse_utc_filter(args.until_utc, "--until-utc")
+    if since_utc is not None and until_utc is not None and since_utc > until_utc:
+        raise ValueError("--since-utc must not be later than --until-utc")
 
     runs: dict[str, dict[str, Any]] = {}
     schema_counts: Counter[int] = Counter()
@@ -200,6 +216,8 @@ def main() -> None:
     skipped_invalid = 0
     invalid_reasons: Counter[str] = Counter()
     duplicate_event_ids = 0
+    skipped_time_filter = 0
+    skipped_version_filter = 0
     version_counts: Counter[str] = Counter()
     version_wins: Counter[str] = Counter()
     ascension_counts: Counter[int] = Counter()
@@ -209,6 +227,17 @@ def main() -> None:
 
     for envelope in read_snapshot(input_path):
         payload = envelope["payload"]
+        timestamp = parse_timestamp(str(envelope["timestamp"])).astimezone(timezone.utc)
+        version = str(payload.get("mod_version", "unknown"))
+        if since_utc is not None and timestamp < since_utc:
+            skipped_time_filter += 1
+            continue
+        if until_utc is not None and timestamp > until_utc:
+            skipped_time_filter += 1
+            continue
+        if args.mod_version is not None and version != args.mod_version:
+            skipped_version_filter += 1
+            continue
         schema = int(payload.get("schema_version", 0))
         schema_counts[schema] += 1
         if schema < args.minimum_schema:
@@ -229,8 +258,6 @@ def main() -> None:
             duplicate_event_ids += 1
             continue
 
-        timestamp = parse_timestamp(str(envelope["timestamp"]))
-        version = str(payload.get("mod_version", "unknown"))
         victory = bool(payload.get("victory", False))
         ascension = int(payload.get("ascension", 0))
         runs[event_id] = {
@@ -770,6 +797,11 @@ def main() -> None:
         "skipped_invalid": skipped_invalid,
         "invalid_reasons": dict(sorted(invalid_reasons.items())),
         "duplicate_event_ids": duplicate_event_ids,
+        "since_utc": since_utc.isoformat() if since_utc else None,
+        "until_utc": until_utc.isoformat() if until_utc else None,
+        "mod_version_filter": args.mod_version,
+        "skipped_time_filter": skipped_time_filter,
+        "skipped_version_filter": skipped_version_filter,
         "win_report": str(win_path),
         "pick_report": str(pick_path),
         "detail_csv": str(csv_path),

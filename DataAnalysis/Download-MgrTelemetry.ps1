@@ -18,6 +18,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# PowerShell unwraps a non-null Nullable[DateTimeOffset] parameter to a plain
+# DateTimeOffset at runtime. Testing .HasValue on that value therefore returns
+# $null/false even when the caller supplied the parameter. Track parameter
+# presence explicitly and use the unwrapped value directly.
+$hasSinceUtc = $PSBoundParameters.ContainsKey('SinceUtc') -and $null -ne $SinceUtc
+$hasUntilUtc = $PSBoundParameters.ContainsKey('UntilUtc') -and $null -ne $UntilUtc
+
 if ([string]::IsNullOrWhiteSpace($PersonalApiKey)) {
     $secureKey = Read-Host 'PostHog Personal API key' -AsSecureString
     $credential = [System.Management.Automation.PSCredential]::new('posthog', $secureKey)
@@ -28,7 +35,7 @@ if ([string]::IsNullOrWhiteSpace($PersonalApiKey)) {
     throw 'A PostHog Personal API key is required.'
 }
 
-if ($SinceUtc.HasValue -and $UntilUtc.HasValue -and $SinceUtc.Value -gt $UntilUtc.Value) {
+if ($hasSinceUtc -and $hasUntilUtc -and $SinceUtc -gt $UntilUtc) {
     throw 'SinceUtc must not be later than UntilUtc.'
 }
 
@@ -82,8 +89,8 @@ $manifestPath = Join-Path $resolvedOutputDirectory "$safeEventName`_$downloadSta
 # Freeze the upper edge of this snapshot so events arriving during the
 # download cannot move already-read pages. A caller-provided UntilUtc takes
 # precedence and also makes historical range exports reproducible.
-$snapshotUntil = if ($UntilUtc.HasValue) {
-    $UntilUtc.Value.ToUniversalTime()
+$snapshotUntil = if ($hasUntilUtc) {
+    $UntilUtc.ToUniversalTime()
 } else {
     [DateTimeOffset]::UtcNow
 }
@@ -134,8 +141,8 @@ try {
         $whereClauses.Add("event = '$EventName'")
         $whereClauses.Add("properties.request_id = 'mgr_clean_run_metrics'")
         $whereClauses.Add("timestamp <= $(ConvertTo-HogQlDateTime64 $snapshotUntil)")
-        if ($SinceUtc.HasValue) {
-            $whereClauses.Add("timestamp >= $(ConvertTo-HogQlDateTime64 $SinceUtc.Value)")
+        if ($hasSinceUtc) {
+            $whereClauses.Add("timestamp >= $(ConvertTo-HogQlDateTime64 $SinceUtc)")
         }
         if ($null -ne $cursorTimestamp) {
             $cursorTimeExpression = ConvertTo-HogQlDateTime64 $cursorTimestamp
@@ -253,7 +260,7 @@ LIMIT $queryLimit
         event_name               = $EventName
         request_id               = 'mgr_clean_run_metrics'
         snapshot_until_utc       = $snapshotUntil.ToString('O')
-        requested_since_utc      = if ($SinceUtc.HasValue) { $SinceUtc.Value.ToUniversalTime().ToString('O') } else { $null }
+        requested_since_utc      = if ($hasSinceUtc) { $SinceUtc.ToUniversalTime().ToString('O') } else { $null }
         max_events               = $MaxEvents
         page_size                = $PageSize
         pages                    = $pageCount

@@ -1,20 +1,24 @@
 using System.Reflection;
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.TestSupport;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace MGRMod.Compatibility;
 
 /// <summary>
-/// Keeps optional post-0.107 convenience APIs out of MGR's static call sites.
-/// CrossVersionCompat can then concentrate on the unavoidable ABI changes
-/// (notably CardLocation and changed virtual hook signatures).
+/// Centralizes ordinary API differences between MGR's supported game targets.
+/// ABI-sensitive overrides remain in their declaring types under conditional
+/// compilation so each payload binds directly to its target assemblies.
 /// </summary>
 internal static class MgrCrossVersionApi
 {
@@ -60,10 +64,12 @@ internal static class MgrCrossVersionApi
             .Where(method => method.Name == "Damage")
             .ToArray();
 
+#if STS2_V107
     private static readonly PropertyInfo? LocalCardSelectorProperty =
         typeof(CardSelectCmd).GetProperty(
             "LocalSelector",
             BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+#endif
 
     public static CardModel CreateCloneForPlayer(CardModel source, Player owner)
     {
@@ -179,8 +185,8 @@ internal static class MgrCrossVersionApi
             return;
         }
 
-        // v0.107 has no branching draw helper. Waiting for the ordinary draw
-        // preserves the card effect; only cross-player queue interleaving differs.
+        // Preserve the card effect if an earlier supported ABI lacks the
+        // branching helper; only cross-player queue interleaving differs.
         await CardPileCmd.Draw(choiceContext, count, player);
     }
 
@@ -227,8 +233,47 @@ internal static class MgrCrossVersionApi
         await task;
     }
 
-    public static ICardSelector? GetLocalCardSelector() =>
-        LocalCardSelectorProperty?.GetValue(null) as ICardSelector;
+    public static ICardSelector? GetCardSelector(Player player)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+#if STS2_V107 || STS2_V111
+        return CardSelectCmd.Selector;
+#else
+        return RunManager.Instance.CardSelectorStack.GetSelector(player);
+#endif
+    }
+
+    public static ICardSelector? GetLocalCardSelector()
+    {
+#if STS2_V107
+        return LocalCardSelectorProperty?.GetValue(null) as ICardSelector;
+#elif STS2_V111
+        return CardSelectCmd.LocalSelector;
+#else
+        return RunManager.Instance.CardSelectorStack.LocalSelector;
+#endif
+    }
+
+    public static void UndoReadyToEndTurn(Player player)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+#if STS2_V107 || STS2_V111
+        CombatManager.Instance.UndoReadyToEndTurn(player);
+#else
+        CombatManager.Instance.TryUndoReadyToEndTurn(player);
+#endif
+    }
+
+    public static async Task<bool> AwaitTweenFinished(Tween tween, Node owner)
+    {
+        ArgumentNullException.ThrowIfNull(tween);
+        ArgumentNullException.ThrowIfNull(owner);
+#if STS2_V107 || STS2_V111
+        return await TweenHelper.AwaitFinished(tween, owner);
+#else
+        return await TweenHelper.AwaitFinished(tween, owner) == TweenOutcome.Finished;
+#endif
+    }
 
     private static object?[]? BuildNonBlockingDrawArguments(
         MethodInfo method,

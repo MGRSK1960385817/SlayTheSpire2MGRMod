@@ -34,7 +34,7 @@ internal static class MgrWideCardSelectCmd
             return null;
 
         UndoEndTurnIfNecessary(player);
-        if (CardSelectCmd.Selector is { } selector)
+        if (MgrCrossVersionApi.GetCardSelector(player) is { } selector)
         {
             return (await selector.GetSelectedCards(cards, 1, 1))
                 .FirstOrDefault();
@@ -120,7 +120,7 @@ internal static class MgrWideCardSelectCmd
         if (CombatManager.Instance.IsPlayerReadyToEndTurn(player) &&
             player.Creature.CombatState is { CurrentSide: CombatSide.Player })
         {
-            CombatManager.Instance.UndoReadyToEndTurn(player);
+            MgrCrossVersionApi.UndoReadyToEndTurn(player);
         }
     }
 }

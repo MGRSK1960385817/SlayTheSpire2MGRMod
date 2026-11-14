@@ -22,8 +22,13 @@ public sealed class BookOfGrudges : ModRelicTemplate
     ];
 
     public override RelicRarity Rarity => RelicRarity.Common;
+#if STS2_V107 || STS2_V111
     public override bool IsAllowed(IRunState runState) =>
         IsBeforeAct3TreasureChest(runState);
+#else
+    protected override bool IsAllowedInternal(IRunState runState) =>
+        !IsLateInAct3(runState);
+#endif
     public override bool ShowCounter => true;
     public override int DisplayAmount => CombatStartAttackNotes;
 

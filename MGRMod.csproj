@@ -14,15 +14,23 @@
     <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
 
     <GodotExportPreset>Windows Desktop</GodotExportPreset>
+    <!-- Prefer a user-installed PowerShell 7 (MSIX/winget first, MSI second),
+         but keep Windows PowerShell 5.1 as a portable fallback. Do not rely on
+         Codex's private pwsh PATH entry, which normal user terminals cannot see. -->
+    <PowerShellExe Condition="'$(PowerShellExe)' == '' and Exists('$(LocalAppData)\Microsoft\WindowsApps\pwsh.exe')">$(LocalAppData)\Microsoft\WindowsApps\pwsh.exe</PowerShellExe>
+    <PowerShellExe Condition="'$(PowerShellExe)' == '' and Exists('$(ProgramFiles)\PowerShell\7\pwsh.exe')">$(ProgramFiles)\PowerShell\7\pwsh.exe</PowerShellExe>
+    <PowerShellExe Condition="'$(PowerShellExe)' == ''">powershell.exe</PowerShellExe>
     <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
     <BuildCrossVersionBundle Condition="'$(BuildCrossVersionBundle)' == '' and '$(DesignTimeBuild)' != 'true'">true</BuildCrossVersionBundle>
     <BuildCrossVersionBundle Condition="'$(BuildCrossVersionBundle)' == ''">false</BuildCrossVersionBundle>
     <V107Sts2DataDir Condition="'$(V107Sts2DataDir)' == ''">$(MSBuildProjectDirectory)\..\.tools\sts2_v107.1_original_refs</V107Sts2DataDir>
     <V111Sts2DataDir Condition="'$(V111Sts2DataDir)' == ''">$(MSBuildProjectDirectory)\..\.tools\sts2_v111.0_original_refs</V111Sts2DataDir>
+    <V113Sts2DataDir Condition="'$(V113Sts2DataDir)' == ''">$(MSBuildProjectDirectory)\..\.tools\sts2_v113.0_original_refs</V113Sts2DataDir>
+    <RitsuLibReferenceRoot Condition="'$(RitsuLibReferenceRoot)' == ''">$(MSBuildProjectDirectory)\..\.tools\ritsulib_v0.6.12_refs</RitsuLibReferenceRoot>
     <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
-    <!-- The outer build is the v0.111 payload. The post-build bundler performs
-         isolated v0.111 and v0.107 builds against the archived references. -->
-    <Sts2DataDir Condition="'$(BuildCrossVersionBundle)' == 'true'">$(V111Sts2DataDir)</Sts2DataDir>
+    <!-- The outer build is the v0.113 payload. The post-build bundler performs
+         isolated v0.113 and v0.111 builds against the archived references. -->
+    <Sts2DataDir Condition="'$(BuildCrossVersionBundle)' == 'true'">$(V113Sts2DataDir)</Sts2DataDir>
     <!-- RitsuLib is installed through Steam Workshop. Keep the NuGet package
          as a compile-time dependency without creating a duplicate local mod. -->
     <RitsuLibAutoCopy>false</RitsuLibAutoCopy>
@@ -33,17 +41,22 @@
     <CrossVersionBundleOutputDir Condition="'$(CrossVersionBundleOutputDir)' == '' and '$(CopyModOnBuild)' != 'false'">$(ModOutputDir)</CrossVersionBundleOutputDir>
     <CrossVersionBundleOutputDir Condition="'$(CrossVersionBundleOutputDir)' == ''">$(MSBuildProjectDirectory)\.artifacts\MGRMod-cross-version</CrossVersionBundleOutputDir>
     <ModPckPath>$(CrossVersionBundleOutputDir)\$(MSBuildProjectName).pck</ModPckPath>
-    <Sts2CompatTarget Condition="'$(Sts2CompatTarget)' == ''">0.111.0</Sts2CompatTarget>
-    <Sts2CompatTarget Condition="'$(BuildCrossVersionBundle)' == 'true'">0.111.0</Sts2CompatTarget>
+    <Sts2CompatTarget Condition="'$(Sts2CompatTarget)' == ''">0.113.0</Sts2CompatTarget>
+    <Sts2CompatTarget Condition="'$(BuildCrossVersionBundle)' == 'true'">0.113.0</Sts2CompatTarget>
     <DefineConstants Condition="'$(Sts2CompatTarget)' == '0.107.1'">$(DefineConstants);STS2_V107</DefineConstants>
+    <DefineConstants Condition="'$(Sts2CompatTarget)' == '0.111.0'">$(DefineConstants);STS2_V111</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" />
-    <PackageReference Include="STS2.RitsuLib" Version="0.5.13"
-                      Condition="'$(Sts2CompatTarget)' != '0.107.1'" />
-    <PackageReference Include="STS2.RitsuLib.Compat.0.107.1" Version="0.5.13"
-                      Condition="'$(Sts2CompatTarget)' == '0.107.1'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="STS2-RitsuLib" HintPath="$(RitsuLibReferenceRoot)\compat\$(Sts2CompatTarget)\STS2-RitsuLib.dll" Private="false" />
+    <Reference Include="STS2-RitsuLib.Runtime" HintPath="$(RitsuLibReferenceRoot)\compat\$(Sts2CompatTarget)\STS2-RitsuLib.Runtime.dll" Private="false" />
+    <Reference Include="STS2-RitsuLib.Shared" HintPath="$(RitsuLibReferenceRoot)\shared\STS2-RitsuLib.Shared.dll" Private="false" />
+    <Reference Include="STS2-RitsuLib.Ui" HintPath="$(RitsuLibReferenceRoot)\shared\STS2-RitsuLib.Ui.dll" Private="false" />
+    <Reference Include="STS2-RitsuLib.Settings" HintPath="$(RitsuLibReferenceRoot)\shared\STS2-RitsuLib.Settings.dll" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +83,9 @@
 
   <Target Name="ValidateSts2GameInstall" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll. Copy local.props.template to local.props and set Sts2Dir." />
+    <Error Condition="!Exists('$(RitsuLibReferenceRoot)\compat\$(Sts2CompatTarget)\STS2-RitsuLib.dll')" Text="Could not find RitsuLib 0.6.12 references for STS2 $(Sts2CompatTarget) at $(RitsuLibReferenceRoot)." />
+    <Error Condition="!Exists('$(RitsuLibReferenceRoot)\compat\$(Sts2CompatTarget)\STS2-RitsuLib.Runtime.dll')" Text="Could not find RitsuLib Runtime 0.6.12 references for STS2 $(Sts2CompatTarget) at $(RitsuLibReferenceRoot)." />
+    <Error Condition="!Exists('$(RitsuLibReferenceRoot)\shared\STS2-RitsuLib.Shared.dll')" Text="Could not find shared RitsuLib 0.6.12 references at $(RitsuLibReferenceRoot)." />
   </Target>
 
   <Target Name="CopyMod" AfterTargets="Build"
@@ -100,8 +116,10 @@
            Text="Could not find the archived v0.107.1 sts2.dll at $(V107Sts2DataDir)." />
     <Error Condition="!Exists('$(V111Sts2DataDir)\sts2.dll')"
            Text="Could not find the archived v0.111.0 sts2.dll at $(V111Sts2DataDir)." />
+    <Error Condition="!Exists('$(V113Sts2DataDir)\sts2.dll')"
+           Text="Could not find the archived v0.113.0 sts2.dll at $(V113Sts2DataDir)." />
     <Error Condition="!Exists('$(ModPckPath)')"
            Text="Could not find MGRMod.pck at $(ModPckPath). Enable PCK export or provide an existing pack." />
-    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildProjectDirectory)\tools\Build-MgrVariantBundle.ps1&quot; -V107DataDir &quot;$(V107Sts2DataDir)&quot; -V111DataDir &quot;$(V111Sts2DataDir)&quot; -PckPath &quot;$(ModPckPath)&quot; -OutputDir &quot;$(CrossVersionBundleOutputDir)&quot; -Configuration $(Configuration)" />
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\tools\Build-MgrVariantBundle.ps1&quot; -V107DataDir &quot;$(V107Sts2DataDir)&quot; -V111DataDir &quot;$(V111Sts2DataDir)&quot; -V113DataDir &quot;$(V113Sts2DataDir)&quot; -RitsuLibReferenceRoot &quot;$(RitsuLibReferenceRoot)&quot; -PckPath &quot;$(ModPckPath)&quot; -OutputDir &quot;$(CrossVersionBundleOutputDir)&quot; -Configuration $(Configuration)" />
   </Target>
 </Project>
