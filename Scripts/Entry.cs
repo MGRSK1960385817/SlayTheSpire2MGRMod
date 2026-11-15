@@ -43,6 +43,7 @@ public partial class Entry
         _runtimePatcher.RegisterPatch<MgrNCardPoolLayerResetPatch>();
         _runtimePatcher.RegisterPatch<MgrFakeMerchantCharacterVisualPatch>();
         _runtimePatcher.RegisterPatch<MgrManimaniTargetPreviewPatch>();
+        _runtimePatcher.RegisterPatch<MgrFinalShotSelectionPatch>();
         _runtimePatcher.RegisterPatch<MgrDynamicCardTypeOverridePatch>();
         _runtimePatcher.RegisterPatch<MgrCardTypeClonePatch>();
         _runtimePatcher.RegisterPatch<MgrRelicRewardPoolPatch>();

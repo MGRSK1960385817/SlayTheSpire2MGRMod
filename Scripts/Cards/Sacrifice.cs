@@ -46,11 +46,11 @@ public sealed class Sacrifice : MgrCard
 
         NoteKind kind = CardNoteResolver.Resolve(chosen);
         await CardCmd.Exhaust(choiceContext, chosen);
-        await ChannelNote(choiceContext, kind);
+        await MgrNoteSystem.ResolveCardTransformation(choiceContext, Owner, kind);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

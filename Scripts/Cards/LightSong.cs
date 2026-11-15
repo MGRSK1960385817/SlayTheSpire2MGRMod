@@ -20,7 +20,7 @@ public sealed class LightSong : MgrCard
     public override int InitialPerformanceTurns =>
         checked(_performanceX + (IsUpgraded ? 1 : 0));
 
-    internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
+    internal override int GetPerformanceTurnsForResultRouting(bool isAutoPlay, ResourceInfo resources) =>
         checked(
             Math.Max(_performanceX, resources.EnergySpent) +
             (IsUpgraded ? 1 : 0) +

@@ -30,12 +30,15 @@ public sealed class MgrHoverTipOrderPatch : IPatchMethod
         CardModel __instance,
         ref IEnumerable<IHoverTip> __result)
     {
-        if (__instance is not MgrCard)
+        bool addPerformanceTip =
+            MgrPerformanceSystem.GetLoversPerformanceFloor(__instance) > 0 &&
+            !__instance.Keywords.Contains(MgrKeywords.PerformanceKeyword);
+        if (!addPerformanceTip && __instance is not MgrCard)
             return;
 
         List<IHoverTip> tips = __result.ToList();
-        if (!tips.Any(MgrHoverTips.IsSupplemental))
-            return;
+        if (addPerformanceTip)
+            tips.Add(HoverTipFactory.FromKeyword(MgrKeywords.PerformanceKeyword));
 
         __result = tips
             .Where(tip => !MgrHoverTips.IsSupplemental(tip))

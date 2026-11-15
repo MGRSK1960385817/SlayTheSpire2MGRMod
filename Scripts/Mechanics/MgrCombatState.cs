@@ -10,6 +10,7 @@ public sealed class MgrCombatState
 {
     public PhraseState Phrase { get; } = new();
     public int TotalNotesGenerated { get; private set; }
+    public int CardsTransformedIntoNotesThisCombat { get; private set; }
     public int StarryNotesGeneratedThisCombat { get; private set; }
     public int StarryNotesGeneratedThisTurn { get; private set; }
     public int NotesGeneratedThisTurn { get; private set; }
@@ -88,6 +89,8 @@ public sealed class MgrCombatState
         ChordTriggersThisTurn++;
         return previous;
     }
+
+    internal void RecordCardTransformation() => CardsTransformedIntoNotesThisCombat++;
 
     public void ResetTurnCounters()
     {

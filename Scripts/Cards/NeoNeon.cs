@@ -1,9 +1,6 @@
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -15,41 +12,21 @@ public sealed class NeoNeon : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(1m, ValueProp.Move),
-        new IntVar("Performance", 1m)
+        new IntVar("Performance", 1m),
+        new IntVar("Damage", 0m) // Used by the previous descriptions pending translation.
     ];
 
-    public override int InitialPerformanceTurns =>
-        DynamicVars["Performance"].IntValue;
+    public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public NeoNeon() : base(
-        0,
-        CardType.Attack,
-        CardRarity.Uncommon,
-        TargetType.AnyEnemy)
+    public NeoNeon() : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
-            .WithHitVfxNode(target =>
-            {
-                MgrSignatureVfx.SpawnRainbowStarRing(target, 26);
-                return MgrAttackVfx.CreateGunshot(
-                    Owner.Creature,
-                    target,
-                    MgrAttackVfx.StarGold,
-                    1f);
-            })
-            .WithHitFx(null, null, "blunt_attack.mp3")
-            .Execute(choiceContext);
-
-        await ChannelNote(choiceContext, NoteKind.Attack);
+        MgrSignatureVfx.SpawnRainbowStarRing(Owner.Creature, 26);
         await ChannelNote(choiceContext, NoteKind.Skill);
+        await ChannelNote(choiceContext, NoteKind.Attack);
         await ChannelNote(choiceContext, NoteKind.Power);
     }
 

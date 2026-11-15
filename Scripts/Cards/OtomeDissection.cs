@@ -36,7 +36,7 @@ public sealed class OtomeDissection : MgrCard
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
             NoteKind kind = CardNoteResolver.Resolve(card);
             await CardCmd.Exhaust(choiceContext, card);
-            await MgrNoteSystem.ChannelNote(choiceContext, Owner, kind);
+            await MgrNoteSystem.ResolveCardTransformation(choiceContext, Owner, kind);
         }
     }
 

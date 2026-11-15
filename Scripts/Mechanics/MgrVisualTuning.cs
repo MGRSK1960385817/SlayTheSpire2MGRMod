@@ -447,9 +447,11 @@ public static class MgrVisualTuning
 
     public static class ByakkoyaGirl
     {
-        // Readability beat after the native draw has completed and before the
-        // random lowest-cost hand card starts its Exhaust presentation.
-        public const float DrawToExhaustPauseSeconds = 1.0f;
+        public const float HitLifetimeSeconds = 0.36f;
+        public const float HitFireflyScale = 3.5f;
+        public const float HitSpread = 70f;
+        public const float HitRise = 32f;
+        public const int HitZIndex = 12;
     }
 
     public static class LightSongVfx

@@ -84,7 +84,7 @@ public sealed class DaybreakFrontline : MgrCard
                 target,
                 skipVisuals: true);
             NotifySilentExhaustFinished(sourcePile, target);
-            await MgrNoteSystem.ChannelNote(choiceContext, context.Player, kind);
+            await MgrNoteSystem.ResolveCardTransformation(choiceContext, context.Player, kind);
         }
     }
 

@@ -332,7 +332,7 @@ public sealed partial class MgrCharacterAuraVisual : Node2D
         HashSet<(AfterimageKind Kind, int Index)> desired = [];
         if (HasDoubleNotes())
             desired.Add((AfterimageKind.Higan, 0));
-        if (_player?.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
+        if (_player?.Creature.GetPowerAmount<DualLoversPower>() > 0m)
             desired.Add((AfterimageKind.DualLovers, 0));
 
         int chaosCount = Math.Clamp(

@@ -14,7 +14,7 @@ public sealed class Higan : MgrCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("ForteLoss", 99m)
+        new IntVar("ForteLoss", 2m)
     ];
 
     public Higan() : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)

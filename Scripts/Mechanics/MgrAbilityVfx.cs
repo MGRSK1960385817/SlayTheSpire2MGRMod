@@ -479,9 +479,8 @@ public static class MgrAbilityVfx
     }
 
     /// <summary>
-    /// Shows the blue-note anticipation for Eighty-Eight Keys once for every
-    /// living enemy, then releases all bursts together. The only awaited time is
-    /// the short shared anticipation, so multiple enemies do not serialize VFX.
+    /// Shows the blue-note anticipation for Eighty-Eight Keys over the given
+    /// creatures, then releases all bursts together after one shared wait.
     /// </summary>
     public static async Task PlayUniverseOf88Keys(
         Player? player,

@@ -47,6 +47,19 @@ public static class MgrSignatureVfx
         return visual;
     }
 
+    public static void SpawnByakkoyaHitFireflies(Creature target, int fireflyCount)
+    {
+        if (fireflyCount <= 0 || TestMode.IsOn || NCombatRoom.Instance is not { } room ||
+            room.GetCreatureNode(target) is not { } targetNode)
+        {
+            return;
+        }
+
+        var visual = new MgrByakkoyaHitFireflyVisual(fireflyCount);
+        visual.GlobalPosition = targetNode.VfxSpawnPosition;
+        room.CombatVfxContainer.AddChildSafely(visual);
+    }
+
     public static void SpawnFallingBird(Creature target, float scale = 1f)
     {
         if (TestMode.IsOn || NCombatRoom.Instance is not { } room)
@@ -221,6 +234,69 @@ public static class MgrSignatureVfx
         // The back VFX container is the same layer vanilla uses for effects
         // that must appear behind creatures instead of covering their bodies.
         room.BackCombatVfxContainer.AddChildSafely(new MgrWatchingEyesVisual());
+    }
+}
+
+internal sealed partial class MgrByakkoyaHitFireflyVisual : Node2D
+{
+    private static readonly Color[] Palette = [new("d396ff"), new("9563ff"), new("efcbff")];
+
+    private readonly Firefly[] _fireflies;
+    private float _age;
+
+    private readonly record struct Firefly(Vector2 Travel, float Size, float Phase, Color Color);
+
+    public MgrByakkoyaHitFireflyVisual(int fireflyCount)
+    {
+        _fireflies = new Firefly[fireflyCount];
+    }
+
+    public override void _Ready()
+    {
+        float angleOffset = Random.Shared.NextSingle() * Mathf.Tau;
+        for (int index = 0; index < _fireflies.Length; index++)
+        {
+            float angle = angleOffset + index * Mathf.Tau / _fireflies.Length;
+            float spread = MgrVisualTuning.ByakkoyaGirl.HitSpread *
+                Mathf.Lerp(0.55f, 1f, Random.Shared.NextSingle());
+            _fireflies[index] = new Firefly(
+                Vector2.FromAngle(angle) * spread,
+                Mathf.Lerp(1.4f, 2.6f, Random.Shared.NextSingle()) * MgrVisualTuning.ByakkoyaGirl.HitFireflyScale,
+                Random.Shared.NextSingle() * Mathf.Tau,
+                Palette[index % Palette.Length]);
+        }
+
+        ZIndex = MgrVisualTuning.ByakkoyaGirl.HitZIndex;
+    }
+
+    public override void _Process(double delta)
+    {
+        _age += (float)delta;
+        if (_age >= MgrVisualTuning.ByakkoyaGirl.HitLifetimeSeconds)
+        {
+            QueueFree();
+            return;
+        }
+
+        QueueRedraw();
+    }
+
+    public override void _Draw()
+    {
+        float progress = Mathf.Clamp(_age / MgrVisualTuning.ByakkoyaGirl.HitLifetimeSeconds, 0f, 1f);
+        float fade = 1f - progress;
+        float spread = 1f - fade * fade;
+        foreach (Firefly firefly in _fireflies)
+        {
+            float twinkle = 0.82f + 0.18f * Mathf.Sin(firefly.Phase + progress * Mathf.Tau);
+            float alpha = fade * twinkle;
+            Vector2 position = firefly.Travel * (0.16f + 0.84f * spread) +
+                Vector2.Up * (MgrVisualTuning.ByakkoyaGirl.HitRise * progress);
+
+            DrawCircle(position, firefly.Size * 5f, firefly.Color with { A = alpha * 0.16f });
+            DrawCircle(position, firefly.Size * 2.6f, firefly.Color with { A = alpha * 0.32f });
+            DrawCircle(position, firefly.Size, firefly.Color.Lerp(Colors.White, 0.48f) with { A = alpha });
+        }
     }
 }
 

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MGRMod.Cards;
+using MGRMod.Characters;
 using MGRMod.Powers;
 using MGRMod.Telemetry;
 using MGRMod.Relics;
@@ -48,10 +49,29 @@ public static class MgrPerformanceSystem
         MgrPerformanceModifierState.Clear();
     }
 
-    public static int GetInitialPerformanceTurns(CardModel card)
+    public static int GetInitialPerformanceTurns(CardModel card) =>
+        card.Type == CardType.Attack && GetQueuedEntry(card) is { } entry
+            ? entry.InitialPerformanceTurns
+            : ApplyPerformanceFloor(
+                card, card is MgrCard mgrCard ? mgrCard.InitialPerformanceTurns : 0);
+
+    internal static int ApplyPerformanceFloor(CardModel card, int printedTurns) =>
+        Math.Max(
+            GetLoversPerformanceFloor(card),
+            checked(printedTurns + MgrPerformanceModifierState.GetAdditionalPerformances(card)));
+
+    internal static int GetLoversPerformanceFloor(CardModel card)
     {
-        int printed = card is MgrCard mgrCard ? mgrCard.InitialPerformanceTurns : 0;
-        return Math.Max(0, printed + MgrPerformanceModifierState.GetAdditionalPerformances(card));
+        if (!card.IsMutable || card.Type != CardType.Attack ||
+            card.Owner is not { } owner ||
+            owner.Creature.GetPower<DualLoversPower>() is not { Amount: > 0 } lovers)
+        {
+            return 0;
+        }
+
+        // Combat factories register discovery candidates before they enter a
+        // pile. Permanent deck instances are outside that combat card scope.
+        return owner.Creature.CombatState?.ContainsCard(card) == true ? lovers.Amount : 0;
     }
 
     internal static void RefreshQueueDependentCardCosts(Player player)
@@ -70,20 +90,20 @@ public static class MgrPerformanceSystem
     public static bool IsPerformanceCard(CardModel card) =>
         GetInitialPerformanceTurns(card) > 0;
 
-    internal static bool IsQueued(CardModel card)
+    internal static bool IsQueued(CardModel card) => GetQueuedEntry(card) is not null;
+
+    private static MgrPerformanceEntry? GetQueuedEntry(CardModel card)
     {
         // Card Library, compendium, and other out-of-combat screens render the
         // immutable canonical model. CardModel.Owner asserts mutability before
         // returning, so it must never be read for those presentation models.
-        if (!card.IsMutable)
-            return false;
+        if (!card.IsMutable || card.Owner is not { } owner ||
+            !MgrPerformanceStateStore.TryGet(owner, out MgrPerformanceState state))
+        {
+            return null;
+        }
 
-        // Mutable reward/preview copies can also exist briefly without an
-        // owner. They cannot belong to a combat-only Performance state.
-        Player? owner = card.Owner;
-        return owner is not null &&
-            MgrPerformanceStateStore.TryGet(owner, out MgrPerformanceState state) &&
-            state.Contains(card);
+        return state.Entries.FirstOrDefault(entry => ReferenceEquals(entry.Card, card));
     }
 
     /// <summary>
@@ -141,6 +161,7 @@ public static class MgrPerformanceSystem
 
     public static bool ShouldHoldForResolvedPlay(
         CardModel card,
+        bool isAutoPlay,
         ResourceInfo resources)
     {
         if (IsCompletingPerformance(card))
@@ -149,14 +170,14 @@ public static class MgrPerformanceSystem
         // Externally inserted cards (and cards exchanged into the rack) may not
         // print Performance at all. Their live queue entry is authoritative:
         // keep them in Play until the scheduler marks their final trigger.
-        if (MgrPerformanceStateStore.TryGet(card.Owner, out MgrPerformanceState state) &&
-            state.Contains(card))
-        {
+        if (IsQueued(card))
             return true;
-        }
+
+        if (card.Owner.Character is not MgrCharacter && GetLoversPerformanceFloor(card) == 0)
+            return false;
 
         int turns = card is MgrCard mgrCard
-            ? mgrCard.GetPerformanceTurnsForResultRouting(resources)
+            ? mgrCard.GetPerformanceTurnsForResultRouting(isAutoPlay, resources)
             : GetInitialPerformanceTurns(card);
         return turns > 0;
     }
@@ -254,11 +275,14 @@ public static class MgrPerformanceSystem
     public static int GrantAdditionalPerformances(CardModel card, int amount)
     {
         int total = MgrPerformanceModifierState.Grant(card, amount);
+        RefreshHandCard(card);
+        return total;
+    }
+
+    internal static void RefreshHandCard(CardModel card) =>
         NPlayerHand.Instance?.GetCard(card)?.UpdateVisuals(
             PileType.Hand,
             CardPreviewMode.Normal);
-        return total;
-    }
 
     public static int AddPerformancesToQueuedCards(Player player, int amount)
     {

@@ -133,7 +133,12 @@ public sealed class MgrNoteSystem : HookedSingletonModel
 
         var player = cardPlay.Card.Owner;
         if (player.Character is not MgrCharacter)
+        {
+            if (MgrPerformanceSystem.GetLoversPerformanceFloor(cardPlay.Card) > 0)
+                MgrPerformanceSystem.ObserveResolvedCardPlay(cardPlay);
+
             return;
+        }
 
         NoteKind playedKind = CardNoteResolver.Resolve(cardPlay.Card);
         await ChannelNote(choiceContext, player, playedKind);
@@ -174,8 +179,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         PileType pileType,
         CardPilePosition position)
     {
-        if (card.Owner.Character is MgrCharacter &&
-            MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, resources))
+        if (MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, isAutoPlay, resources))
         {
             return (PileType.Play, CardPilePosition.Bottom);
         }
@@ -189,8 +193,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         ResourceInfo resources,
         CardLocation location)
     {
-        if (card.Owner.Character is MgrCharacter &&
-            MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, resources))
+        if (MgrPerformanceSystem.ShouldHoldForResolvedPlay(card, isAutoPlay, resources))
         {
             return new CardLocation(card.Owner, PileType.Play, CardPilePosition.Bottom);
         }
@@ -198,6 +201,30 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         return location;
     }
 #endif
+
+    internal static int GetCardTransformationCount(Player player) =>
+        MgrCombatStateStore.TryGet(player, out MgrCombatState state)
+            ? state.CardsTransformedIntoNotesThisCombat
+            : 0;
+
+    /// <summary>
+    /// Generates the note for one exhausted card. Count the card once even if
+    /// the note was duplicated; ordinary note generation bypasses this entry.
+    /// </summary>
+    internal static async Task ResolveCardTransformation(
+        PlayerChoiceContext choiceContext, Player player, NoteKind kind)
+    {
+        MgrCombatState state = MgrCombatStateStore.For(player);
+        if (await ChannelNote(choiceContext, player, kind))
+        {
+            state.RecordCardTransformation();
+            RefreshConditionalCardGlows(player);
+        }
+    }
+
+    internal static bool CanChannelNoteKind(Player player, NoteKind kind) =>
+        kind != NoteKind.Attack ||
+        player.Creature.GetPowerAmount<DualLoversPower>() <= 0m;
 
     /// <summary>
     /// Unified entry point for card plays, discard-based generation and future card effects.
@@ -208,14 +235,8 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         Player player,
         NoteKind kind)
     {
-        if (ShouldStopNoteSequence(player))
+        if (ShouldStopNoteSequence(player) || !CanChannelNoteKind(player, kind))
             return false;
-
-        if (kind == NoteKind.Attack &&
-            player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m)
-        {
-            return false;
-        }
 
         int copies = player.Creature.GetPowerAmount<DoubleNotesPower>() > 0m ? 2 : 1;
         bool generatedAny = false;
@@ -243,7 +264,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             return Task.CompletedTask;
 
         bool suppressAttack =
-            player.Creature.GetPowerAmount<AttackNoteSilencePower>() > 0m;
+            player.Creature.GetPowerAmount<DualLoversPower>() > 0m;
         int totalWeight = RandomBasicNoteWeights
             .Where(entry => !suppressAttack || entry.Kind != NoteKind.Attack)
             .Sum(static entry => entry.Weight);
@@ -557,32 +578,47 @@ public sealed class MgrNoteSystem : HookedSingletonModel
         }
     }
 
-    public override Task AfterPlayerTurnStartEarly(
+    public override Task BeforeSideTurnStart(
         PlayerChoiceContext choiceContext,
-        Player player)
+        CombatSide side,
+        IReadOnlyList<Creature> participants,
+        ICombatState combatState)
     {
-        if (MgrCombatStateStore.TryGet(player, out MgrCombatState state))
+        if (side != CombatSide.Player)
+            return Task.CompletedTask;
+
+        // The native hand draw and its effects run before AfterPlayerTurnStartEarly.
+        foreach (Creature participant in participants)
         {
-            state.ResetTurnCounters();
-            player.Creature
-                .GetPower<UniverseOf88KeysPower>()?
-                .NotifyChordCounterChanged();
+            if (participant.Player is not { } player ||
+                !MgrCombatStateStore.TryGet(player, out MgrCombatState state))
+            {
+                continue;
+            }
+
+            // BeforeCombatStart can already resolve relic Chords for turn one.
+            if (player.PlayerCombatState is { TurnNumber: > 1 })
+                state.ResetTurnCounters();
+
             RefreshConditionalCardGlows(player);
         }
-
-        if (player.Character is MgrCharacter)
-            MgrPerformanceStateStore.For(player).ResetTurnCounters();
 
         return Task.CompletedTask;
     }
 
-    public override async Task AfterPlayerTurnStart(
+    public override Task AfterPlayerTurnStartEarly(
         PlayerChoiceContext choiceContext,
         Player player)
     {
-        if (player.Character is MgrCharacter)
-            await MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
+        if (MgrPerformanceStateStore.TryGet(player, out MgrPerformanceState performance))
+            performance.ResetTurnCounters();
+
+        return Task.CompletedTask;
     }
+
+    public override Task AfterPlayerTurnStart(
+        PlayerChoiceContext choiceContext,
+        Player player) => MgrPerformanceSystem.PerformAtTurnStart(choiceContext, player);
 
     public override Task BeforeSideTurnEnd(
         PlayerChoiceContext choiceContext,
@@ -747,9 +783,6 @@ public sealed class MgrNoteSystem : HookedSingletonModel
             {
                 triggerCount++;
             }
-            player.Creature
-                .GetPower<UniverseOf88KeysPower>()?
-                .NotifyChordCounterChanged();
             lastTriggerBefore = chordTriggersBefore;
             if (index > 0)
             {
@@ -793,7 +826,7 @@ public sealed class MgrNoteSystem : HookedSingletonModel
     }
 
     /// <summary>
-    /// MGR's phrase and chord counters live outside Tower 2's immutable combat
+    /// MGR's phrase, chord and conversion counters live outside Tower 2's immutable combat
     /// state, so changing them does not itself raise CombatStateChanged. Refresh
     /// the native hand holders explicitly so conditional glow channels are read
     /// immediately instead of waiting for an unrelated engine state update.

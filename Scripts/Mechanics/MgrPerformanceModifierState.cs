@@ -16,7 +16,7 @@ public static class MgrPerformanceModifierState
     private static readonly HashSet<CardModel> PerformanceKeywordAddedByModifier = [];
 
     public static int GetAdditionalPerformances(CardModel card) =>
-        AdditionalPerformances.TryGetValue(card, out int amount) ? amount : 0;
+        AdditionalPerformances.GetValueOrDefault(card);
 
     public static int Grant(CardModel card, int amount)
     {
@@ -27,7 +27,7 @@ public static class MgrPerformanceModifierState
         // Native MGR Performance cards already render a Performance DynamicVar.
         // Modifying the live combat value updates the existing line instead of
         // appending a second, contradictory line. The delta is restored later.
-        if (card is MgrCard &&
+        if (card is MgrCard { InitialPerformanceTurns: > 0 } &&
             card.DynamicVars.TryGetValue("Performance", out var performanceVar))
         {
             performanceVar.BaseValue += amount;
@@ -36,14 +36,25 @@ public static class MgrPerformanceModifierState
             return performanceVar.IntValue;
         }
 
-        int updated = checked(GetAdditionalPerformances(card) + amount);
-        AdditionalPerformances[card] = updated;
-        if (!card.Keywords.Contains(MgrKeywords.PerformanceKeyword))
+        AdditionalPerformances[card] = checked(AdditionalPerformances.GetValueOrDefault(card) + amount);
+        RefreshPerformanceKeyword(card);
+        return GetAdditionalPerformances(card);
+    }
+
+    private static void RefreshPerformanceKeyword(CardModel card)
+    {
+        if (GetAdditionalPerformances(card) > 0)
         {
-            card.AddModKeyword(MgrKeywords.PerformanceKeyword);
-            PerformanceKeywordAddedByModifier.Add(card);
+            if (!card.Keywords.Contains(MgrKeywords.PerformanceKeyword))
+            {
+                card.AddModKeyword(MgrKeywords.PerformanceKeyword);
+                PerformanceKeywordAddedByModifier.Add(card);
+            }
         }
-        return updated;
+        else if (PerformanceKeywordAddedByModifier.Remove(card))
+        {
+            card.RemoveModKeyword(MgrKeywords.PerformanceKeyword);
+        }
     }
 
     public static void Clear()

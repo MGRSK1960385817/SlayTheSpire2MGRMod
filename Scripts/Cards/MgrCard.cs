@@ -81,7 +81,7 @@ public abstract class MgrCard(
     /// snapshot captured for the current play, which exists before OnPlay has
     /// finished updating card-local state.
     /// </summary>
-    internal virtual int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
+    internal virtual int GetPerformanceTurnsForResultRouting(bool isAutoPlay, ResourceInfo resources) =>
         MgrPerformanceSystem.GetInitialPerformanceTurns(this);
 
     /// <summary>

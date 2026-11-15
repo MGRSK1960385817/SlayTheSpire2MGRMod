@@ -18,7 +18,7 @@ public sealed class MaguroBash : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(20m, ValueProp.Move)
+        new DamageVar(22m, ValueProp.Move)
     ];
 
     public MaguroBash() : base(4, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -70,6 +70,6 @@ public sealed class MaguroBash : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(7m);
+        DynamicVars.Damage.UpgradeValueBy(6m);
     }
 }

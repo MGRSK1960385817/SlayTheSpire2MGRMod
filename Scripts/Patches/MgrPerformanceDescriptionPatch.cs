@@ -52,52 +52,49 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             starryText = $"[sine][color=#b96cff]{starry.GetFormattedText()}[/color][/sine]";
         }
 
-        int amount = MgrPerformanceModifierState.GetAdditionalPerformances(__instance);
+        int printedTurns = mgrCard?.InitialPerformanceTurns ?? 0;
+        int additionalTurns = MgrPerformanceModifierState.GetAdditionalPerformances(__instance);
+        int effectiveTurns = MgrPerformanceSystem.GetInitialPerformanceTurns(__instance);
         string? addedPerformanceText = null;
-        if (amount > 0)
+        if (__instance is CubicPrism)
         {
-            if (__instance is CubicPrism)
+            int floor = MgrPerformanceSystem.GetLoversPerformanceFloor(__instance);
+            if (MgrPerformanceSystem.IsQueued(__instance))
             {
-                // X-cost Performance owns the first identity line already.
-                // Replace that line with one combined expression instead of
-                // prepending a contradictory fixed "Performance 1" line.
-                var combinedLine = new LocString(
-                    "cards",
-                    "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
-                combinedLine.Add(
-                    "Times",
-                    amount);
-                string combinedText = combinedLine.GetFormattedText();
-                int firstLineBreak = __result.IndexOf('\n');
-                __result = firstLineBreak >= 0
-                    ? combinedText + __result[firstLineBreak..]
-                    : combinedText;
+                ReplacePerformanceLine(ref __result, FormatPerformanceLine(effectiveTurns));
             }
-            else if (__instance is LightSong lightSong)
+            else if (floor > 0)
             {
-                int totalBonus = checked(amount + (lightSong.IsUpgraded ? 1 : 0));
-                var combinedLine = new LocString(
-                    "cards",
-                    "MGR_MOD_CARD_LIGHT_SONG_PERFORMANCE_BONUS");
-                combinedLine.Add("Times", totalBonus);
-                string combinedText = combinedLine.GetFormattedText();
-                int firstLineBreak = __result.IndexOf('\n');
-                __result = firstLineBreak >= 0
-                    ? combinedText + __result[firstLineBreak..]
-                    : combinedText;
+                string x = additionalTurns > 0 ? $"X+[blue]{additionalTurns}[/blue]" : "X";
+                var line = new LocString("cards", "MGR_MOD_CARD_COMBAT_X_PERFORMANCE_MINIMUM");
+                line.Add("X", x);
+                line.Add("Times", floor);
+                ReplacePerformanceLine(ref __result, line.GetFormattedText());
             }
-            else
+            else if (additionalTurns > 0)
             {
-                var line = new LocString(
-                    "cards",
-                    "MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
-                line.Add("Times", amount);
-                addedPerformanceText = line.GetFormattedText();
+                var line = new LocString("cards", "MGR_MOD_CARD_CUBIC_PRISM_PERFORMANCE_BONUS");
+                line.Add("Times", additionalTurns);
+                ReplacePerformanceLine(ref __result, line.GetFormattedText());
             }
         }
-
-        if (__instance is CubicPrism { IsMutable: true } cubicPrism)
-            FormatLockedCubicPrismPerformance(cubicPrism, ref __result);
+        else if (__instance is LightSong lightSong)
+        {
+            if (additionalTurns > 0)
+            {
+                var line = new LocString("cards", "MGR_MOD_CARD_LIGHT_SONG_PERFORMANCE_BONUS");
+                line.Add("Times", checked(additionalTurns + (lightSong.IsUpgraded ? 1 : 0)));
+                ReplacePerformanceLine(ref __result, line.GetFormattedText());
+            }
+        }
+        else if (printedTurns > 0 && effectiveTurns != printedTurns)
+        {
+            ReplacePerformanceLine(ref __result, FormatPerformanceLine(effectiveTurns));
+        }
+        else if (printedTurns == 0 && effectiveTurns > 0)
+        {
+            addedPerformanceText = FormatPerformanceLine(effectiveTurns);
+        }
 
         // Identity mechanics share the first line. Native MGR Performance cards
         // already print their value in the body, so Starry joins that line; a
@@ -132,8 +129,6 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
             CompactTerminalKeywordLines(mgrCard, ref __result);
             if (mgrCard is SpringStorm or Chorus or WhiteSouthWind or PuppetClown)
                 MoveKeywordToFirstLine(mgrCard, CardKeyword.Retain, ref __result);
-            if (mgrCard is ByakkoyaGirl)
-                CompactPerformanceExhaustLine(ref __result);
             if (mgrCard is GalaxyLamp)
                 CompactPerformanceExhaustLine(ref __result);
             MoveInnateToFirstLine(mgrCard, ref __result);
@@ -176,34 +171,27 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
                 .Where(line => !string.IsNullOrWhiteSpace(line)));
     }
 
-    private static void FormatLockedCubicPrismPerformance(
-        CubicPrism card,
-        ref string description)
+    private static string FormatPerformanceLine(int turns)
     {
-        if (!MgrPerformanceSystem.IsQueued(card))
+        var line = new LocString("cards", "MGR_MOD_CARD_COMBAT_PERFORMANCE_BONUS");
+        line.Add("Times", turns);
+        return line.GetFormattedText();
+    }
+
+    private static void ReplacePerformanceLine(ref string description, string replacement)
+    {
+        // Native Retain, Ethereal and Innate can precede the printed rules.
+        // Match the localized keyword so those lines survive the replacement.
+        int keywordEnd = replacement.IndexOf("[/gold]", StringComparison.Ordinal);
+        string keyword = replacement[..(keywordEnd + "[/gold]".Length)];
+        string[] lines = description.Split('\n');
+        int index = Array.FindIndex(
+            lines, line => line.TrimStart().StartsWith(keyword, StringComparison.Ordinal));
+        if (index < 0)
             return;
 
-        string lockedX = card.LockedPerformanceX.ToString(
-            System.Globalization.CultureInfo.InvariantCulture);
-
-        // Damage and hit count are separate localized variables now: Damage
-        // follows the native preview hooks while Hits remains locked. Only the
-        // first identity line still contains a literal X for Performance.
-        int firstLineBreak = description.IndexOf('\n');
-        if (firstLineBreak < 0)
-        {
-            description = description.Replace(
-                "X",
-                lockedX,
-                StringComparison.Ordinal);
-            return;
-        }
-
-        string firstLine = description[..firstLineBreak].Replace(
-            "X",
-            lockedX,
-            StringComparison.Ordinal);
-        description = firstLine + description[firstLineBreak..];
+        lines[index] = replacement;
+        description = string.Join('\n', lines);
     }
 
     private static void CompactStarryRetainLine(

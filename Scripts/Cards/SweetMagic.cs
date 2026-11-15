@@ -18,6 +18,14 @@ public sealed class SweetMagic : MgrCard
 
     protected override MgrKeywordKind KeywordKinds => MgrKeywordKind.Forte;
 
+    protected override bool ShouldGlowGoldInternal =>
+        CombatState is not null &&
+        PileType.Hand.GetPile(Owner).Cards
+            .Where(card => card != this && card.Type != CardType.None)
+            .Select(CardNoteResolver.Resolve)
+            .Distinct()
+            .Count() >= DynamicVars.Cards.IntValue;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new CardsVar(3),
@@ -60,7 +68,7 @@ public sealed class SweetMagic : MgrCard
         foreach (CardModel card in selected)
             await CardCmd.Exhaust(choiceContext, card);
         foreach (NoteKind kind in kinds)
-            await ChannelNote(choiceContext, kind);
+            await MgrNoteSystem.ResolveCardTransformation(choiceContext, Owner, kind);
 
         if (kinds.Length != DynamicVars.Cards.IntValue ||
             kinds.Distinct().Count() != kinds.Length)

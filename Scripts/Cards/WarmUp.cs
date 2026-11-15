@@ -15,12 +15,12 @@ public sealed class WarmUp : MgrCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<FortePower>(1m),
-        new IntVar("Performance", 2m)
+        new IntVar("Performance", 1m)
     ];
 
     public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
 
-    public WarmUp() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+    public WarmUp() : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -50,6 +50,6 @@ public sealed class WarmUp : MgrCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Performance"].UpgradeValueBy(-1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

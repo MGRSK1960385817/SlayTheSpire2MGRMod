@@ -11,9 +11,11 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "universe_of_88_keys")]
 public sealed class UniverseOf88Keys : MgrCard
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<UniverseOf88KeysPower>(8m)
+        new PowerVar<UniverseOf88KeysPower>(5m)
     ];
 
     public UniverseOf88Keys() : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)

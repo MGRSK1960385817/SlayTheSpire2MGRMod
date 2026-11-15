@@ -20,7 +20,6 @@ public sealed class CubicPrism : MgrCard
 
     private int _performanceX;
 
-    internal int LockedPerformanceX => _performanceX;
     internal int LockedDamageAndHits =>
         checked(_performanceX + (IsUpgraded ? 1 : 0));
 
@@ -32,10 +31,9 @@ public sealed class CubicPrism : MgrCard
         new DamageVar(0m, ValueProp.Move)
     ];
 
-    internal override int GetPerformanceTurnsForResultRouting(ResourceInfo resources) =>
-        checked(
-            Math.Max(_performanceX, resources.EnergySpent) +
-            MgrPerformanceModifierState.GetAdditionalPerformances(this));
+    internal override int GetPerformanceTurnsForResultRouting(bool isAutoPlay, ResourceInfo resources) =>
+        MgrPerformanceSystem.ApplyPerformanceFloor(
+            this, isAutoPlay ? _performanceX : ResolveEnergyXValue());
 
     public CubicPrism() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
     {

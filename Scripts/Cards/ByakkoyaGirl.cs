@@ -1,9 +1,13 @@
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
+using MGRMod.Compatibility;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -12,70 +16,78 @@ namespace MGRMod.Cards;
 [RegisterCard(typeof(MgrCardPool), StableEntryStem = "byakkoya_girl")]
 public sealed class ByakkoyaGirl : MgrCard
 {
+    private const string DamagePerHitKey = "DamagePerHit";
+
     protected override bool TransformsCardsIntoNotes => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("Performance", 2m),
-        new CardsVar(1)
+        new IntVar(DamagePerHitKey, 4m),
+        new CardsVar(1),
+        new CalculationBaseVar(0m),
+        new CalculationExtraVar(1m),
+        new CalculatedVar("DamageTriggers").WithMultiplier(
+            static (card, _) => GetPreviewHitCount(card)),
+        new IntVar("Performance", 0m) // Used by the previous descriptions pending translation.
     ];
 
-    public override int InitialPerformanceTurns => DynamicVars["Performance"].IntValue;
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Concat([CardKeyword.Exhaust]);
-
-    public ByakkoyaGirl() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+    public ByakkoyaGirl() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        IEnumerable<CardModel> drawnCards = await CardPileCmd.Draw(
-            choiceContext,
-            DynamicVars.Cards.BaseValue,
-            Owner);
-
-        // Let the native draw presentation settle before selecting and
-        // exhausting the lowest-cost hand card. The hand snapshot deliberately
-        // remains after this visual-only beat, so the chosen candidate still
-        // comes from the latest authoritative pile state.
-        if (drawnCards.Any())
+        if (PileType.Hand.GetPile(Owner).Cards.Any(card => IsConversionTarget(this, card)))
         {
-            await Cmd.Wait(MgrPerformanceSystem.GetVisualWaitDuration(
-                this,
-                MgrVisualTuning.ByakkoyaGirl.DrawToExhaustPauseSeconds));
+            var prompt = LocString.GetIfExists("cards", "MGR_MOD_CARD_BYAKKOYA_GIRL.selectionScreenPrompt")
+                ?? CardSelectorPrefs.TransformSelectionPrompt;
+            CardModel? selected = (await CardSelectCmd.FromHand(
+                choiceContext, Owner, new CardSelectorPrefs(prompt, DynamicVars.Cards.IntValue),
+                filter: card => IsConversionTarget(this, card), source: this)).FirstOrDefault();
+            if (selected is not null)
+            {
+                NoteKind kind = CardNoteResolver.Resolve(selected);
+                await CardCmd.Exhaust(choiceContext, selected);
+                await MgrNoteSystem.ResolveCardTransformation(choiceContext, Owner, kind);
+            }
         }
 
-        List<CardModel> hand = PileType.Hand.GetPile(Owner).Cards.ToList();
-        if (hand.Count == 0)
+        if (Owner.Creature.CombatState is not { } combatState)
             return;
 
-        int lowestCost = hand.Min(GetCurrentEnergyCost);
-        List<CardModel> candidates = hand
-            .Where(card => GetCurrentEnergyCost(card) == lowestCost)
-            .ToList();
-
-        // Unplayable Curses and Statuses both resolve to a practical cost of 0.
-        // When both categories tie, remove Status candidates so Curse cards get
-        // the requested priority. Other genuinely 0-cost cards remain eligible.
-        if (candidates.Any(card => card.Type == CardType.Curse) &&
-            candidates.Any(card => card.Type == CardType.Status))
+        int hitCount = MgrNoteSystem.GetCardTransformationCount(Owner);
+        decimal damage = DynamicVars[DamagePerHitKey].BaseValue;
+        for (int hit = 0; hit < hitCount; hit++)
         {
-            candidates.RemoveAll(card => card.Type == CardType.Status);
+            if (MgrNoteSystem.ShouldStopNoteSequence(Owner))
+                break;
+
+            var target = Owner.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies);
+            if (target is null)
+                break;
+
+            MgrSignatureVfx.SpawnByakkoyaHitFireflies(target, (int)damage);
+            await MgrCrossVersionApi.Damage(
+                choiceContext, target, damage, ValueProp.Unpowered, Owner.Creature,
+                cardSource: null, cardPlay: null);
         }
-
-        CardModel chosen = Owner.RunState.Rng.CombatCardSelection.NextItem(candidates)
-            ?? candidates[0];
-        NoteKind kind = CardNoteResolver.Resolve(chosen);
-        await CardCmd.Exhaust(choiceContext, chosen);
-        await ChannelNote(choiceContext, kind);
     }
 
-    private static int GetCurrentEnergyCost(CardModel card) =>
-        card.EnergyCost.GetAmountToSpend();
-
-    protected override void OnUpgrade()
+    private static decimal GetPreviewHitCount(CardModel source)
     {
-        EnergyCost.UpgradeBy(-1);
+        if (source.CombatState is null)
+            return 0m;
+
+        var player = source.Owner;
+        bool canTransform = PileType.Hand.GetPile(player).Cards.Any(card =>
+            IsConversionTarget(source, card) &&
+            MgrNoteSystem.CanChannelNoteKind(player, CardNoteResolver.Resolve(card)));
+
+        return MgrNoteSystem.GetCardTransformationCount(player) + (canTransform ? 1 : 0);
     }
+
+    private static bool IsConversionTarget(CardModel source, CardModel card) =>
+        card != source && card.Type != CardType.None;
+
+    protected override void OnUpgrade() => DynamicVars[DamagePerHitKey].UpgradeValueBy(2m);
 }
