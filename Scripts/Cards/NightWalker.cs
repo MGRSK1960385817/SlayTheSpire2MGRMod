@@ -22,7 +22,7 @@ public sealed class NightWalker : MgrCard
     [
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
-        new DamageVar(6m, ValueProp.Move),
+        new DamageVar(5m, ValueProp.Move),
         new CalculatedVar("TotalHits").WithMultiplier(
             static (card, _) =>
             {
