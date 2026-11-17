@@ -1,8 +1,13 @@
+using System.Globalization;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
 using MGRMod.Mechanics;
@@ -18,7 +23,50 @@ public sealed class CubicPrism : MgrCard
     private const string BaseHitsDisplay = "CubicPrismBaseHits";
     private const string UpgradedHitsDisplay = "CubicPrismUpgradedHits";
 
+    private sealed class PrismDamageVar() : DamageVar(0m, ValueProp.Move)
+    {
+        public int? PreviewHits { get; private set; }
+
+        public override void UpdateCardPreview(
+            CardModel card,
+            CardPreviewMode previewMode,
+            Creature? target,
+            bool runGlobalHooks)
+        {
+            var prism = (CubicPrism)card;
+            PreviewHits = null;
+            if (MgrPerformanceSystem.IsQueued(prism))
+            {
+                PreviewHits = prism.LockedDamageAndHits;
+            }
+            else if (runGlobalHooks && prism.GetCurrentEnergyXForPreview() is { } x)
+            {
+                PreviewHits = checked(x + (prism.IsUpgraded || previewMode == CardPreviewMode.Upgrade ? 1 : 0));
+            }
+
+            if (PreviewHits is not { } hits)
+            {
+                base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+                return;
+            }
+
+            if (hits <= 0)
+            {
+                PreviewValue = EnchantedValue = 0m;
+                return;
+            }
+
+            // Previewing a different X must leave the damage locked by play intact.
+            var preview = new DamageVar(hits, Props);
+            preview.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+            EnchantedValue = preview.EnchantedValue;
+            PreviewValue = preview.PreviewValue;
+        }
+    }
+
     private int _performanceX;
+    private bool UsesCurrentEnergyPreview =>
+        Pile?.Type == PileType.Hand || UpgradePreviewType == CardUpgradePreviewType.Combat;
 
     internal int LockedDamageAndHits =>
         checked(_performanceX + (IsUpgraded ? 1 : 0));
@@ -28,8 +76,13 @@ public sealed class CubicPrism : MgrCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(0m, ValueProp.Move)
+        new PrismDamageVar()
     ];
+
+    internal int? GetCurrentEnergyXForPreview() =>
+        UsesCurrentEnergyPreview && CombatState is { } combatState
+            ? Hook.ModifyXValue(combatState, this, EnergyCost.GetAmountToSpend())
+            : null;
 
     internal override int GetPerformanceTurnsForResultRouting(bool isAutoPlay, ResourceInfo resources) =>
         MgrPerformanceSystem.ApplyPerformanceFloor(
@@ -89,25 +142,34 @@ public sealed class CubicPrism : MgrCard
     {
         base.AddExtraArgsToDescription(description);
 
-        bool isQueued = MgrPerformanceSystem.IsQueued(this);
-        string damage = isQueued
-            ? DynamicVars.Damage.ToHighlightedString(inverse: false)
-            : "X";
-        string hits = isQueued
-            ? LockedDamageAndHits.ToString(
-                System.Globalization.CultureInfo.InvariantCulture)
-            : "X";
+        var damageVar = (PrismDamageVar)DynamicVars.Damage;
+        int? previewHits = MgrPerformanceSystem.IsQueued(this)
+            ? LockedDamageAndHits
+            : UsesCurrentEnergyPreview ? damageVar.PreviewHits : null;
+        if (previewHits is { } hits)
+        {
+            string damage = damageVar.ToHighlightedString(inverse: false);
+            string hitCount = Math.Max(hits, 0).ToString(CultureInfo.InvariantCulture);
+            description.Add(BaseDamageDisplay, damage);
+            description.Add(UpgradedDamageDisplay, damage);
+            description.Add(BaseHitsDisplay, hitCount);
+            description.Add(UpgradedHitsDisplay, hitCount);
+            return;
+        }
 
-        // Both branches use the current locked values while queued; outside
-        // combat the IfUpgraded formatter selects the original X or X+1 text.
-        description.Add(BaseDamageDisplay, damage);
-        description.Add(
-            UpgradedDamageDisplay,
-            isQueued ? damage : "X+1");
-        description.Add(BaseHitsDisplay, hits);
-        description.Add(
-            UpgradedHitsDisplay,
-            isQueued ? hits : "X+1");
+        description.Add(BaseDamageDisplay, FormatDamageFormula(0));
+        description.Add(UpgradedDamageDisplay, FormatDamageFormula(1));
+        description.Add(BaseHitsDisplay, "X");
+        description.Add(UpgradedHitsDisplay, "X+1");
+    }
+
+    private string FormatDamageFormula(int upgradeBonus)
+    {
+        if (Enchantment is Instinct)
+            return upgradeBonus == 0 ? "2×X" : "2×(X+1)";
+
+        int bonus = upgradeBonus + (Enchantment is Sharp sharp ? sharp.Amount : 0);
+        return bonus == 0 ? "X" : $"X+{bonus.ToString(CultureInfo.InvariantCulture)}";
     }
 
     private void SyncLockedDamageVar() =>

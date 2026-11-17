@@ -56,12 +56,17 @@ public sealed class MgrPerformanceDescriptionPatch : IPatchMethod
         int additionalTurns = MgrPerformanceModifierState.GetAdditionalPerformances(__instance);
         int effectiveTurns = MgrPerformanceSystem.GetInitialPerformanceTurns(__instance);
         string? addedPerformanceText = null;
-        if (__instance is CubicPrism)
+        if (__instance is CubicPrism prism)
         {
             int floor = MgrPerformanceSystem.GetLoversPerformanceFloor(__instance);
             if (MgrPerformanceSystem.IsQueued(__instance))
             {
                 ReplacePerformanceLine(ref __result, FormatPerformanceLine(effectiveTurns));
+            }
+            else if (prism.GetCurrentEnergyXForPreview() is { } xValue)
+            {
+                int previewTurns = MgrPerformanceSystem.ApplyPerformanceFloor(prism, xValue);
+                ReplacePerformanceLine(ref __result, FormatPerformanceLine(previewTurns));
             }
             else if (floor > 0)
             {

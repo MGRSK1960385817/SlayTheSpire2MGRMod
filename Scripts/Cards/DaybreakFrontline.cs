@@ -43,23 +43,20 @@ public sealed class DaybreakFrontline : MgrCard
         PlayerChoiceContext choiceContext,
         PerformanceCompletionContext context)
     {
-        CardModel[] targets = MgrCurseUtils.SnapshotCursesAndStatuses(
-            context.Player,
-            includePerformanceQueue: true,
-            PileType.Hand,
-            PileType.Draw,
-            PileType.Discard,
-            PileType.Exhaust);
+        CardModel[] targets = MgrCurseUtils.SnapshotCursesAndStatusesInCombat(context.Player);
 
         if (targets.Length > 0)
             await MgrAbilityVfx.PlayCentralCardExhaust(targets);
 
         foreach (CardModel target in targets)
         {
+            CardPile? sourcePile = target.Pile;
+            if (sourcePile?.Type == PileType.Exhaust)
+                continue;
+
             NoteKind kind = CardNoteResolver.Resolve(target);
             MgrPerformanceSystem.DetachQueuedCard(context.Player, target);
 
-            CardPile? sourcePile = target.Pile;
             if (sourcePile?.Type is PileType.Hand &&
                 NPlayerHand.Instance is { } hand &&
                 hand.GetCardHolder(target) is not null)
@@ -68,15 +65,6 @@ public sealed class DaybreakFrontline : MgrCard
                 // into the central exhaust row. Keep this fallback for test or
                 // headless paths where no combat UI was available.
                 hand.Remove(target);
-            }
-
-            if (sourcePile?.Type is PileType.Exhaust)
-            {
-                // Re-exhaust cards which already live in the Exhaust pile: lift
-                // the model out silently, then let the real command put it back
-                // so Before/AfterExhaust hooks run once more. The pile ends with
-                // the same count, matching the requested "out, then back in".
-                sourcePile.RemoveInternal(target, silent: true);
             }
 
             await CardCmd.Exhaust(

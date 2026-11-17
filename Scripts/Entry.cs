@@ -38,6 +38,7 @@ public partial class Entry
         _runtimePatcher ??= RitsuLibFramework.CreatePatcher(ModId, "runtime", "runtime integration");
         _runtimePatcher.RegisterPatch<MgrAudioVolumePatch>();
         _runtimePatcher.RegisterPatch<MgrPerformanceDescriptionPatch>();
+        _runtimePatcher.RegisterPatch<MgrCombatRelicPreviewPatch>();
         _runtimePatcher.RegisterPatch<MgrPerformancePowerCardVfxPatch>();
         _runtimePatcher.RegisterPatch<MgrHoverTipOrderPatch>();
         _runtimePatcher.RegisterPatch<MgrNCardPoolLayerResetPatch>();

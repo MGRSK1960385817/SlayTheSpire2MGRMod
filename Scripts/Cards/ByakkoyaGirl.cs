@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
@@ -7,7 +8,6 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MGRMod.Characters;
-using MGRMod.Compatibility;
 using MGRMod.Mechanics;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -18,11 +18,13 @@ public sealed class ByakkoyaGirl : MgrCard
 {
     private const string DamagePerHitKey = "DamagePerHit";
 
+    private DamageVar DamagePerHit => (DamageVar)DynamicVars[DamagePerHitKey];
+
     protected override bool TransformsCardsIntoNotes => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar(DamagePerHitKey, 4m),
+        new DamageVar(DamagePerHitKey, 4m, ValueProp.Move),
         new CardsVar(1),
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
@@ -56,7 +58,19 @@ public sealed class ByakkoyaGirl : MgrCard
             return;
 
         int hitCount = MgrNoteSystem.GetCardTransformationCount(Owner);
-        decimal damage = DynamicVars[DamagePerHitKey].BaseValue;
+        if (hitCount <= 0 || MgrNoteSystem.ShouldStopNoteSequence(Owner) ||
+            combatState.HittableEnemies.Count == 0)
+        {
+            return;
+        }
+
+        // Group the random hits so attack effects apply to the whole card play.
+#if STS2_V107
+        await using var attack = await AttackCommand.CreateContextAsync(combatState, choiceContext, this);
+#else
+        await using var attack = await AttackCommand.CreateContextAsync(combatState, choiceContext, cardPlay);
+#endif
+        DamageVar damage = DamagePerHit;
         for (int hit = 0; hit < hitCount; hit++)
         {
             if (MgrNoteSystem.ShouldStopNoteSequence(Owner))
@@ -66,10 +80,12 @@ public sealed class ByakkoyaGirl : MgrCard
             if (target is null)
                 break;
 
-            MgrSignatureVfx.SpawnByakkoyaHitFireflies(target, (int)damage);
-            await MgrCrossVersionApi.Damage(
-                choiceContext, target, damage, ValueProp.Unpowered, Owner.Creature,
-                cardSource: null, cardPlay: null);
+            MgrSignatureVfx.SpawnByakkoyaHitFireflies(target, (int)damage.BaseValue);
+#if STS2_V107
+            attack.AddHit(await CreatureCmd.Damage(choiceContext, target, damage, this));
+#else
+            attack.AddHit(await CreatureCmd.Damage(choiceContext, target, damage, this, cardPlay));
+#endif
         }
     }
 
@@ -89,5 +105,5 @@ public sealed class ByakkoyaGirl : MgrCard
     private static bool IsConversionTarget(CardModel source, CardModel card) =>
         card != source && card.Type != CardType.None;
 
-    protected override void OnUpgrade() => DynamicVars[DamagePerHitKey].UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DamagePerHit.UpgradeValueBy(2m);
 }

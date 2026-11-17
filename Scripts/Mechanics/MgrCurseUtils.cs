@@ -27,12 +27,11 @@ public static class MgrCurseUtils
             ["Enthralled"] = 2
         };
 
-    private static readonly PileType[] CountedCombatPiles =
+    private static readonly PileType[] InCombatPiles =
     [
         PileType.Hand,
         PileType.Draw,
-        PileType.Discard,
-        PileType.Exhaust
+        PileType.Discard
     ];
 
     public static int GetRandomCurseWeight(CardModel card)
@@ -125,10 +124,18 @@ public static class MgrCurseUtils
     }
 
     public static int CountCurses(Player player) =>
-        CountedCombatPiles.Sum(pile =>
-            pile.GetPile(player).Cards.Count(card => card.Type == CardType.Curse)) +
-        MgrPerformanceSystem.GetQueuedCards(player)
-            .Count(card => card.Type == CardType.Curse);
+        EnumerateCardsInCombat(player).Count(card => card.Type == CardType.Curse);
+
+    internal static CardModel[] SnapshotCursesAndStatusesInCombat(Player player) =>
+        EnumerateCardsInCombat(player)
+            .Where(card => card.Type is CardType.Curse or CardType.Status)
+            .ToArray();
+
+    private static IEnumerable<CardModel> EnumerateCardsInCombat(Player player) =>
+        InCombatPiles.SelectMany(pile => pile.GetPile(player).Cards)
+            .Concat(MgrPerformanceSystem.GetQueuedCards(player)
+                .Where(card => card.Pile?.Type != PileType.Exhaust))
+            .Distinct();
 
     public static CardModel[] SnapshotCursesAndStatuses(
         Player player,
