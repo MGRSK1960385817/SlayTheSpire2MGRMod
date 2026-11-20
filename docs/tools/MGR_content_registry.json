@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "lastUpdated": "2026-08-30",
+  "lastUpdated": "2026-11-20",
   "purpose": "供作者快速查看、确认和重命名 MGR 卡牌、遗物与药水；本文件是开发登记表，不会被游戏运行时读取。",
   "fieldGuide": {
     "codeName": "唯一英文开发标识；同时作为 C# 类型名、源码文件名和默认图片基本名。",
@@ -34,12 +34,12 @@
     },
     "activeRelics": {
       "Starter": 2,
-      "Common": 2,
+      "Common": 3,
       "Uncommon": 3,
       "Rare": 3,
       "Shop": 1,
       "Ancient": 0,
-      "total": 11
+      "total": 12
     },
     "activePotions": { "Common": 1, "Uncommon": 1, "Rare": 1, "total": 3 }
   },
@@ -234,7 +234,7 @@
       "status": 1,
       "type": "Attack",
       "rarity": "Common",
-      "summary": "将1张随机诅咒加入弃牌堆；手牌、抽牌堆、弃牌堆与演奏队列中每有1张诅咒便对随机敌人造成6点伤害；升级后伤害增加至9。"
+      "summary": "将1张随机诅咒加入弃牌堆；手牌、抽牌堆、弃牌堆与演奏队列中每有1张诅咒便对随机敌人造成7点伤害；升级后伤害增加至10。"
     },
     {
       "codeName": "Frenzy",
@@ -879,6 +879,13 @@
       "status": 1,
       "rarity": "Rare",
       "summary": "回合开始时，若初始抽牌中抽到的技能牌少于2张，抽4张牌。"
+    },
+    {
+      "codeName": "MagicBroom",
+      "name": "魔法扫帚",
+      "status": 1,
+      "rarity": "Common",
+      "summary": "战斗开始时，首轮抽牌后额外抽1张牌，再选择1张手牌转化为音符；沿用消耗目标牌并生成对应音符的统一转化规则。"
     }
   ],
   "potions": [

@@ -31,5 +31,9 @@
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Is the filling sweet bean paste, or tuna?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Little Angel",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "At the start of your turn, if you drew fewer than {SkillThreshold:diff()} Skill cards, draw {Cards:diff()} cards.",
-  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "May it help you escape misfortune."
+  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "May it help you escape misfortune.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.title": "Magic Broom",
+  "MGR_MOD_RELIC_MAGIC_BROOM.description": "At the start of each combat, draw 1 card, then choose 1 card in your Hand to transform into a Note.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.flavor": "Sweep away everything you don't need!",
+  "MGR_MOD_RELIC_MAGIC_BROOM.selectionScreenPrompt": "Choose 1 card in your Hand to transform into a Note."
 }

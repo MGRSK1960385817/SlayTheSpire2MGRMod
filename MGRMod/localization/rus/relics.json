@@ -31,5 +31,9 @@
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Начинка из адзуки или из тунца?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Маленький ангел",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "В начале хода, если вы добрали менее {SkillThreshold:diff()} Навыков, доберите карты: {Cards:diff()}.",
-  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Пусть он отведет от тебя беду."
+  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Пусть он отведет от тебя беду.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.title": "Волшебная метла",
+  "MGR_MOD_RELIC_MAGIC_BROOM.description": "В начале каждого боя доберите 1 карту, затем выберите 1 карту в руке и превратите ее в ноту.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.flavor": "Вымети все ненужное!",
+  "MGR_MOD_RELIC_MAGIC_BROOM.selectionScreenPrompt": "Выберите карту в руке, чтобы превратить ее в ноту."
 }

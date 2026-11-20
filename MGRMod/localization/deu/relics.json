@@ -31,5 +31,9 @@
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Mit roter Bohnenpaste oder mit Fischfüllung?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Kleiner Engel",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "Ziehe zu Beginn deines Zuges {Cards:diff()} Karten, falls du weniger als {SkillThreshold:diff()} Fertigkeitskarten gezogen hast.",
-  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Möge er dich vor Unglück bewahren."
+  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Möge er dich vor Unglück bewahren.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.title": "Zauberbesen",
+  "MGR_MOD_RELIC_MAGIC_BROOM.description": "Ziehe zu Beginn jedes Kampfes 1 Karte und wähle dann 1 Handkarte, die du in eine Note umwandelst.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.flavor": "Feg alles weg, was du nicht brauchst!",
+  "MGR_MOD_RELIC_MAGIC_BROOM.selectionScreenPrompt": "Wähle 1 Handkarte, die du in eine Note umwandelst."
 }

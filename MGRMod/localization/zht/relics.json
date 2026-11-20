@@ -31,5 +31,9 @@
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "紅豆餡還是魚肉餡？",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "小天使",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "回合開始時，若你抽到的技能牌少於 {SkillThreshold:diff()} 張，抽 {Cards:diff()} 張牌。",
-  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "願助你擺脫厄運。"
+  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "願助你擺脫厄運。",
+  "MGR_MOD_RELIC_MAGIC_BROOM.title": "魔法掃帚",
+  "MGR_MOD_RELIC_MAGIC_BROOM.description": "戰鬥開始時，抽 1 張牌，然後選擇 1 張手牌轉化為音符。",
+  "MGR_MOD_RELIC_MAGIC_BROOM.flavor": "把不需要的東西都掃掉！",
+  "MGR_MOD_RELIC_MAGIC_BROOM.selectionScreenPrompt": "選擇 1 張手牌轉化為音符。"
 }

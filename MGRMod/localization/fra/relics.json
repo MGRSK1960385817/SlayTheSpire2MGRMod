@@ -31,5 +31,9 @@
   "MGR_MOD_RELIC_MAGUROYAKI.flavor": "Fourré aux haricots rouges ou au thon ?",
   "MGR_MOD_RELIC_LITTLE_ANGEL.title": "Petit ange",
   "MGR_MOD_RELIC_LITTLE_ANGEL.description": "Au début du tour, si vous avez pioché moins de {SkillThreshold:diff()} Compétences, piochez {Cards:diff()} cartes.",
-  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Puisse-t-il éloigner le malheur."
+  "MGR_MOD_RELIC_LITTLE_ANGEL.flavor": "Puisse-t-il éloigner le malheur.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.title": "Balai magique",
+  "MGR_MOD_RELIC_MAGIC_BROOM.description": "Au début de chaque combat, piochez 1 carte, puis choisissez 1 carte de votre Main à transformer en note.",
+  "MGR_MOD_RELIC_MAGIC_BROOM.flavor": "Balayez tout ce dont vous n’avez pas besoin !",
+  "MGR_MOD_RELIC_MAGIC_BROOM.selectionScreenPrompt": "Choisissez une carte de votre Main à transformer en note."
 }
